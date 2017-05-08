@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="16B2555" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="61" id="KGk-i7-Jjw" customClass="LMTableViewCell">
+            <rect key="frame" x="0.0" y="0.0" width="332" height="61"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="332" height="60.5"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="default_user_avatar.png" translatesAutoresizingMaskIntoConstraints="NO" id="6v0-F7-XTN">
+                        <rect key="frame" x="15" y="8.5" width="44" height="44"/>
+                        <constraints>
+                            <constraint firstAttribute="width" secondItem="6v0-F7-XTN" secondAttribute="height" multiplier="1:1" id="14F-5U-3dw"/>
+                            <constraint firstAttribute="width" constant="44" id="CJj-IG-nXz"/>
+                        </constraints>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" horizontalCompressionResistancePriority="740" text="绝命毒师" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Aja-gl-Tqv">
+                        <rect key="frame" x="69" y="8.5" width="57.5" height="17"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <color key="textColor" red="0.66666666666666663" green="0.66666666666666663" blue="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="7月16日 21：45" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="d4w-mP-pqp">
+                        <rect key="frame" x="69" y="33" width="115.5" height="19.5"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                        <color key="textColor" red="0.43529411759999997" green="0.4431372549" blue="0.47450980390000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="未确认" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="law-HV-mSn">
+                        <rect key="frame" x="279" y="35.5" width="43" height="17"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <color key="textColor" red="0.90980392156862744" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="888888 BTC" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CJ7-a7-WIF">
+                        <rect key="frame" x="238" y="8.5" width="84" height="17"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <color key="textColor" red="0.66666666666666663" green="0.66666666666666663" blue="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="Aja-gl-Tqv" firstAttribute="top" secondItem="6v0-F7-XTN" secondAttribute="top" id="ByN-EI-Sss"/>
+                    <constraint firstItem="Aja-gl-Tqv" firstAttribute="leading" secondItem="6v0-F7-XTN" secondAttribute="trailing" constant="10" id="IHF-4b-rQm"/>
+                    <constraint firstItem="CJ7-a7-WIF" firstAttribute="top" secondItem="Aja-gl-Tqv" secondAttribute="top" id="Kkw-D3-0Sx"/>
+                    <constraint firstItem="d4w-mP-pqp" firstAttribute="leading" secondItem="6v0-F7-XTN" secondAttribute="trailing" constant="10" id="Nk3-ik-Dp5"/>
+                    <constraint firstItem="d4w-mP-pqp" firstAttribute="bottom" secondItem="6v0-F7-XTN" secondAttribute="bottom" id="V2F-qk-kBj"/>
+                    <constraint firstItem="law-HV-mSn" firstAttribute="bottom" secondItem="d4w-mP-pqp" secondAttribute="bottom" id="Xmd-6d-pFE"/>
+                    <constraint firstItem="6v0-F7-XTN" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="YgW-Sx-Rjo"/>
+                    <constraint firstAttribute="trailing" secondItem="law-HV-mSn" secondAttribute="trailing" constant="10" id="bCZ-p7-ly8"/>
+                    <constraint firstItem="CJ7-a7-WIF" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="Aja-gl-Tqv" secondAttribute="trailing" constant="10" id="dLz-hW-he0"/>
+                    <constraint firstAttribute="trailing" secondItem="CJ7-a7-WIF" secondAttribute="trailing" constant="10" id="dpv-fv-phT"/>
+                    <constraint firstItem="CJ7-a7-WIF" firstAttribute="top" secondItem="Aja-gl-Tqv" secondAttribute="top" id="ifw-K0-MSa"/>
+                    <constraint firstItem="CJ7-a7-WIF" firstAttribute="leading" secondItem="Aja-gl-Tqv" secondAttribute="trailing" priority="750" constant="50" id="qiF-2Q-84w"/>
+                    <constraint firstItem="6v0-F7-XTN" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="15" id="rw9-hb-awX"/>
+                </constraints>
+                <variation key="default">
+                    <mask key="constraints">
+                        <exclude reference="ifw-K0-MSa"/>
+                        <exclude reference="qiF-2Q-84w"/>
+                    </mask>
+                </variation>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="bitMoneyLabel" destination="d4w-mP-pqp" id="vZl-I9-R6t"/>
+                <outlet property="iconImageView" destination="6v0-F7-XTN" id="ya9-WJ-lQL"/>
+                <outlet property="nameLabel" destination="Aja-gl-Tqv" id="8HS-AA-N5b"/>
+                <outlet property="sureLabel" destination="law-HV-mSn" id="ZN8-qf-bYI"/>
+                <outlet property="timeLabel" destination="CJ7-a7-WIF" id="MXJ-aa-No6"/>
+            </connections>
+            <point key="canvasLocation" x="366" y="295.5"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="default_user_avatar.png" width="162" height="163"/>
+    </resources>
+</document>

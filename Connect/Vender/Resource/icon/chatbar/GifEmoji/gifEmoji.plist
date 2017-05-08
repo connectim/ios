@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+    <string>angry</string>
+    
+    <string>angry2</string>
+    
+    <string>big_smile</string>
+    
+    <string>cool_man</string>
+    
+    <string>dead</string>
+    
+    <string>devil</string>
+    
+    <string>dissapointment</string>
+    
+    <string>dissapointment2</string>
+    
+    <string>eye_blink</string>
+    
+    <string>eye_blink2</string>
+    
+    <string>goofy</string>
+    
+    <string>goofy_blink</string>
+    
+    <string>gooy_love</string>
+    
+    <string>holy_man</string>
+    
+    <string>kiss</string>
+    
+    <string>loud_crying</string>
+    
+    <string>love</string>
+    
+    <string>love_shock</string>
+    
+    <string>mmmm</string>
+    
+    <string>nervous_laugh</string>
+    
+    <string>rofl</string>
+    
+    <string>sad</string>
+    
+    <string>sad_cry</string>
+    
+    <string>shit</string>
+    
+    <string>shock</string>
+    
+    <string>shy_lough</string>
+    
+    <string>sleep</string>
+    
+    <string>suprise</string>
+    
+    <string>sweaty_sad</string>
+    
+    <string>vomit</string>
+    
+    <string>wat</string>
+    
+    <string>wat2</string>
+</array>
+</plist>

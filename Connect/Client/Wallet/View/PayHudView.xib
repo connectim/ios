@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11542" systemVersion="16B2657" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11524"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="PayHudView">
+            <rect key="frame" x="0.0" y="0.0" width="345" height="373"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Connect Wallet" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sAc-tG-zQC">
+                    <rect key="frame" x="0.0" y="58" width="345" height="285"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="19"/>
+                    <color key="textColor" cocoaTouchSystemColor="tableCellGroupedBackgroundColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="st5-CD-PLQ">
+                    <rect key="frame" x="0.0" y="343" width="345" height="30"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="30" id="50g-rK-hI9"/>
+                    </constraints>
+                </view>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="connect_pay" translatesAutoresizingMaskIntoConstraints="NO" id="lYm-kB-kmw">
+                    <rect key="frame" x="151" y="10" width="43" height="48"/>
+                    <constraints>
+                        <constraint firstAttribute="width" secondItem="lYm-kB-kmw" secondAttribute="height" multiplier="86:96" id="RSW-0C-wWN"/>
+                        <constraint firstAttribute="height" constant="48" id="cKu-0n-xa9"/>
+                    </constraints>
+                </imageView>
+            </subviews>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstItem="lYm-kB-kmw" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" constant="10" id="1EI-LR-7tM"/>
+                <constraint firstItem="sAc-tG-zQC" firstAttribute="top" secondItem="lYm-kB-kmw" secondAttribute="bottom" id="1LN-Ft-Wwh"/>
+                <constraint firstItem="st5-CD-PLQ" firstAttribute="top" secondItem="sAc-tG-zQC" secondAttribute="bottom" id="2ug-Ub-vUS"/>
+                <constraint firstAttribute="trailing" secondItem="sAc-tG-zQC" secondAttribute="trailing" id="AVB-dM-21Q"/>
+                <constraint firstItem="st5-CD-PLQ" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="MF7-9m-nPh"/>
+                <constraint firstItem="sAc-tG-zQC" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="Vfr-tz-n0V"/>
+                <constraint firstItem="sAc-tG-zQC" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="ar4-kt-N6i"/>
+                <constraint firstItem="lYm-kB-kmw" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="hmI-rn-FBY"/>
+                <constraint firstAttribute="bottom" secondItem="st5-CD-PLQ" secondAttribute="bottom" id="khV-lI-cgn"/>
+                <constraint firstAttribute="trailing" secondItem="st5-CD-PLQ" secondAttribute="trailing" id="ojN-n4-tB9"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="dotView" destination="st5-CD-PLQ" id="Swu-AR-H6w"/>
+                <outlet property="logoImageTopConstaton" destination="1EI-LR-7tM" id="NlL-6E-KSE"/>
+                <outlet property="logoImageView" destination="lYm-kB-kmw" id="4pM-cr-gZD"/>
+                <outlet property="titleLabel" destination="sAc-tG-zQC" id="yy7-2K-Crc"/>
+            </connections>
+            <point key="canvasLocation" x="40.5" y="-109.5"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="connect_pay" width="43" height="48"/>
+    </resources>
+</document>

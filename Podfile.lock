@@ -1,0 +1,146 @@
+PODS:
+  - AFNetworking (3.1.0):
+    - AFNetworking/NSURLSession (= 3.1.0)
+    - AFNetworking/Reachability (= 3.1.0)
+    - AFNetworking/Security (= 3.1.0)
+    - AFNetworking/Serialization (= 3.1.0)
+    - AFNetworking/UIKit (= 3.1.0)
+  - AFNetworking/NSURLSession (3.1.0):
+    - AFNetworking/Reachability
+    - AFNetworking/Security
+    - AFNetworking/Serialization
+  - AFNetworking/Reachability (3.1.0)
+  - AFNetworking/Security (3.1.0)
+  - AFNetworking/Serialization (3.1.0)
+  - AFNetworking/UIKit (3.1.0):
+    - AFNetworking/NSURLSession
+  - Bugly (2.4.7)
+  - CocoaLumberjack (3.1.0):
+    - CocoaLumberjack/Default (= 3.1.0)
+    - CocoaLumberjack/Extensions (= 3.1.0)
+  - CocoaLumberjack/Default (3.1.0)
+  - CocoaLumberjack/Extensions (3.1.0):
+    - CocoaLumberjack/Default
+  - FMDB/SQLCipher (2.6.2):
+    - SQLCipher
+  - FMDB/standard (2.6.2)
+  - FMDBMigrationManager (1.4.1):
+    - FMDBMigrationManager/System (= 1.4.1)
+  - FMDBMigrationManager/System (1.4.1):
+    - FMDB/standard (>= 2.3)
+  - Kiwi (2.4.0)
+  - KSCrash (1.6.0):
+    - KSCrash/Installations (= 1.6.0)
+  - KSCrash/Installations (1.6.0):
+    - KSCrash/Recording
+    - KSCrash/Reporting
+  - KSCrash/no-arc (1.6.0)
+  - KSCrash/Recording (1.6.0):
+    - KSCrash/no-arc
+  - KSCrash/Reporting (1.6.0):
+    - KSCrash/Recording
+    - KSCrash/Reporting/Filters (= 1.6.0)
+    - KSCrash/Reporting/MessageUI (= 1.6.0)
+    - KSCrash/Reporting/Sinks (= 1.6.0)
+    - KSCrash/Reporting/Tools (= 1.6.0)
+  - KSCrash/Reporting/Filters (1.6.0):
+    - KSCrash/Recording
+    - KSCrash/Reporting/Filters/Alert (= 1.6.0)
+    - KSCrash/Reporting/Filters/AppleFmt (= 1.6.0)
+    - KSCrash/Reporting/Filters/Base (= 1.6.0)
+    - KSCrash/Reporting/Filters/Basic (= 1.6.0)
+    - KSCrash/Reporting/Filters/GZip (= 1.6.0)
+    - KSCrash/Reporting/Filters/JSON (= 1.6.0)
+    - KSCrash/Reporting/Filters/Sets (= 1.6.0)
+    - KSCrash/Reporting/Filters/Stringify (= 1.6.0)
+    - KSCrash/Reporting/Filters/Tools (= 1.6.0)
+  - KSCrash/Reporting/Filters/Alert (1.6.0):
+    - KSCrash/Recording
+    - KSCrash/Reporting/Filters/Base
+  - KSCrash/Reporting/Filters/AppleFmt (1.6.0):
+    - KSCrash/Recording
+    - KSCrash/Reporting/Filters/Base
+  - KSCrash/Reporting/Filters/Base (1.6.0):
+    - KSCrash/Recording
+  - KSCrash/Reporting/Filters/Basic (1.6.0):
+    - KSCrash/Recording
+    - KSCrash/Reporting/Filters/Base
+  - KSCrash/Reporting/Filters/GZip (1.6.0):
+    - KSCrash/Recording
+    - KSCrash/Reporting/Filters/Base
+  - KSCrash/Reporting/Filters/JSON (1.6.0):
+    - KSCrash/Recording
+    - KSCrash/Reporting/Filters/Base
+  - KSCrash/Reporting/Filters/Sets (1.6.0):
+    - KSCrash/Recording
+    - KSCrash/Reporting/Filters/AppleFmt
+    - KSCrash/Reporting/Filters/Base
+    - KSCrash/Reporting/Filters/Basic
+    - KSCrash/Reporting/Filters/GZip
+    - KSCrash/Reporting/Filters/JSON
+    - KSCrash/Reporting/Filters/Stringify
+  - KSCrash/Reporting/Filters/Stringify (1.6.0):
+    - KSCrash/Recording
+    - KSCrash/Reporting/Filters/Base
+  - KSCrash/Reporting/Filters/Tools (1.6.0):
+    - KSCrash/Recording
+  - KSCrash/Reporting/MessageUI (1.6.0):
+    - KSCrash/Recording
+  - KSCrash/Reporting/Sinks (1.6.0):
+    - KSCrash/Recording
+    - KSCrash/Reporting/Filters
+    - KSCrash/Reporting/Tools
+  - KSCrash/Reporting/Tools (1.6.0):
+    - KSCrash/Recording
+  - libPhoneNumber-iOS (0.9.6)
+  - MBProgressHUD (0.9.2)
+  - MJRefresh (3.1.12)
+  - PLeakSniffer (0.1.0)
+  - Protobuf (3.1.0)
+  - SQLCipher (3.4.1):
+    - SQLCipher/standard (= 3.4.1)
+  - SQLCipher/common (3.4.1)
+  - SQLCipher/standard (3.4.1):
+    - SQLCipher/common
+
+DEPENDENCIES:
+  - AFNetworking (~> 3.0)
+  - Bugly
+  - CocoaLumberjack
+  - FMDB/SQLCipher
+  - FMDBMigrationManager
+  - Kiwi
+  - KSCrash (= 1.6.0)
+  - libPhoneNumber-iOS (~> 0.8)
+  - MBProgressHUD (~> 0.9.2)
+  - MJRefresh (from `git@github.com:connectim/MJRefresh.git`)
+  - PLeakSniffer
+  - Protobuf (~> 3.1.0)
+
+EXTERNAL SOURCES:
+  MJRefresh:
+    :git: git@github.com:connectim/MJRefresh.git
+
+CHECKOUT OPTIONS:
+  MJRefresh:
+    :commit: 943624a2f196d03333e7397e387c6aaeebd0fb03
+    :git: git@github.com:connectim/MJRefresh.git
+
+SPEC CHECKSUMS:
+  AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
+  Bugly: 2c256069145f550171907c5cb1c0f84ad291f6c1
+  CocoaLumberjack: 8311463ddf9ee86a06ef92a071dd656c89244500
+  FMDB: 854a0341b4726e53276f2a8996f06f1b80f9259a
+  FMDBMigrationManager: d52007f328ea0665e8985ca8a33500707aef084f
+  Kiwi: f49c9d54b28917df5928fe44968a39ed198cb8a8
+  KSCrash: 73fc2bcec2b6bcd1d948d200e11904c39d532a0e
+  libPhoneNumber-iOS: 36044ed9658b5c11ee3cb3011751e47251d34992
+  MBProgressHUD: 1569cf7ace17a8bac47aabfbb8580a49690386d1
+  MJRefresh: b96cdb21c4aa75a7b07654311ab2f315c497e806
+  PLeakSniffer: f7eb13cd3a36150e0a2fd5fe8a33ca83bd2646d4
+  Protobuf: 265e9977d04a83eba9cefb0bed3ad07e41033b4a
+  SQLCipher: 43d12c0eb9c57fb438749618fc3ce0065509a559
+
+PODFILE CHECKSUM: 4cef4674c4465e3968d75d53ad7d0feb5be97afc
+
+COCOAPODS: 1.2.0

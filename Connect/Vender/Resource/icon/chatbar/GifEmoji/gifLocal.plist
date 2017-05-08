@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>0</key>
+    <string>angry</string>
+    
+    <key>1</key>
+    <string>angry2</string>
+    
+    <key>2</key>
+    <string>big_smile</string>
+    
+    <key>3</key>
+    <string>cool_man</string>
+    
+    <key>4</key>
+    <string>dead</string>
+    
+    <key>5</key>
+    <string>devil</string>
+    
+    <key>6</key>
+    <string>dissapointment</string>
+    
+    <key>7</key>
+    <string>dissapointment2</string>
+    
+    <key>8</key>
+    <string>eye_blink</string>
+    
+    <key>9</key>
+    <string>eye_blink2</string>
+    
+    <key>10</key>
+    <string>goofy</string>
+    
+    <key>11</key>
+    <string>goofy_blink</string>
+    
+    <key>12</key>
+    <string>gooy_love</string>
+    
+    <key>13</key>
+    <string>holy_man</string>
+    
+    <key>14</key>
+    <string>kiss</string>
+    
+    <key>15</key>
+    <string>loud_crying</string>
+    
+    <key>16</key>
+    <string>love</string>
+    
+    <key>17</key>
+    <string>love_shock</string>
+    
+    <key>18</key>
+    <string>mmmm</string>
+    
+    <key>19</key>
+    <string>nervous_laugh</string>
+    
+    <key>20</key>
+    <string>rofl</string>
+    
+    <key>21</key>
+    <string>sad</string>
+    
+    <key>22</key>
+    <string>sad_cry</string>
+    
+    <key>23</key>
+    <string>shit</string>
+    
+    <key>24</key>
+    <string>shock</string>
+    
+    <key>25</key>
+    <string>shy_lough</string>
+    
+    <key>26</key>
+    <string>sleep</string>
+    
+    <key>27</key>
+    <string>suprise</string>
+    
+    <key>28</key>
+    <string>sweaty_sad</string>
+    
+    <key>29</key>
+    <string>vomit</string>
+    
+    <key>30</key>
+    <string>wat</string>
+    
+    <key>31</key>
+    <string>wat2</string>
+</dict>
+</plist>

@@ -1,0 +1,426 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+
+<dict>
+	<key>[Alien]</key>
+	<string>people_0</string>
+</dict>
+
+<dict>
+	<key>[Asian]</key>
+	<string>people_1</string>
+</dict>
+
+<dict>
+	<key>[Astronaut]</key>
+	<string>people_2</string>
+</dict>
+
+<dict>
+	<key>[Baby1]</key>
+	<string>people_3</string>
+</dict>
+
+<dict>
+	<key>[Baby2]</key>
+	<string>people_4</string>
+</dict>
+
+<dict>
+	<key>[Baby3]</key>
+	<string>people_5</string>
+</dict>
+
+<dict>
+	<key>[BikiniBody]</key>
+	<string>people_6</string>
+</dict>
+
+<dict>
+	<key>[BikiniBottom]</key>
+	<string>people_7</string>
+</dict>
+
+<dict>
+	<key>[BirthdaySuit]</key>
+	<string>people_8</string>
+</dict>
+
+<dict>
+	<key>[BlockFace]</key>
+	<string>people_9</string>
+</dict>
+
+<dict>
+	<key>[Boy1]</key>
+	<string>people_10</string>
+</dict>
+
+<dict>
+	<key>[Boy2]</key>
+	<string>people_11</string>
+</dict>
+
+<dict>
+	<key>[Boy3]</key>
+	<string>people_12</string>
+</dict>
+
+<dict>
+	<key>[Bro]</key>
+	<string>people_13</string>
+</dict>
+
+<dict>
+	<key>[Cheer]</key>
+	<string>people_14</string>
+</dict>
+
+<dict>
+	<key>[Cowboy]</key>
+	<string>people_15</string>
+</dict>
+
+<dict>
+	<key>[Devil]</key>
+	<string>people_16</string>
+</dict>
+
+<dict>
+	<key>[Doctor]</key>
+	<string>people_17</string>
+</dict>
+
+<dict>
+	<key>[Family]</key>
+	<string>people_18</string>
+</dict>
+
+<dict>
+	<key>[Fan]</key>
+	<string>people_19</string>
+</dict>
+
+<dict>
+	<key>[Fat]</key>
+	<string>people_20</string>
+</dict>
+
+<dict>
+	<key>[Firefighter]</key>
+	<string>people_21</string>
+</dict>
+
+<dict>
+	<key>[Ghost]</key>
+	<string>people_22</string>
+</dict>
+
+<dict>
+	<key>[Ginger]</key>
+	<string>people_23</string>
+</dict>
+
+<dict>
+	<key>[GingerBeard]</key>
+	<string>people_24</string>
+</dict>
+
+<dict>
+	<key>[Girl1]</key>
+	<string>people_25</string>
+</dict>
+
+<dict>
+	<key>[Girl2]</key>
+	<string>people_26</string>
+</dict>
+
+<dict>
+	<key>[Girl3]</key>
+	<string>people_27</string>
+</dict>
+
+<dict>
+	<key>[HairFlip]</key>
+	<string>people_28</string>
+</dict>
+
+<dict>
+	<key>[HandRaised]</key>
+	<string>people_29</string>
+</dict>
+
+<dict>
+	<key>[Harry]</key>
+	<string>people_30</string>
+</dict>
+
+<dict>
+	<key>[Hippy]</key>
+	<string>people_31</string>
+</dict>
+
+<dict>
+	<key>[HippyChick]</key>
+	<string>people_32</string>
+</dict>
+
+<dict>
+	<key>[Hipster]</key>
+	<string>people_33</string>
+</dict>
+
+<dict>
+	<key>[HoldingHands]</key>
+	<string>people_34</string>
+</dict>
+
+<dict>
+	<key>[HomosexualFamily1]</key>
+	<string>people_35</string>
+</dict>
+
+<dict>
+	<key>[HomosexualFamily2]</key>
+	<string>people_36</string>
+</dict>
+
+<dict>
+	<key>[Idontknow]</key>
+	<string>people_37</string>
+</dict>
+
+<dict>
+	<key>[Idontknowman]</key>
+	<string>people_38</string>
+</dict>
+
+<dict>
+	<key>[Indian]</key>
+	<string>people_39</string>
+</dict>
+
+<dict>
+	<key>[Jesus]</key>
+	<string>people_40</string>
+</dict>
+
+<dict>
+	<key>[Kissing]</key>
+	<string>people_41</string>
+</dict>
+
+<dict>
+	<key>[Lumberjack]</key>
+	<string>people_42</string>
+</dict>
+
+<dict>
+	<key>[MakeitRain1]</key>
+	<string>people_43</string>
+</dict>
+
+<dict>
+	<key>[MakeitRain2]</key>
+	<string>people_44</string>
+</dict>
+
+<dict>
+	<key>[Man1]</key>
+	<string>people_45</string>
+</dict>
+
+<dict>
+	<key>[Man3]</key>
+	<string>people_46</string>
+</dict>
+
+<dict>
+	<key>[Man]</key>
+	<string>people_47</string>
+</dict>
+
+<dict>
+	<key>[ManBun]</key>
+	<string>people_48</string>
+</dict>
+
+<dict>
+	<key>[MenHoldingHands]</key>
+	<string>people_49</string>
+</dict>
+
+<dict>
+	<key>[MenKissing]</key>
+	<string>people_50</string>
+</dict>
+
+<dict>
+	<key>[Mexican]</key>
+	<string>people_51</string>
+</dict>
+
+<dict>
+	<key>[Monk]</key>
+	<string>people_52</string>
+</dict>
+
+<dict>
+	<key>[Mullet]</key>
+	<string>people_53</string>
+</dict>
+
+<dict>
+	<key>[Muslim]</key>
+	<string>people_54</string>
+</dict>
+
+<dict>
+	<key>[Nerd]</key>
+	<string>people_55</string>
+</dict>
+
+<dict>
+	<key>[Ninja]</key>
+	<string>people_56</string>
+</dict>
+
+<dict>
+	<key>[Nurse]</key>
+	<string>people_57</string>
+</dict>
+
+<dict>
+	<key>[OldMan1]</key>
+	<string>people_58</string>
+</dict>
+
+<dict>
+	<key>[OldMan2]</key>
+	<string>people_59</string>
+</dict>
+
+<dict>
+	<key>[OldMan3]</key>
+	<string>people_60</string>
+</dict>
+
+<dict>
+	<key>[OldWoman1]</key>
+	<string>people_61</string>
+</dict>
+
+<dict>
+	<key>[OldWoman2]</key>
+	<string>people_62</string>
+</dict>
+
+<dict>
+	<key>[OldWoman3]</key>
+	<string>people_63</string>
+</dict>
+
+<dict>
+	<key>[Pirate]</key>
+	<string>people_64</string>
+</dict>
+
+<dict>
+	<key>[Police]</key>
+	<string>people_65</string>
+</dict>
+
+<dict>
+	<key>[Praying]</key>
+	<string>people_66</string>
+</dict>
+
+<dict>
+	<key>[Rasta]</key>
+	<string>people_67</string>
+</dict>
+
+<dict>
+	<key>[Robot]</key>
+	<string>people_68</string>
+</dict>
+
+<dict>
+	<key>[Santa]</key>
+	<string>people_69</string>
+</dict>
+
+<dict>
+	<key>[Selfie]</key>
+	<string>people_70</string>
+</dict>
+
+<dict>
+	<key>[Skinny]</key>
+	<string>people_71</string>
+</dict>
+
+<dict>
+	<key>[Skull]</key>
+	<string>people_72</string>
+</dict>
+
+<dict>
+	<key>[Superhero]</key>
+	<string>people_73</string>
+</dict>
+
+<dict>
+	<key>[Surfer]</key>
+	<string>people_74</string>
+</dict>
+
+<dict>
+	<key>[SwimTrunks]</key>
+	<string>people_75</string>
+</dict>
+
+<dict>
+	<key>[TopHat]</key>
+	<string>people_76</string>
+</dict>
+
+<dict>
+	<key>[Wizard]</key>
+	<string>people_77</string>
+</dict>
+
+<dict>
+	<key>[Woman1]</key>
+	<string>people_78</string>
+</dict>
+
+<dict>
+	<key>[Woman3]</key>
+	<string>people_79</string>
+</dict>
+
+<dict>
+	<key>[Woman]</key>
+	<string>people_80</string>
+</dict>
+
+<dict>
+	<key>[WomenHoldingHands]</key>
+	<string>people_81</string>
+</dict>
+
+<dict>
+	<key>[WomenKissing]</key>
+	<string>people_82</string>
+</dict>
+
+<dict>
+	<key>[Zombie]</key>
+	<string>people_83</string>
+</dict>
+</array>
+</plist>

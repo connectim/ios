@@ -1,0 +1,74 @@
+//
+//  Connect-PrefixHeader.pch
+//  Connect
+//
+//  Created by MoHuilin on 16/5/9.
+//  Copyright © 2016年 Connect.  All rights reserved.
+//
+
+#ifdef __OBJC__
+#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
+#import "Define.h"
+#import "NetDefines.h"
+#import "SessionManager.h"
+//-------- Internationalization --------
+#import "Language.h"
+
+//-------- Category --------
+#import "UIView+Frame.h"
+#import "UIScreen+Frame.h"
+#import "UIColor+HEX.h"
+#import "NSUserDefaults+SafeAccess.h"
+#import "Masonry.h"
+#import "Adapter.h"
+#import "AutoFrameLabel.h"
+#import "UINavigationController+LM.h"
+#import "KQXPasswordInputTipView.h"
+#import "KQXPasswordInputController.h"
+#import "UIAlertController+Blocks.h"
+
+//-------- third lib --------
+#import <MBProgressHUD.h>
+#import "MBProgressHUD+Loading.h"
+#import <MJRefresh.h>
+
+//-------- error code tool --------
+#import "LMErrorCodeTool.h"
+
+//-------- image set --------
+#import "UIImageView+LMSetImageUrl.h"
+
+//-------- log --------
+#import <CocoaLumberjack/CocoaLumberjack.h>
+#import "MyLogFormatter.h"
+#if DEBUG
+static const DDLogLevel ddLogLevel = DDLogLevelAll;
+#else
+static const DDLogLevel ddLogLevel = DDLogLevelOff;
+#endif
+
+//-------- app hander tool --------
+#import "ChatLibHeader.h"
+#import "LKUserCenter.h"
+#import "ServerCenter.h"
+#import "GcmDataModel.h"
+#import "NSArray+Util.h"
+#import "NSMutableArray+MoveObject.h"
+#import "NSMutableArray+Check.h"
+#import "ChatMessageFileManager.h"
+#import "GCD.h"
+#import "MMAppSetting.h"
+#import "KeyHandle.h"
+#import "SetGlobalHandler.h"
+#import "NSString+hash.h"
+#import "CIMainCache.h"
+#import "RegexKit.h"
+#import "PayTool.h"
+
+//-------- app color --------
+#import "colorConfiguration.h"
+#import "LMNotificationDefine.h"
+#import "NSDictionary+NilSafe.h"
+
+#endif

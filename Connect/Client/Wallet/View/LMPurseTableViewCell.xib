@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="10117" systemVersion="15G1004" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="164" id="KGk-i7-Jjw" customClass="LMPurseTableViewCell">
+            <rect key="frame" x="0.0" y="0.0" width="359" height="164"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="359" height="163"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="bitcoin_word_icon" translatesAutoresizingMaskIntoConstraints="NO" id="GvJ-PM-tEb">
+                        <rect key="frame" x="15" y="15" width="70" height="20"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="70" id="cTz-fG-Hcu"/>
+                            <constraint firstAttribute="height" constant="20" id="gUG-NJ-owH"/>
+                        </constraints>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="16kMdHAuBkszZSCN3QZGWaLLkwzkXfczQK" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hFp-fp-Onr">
+                        <rect key="frame" x="15" y="45" width="295" height="17"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="qrcodeimage" translatesAutoresizingMaskIntoConstraints="NO" id="k7Q-YD-bl5">
+                        <rect key="frame" x="15" y="115" width="33" height="33"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="33" id="YfV-vn-JcI"/>
+                            <constraint firstAttribute="height" constant="33" id="o6Z-Wz-A7y"/>
+                        </constraints>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1.12345678" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Vvo-lo-Gr0">
+                        <rect key="frame" x="188" y="107" width="143" height="33"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="27"/>
+                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="主地址 余额" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mVK-q2-dTZ">
+                        <rect key="frame" x="275" y="92" width="64" height="15"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                        <color key="textColor" red="0.71764705880000002" green="0.71764705880000002" blue="0.71764705880000002" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="GvJ-PM-tEb" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="15" id="4OR-Kh-0EV"/>
+                    <constraint firstItem="GvJ-PM-tEb" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="15" id="Aa8-nP-1UW"/>
+                    <constraint firstItem="Vvo-lo-Gr0" firstAttribute="top" secondItem="mVK-q2-dTZ" secondAttribute="bottom" id="ERh-E8-ZvZ"/>
+                    <constraint firstItem="hFp-fp-Onr" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="15" id="IPH-Ta-Zrx"/>
+                    <constraint firstItem="hFp-fp-Onr" firstAttribute="top" secondItem="GvJ-PM-tEb" secondAttribute="bottom" constant="10" id="KrF-eM-Mht"/>
+                    <constraint firstAttribute="trailingMargin" secondItem="Vvo-lo-Gr0" secondAttribute="trailing" constant="20" id="Ltb-P6-y6w"/>
+                    <constraint firstAttribute="bottomMargin" secondItem="Vvo-lo-Gr0" secondAttribute="bottom" constant="15" id="Yqg-0p-Scw"/>
+                    <constraint firstAttribute="trailing" secondItem="mVK-q2-dTZ" secondAttribute="trailing" constant="20" id="eev-Dz-06S"/>
+                    <constraint firstAttribute="bottom" secondItem="k7Q-YD-bl5" secondAttribute="bottom" constant="15" id="maV-Ll-lSf"/>
+                    <constraint firstItem="k7Q-YD-bl5" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="15" id="uj6-ec-cca"/>
+                </constraints>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="QrcodeImage" destination="k7Q-YD-bl5" id="Igr-th-eMJ"/>
+                <outlet property="bitcoinAccout" destination="Vvo-lo-Gr0" id="gTm-eU-yH2"/>
+                <outlet property="bitcoinAddress" destination="hFp-fp-Onr" id="WzI-e8-Ggf"/>
+                <outlet property="listLabel" destination="mVK-q2-dTZ" id="ot0-yn-Edo"/>
+            </connections>
+            <point key="canvasLocation" x="287.5" y="184"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="bitcoin_word_icon" width="76" height="20"/>
+        <image name="qrcodeimage" width="32" height="32"/>
+    </resources>
+</document>

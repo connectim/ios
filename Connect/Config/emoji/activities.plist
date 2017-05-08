@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+<dict>
+	<key>[Archery]</key>
+	<string>activities_0</string>
+</dict>
+
+<dict>
+	<key>[Art]</key>
+	<string>activities_1</string>
+</dict>
+
+<dict>
+	<key>[Award]</key>
+	<string>activities_2</string>
+</dict>
+
+<dict>
+	<key>[Backpacking]</key>
+	<string>activities_3</string>
+</dict>
+
+<dict>
+	<key>[Baseball]</key>
+	<string>activities_4</string>
+</dict>
+
+<dict>
+	<key>[Basketball]</key>
+	<string>activities_5</string>
+</dict>
+
+<dict>
+	<key>[BBQ]</key>
+	<string>activities_6</string>
+</dict>
+
+<dict>
+	<key>[Bowling]</key>
+	<string>activities_7</string>
+</dict>
+
+<dict>
+	<key>[Boxing]</key>
+	<string>activities_8</string>
+</dict>
+
+<dict>
+	<key>[Campfire]</key>
+	<string>activities_9</string>
+</dict>
+
+<dict>
+	<key>[Camping]</key>
+	<string>activities_10</string>
+</dict>
+
+<dict>
+	<key>[Cards]</key>
+	<string>activities_11</string>
+</dict>
+
+<dict>
+	<key>[Cricket]</key>
+	<string>activities_12</string>
+</dict>
+
+<dict>
+	<key>[Dancing]</key>
+	<string>activities_13</string>
+</dict>
+
+<dict>
+	<key>[DiscGolf]</key>
+	<string>activities_14</string>
+</dict>
+
+<dict>
+	<key>[Finish]</key>
+	<string>activities_15</string>
+</dict>
+
+<dict>
+	<key>[Fishing]</key>
+	<string>activities_16</string>
+</dict>
+
+<dict>
+	<key>[Football]</key>
+	<string>activities_17</string>
+</dict>
+
+<dict>
+	<key>[Gardening]</key>
+	<string>activities_18</string>
+</dict>
+
+<dict>
+	<key>[Golf]</key>
+	<string>activities_19</string>
+</dict>
+
+<dict>
+	<key>[Guitar]</key>
+	<string>activities_20</string>
+</dict>
+
+<dict>
+	<key>[Hockey]</key>
+	<string>activities_21</string>
+</dict>
+
+<dict>
+	<key>[Hottubbing]</key>
+	<string>activities_22</string>
+</dict>
+
+<dict>
+	<key>[Jetskiing]</key>
+	<string>activities_23</string>
+</dict>
+
+<dict>
+	<key>[Karate]</key>
+	<string>activities_24</string>
+</dict>
+
+<dict>
+	<key>[Kayaking]</key>
+	<string>activities_25</string>
+</dict>
+
+<dict>
+	<key>[Lacrosse]</key>
+	<string>activities_26</string>
+</dict>
+
+<dict>
+	<key>[Manicure]</key>
+	<string>activities_27</string>
+</dict>
+
+<dict>
+	<key>[Massage]</key>
+	<string>activities_28</string>
+</dict>
+
+<dict>
+	<key>[MountainClimbing]</key>
+	<string>activities_29</string>
+</dict>
+
+<dict>
+	<key>[Paddleboarding]</key>
+	<string>activities_30</string>
+</dict>
+
+<dict>
+	<key>[PingPong]</key>
+	<string>activities_31</string>
+</dict>
+
+<dict>
+	<key>[Running]</key>
+	<string>activities_32</string>
+</dict>
+
+<dict>
+	<key>[Showering]</key>
+	<string>activities_33</string>
+</dict>
+
+<dict>
+	<key>[Skateboarding]</key>
+	<string>activities_34</string>
+</dict>
+
+<dict>
+	<key>[Skiing]</key>
+	<string>activities_35</string>
+</dict>
+
+<dict>
+	<key>[Snorkeling]</key>
+	<string>activities_36</string>
+</dict>
+
+<dict>
+	<key>[Snowboarding]</key>
+	<string>activities_37</string>
+</dict>
+
+<dict>
+	<key>[Soccer]</key>
+	<string>activities_38</string>
+</dict>
+
+<dict>
+	<key>[Sunbathing]</key>
+	<string>activities_39</string>
+</dict>
+
+<dict>
+	<key>[Surfing2]</key>
+	<string>activities_40</string>
+</dict>
+
+<dict>
+	<key>[Surfing]</key>
+	<string>activities_41</string>
+</dict>
+
+<dict>
+	<key>[Swimming]</key>
+	<string>activities_42</string>
+</dict>
+
+<dict>
+	<key>[Tennis]</key>
+	<string>activities_43</string>
+</dict>
+
+<dict>
+	<key>[Trophy]</key>
+	<string>activities_44</string>
+</dict>
+
+<dict>
+	<key>[Volleyball]</key>
+	<string>activities_45</string>
+</dict>
+
+<dict>
+	<key>[Volunteering]</key>
+	<string>activities_46</string>
+</dict>
+
+<dict>
+	<key>[WeightLifting]</key>
+	<string>activities_47</string>
+</dict>
+
+<dict>
+	<key>[Yoga]</key>
+	<string>activities_48</string>
+</dict>
+</array>
+</plist>

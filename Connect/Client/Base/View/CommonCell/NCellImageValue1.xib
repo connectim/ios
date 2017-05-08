@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="16B2657" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="bhZ-ai-rAX" customClass="NCellImageValue1">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="bhZ-ai-rAX" id="83r-i4-Cqw">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SnE-f6-Xe5">
+                        <rect key="frame" x="58" y="11" width="43" height="21"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ShareArrow" translatesAutoresizingMaskIntoConstraints="NO" id="WoD-Ti-KEF">
+                        <rect key="frame" x="300" y="15" width="9" height="14"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="9" id="UgT-PZ-wNP"/>
+                            <constraint firstAttribute="height" constant="14" id="wEC-jJ-Mh8"/>
+                        </constraints>
+                    </imageView>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Kgr-DI-neV">
+                        <rect key="frame" x="13" y="4" width="35" height="35"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="35" id="yhe-Wz-2nd"/>
+                            <constraint firstAttribute="width" constant="35" id="ypq-Nz-7e6"/>
+                        </constraints>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="绝命毒师" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gem-F0-mzH">
+                        <rect key="frame" x="217" y="11" width="68" height="21"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <color key="textColor" red="0.66666666666666663" green="0.66666666666666663" blue="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="SnE-f6-Xe5" firstAttribute="centerY" secondItem="83r-i4-Cqw" secondAttribute="centerY" id="D5i-sZ-IE5"/>
+                    <constraint firstItem="gem-F0-mzH" firstAttribute="centerY" secondItem="83r-i4-Cqw" secondAttribute="centerY" id="FHZ-Q0-gNO"/>
+                    <constraint firstItem="SnE-f6-Xe5" firstAttribute="leading" secondItem="Kgr-DI-neV" secondAttribute="trailing" constant="10" id="N7w-z6-ZNc"/>
+                    <constraint firstItem="Kgr-DI-neV" firstAttribute="leading" secondItem="83r-i4-Cqw" secondAttribute="leadingMargin" constant="5" id="NuM-rl-Ws3"/>
+                    <constraint firstItem="WoD-Ti-KEF" firstAttribute="centerY" secondItem="83r-i4-Cqw" secondAttribute="centerY" id="RkB-1G-VbP"/>
+                    <constraint firstItem="WoD-Ti-KEF" firstAttribute="leading" secondItem="gem-F0-mzH" secondAttribute="trailing" constant="15" id="XKN-mP-N3k"/>
+                    <constraint firstAttribute="trailingMargin" secondItem="WoD-Ti-KEF" secondAttribute="trailing" constant="3" id="Xe7-SV-fw2"/>
+                    <constraint firstItem="gem-F0-mzH" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="SnE-f6-Xe5" secondAttribute="trailing" constant="10" id="cEG-B2-1oM"/>
+                    <constraint firstItem="Kgr-DI-neV" firstAttribute="centerY" secondItem="83r-i4-Cqw" secondAttribute="centerY" id="zrG-al-nt4"/>
+                </constraints>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="CustomIconImageView" destination="Kgr-DI-neV" id="TCM-ch-rv8"/>
+                <outlet property="arrowImageView" destination="WoD-Ti-KEF" id="qPQ-Gr-Z60"/>
+                <outlet property="customSubTitleLabel" destination="gem-F0-mzH" id="Kv0-n6-kiZ"/>
+                <outlet property="customTitleLabel" destination="SnE-f6-Xe5" id="1ww-jj-hJi"/>
+            </connections>
+            <point key="canvasLocation" x="-232" y="-47"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="ShareArrow" width="13" height="18"/>
+    </resources>
+</document>

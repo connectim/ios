@@ -1,0 +1,426 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+
+<dict>
+	<key>[Apple]</key>
+	<string>food_0</string>
+</dict>
+
+<dict>
+	<key>[Avocado]</key>
+	<string>food_1</string>
+</dict>
+
+<dict>
+	<key>[BabyBottle]</key>
+	<string>food_2</string>
+</dict>
+
+<dict>
+	<key>[Bacon]</key>
+	<string>food_3</string>
+</dict>
+
+<dict>
+	<key>[Bagel]</key>
+	<string>food_4</string>
+</dict>
+
+<dict>
+	<key>[Banana]</key>
+	<string>food_5</string>
+</dict>
+
+<dict>
+	<key>[BeerCan]</key>
+	<string>food_6</string>
+</dict>
+
+<dict>
+	<key>[BeerPong]</key>
+	<string>food_7</string>
+</dict>
+
+<dict>
+	<key>[BloodyMary]</key>
+	<string>food_8</string>
+</dict>
+
+<dict>
+	<key>[Blueberries]</key>
+	<string>food_9</string>
+</dict>
+
+<dict>
+	<key>[BobaTea]</key>
+	<string>food_10</string>
+</dict>
+
+<dict>
+	<key>[Broccoli]</key>
+	<string>food_11</string>
+</dict>
+
+<dict>
+	<key>[Burger]</key>
+	<string>food_12</string>
+</dict>
+
+<dict>
+	<key>[Burrito]</key>
+	<string>food_13</string>
+</dict>
+
+<dict>
+	<key>[Carrot]</key>
+	<string>food_14</string>
+</dict>
+
+<dict>
+	<key>[Champagne]</key>
+	<string>food_15</string>
+</dict>
+
+<dict>
+	<key>[CheersBeer]</key>
+	<string>food_16</string>
+</dict>
+
+<dict>
+	<key>[CheersBeerBottles]</key>
+	<string>food_17</string>
+</dict>
+
+<dict>
+	<key>[CheersChampagne]</key>
+	<string>food_18</string>
+</dict>
+
+<dict>
+	<key>[CheersMixDrink]</key>
+	<string>food_19</string>
+</dict>
+
+<dict>
+	<key>[Cheese]</key>
+	<string>food_20</string>
+</dict>
+
+<dict>
+	<key>[Chemex]</key>
+	<string>food_21</string>
+</dict>
+
+<dict>
+	<key>[Chicken]</key>
+	<string>food_22</string>
+</dict>
+
+<dict>
+	<key>[ChineseTakeoutBox]</key>
+	<string>food_23</string>
+</dict>
+
+<dict>
+	<key>[ChocolateBar]</key>
+	<string>food_24</string>
+</dict>
+
+<dict>
+	<key>[ChocolateDippedStrawberry]</key>
+	<string>food_25</string>
+</dict>
+
+<dict>
+	<key>[CoconutDrink]</key>
+	<string>food_26</string>
+</dict>
+
+<dict>
+	<key>[Coffee]</key>
+	<string>food_27</string>
+</dict>
+
+<dict>
+	<key>[CoffeeToGo]</key>
+	<string>food_28</string>
+</dict>
+
+<dict>
+	<key>[Cookie]</key>
+	<string>food_29</string>
+</dict>
+
+<dict>
+	<key>[Corn]</key>
+	<string>food_30</string>
+</dict>
+
+<dict>
+	<key>[CraftBeer]</key>
+	<string>food_31</string>
+</dict>
+
+<dict>
+	<key>[Cupcake]</key>
+	<string>food_32</string>
+</dict>
+
+<dict>
+	<key>[Donut]</key>
+	<string>food_33</string>
+</dict>
+
+<dict>
+	<key>[EnergyDrink]</key>
+	<string>food_34</string>
+</dict>
+
+<dict>
+	<key>[Frappuccino]</key>
+	<string>food_35</string>
+</dict>
+
+<dict>
+	<key>[FrenchPress]</key>
+	<string>food_36</string>
+</dict>
+
+<dict>
+	<key>[FriedEgg]</key>
+	<string>food_37</string>
+</dict>
+
+<dict>
+	<key>[Grapes]</key>
+	<string>food_38</string>
+</dict>
+
+<dict>
+	<key>[GreenBeans]</key>
+	<string>food_39</string>
+</dict>
+
+<dict>
+	<key>[GreenPepper]</key>
+	<string>food_40</string>
+</dict>
+
+<dict>
+	<key>[Hotdog]</key>
+	<string>food_41</string>
+</dict>
+
+<dict>
+	<key>[HotSauce]</key>
+	<string>food_42</string>
+</dict>
+
+<dict>
+	<key>[IceCream]</key>
+	<string>food_43</string>
+</dict>
+
+<dict>
+	<key>[Jager]</key>
+	<string>food_44</string>
+</dict>
+
+<dict>
+	<key>[Kale]</key>
+	<string>food_45</string>
+</dict>
+
+<dict>
+	<key>[Keg]</key>
+	<string>food_46</string>
+</dict>
+
+<dict>
+	<key>[Lobster]</key>
+	<string>food_47</string>
+</dict>
+
+<dict>
+	<key>[Martini]</key>
+	<string>food_48</string>
+</dict>
+
+<dict>
+	<key>[MilkShake]</key>
+	<string>food_49</string>
+</dict>
+
+<dict>
+	<key>[Mimosa]</key>
+	<string>food_50</string>
+</dict>
+
+<dict>
+	<key>[Orange]</key>
+	<string>food_51</string>
+</dict>
+
+<dict>
+	<key>[Pepper]</key>
+	<string>food_52</string>
+</dict>
+
+<dict>
+	<key>[Pint]</key>
+	<string>food_53</string>
+</dict>
+
+<dict>
+	<key>[Pizza]</key>
+	<string>food_54</string>
+</dict>
+
+<dict>
+	<key>[PlasticWaterBottle]</key>
+	<string>food_55</string>
+</dict>
+
+<dict>
+	<key>[PopChampagneBottle]</key>
+	<string>food_56</string>
+</dict>
+
+<dict>
+	<key>[Popsicle]</key>
+	<string>food_57</string>
+</dict>
+
+<dict>
+	<key>[ProteinShake]</key>
+	<string>food_58</string>
+</dict>
+
+<dict>
+	<key>[RedWine]</key>
+	<string>food_59</string>
+</dict>
+
+<dict>
+	<key>[RedWineGlass]</key>
+	<string>food_60</string>
+</dict>
+
+<dict>
+	<key>[Sake]</key>
+	<string>food_61</string>
+</dict>
+
+<dict>
+	<key>[Salad]</key>
+	<string>food_62</string>
+</dict>
+
+<dict>
+	<key>[Salmon]</key>
+	<string>food_63</string>
+</dict>
+
+<dict>
+	<key>[Sandwich]</key>
+	<string>food_64</string>
+</dict>
+
+<dict>
+	<key>[Scotch]</key>
+	<string>food_65</string>
+</dict>
+
+<dict>
+	<key>[SixPack]</key>
+	<string>food_66</string>
+</dict>
+
+<dict>
+	<key>[Smoothie]</key>
+	<string>food_67</string>
+</dict>
+
+<dict>
+	<key>[SoloCup]</key>
+	<string>food_68</string>
+</dict>
+
+<dict>
+	<key>[Steak]</key>
+	<string>food_69</string>
+</dict>
+
+<dict>
+	<key>[Strawberries]</key>
+	<string>food_70</string>
+</dict>
+
+<dict>
+	<key>[Sushi]</key>
+	<string>food_71</string>
+</dict>
+
+<dict>
+	<key>[Taco]</key>
+	<string>food_72</string>
+</dict>
+
+<dict>
+	<key>[Tea]</key>
+	<string>food_73</string>
+</dict>
+
+<dict>
+	<key>[Tequila]</key>
+	<string>food_74</string>
+</dict>
+
+<dict>
+	<key>[ThanksgivingTurkey]</key>
+	<string>food_75</string>
+</dict>
+
+<dict>
+	<key>[Tomato]</key>
+	<string>food_76</string>
+</dict>
+
+<dict>
+	<key>[Vodka]</key>
+	<string>food_77</string>
+</dict>
+
+<dict>
+	<key>[WaterBottle]</key>
+	<string>food_78</string>
+</dict>
+
+<dict>
+	<key>[Watermelon]</key>
+	<string>food_79</string>
+</dict>
+
+<dict>
+	<key>[Whiskey]</key>
+	<string>food_80</string>
+</dict>
+
+<dict>
+	<key>[WhiteWine]</key>
+	<string>food_81</string>
+</dict>
+
+<dict>
+	<key>[WhiteWineGlass]</key>
+	<string>food_82</string>
+</dict>
+
+<dict>
+	<key>[WorkoutSupplement]</key>
+	<string>food_83</string>
+</dict>
+</array>
+</plist>

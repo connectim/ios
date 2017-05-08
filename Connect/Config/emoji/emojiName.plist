@@ -1,0 +1,1169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    
+    <key>[Archery]</key>
+    <string>activities_0</string>
+    <key>[Art]</key>
+    <string>activities_1</string>
+    <key>[Award]</key>
+    <string>activities_2</string>
+    <key>[Backpacking]</key>
+    <string>activities_3</string>
+    <key>[Baseball]</key>
+    <string>activities_4</string>
+    <key>[Basketball]</key>
+    <string>activities_5</string>
+    <key>[BBQ]</key>
+    <string>activities_6</string>
+    <key>[Bowling]</key>
+    <string>activities_7</string>
+    <key>[Boxing]</key>
+    <string>activities_8</string>
+    <key>[Campfire]</key>
+    <string>activities_9</string>
+    <key>[Camping]</key>
+    <string>activities_10</string>
+    <key>[Cards]</key>
+    <string>activities_11</string>
+    <key>[Cricket]</key>
+    <string>activities_12</string>
+    <key>[Dancing]</key>
+    <string>activities_13</string>
+    <key>[DiscGolf]</key>
+    <string>activities_14</string>
+    <key>[Finish]</key>
+    <string>activities_15</string>
+    <key>[Fishing]</key>
+    <string>activities_16</string>
+    <key>[Football]</key>
+    <string>activities_17</string>
+    <key>[Gardening]</key>
+    <string>activities_18</string>
+    <key>[Golf]</key>
+    <string>activities_19</string>
+    <key>[Guitar]</key>
+    <string>activities_20</string>
+    <key>[Hockey]</key>
+    <string>activities_21</string>
+    <key>[Hottubbing]</key>
+    <string>activities_22</string>
+    <key>[Jetskiing]</key>
+    <string>activities_23</string>
+    <key>[Karate]</key>
+    <string>activities_24</string>
+    <key>[Kayaking]</key>
+    <string>activities_25</string>
+    <key>[Lacrosse]</key>
+    <string>activities_26</string>
+    <key>[Manicure]</key>
+    <string>activities_27</string>
+    <key>[Massage]</key>
+    <string>activities_28</string>
+    <key>[MountainClimbing]</key>
+    <string>activities_29</string>
+    <key>[Paddleboarding]</key>
+    <string>activities_30</string>
+    <key>[PingPong]</key>
+    <string>activities_31</string>
+    <key>[Running]</key>
+    <string>activities_32</string>
+    <key>[Showering]</key>
+    <string>activities_33</string>
+    <key>[Skateboarding]</key>
+    <string>activities_34</string>
+    <key>[Skiing]</key>
+    <string>activities_35</string>
+    <key>[Snorkeling]</key>
+    <string>activities_36</string>
+    <key>[Snowboarding]</key>
+    <string>activities_37</string>
+    <key>[Soccer]</key>
+    <string>activities_38</string>
+    <key>[Sunbathing]</key>
+    <string>activities_39</string>
+    <key>[Surfing2]</key>
+    <string>activities_40</string>
+    <key>[Surfing]</key>
+    <string>activities_41</string>
+    <key>[Swimming]</key>
+    <string>activities_42</string>
+    <key>[Tennis]</key>
+    <string>activities_43</string>
+    <key>[Trophy]</key>
+    <string>activities_44</string>
+    <key>[Volleyball]</key>
+    <string>activities_45</string>
+    <key>[Volunteering]</key>
+    <string>activities_46</string>
+    <key>[WeightLifting]</key>
+    <string>activities_47</string>
+    <key>[Yoga]</key>
+    <string>activities_48</string>
+
+    
+    <key>[Apple]</key>
+    <string>food_0</string>
+    <key>[Avocado]</key>
+    <string>food_1</string>
+    <key>[BabyBottle]</key>
+    <string>food_2</string>
+    <key>[Bacon]</key>
+    <string>food_3</string>
+    <key>[Bagel]</key>
+    <string>food_4</string>
+    <key>[Banana]</key>
+    <string>food_5</string>
+    <key>[BeerCan]</key>
+    <string>food_6</string>
+    <key>[BeerPong]</key>
+    <string>food_7</string>
+    <key>[BloodyMary]</key>
+    <string>food_8</string>
+    <key>[Blueberries]</key>
+    <string>food_9</string>
+    <key>[BobaTea]</key>
+    <string>food_10</string>
+    <key>[Broccoli]</key>
+    <string>food_11</string>
+    <key>[Burger]</key>
+    <string>food_12</string>
+    <key>[Burrito]</key>
+    <string>food_13</string>
+    <key>[Carrot]</key>
+    <string>food_14</string>
+    <key>[Champagne]</key>
+    <string>food_15</string>
+    <key>[CheersBeer]</key>
+    <string>food_16</string>
+    <key>[CheersBeerBottles]</key>
+    <string>food_17</string>
+    <key>[CheersChampagne]</key>
+    <string>food_18</string>
+    <key>[CheersMixDrink]</key>
+    <string>food_19</string>
+    <key>[Cheese]</key>
+    <string>food_20</string>
+    <key>[Chemex]</key>
+    <string>food_21</string>
+    <key>[Chicken]</key>
+    <string>food_22</string>
+    <key>[ChineseTakeoutBox]</key>
+    <string>food_23</string>
+    <key>[ChocolateBar]</key>
+    <string>food_24</string>
+    <key>[ChocolateDippedStrawberry]</key>
+    <string>food_25</string>
+    <key>[CoconutDrink]</key>
+    <string>food_26</string>
+    <key>[Coffee]</key>
+    <string>food_27</string>
+    <key>[CoffeeToGo]</key>
+    <string>food_28</string>
+    <key>[Cookie]</key>
+    <string>food_29</string>
+    <key>[Corn]</key>
+    <string>food_30</string>
+    <key>[CraftBeer]</key>
+    <string>food_31</string>
+    <key>[Cupcake]</key>
+    <string>food_32</string>
+    <key>[Donut]</key>
+    <string>food_33</string>
+    <key>[EnergyDrink]</key>
+    <string>food_34</string>
+    <key>[Frappuccino]</key>
+    <string>food_35</string>
+    <key>[FrenchPress]</key>
+    <string>food_36</string>
+    <key>[FriedEgg]</key>
+    <string>food_37</string>
+    <key>[Grapes]</key>
+    <string>food_38</string>
+    <key>[GreenBeans]</key>
+    <string>food_39</string>
+    <key>[GreenPepper]</key>
+    <string>food_40</string>
+    <key>[Hotdog]</key>
+    <string>food_41</string>
+    <key>[HotSauce]</key>
+    <string>food_42</string>
+    <key>[IceCream]</key>
+    <string>food_43</string>
+    <key>[Jager]</key>
+    <string>food_44</string>
+    <key>[Kale]</key>
+    <string>food_45</string>
+    <key>[Keg]</key>
+    <string>food_46</string>
+    <key>[Lobster]</key>
+    <string>food_47</string>
+    <key>[Martini]</key>
+    <string>food_48</string>
+    <key>[MilkShake]</key>
+    <string>food_49</string>
+    <key>[Mimosa]</key>
+    <string>food_50</string>
+    <key>[Orange]</key>
+    <string>food_51</string>
+    <key>[Pepper]</key>
+    <string>food_52</string>
+    <key>[Pint]</key>
+    <string>food_53</string>
+    <key>[Pizza]</key>
+    <string>food_54</string>
+    <key>[PlasticWaterBottle]</key>
+    <string>food_55</string>
+    <key>[PopChampagneBottle]</key>
+    <string>food_56</string>
+    <key>[Popsicle]</key>
+    <string>food_57</string>
+    <key>[ProteinShake]</key>
+    <string>food_58</string>
+    <key>[RedWine]</key>
+    <string>food_59</string>
+    <key>[RedWineGlass]</key>
+    <string>food_60</string>
+    <key>[Sake]</key>
+    <string>food_61</string>
+    <key>[Salad]</key>
+    <string>food_62</string>
+    <key>[Salmon]</key>
+    <string>food_63</string>
+    <key>[Sandwich]</key>
+    <string>food_64</string>
+    <key>[Scotch]</key>
+    <string>food_65</string>
+    <key>[SixPack]</key>
+    <string>food_66</string>
+    <key>[Smoothie]</key>
+    <string>food_67</string>
+    <key>[SoloCup]</key>
+    <string>food_68</string>
+    <key>[Steak]</key>
+    <string>food_69</string>
+    <key>[Strawberries]</key>
+    <string>food_70</string>
+    <key>[Sushi]</key>
+    <string>food_71</string>
+    <key>[Taco]</key>
+    <string>food_72</string>
+    <key>[Tea]</key>
+    <string>food_73</string>
+    <key>[Tequila]</key>
+    <string>food_74</string>
+    <key>[ThanksgivingTurkey]</key>
+    <string>food_75</string>
+    <key>[Tomato]</key>
+    <string>food_76</string>
+    <key>[Vodka]</key>
+    <string>food_77</string>
+    <key>[WaterBottle]</key>
+    <string>food_78</string>
+    <key>[Watermelon]</key>
+    <string>food_79</string>
+    <key>[Whiskey]</key>
+    <string>food_80</string>
+    <key>[WhiteWine]</key>
+    <string>food_81</string>
+    <key>[WhiteWineGlass]</key>
+    <string>food_82</string>
+    <key>[WorkoutSupplement]</key>
+    <string>food_83</string>
+
+    
+    <key>[DropsMic1]</key>
+    <string>gestures_0</string>
+    <key>[DropsMic2]</key>
+    <string>gestures_1</string>
+    <key>[DropsMic3]</key>
+    <string>gestures_2</string>
+    <key>[FingersCrossed1]</key>
+    <string>gestures_3</string>
+    <key>[FingersCrossed2]</key>
+    <string>gestures_4</string>
+    <key>[FingersCrossed3]</key>
+    <string>gestures_5</string>
+    <key>[FistBump1]</key>
+    <string>gestures_6</string>
+    <key>[FistBump2]</key>
+    <string>gestures_7</string>
+    <key>[FistBump3]</key>
+    <string>gestures_8</string>
+    <key>[HandShake1]</key>
+    <string>gestures_9</string>
+    <key>[HandShake2]</key>
+    <string>gestures_10</string>
+    <key>[HandShake3]</key>
+    <string>gestures_11</string>
+    <key>[HighFive1]</key>
+    <string>gestures_12</string>
+    <key>[HighFive2]</key>
+    <string>gestures_13</string>
+    <key>[HighFive3]</key>
+    <string>gestures_14</string>
+    <key>[ILoveYou1]</key>
+    <string>gestures_15</string>
+    <key>[ILoveYou2]</key>
+    <string>gestures_16</string>
+    <key>[ILoveYou3]</key>
+    <string>gestures_17</string>
+    <key>[MiddleFinger1]</key>
+    <string>gestures_18</string>
+    <key>[MiddleFinger2]</key>
+    <string>gestures_19</string>
+    <key>[MiddleFinger3]</key>
+    <string>gestures_20</string>
+    <key>[PinkySwear1]</key>
+    <string>gestures_21</string>
+    <key>[PinkySwear2]</key>
+    <string>gestures_22</string>
+    <key>[PinkySwear3]</key>
+    <string>gestures_23</string>
+    <key>[RockOn1]</key>
+    <string>gestures_24</string>
+    <key>[RockOn2]</key>
+    <string>gestures_25</string>
+    <key>[RockOn3]</key>
+    <string>gestures_26</string>
+    <key>[Shaka1]</key>
+    <string>gestures_27</string>
+    <key>[Shaka2]</key>
+    <string>gestures_28</string>
+    <key>[Shaka3]</key>
+    <string>gestures_29</string>
+    <key>[Shocker1]</key>
+    <string>gestures_30</string>
+    <key>[Shocker2]</key>
+    <string>gestures_31</string>
+    <key>[Shocker3]</key>
+    <string>gestures_32</string>
+    <key>[ThumbsDown1]</key>
+    <string>gestures_33</string>
+    <key>[ThumbsDown2]</key>
+    <string>gestures_34</string>
+    <key>[ThumbsDown3]</key>
+    <string>gestures_35</string>
+    <key>[ThumbsUp1]</key>
+    <string>gestures_36</string>
+    <key>[ThumbsUp2]</key>
+    <string>gestures_37</string>
+    <key>[ThumbsUp3]</key>
+    <string>gestures_38</string>
+    <key>[VulcanSalute1]</key>
+    <string>gestures_39</string>
+    <key>[VulcanSalute2]</key>
+    <string>gestures_40</string>
+    <key>[VulcanSalute3]</key>
+    <string>gestures_41</string>
+
+    
+    <key>[Acorn]</key>
+    <string>nature_0</string>
+    <key>[Bonsai]</key>
+    <string>nature_1</string>
+    <key>[Cactus]</key>
+    <string>nature_2</string>
+    <key>[Cloudy]</key>
+    <string>nature_3</string>
+    <key>[Clover]</key>
+    <string>nature_4</string>
+    <key>[Earth]</key>
+    <string>nature_5</string>
+    <key>[Earthquake]</key>
+    <string>nature_6</string>
+    <key>[FallingLeaf]</key>
+    <string>nature_7</string>
+    <key>[Fire]</key>
+    <string>nature_8</string>
+    <key>[Flood]</key>
+    <string>nature_9</string>
+    <key>[Flower2]</key>
+    <string>nature_10</string>
+    <key>[Flower]</key>
+    <string>nature_11</string>
+    <key>[FlowerPot]</key>
+    <string>nature_12</string>
+    <key>[Flowers]</key>
+    <string>nature_13</string>
+    <key>[Forest]</key>
+    <string>nature_14</string>
+    <key>[Grass]</key>
+    <string>nature_15</string>
+    <key>[Growing]</key>
+    <string>nature_16</string>
+    <key>[Hot]</key>
+    <string>nature_17</string>
+    <key>[Island]</key>
+    <string>nature_18</string>
+    <key>[Leaf]</key>
+    <string>nature_19</string>
+    <key>[Lightning]</key>
+    <string>nature_20</string>
+    <key>[MapleLeaf]</key>
+    <string>nature_21</string>
+    <key>[Marijuana]</key>
+    <string>nature_22</string>
+    <key>[Moon]</key>
+    <string>nature_23</string>
+    <key>[Mountain]</key>
+    <string>nature_24</string>
+    <key>[Mushroom]</key>
+    <string>nature_25</string>
+    <key>[PalmTree]</key>
+    <string>nature_26</string>
+    <key>[PartlyCloudy]</key>
+    <string>nature_27</string>
+    <key>[PineTree]</key>
+    <string>nature_28</string>
+    <key>[Plant]</key>
+    <string>nature_29</string>
+    <key>[Rainbow]</key>
+    <string>nature_30</string>
+    <key>[Raining]</key>
+    <string>nature_31</string>
+    <key>[Rose]</key>
+    <string>nature_32</string>
+    <key>[ShootingStar]</key>
+    <string>nature_33</string>
+    <key>[Snowing]</key>
+    <string>nature_34</string>
+    <key>[SolarPower]</key>
+    <string>nature_35</string>
+    <key>[Succulent]</key>
+    <string>nature_36</string>
+    <key>[Sun]</key>
+    <string>nature_37</string>
+    <key>[Sunrise]</key>
+    <string>nature_38</string>
+    <key>[Sunset]</key>
+    <string>nature_39</string>
+    <key>[Tornado]</key>
+    <string>nature_40</string>
+    <key>[Tree]</key>
+    <string>nature_41</string>
+    <key>[Volcano]</key>
+    <string>nature_42</string>
+    <key>[Waterfall]</key>
+    <string>nature_43</string>
+    <key>[Watering]</key>
+    <string>nature_44</string>
+    <key>[Wave]</key>
+    <string>nature_45</string>
+    <key>[WindPower]</key>
+    <string>nature_46</string>
+    <key>[Windy]</key>
+    <string>nature_47</string>
+    <key>[Wood]</key>
+    <string>nature_48</string>
+
+    
+    
+    <key>[3DGlasses]</key>
+    <string>object_0</string>
+    <key>[8Ball]</key>
+    <string>object_1</string>
+    <key>[Anchor]</key>
+    <string>object_2</string>
+    <key>[Axe]</key>
+    <string>object_3</string>
+    <key>[Balloons]</key>
+    <string>object_4</string>
+    <key>[Bandaid]</key>
+    <string>object_5</string>
+    <key>[Beaker]</key>
+    <string>object_6</string>
+    <key>[Beard]</key>
+    <string>object_7</string>
+    <key>[Bell]</key>
+    <string>object_8</string>
+    <key>[Bikini]</key>
+    <string>object_9</string>
+    <key>[Bitcoin]</key>
+    <string>object_10</string>
+    <key>[BlowDryer]</key>
+    <string>object_11</string>
+    <key>[Bomb]</key>
+    <string>object_12</string>
+    <key>[Book]</key>
+    <string>object_13</string>
+    <key>[Boombox]</key>
+    <string>object_14</string>
+    <key>[BowandArrow]</key>
+    <string>object_15</string>
+    <key>[Cake]</key>
+    <string>object_16</string>
+    <key>[Calculator]</key>
+    <string>object_17</string>
+    <key>[Calendar]</key>
+    <string>object_18</string>
+    <key>[Call]</key>
+    <string>object_19</string>
+    <key>[Celebration]</key>
+    <string>object_20</string>
+    <key>[Clock]</key>
+    <string>object_21</string>
+    <key>[Comb]</key>
+    <string>object_22</string>
+    <key>[CowboyHat]</key>
+    <string>object_23</string>
+    <key>[Cross]</key>
+    <string>object_24</string>
+    <key>[Crown]</key>
+    <string>object_25</string>
+    <key>[Desktop]</key>
+    <string>object_26</string>
+    <key>[Diamond]</key>
+    <string>object_27</string>
+    <key>[DiscoBall]</key>
+    <string>object_28</string>
+    <key>[Drill]</key>
+    <string>object_29</string>
+    <key>[DuctTape]</key>
+    <string>object_30</string>
+    <key>[Fart]</key>
+    <string>object_31</string>
+    <key>[Firework]</key>
+    <string>object_32</string>
+    <key>[FlipFlops]</key>
+    <string>object_33</string>
+    <key>[Gameboy]</key>
+    <string>object_34</string>
+    <key>[Glasses]</key>
+    <string>object_35</string>
+    <key>[Gun]</key>
+    <string>object_36</string>
+    <key>[Hammer]</key>
+    <string>object_37</string>
+    <key>[Handbag]</key>
+    <string>object_38</string>
+    <key>[Handcuffs]</key>
+    <string>object_39</string>
+    <key>[Headphones]</key>
+    <string>object_40</string>
+    <key>[Heart]</key>
+    <string>object_41</string>
+    <key>[Hoody]</key>
+    <string>object_42</string>
+    <key>[Horseshoe]</key>
+    <string>object_43</string>
+    <key>[JetPack]</key>
+    <string>object_44</string>
+    <key>[Keys]</key>
+    <string>object_45</string>
+    <key>[Knuckles]</key>
+    <string>object_46</string>
+    <key>[Laptop]</key>
+    <string>object_47</string>
+    <key>[LaserGun]</key>
+    <string>object_48</string>
+    <key>[Lightbulb]</key>
+    <string>object_49</string>
+    <key>[Lighter]</key>
+    <string>object_50</string>
+    <key>[LightSaber]</key>
+    <string>object_51</string>
+    <key>[Lips]</key>
+    <string>object_52</string>
+    <key>[Lipstick]</key>
+    <string>object_53</string>
+    <key>[MagicWand]</key>
+    <string>object_54</string>
+    <key>[MagnifyingGlass]</key>
+    <string>object_55</string>
+    <key>[Mail]</key>
+    <string>object_56</string>
+    <key>[Mailbox]</key>
+    <string>object_57</string>
+    <key>[MeasuringTape]</key>
+    <string>object_58</string>
+    <key>[Microscope]</key>
+    <string>object_59</string>
+    <key>[MobilePhone1]</key>
+    <string>object_60</string>
+    <key>[MobilePhone2]</key>
+    <string>object_61</string>
+    <key>[MoneyBags]</key>
+    <string>object_62</string>
+    <key>[MoneyClip]</key>
+    <string>object_63</string>
+    <key>[Mustache]</key>
+    <string>object_64</string>
+    <key>[NerfGun]</key>
+    <string>object_65</string>
+    <key>[Netflix]</key>
+    <string>object_66</string>
+    <key>[Newspaper]</key>
+    <string>object_67</string>
+    <key>[NintendoController]</key>
+    <string>object_68</string>
+    <key>[Pacifier]</key>
+    <string>object_69</string>
+    <key>[PaintBrush]</key>
+    <string>object_70</string>
+    <key>[PartyHat]</key>
+    <string>object_71</string>
+    <key>[Pencil]</key>
+    <string>object_72</string>
+    <key>[Perfume]</key>
+    <string>object_73</string>
+    <key>[PiggyBank]</key>
+    <string>object_74</string>
+    <key>[Pills]</key>
+    <string>object_75</string>
+    <key>[PimpHat]</key>
+    <string>object_76</string>
+    <key>[Pipe]</key>
+    <string>object_77</string>
+    <key>[Poop]</key>
+    <string>object_78</string>
+    <key>[Potion]</key>
+    <string>object_79</string>
+    <key>[Present]</key>
+    <string>object_80</string>
+    <key>[Printer]</key>
+    <string>object_81</string>
+    <key>[Record]</key>
+    <string>object_82</string>
+    <key>[Ring]</key>
+    <string>object_83</string>
+    <key>[RubberDucky]</key>
+    <string>object_84</string>
+    <key>[Safe]</key>
+    <string>object_85</string>
+    <key>[Science]</key>
+    <string>object_86</string>
+    <key>[Scissors]</key>
+    <string>object_87</string>
+    <key>[Shield]</key>
+    <string>object_88</string>
+    <key>[ShoppingBag]</key>
+    <string>object_89</string>
+    <key>[Shorts]</key>
+    <string>object_90</string>
+    <key>[Shovel]</key>
+    <string>object_91</string>
+    <key>[Sombrero]</key>
+    <string>object_92</string>
+    <key>[SportBra]</key>
+    <string>object_93</string>
+    <key>[SquirtGun]</key>
+    <string>object_94</string>
+    <key>[Stroller]</key>
+    <string>object_95</string>
+    <key>[Sword]</key>
+    <string>object_96</string>
+    <key>[Tablet]</key>
+    <string>object_97</string>
+    <key>[Tanktop]</key>
+    <string>object_98</string>
+    <key>[ToiletPaper]</key>
+    <string>object_99</string>
+    <key>[Tools]</key>
+    <string>object_100</string>
+    <key>[Toothbrush]</key>
+    <string>object_101</string>
+    <key>[TreasureChest]</key>
+    <string>object_102</string>
+    <key>[Turntables]</key>
+    <string>object_103</string>
+    <key>[TV]</key>
+    <string>object_104</string>
+    <key>[Umbrella]</key>
+    <string>object_105</string>
+    <key>[Vape]</key>
+    <string>object_106</string>
+    <key>[VideoGameController]</key>
+    <string>object_107</string>
+    <key>[Wallet]</key>
+    <string>object_108</string>
+    <key>[Watch]</key>
+    <string>object_109</string>
+    <key>[Yarn]</key>
+    <string>object_110</string>
+    <key>[YogaPants]</key>
+    <string>object_111</string>
+
+    
+    <key>[Alien]</key>
+    <string>people_0</string>
+    <key>[Asian]</key>
+    <string>people_1</string>
+    <key>[Astronaut]</key>
+    <string>people_2</string>
+    <key>[Baby1]</key>
+    <string>people_3</string>
+    <key>[Baby2]</key>
+    <string>people_4</string>
+    <key>[Baby3]</key>
+    <string>people_5</string>
+    <key>[BikiniBody]</key>
+    <string>people_6</string>
+    <key>[BikiniBottom]</key>
+    <string>people_7</string>
+    <key>[BirthdaySuit]</key>
+    <string>people_8</string>
+    <key>[BlockFace]</key>
+    <string>people_9</string>
+    <key>[Boy1]</key>
+    <string>people_10</string>
+    <key>[Boy2]</key>
+    <string>people_11</string>
+    <key>[Boy3]</key>
+    <string>people_12</string>
+    <key>[Bro]</key>
+    <string>people_13</string>
+    <key>[Cheer]</key>
+    <string>people_14</string>
+    <key>[Cowboy]</key>
+    <string>people_15</string>
+    <key>[Devil]</key>
+    <string>people_16</string>
+    <key>[Doctor]</key>
+    <string>people_17</string>
+    <key>[Family]</key>
+    <string>people_18</string>
+    <key>[Fan]</key>
+    <string>people_19</string>
+    <key>[Fat]</key>
+    <string>people_20</string>
+    <key>[Firefighter]</key>
+    <string>people_21</string>
+    <key>[Ghost]</key>
+    <string>people_22</string>
+    <key>[Ginger]</key>
+    <string>people_23</string>
+    <key>[GingerBeard]</key>
+    <string>people_24</string>
+    <key>[Girl1]</key>
+    <string>people_25</string>
+    <key>[Girl2]</key>
+    <string>people_26</string>
+    <key>[Girl3]</key>
+    <string>people_27</string>
+    <key>[HairFlip]</key>
+    <string>people_28</string>
+    <key>[HandRaised]</key>
+    <string>people_29</string>
+    <key>[Harry]</key>
+    <string>people_30</string>
+    <key>[Hippy]</key>
+    <string>people_31</string>
+    <key>[HippyChick]</key>
+    <string>people_32</string>
+    <key>[Hipster]</key>
+    <string>people_33</string>
+    <key>[HoldingHands]</key>
+    <string>people_34</string>
+    <key>[HomosexualFamily1]</key>
+    <string>people_35</string>
+    <key>[HomosexualFamily2]</key>
+    <string>people_36</string>
+    <key>[Idontknow]</key>
+    <string>people_37</string>
+    <key>[Idontknowman]</key>
+    <string>people_38</string>
+    <key>[Indian]</key>
+    <string>people_39</string>
+    <key>[Jesus]</key>
+    <string>people_40</string>
+    <key>[Kissing]</key>
+    <string>people_41</string>
+    <key>[Lumberjack]</key>
+    <string>people_42</string>
+    <key>[MakeitRain1]</key>
+    <string>people_43</string>
+    <key>[MakeitRain2]</key>
+    <string>people_44</string>
+    <key>[Man1]</key>
+    <string>people_45</string>
+    <key>[Man3]</key>
+    <string>people_46</string>
+    <key>[Man]</key>
+    <string>people_47</string>
+    <key>[ManBun]</key>
+    <string>people_48</string>
+    <key>[MenHoldingHands]</key>
+    <string>people_49</string>
+    <key>[MenKissing]</key>
+    <string>people_50</string>
+    <key>[Mexican]</key>
+    <string>people_51</string>
+    <key>[Monk]</key>
+    <string>people_52</string>
+    <key>[Mullet]</key>
+    <string>people_53</string>
+    <key>[Muslim]</key>
+    <string>people_54</string>
+    <key>[Nerd]</key>
+    <string>people_55</string>
+    <key>[Ninja]</key>
+    <string>people_56</string>
+    <key>[Nurse]</key>
+    <string>people_57</string>
+    <key>[OldMan1]</key>
+    <string>people_58</string>
+    <key>[OldMan2]</key>
+    <string>people_59</string>
+    <key>[OldMan3]</key>
+    <string>people_60</string>
+    <key>[OldWoman1]</key>
+    <string>people_61</string>
+    <key>[OldWoman2]</key>
+    <string>people_62</string>
+    <key>[OldWoman3]</key>
+    <string>people_63</string>
+    <key>[Pirate]</key>
+    <string>people_64</string>
+    <key>[Police]</key>
+    <string>people_65</string>
+    <key>[Praying]</key>
+    <string>people_66</string>
+    <key>[Rasta]</key>
+    <string>people_67</string>
+    <key>[Robot]</key>
+    <string>people_68</string>
+    <key>[Santa]</key>
+    <string>people_69</string>
+    <key>[Selfie]</key>
+    <string>people_70</string>
+    <key>[Skinny]</key>
+    <string>people_71</string>
+    <key>[Skull]</key>
+    <string>people_72</string>
+    <key>[Superhero]</key>
+    <string>people_73</string>
+    <key>[Surfer]</key>
+    <string>people_74</string>
+    <key>[SwimTrunks]</key>
+    <string>people_75</string>
+    <key>[TopHat]</key>
+    <string>people_76</string>
+    <key>[Wizard]</key>
+    <string>people_77</string>
+    <key>[Woman1]</key>
+    <string>people_78</string>
+    <key>[Woman3]</key>
+    <string>people_79</string>
+    <key>[Woman]</key>
+    <string>people_80</string>
+    <key>[WomenHoldingHands]</key>
+    <string>people_81</string>
+    <key>[WomenKissing]</key>
+    <string>people_82</string>
+    <key>[Zombie]</key>
+    <string>people_83</string>
+
+    
+    <key>[Airplane]</key>
+    <string>travel_0</string>
+    <key>[AirplaneTickets]</key>
+    <string>travel_1</string>
+    <key>[Ambulance]</key>
+    <string>travel_2</string>
+    <key>[Backpack]</key>
+    <string>travel_3</string>
+    <key>[Bike]</key>
+    <string>travel_4</string>
+    <key>[Binoculars]</key>
+    <string>travel_5</string>
+    <key>[Boat]</key>
+    <string>travel_6</string>
+    <key>[Bridge]</key>
+    <string>travel_7</string>
+    <key>[Bus]</key>
+    <string>travel_8</string>
+    <key>[Car]</key>
+    <string>travel_9</string>
+    <key>[Compass]</key>
+    <string>travel_10</string>
+    <key>[FireTruck]</key>
+    <string>travel_11</string>
+    <key>[FuelPump]</key>
+    <string>travel_12</string>
+    <key>[Globe]</key>
+    <string>travel_13</string>
+    <key>[Helicopter]</key>
+    <string>travel_14</string>
+    <key>[HikingBoot]</key>
+    <string>travel_15</string>
+    <key>[HotAirBaloon]</key>
+    <string>travel_16</string>
+    <key>[Hotel]</key>
+    <string>travel_17</string>
+    <key>[HotelRoom]</key>
+    <string>travel_18</string>
+    <key>[House]</key>
+    <string>travel_19</string>
+    <key>[Limo]</key>
+    <string>travel_20</string>
+    <key>[LocationPin]</key>
+    <string>travel_21</string>
+    <key>[Luggage]</key>
+    <string>travel_22</string>
+    <key>[Map1]</key>
+    <string>travel_23</string>
+    <key>[Map2]</key>
+    <string>travel_24</string>
+    <key>[Moped]</key>
+    <string>travel_25</string>
+    <key>[Motorcycle]</key>
+    <string>travel_26</string>
+    <key>[OffRoadVehicle]</key>
+    <string>travel_27</string>
+    <key>[Parking]</key>
+    <string>travel_28</string>
+    <key>[Passport]</key>
+    <string>travel_29</string>
+    <key>[PoliceCar]</key>
+    <string>travel_30</string>
+    <key>[RocketShip]</key>
+    <string>travel_31</string>
+    <key>[RV]</key>
+    <string>travel_32</string>
+    <key>[SailBoat]</key>
+    <string>travel_33</string>
+    <key>[SchoolBus]</key>
+    <string>travel_34</string>
+    <key>[SLRCamera]</key>
+    <string>travel_35</string>
+    <key>[Sportscar]</key>
+    <string>travel_36</string>
+    <key>[SteeringWheel]</key>
+    <string>travel_37</string>
+    <key>[Submarine]</key>
+    <string>travel_38</string>
+    <key>[Suitcase]</key>
+    <string>travel_39</string>
+    <key>[SurfVan]</key>
+    <string>travel_40</string>
+    <key>[Taxi]</key>
+    <string>travel_41</string>
+    <key>[TowTruck]</key>
+    <string>travel_42</string>
+    <key>[TrafficCone]</key>
+    <string>travel_43</string>
+    <key>[TrafficLight]</key>
+    <string>travel_44</string>
+    <key>[Train]</key>
+    <string>travel_45</string>
+    <key>[Truck]</key>
+    <string>travel_46</string>
+    <key>[TSA]</key>
+    <string>travel_47</string>
+    <key>[Vacation]</key>
+    <string>travel_48</string>
+
+	<key>[Angel]</key>
+<string>smiley_0</string>
+<key>[Angry]</key>
+<string>smiley_1</string>
+<key>[Barfing]</key>
+<string>smiley_2</string>
+<key>[Blackout]</key>
+<string>smiley_3</string>
+<key>[Blue]</key>
+<string>smiley_4</string>
+<key>[Confounded]</key>
+<string>smiley_5</string>
+<key>[Confused]</key>
+<string>smiley_6</string>
+<key>[Crying]</key>
+<string>smiley_7</string>
+<key>[Disappointed]</key>
+<string>smiley_8</string>
+<key>[EatingPopcorn]</key>
+<string>smiley_9</string>
+<key>[Excited]</key>
+<string>smiley_10</string>
+<key>[FacePalm]</key>
+<string>smiley_11</string>
+<key>[Freezing]</key>
+<string>smiley_12</string>
+<key>[FunnyMask]</key>
+<string>smiley_13</string>
+<key>[GoldTeeth]</key>
+<string>smiley_14</string>
+<key>[Grin]</key>
+<string>smiley_15</string>
+<key>[HeartEyes]</key>
+<string>smiley_16</string>
+<key>[Hug]</key>
+<string>smiley_17</string>
+<key>[Hungover]</key>
+<string>smiley_18</string>
+<key>[Hypnotized]</key>
+<string>smiley_19</string>
+<key>[Kiss]</key>
+<string>smiley_20</string>
+<key>[Kiss2]</key>
+<string>smiley_21</string>
+<key>[KissWink]</key>
+<string>smiley_22</string>
+<key>[LargeSmile]</key>
+<string>smiley_23</string>
+<key>[Laughing]</key>
+<string>smiley_24</string>
+<key>[ListentoMusic]</key>
+<string>smiley_25</string>
+<key>[MedicalMask]</key>
+<string>smiley_26</string>
+<key>[MoneyEyes]</key>
+<string>smiley_27</string>
+<key>[NerdReading]</key>
+<string>smiley_28</string>
+<key>[OMG]</key>
+<string>smiley_29</string>
+<key>[Quiet]</key>
+<string>smiley_30</string>
+<key>[RaisedEyebrow]</key>
+<string>smiley_31</string>
+<key>[RollingEyes]</key>
+<string>smiley_32</string>
+<key>[Sad]</key>
+<string>smiley_33</string>
+<key>[Scared]</key>
+<string>smiley_34</string>
+<key>[Shades]</key>
+<string>smiley_35</string>
+<key>[Shocked]</key>
+<string>smiley_36</string>
+<key>[Sick]</key>
+<string>smiley_37</string>
+<key>[Singing]</key>
+<string>smiley_38</string>
+<key>[Sleeping]</key>
+<string>smiley_39</string>
+<key>[Sleepy]</key>
+<string>smiley_40</string>
+<key>[Smile]</key>
+<string>smiley_41</string>
+<key>[SmileClosedEyes]</key>
+<string>smiley_42</string>
+<key>[Smirk]</key>
+<string>smiley_43</string>
+<key>[Smirk2]</key>
+<string>smiley_44</string>
+<key>[Sobbing]</key>
+<string>smiley_45</string>
+<key>[Stare]</key>
+<string>smiley_46</string>
+<key>[StarryEyed]</key>
+<string>smiley_47</string>
+<key>[Straightface]</key>
+<string>smiley_48</string>
+<key>[Suprised]</key>
+<string>smiley_49</string>
+<key>[Sweating]</key>
+<string>smiley_50</string>
+<key>[Talktothehand]</key>
+<string>smiley_51</string>
+<key>[TearingUp]</key>
+<string>smiley_52</string>
+<key>[TearsofJoy]</key>
+<string>smiley_53</string>
+<key>[Terrified]</key>
+<string>smiley_54</string>
+<key>[TongueClosedEyes]</key>
+<string>smiley_55</string>
+<key>[TongueSide]</key>
+<string>smiley_56</string>
+<key>[TongueWink]</key>
+<string>smiley_57</string>
+<key>[Waiting]</key>
+<string>smiley_58</string>
+<key>[Wasted]</key>
+<string>smiley_59</string>
+<key>[Weary]</key>
+<string>smiley_60</string>
+<key>[Wink]</key>
+<string>smiley_61</string>
+<key>[Zipped]</key>
+<string>smiley_62</string>
+<key>[Bear]</key>
+<string>animal_0</string>
+<key>[Bull]</key>
+<string>animal_1</string>
+<key>[Chameleon]</key>
+<string>animal_2</string>
+<key>[Chick]</key>
+<string>animal_3</string>
+<key>[Corgie]</key>
+<string>animal_4</string>
+<key>[Crab]</key>
+<string>animal_5</string>
+<key>[Deer]</key>
+<string>animal_6</string>
+<key>[Dinosaur]</key>
+<string>animal_7</string>
+<key>[Dolphin]</key>
+<string>animal_8</string>
+<key>[Donkey]</key>
+<string>animal_9</string>
+<key>[Dragon]</key>
+<string>animal_10</string>
+<key>[Eagle]</key>
+<string>animal_11</string>
+<key>[Elephant]</key>
+<string>animal_12</string>
+<key>[Fish]</key>
+<string>animal_13</string>
+<key>[Fox]</key>
+<string>animal_14</string>
+<key>[Giraffe]</key>
+<string>animal_15</string>
+<key>[Gorilla]</key>
+<string>animal_16</string>
+<key>[GrumpyCat]</key>
+<string>animal_17</string>
+<key>[Hippo]</key>
+<string>animal_18</string>
+<key>[Horse]</key>
+<string>animal_19</string>
+<key>[Koala]</key>
+<string>animal_20</string>
+<key>[Lion]</key>
+<string>animal_21</string>
+<key>[Llama]</key>
+<string>animal_22</string>
+<key>[LuckyCat]</key>
+<string>animal_23</string>
+<key>[Mouse]</key>
+<string>animal_24</string>
+<key>[Octopus]</key>
+<string>animal_25</string>
+<key>[Owl]</key>
+<string>animal_26</string>
+<key>[Panda]</key>
+<string>animal_27</string>
+<key>[Penguin]</key>
+<string>animal_28</string>
+<key>[Pig]</key>
+<string>animal_29</string>
+<key>[PolarBear]</key>
+<string>animal_30</string>
+<key>[Rabbit]</key>
+<string>animal_31</string>
+<key>[Rhino]</key>
+<string>animal_32</string>
+<key>[Shark]</key>
+<string>animal_33</string>
+<key>[SharkFin]</key>
+<string>animal_34</string>
+<key>[Sloth]</key>
+<string>animal_35</string>
+<key>[Snake]</key>
+<string>animal_36</string>
+<key>[Troll]</key>
+<string>animal_37</string>
+<key>[Turkey]</key>
+<string>animal_38</string>
+<key>[Turtle]</key>
+<string>animal_39</string>
+<key>[Unicorn]</key>
+<string>animal_40</string>
+<key>[Whale]</key>
+<string>animal_41</string>
+</dict>
+</plist>

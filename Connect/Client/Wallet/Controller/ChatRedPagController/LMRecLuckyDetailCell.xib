@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="16B2657" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="KGk-i7-Jjw" customClass="LMRecLuckyDetailCell">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="65"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="64"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="IMG_0429.jpg" translatesAutoresizingMaskIntoConstraints="NO" id="zMa-dD-mzO">
+                        <rect key="frame" x="13" y="10" width="45" height="45"/>
+                        <constraints>
+                            <constraint firstAttribute="width" secondItem="zMa-dD-mzO" secondAttribute="height" multiplier="1:1" id="d6G-FH-sHg"/>
+                            <constraint firstAttribute="width" constant="45" id="ogG-hM-4XX"/>
+                        </constraints>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                <integer key="value" value="4"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                        </userDefinedRuntimeAttributes>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Hulk" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lcH-0c-idG">
+                        <rect key="frame" x="68" y="10" width="30" height="17"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <color key="textColor" red="0.086274509803921567" green="0.10196078431372549" blue="0.12941176470588234" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0.123456789 BTC" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="D1Z-g3-YTs">
+                        <rect key="frame" x="68" y="38" width="118" height="17"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <color key="textColor" red="0.086274509803921567" green="0.10196078431372549" blue="0.12941176470588234" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="5月16日 22:43" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wG7-dm-aG1">
+                        <rect key="frame" x="236" y="10" width="76" height="14"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                        <color key="textColor" red="0.52156862745098043" green="0.53725490196078429" blue="0.59607843137254901" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="S2u-IY-Psw">
+                        <rect key="frame" x="239" y="38" width="73" height="17"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <state key="normal" title="手气最佳" image="redpackge_good_lock">
+                            <color key="titleColor" red="0.90256959199905396" green="0.55436313152313232" blue="0.2043229341506958" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        </state>
+                    </button>
+                </subviews>
+                <color key="backgroundColor" red="0.94509803921568625" green="0.94509803921568625" blue="0.94509803921568625" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                <constraints>
+                    <constraint firstItem="lcH-0c-idG" firstAttribute="leading" secondItem="zMa-dD-mzO" secondAttribute="trailing" constant="10" id="495-Fg-CRM"/>
+                    <constraint firstItem="lcH-0c-idG" firstAttribute="top" secondItem="zMa-dD-mzO" secondAttribute="top" id="6Ap-fa-bQG"/>
+                    <constraint firstItem="D1Z-g3-YTs" firstAttribute="bottom" secondItem="zMa-dD-mzO" secondAttribute="bottom" id="DBx-6Z-7Vm"/>
+                    <constraint firstItem="D1Z-g3-YTs" firstAttribute="leading" secondItem="lcH-0c-idG" secondAttribute="leading" id="IKK-oa-Ads"/>
+                    <constraint firstItem="zMa-dD-mzO" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="Yi8-rr-gd2"/>
+                    <constraint firstItem="zMa-dD-mzO" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="13" id="ZYD-9q-eSn"/>
+                    <constraint firstItem="S2u-IY-Psw" firstAttribute="trailing" secondItem="wG7-dm-aG1" secondAttribute="trailing" id="jDV-dz-pfj"/>
+                    <constraint firstItem="S2u-IY-Psw" firstAttribute="bottom" secondItem="D1Z-g3-YTs" secondAttribute="bottom" id="pyS-CP-fTN"/>
+                    <constraint firstItem="wG7-dm-aG1" firstAttribute="trailing" secondItem="H2p-sc-9uM" secondAttribute="trailingMargin" id="tKw-cA-gzn"/>
+                    <constraint firstItem="wG7-dm-aG1" firstAttribute="top" secondItem="lcH-0c-idG" secondAttribute="top" id="yTg-7a-bOr"/>
+                </constraints>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="dateLabel" destination="wG7-dm-aG1" id="J8h-NJ-a1R"/>
+                <outlet property="icon" destination="zMa-dD-mzO" id="Sde-hO-ehf"/>
+                <outlet property="iconWidthConstaton" destination="ogG-hM-4XX" id="80g-zj-JFN"/>
+                <outlet property="moneyValueLabel" destination="D1Z-g3-YTs" id="oG2-jP-38p"/>
+                <outlet property="nameLabel" destination="lcH-0c-idG" id="9pS-Kg-JoF"/>
+                <outlet property="winerTipView" destination="S2u-IY-Psw" id="mCh-EY-XaP"/>
+            </connections>
+            <point key="canvasLocation" x="530" y="345"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="IMG_0429.jpg" width="750" height="752"/>
+        <image name="redpackge_good_lock" width="15" height="15"/>
+    </resources>
+</document>

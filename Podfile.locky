@@ -1,0 +1,110 @@
+PODS:
+  - Bugly (2.3.1)
+  - CocoaLumberjack (2.3.0):
+    - CocoaLumberjack/Default (= 2.3.0)
+    - CocoaLumberjack/Extensions (= 2.3.0)
+  - CocoaLumberjack/Core (2.3.0)
+  - CocoaLumberjack/Default (2.3.0):
+    - CocoaLumberjack/Core
+  - CocoaLumberjack/Extensions (2.3.0):
+    - CocoaLumberjack/Default
+  - FBAllocationTracker (0.1.5)
+  - FBMemoryProfiler (0.1.3):
+    - FBAllocationTracker (~> 0.1)
+    - FBRetainCycleDetector (~> 0.1)
+  - FBRetainCycleDetector (0.1.2)
+  - KSCrash (1.6.0):
+    - KSCrash/Installations (= 1.6.0)
+  - KSCrash/Installations (1.6.0):
+    - KSCrash/Recording
+    - KSCrash/Reporting
+  - KSCrash/no-arc (1.6.0)
+  - KSCrash/Recording (1.6.0):
+    - KSCrash/no-arc
+  - KSCrash/Reporting (1.6.0):
+    - KSCrash/Recording
+    - KSCrash/Reporting/Filters (= 1.6.0)
+    - KSCrash/Reporting/MessageUI (= 1.6.0)
+    - KSCrash/Reporting/Sinks (= 1.6.0)
+    - KSCrash/Reporting/Tools (= 1.6.0)
+  - KSCrash/Reporting/Filters (1.6.0):
+    - KSCrash/Recording
+    - KSCrash/Reporting/Filters/Alert (= 1.6.0)
+    - KSCrash/Reporting/Filters/AppleFmt (= 1.6.0)
+    - KSCrash/Reporting/Filters/Base (= 1.6.0)
+    - KSCrash/Reporting/Filters/Basic (= 1.6.0)
+    - KSCrash/Reporting/Filters/GZip (= 1.6.0)
+    - KSCrash/Reporting/Filters/JSON (= 1.6.0)
+    - KSCrash/Reporting/Filters/Sets (= 1.6.0)
+    - KSCrash/Reporting/Filters/Stringify (= 1.6.0)
+    - KSCrash/Reporting/Filters/Tools (= 1.6.0)
+  - KSCrash/Reporting/Filters/Alert (1.6.0):
+    - KSCrash/Recording
+    - KSCrash/Reporting/Filters/Base
+  - KSCrash/Reporting/Filters/AppleFmt (1.6.0):
+    - KSCrash/Recording
+    - KSCrash/Reporting/Filters/Base
+  - KSCrash/Reporting/Filters/Base (1.6.0):
+    - KSCrash/Recording
+  - KSCrash/Reporting/Filters/Basic (1.6.0):
+    - KSCrash/Recording
+    - KSCrash/Reporting/Filters/Base
+  - KSCrash/Reporting/Filters/GZip (1.6.0):
+    - KSCrash/Recording
+    - KSCrash/Reporting/Filters/Base
+  - KSCrash/Reporting/Filters/JSON (1.6.0):
+    - KSCrash/Recording
+    - KSCrash/Reporting/Filters/Base
+  - KSCrash/Reporting/Filters/Sets (1.6.0):
+    - KSCrash/Recording
+    - KSCrash/Reporting/Filters/AppleFmt
+    - KSCrash/Reporting/Filters/Base
+    - KSCrash/Reporting/Filters/Basic
+    - KSCrash/Reporting/Filters/GZip
+    - KSCrash/Reporting/Filters/JSON
+    - KSCrash/Reporting/Filters/Stringify
+  - KSCrash/Reporting/Filters/Stringify (1.6.0):
+    - KSCrash/Recording
+    - KSCrash/Reporting/Filters/Base
+  - KSCrash/Reporting/Filters/Tools (1.6.0):
+    - KSCrash/Recording
+  - KSCrash/Reporting/MessageUI (1.6.0):
+    - KSCrash/Recording
+  - KSCrash/Reporting/Sinks (1.6.0):
+    - KSCrash/Recording
+    - KSCrash/Reporting/Filters
+    - KSCrash/Reporting/Tools
+  - KSCrash/Reporting/Tools (1.6.0):
+    - KSCrash/Recording
+  - libPhoneNumber-iOS (0.8.14)
+  - MBProgressHUD (0.9.2)
+  - MJRefresh (3.1.9)
+  - Protobuf (3.0.0-beta-3.1)
+
+DEPENDENCIES:
+  - Bugly
+  - CocoaLumberjack
+  - FBAllocationTracker
+  - FBMemoryProfiler
+  - FBRetainCycleDetector
+  - KSCrash
+  - libPhoneNumber-iOS (~> 0.8)
+  - MBProgressHUD (~> 0.9.2)
+  - MJRefresh
+  - Protobuf (~> 3.0.0-beta-2)
+
+SPEC CHECKSUMS:
+  Bugly: c8ece2fa5bdcb404abdd0e07131e8129f580d893
+  CocoaLumberjack: 97fab7ee5f507fe54445cca7ea80f926729cfd15
+  FBAllocationTracker: dfdca3f71aceca6a85e95e3c6ec76a9785eba0f1
+  FBMemoryProfiler: 623fc5f8a61f7d02ec75c87e3b97c90f621d8b02
+  FBRetainCycleDetector: 45462f9ed1af0cd77224a4cc4e6dacaca47371b4
+  KSCrash: 73fc2bcec2b6bcd1d948d200e11904c39d532a0e
+  libPhoneNumber-iOS: fb165271ebe7fb32e55da97b83219382f2f9d409
+  MBProgressHUD: 1569cf7ace17a8bac47aabfbb8580a49690386d1
+  MJRefresh: c5f1f1653e5a1b932c90f78074f2bc86f3f9bd5e
+  Protobuf: 93350904b8872d186f9b25d850d8aa6ceb1e68ea
+
+PODFILE CHECKSUM: 33401b847951e40d546f832b526171238085baca
+
+COCOAPODS: 1.0.1

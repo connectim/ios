@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<dict>
+	<key>[Angel]</key>
+	<string>smiley_0</string>
+</dict>
+
+<dict>
+	<key>[Angry]</key>
+	<string>smiley_1</string>
+</dict>
+
+<dict>
+	<key>[Barfing]</key>
+	<string>smiley_2</string>
+</dict>
+
+<dict>
+	<key>[Blackout]</key>
+	<string>smiley_3</string>
+</dict>
+
+<dict>
+	<key>[Blue]</key>
+	<string>smiley_4</string>
+</dict>
+
+<dict>
+	<key>[Confounded]</key>
+	<string>smiley_5</string>
+</dict>
+
+<dict>
+	<key>[Confused]</key>
+	<string>smiley_6</string>
+</dict>
+
+<dict>
+	<key>[Crying]</key>
+	<string>smiley_7</string>
+</dict>
+
+<dict>
+	<key>[Disappointed]</key>
+	<string>smiley_8</string>
+</dict>
+
+<dict>
+	<key>[EatingPopcorn]</key>
+	<string>smiley_9</string>
+</dict>
+
+<dict>
+	<key>[Excited]</key>
+	<string>smiley_10</string>
+</dict>
+
+<dict>
+	<key>[FacePalm]</key>
+	<string>smiley_11</string>
+</dict>
+
+<dict>
+	<key>[Freezing]</key>
+	<string>smiley_12</string>
+</dict>
+
+<dict>
+	<key>[FunnyMask]</key>
+	<string>smiley_13</string>
+</dict>
+
+<dict>
+	<key>[GoldTeeth]</key>
+	<string>smiley_14</string>
+</dict>
+
+<dict>
+	<key>[Grin]</key>
+	<string>smiley_15</string>
+</dict>
+
+<dict>
+	<key>[HeartEyes]</key>
+	<string>smiley_16</string>
+</dict>
+
+<dict>
+	<key>[Hug]</key>
+	<string>smiley_17</string>
+</dict>
+
+<dict>
+	<key>[Hungover]</key>
+	<string>smiley_18</string>
+</dict>
+
+<dict>
+	<key>[Hypnotized]</key>
+	<string>smiley_19</string>
+</dict>
+
+<dict>
+	<key>[Kiss]</key>
+	<string>smiley_20</string>
+</dict>
+
+<dict>
+	<key>[Kiss2]</key>
+	<string>smiley_21</string>
+</dict>
+
+<dict>
+	<key>[KissWink]</key>
+	<string>smiley_22</string>
+</dict>
+
+<dict>
+	<key>[LargeSmile]</key>
+	<string>smiley_23</string>
+</dict>
+
+<dict>
+	<key>[Laughing]</key>
+	<string>smiley_24</string>
+</dict>
+
+<dict>
+	<key>[ListentoMusic]</key>
+	<string>smiley_25</string>
+</dict>
+
+<dict>
+	<key>[MedicalMask]</key>
+	<string>smiley_26</string>
+</dict>
+
+<dict>
+	<key>[MoneyEyes]</key>
+	<string>smiley_27</string>
+</dict>
+
+<dict>
+	<key>[NerdReading]</key>
+	<string>smiley_28</string>
+</dict>
+
+<dict>
+	<key>[OMG]</key>
+	<string>smiley_29</string>
+</dict>
+
+<dict>
+	<key>[Quiet]</key>
+	<string>smiley_30</string>
+</dict>
+
+<dict>
+	<key>[RaisedEyebrow]</key>
+	<string>smiley_31</string>
+</dict>
+
+<dict>
+	<key>[RollingEyes]</key>
+	<string>smiley_32</string>
+</dict>
+
+<dict>
+	<key>[Sad]</key>
+	<string>smiley_33</string>
+</dict>
+
+<dict>
+	<key>[Scared]</key>
+	<string>smiley_34</string>
+</dict>
+
+<dict>
+	<key>[Shades]</key>
+	<string>smiley_35</string>
+</dict>
+
+<dict>
+	<key>[Shocked]</key>
+	<string>smiley_36</string>
+</dict>
+
+<dict>
+	<key>[Sick]</key>
+	<string>smiley_37</string>
+</dict>
+
+<dict>
+	<key>[Singing]</key>
+	<string>smiley_38</string>
+</dict>
+
+<dict>
+	<key>[Sleeping]</key>
+	<string>smiley_39</string>
+</dict>
+
+<dict>
+	<key>[Sleepy]</key>
+	<string>smiley_40</string>
+</dict>
+
+<dict>
+	<key>[Smile]</key>
+	<string>smiley_41</string>
+</dict>
+
+<dict>
+	<key>[SmileClosedEyes]</key>
+	<string>smiley_42</string>
+</dict>
+
+<dict>
+	<key>[Smirk]</key>
+	<string>smiley_43</string>
+</dict>
+
+<dict>
+	<key>[Smirk2]</key>
+	<string>smiley_44</string>
+</dict>
+
+<dict>
+	<key>[Sobbing]</key>
+	<string>smiley_45</string>
+</dict>
+
+<dict>
+	<key>[Stare]</key>
+	<string>smiley_46</string>
+</dict>
+
+<dict>
+	<key>[StarryEyed]</key>
+	<string>smiley_47</string>
+</dict>
+
+<dict>
+	<key>[Straightface]</key>
+	<string>smiley_48</string>
+</dict>
+
+<dict>
+	<key>[Suprised]</key>
+	<string>smiley_49</string>
+</dict>
+
+<dict>
+	<key>[Sweating]</key>
+	<string>smiley_50</string>
+</dict>
+
+<dict>
+	<key>[Talktothehand]</key>
+	<string>smiley_51</string>
+</dict>
+
+<dict>
+	<key>[TearingUp]</key>
+	<string>smiley_52</string>
+</dict>
+
+<dict>
+	<key>[TearsofJoy]</key>
+	<string>smiley_53</string>
+</dict>
+
+<dict>
+	<key>[Terrified]</key>
+	<string>smiley_54</string>
+</dict>
+
+<dict>
+	<key>[TongueClosedEyes]</key>
+	<string>smiley_55</string>
+</dict>
+
+<dict>
+	<key>[TongueSide]</key>
+	<string>smiley_56</string>
+</dict>
+
+<dict>
+	<key>[TongueWink]</key>
+	<string>smiley_57</string>
+</dict>
+
+<dict>
+	<key>[Waiting]</key>
+	<string>smiley_58</string>
+</dict>
+
+<dict>
+	<key>[Wasted]</key>
+	<string>smiley_59</string>
+</dict>
+
+<dict>
+	<key>[Weary]</key>
+	<string>smiley_60</string>
+</dict>
+
+<dict>
+	<key>[Wink]</key>
+	<string>smiley_61</string>
+</dict>
+
+<dict>
+	<key>[Zipped]</key>
+	<string>smiley_62</string>
+</dict>
+
+</array>
+</plist>

@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+
+<dict>
+	<key>[DropsMic1]</key>
+	<string>gestures_0</string>
+</dict>
+
+<dict>
+	<key>[DropsMic2]</key>
+	<string>gestures_1</string>
+</dict>
+
+<dict>
+	<key>[DropsMic3]</key>
+	<string>gestures_2</string>
+</dict>
+
+<dict>
+	<key>[FingersCrossed1]</key>
+	<string>gestures_3</string>
+</dict>
+
+<dict>
+	<key>[FingersCrossed2]</key>
+	<string>gestures_4</string>
+</dict>
+
+<dict>
+	<key>[FingersCrossed3]</key>
+	<string>gestures_5</string>
+</dict>
+
+<dict>
+	<key>[FistBump1]</key>
+	<string>gestures_6</string>
+</dict>
+
+<dict>
+	<key>[FistBump2]</key>
+	<string>gestures_7</string>
+</dict>
+
+<dict>
+	<key>[FistBump3]</key>
+	<string>gestures_8</string>
+</dict>
+
+<dict>
+	<key>[HandShake1]</key>
+	<string>gestures_9</string>
+</dict>
+
+<dict>
+	<key>[HandShake2]</key>
+	<string>gestures_10</string>
+</dict>
+
+<dict>
+	<key>[HandShake3]</key>
+	<string>gestures_11</string>
+</dict>
+
+<dict>
+	<key>[HighFive1]</key>
+	<string>gestures_12</string>
+</dict>
+
+<dict>
+	<key>[HighFive2]</key>
+	<string>gestures_13</string>
+</dict>
+
+<dict>
+	<key>[HighFive3]</key>
+	<string>gestures_14</string>
+</dict>
+
+<dict>
+	<key>[ILoveYou1]</key>
+	<string>gestures_15</string>
+</dict>
+
+<dict>
+	<key>[ILoveYou2]</key>
+	<string>gestures_16</string>
+</dict>
+
+<dict>
+	<key>[ILoveYou3]</key>
+	<string>gestures_17</string>
+</dict>
+
+<dict>
+	<key>[MiddleFinger1]</key>
+	<string>gestures_18</string>
+</dict>
+
+<dict>
+	<key>[MiddleFinger2]</key>
+	<string>gestures_19</string>
+</dict>
+
+<dict>
+	<key>[MiddleFinger3]</key>
+	<string>gestures_20</string>
+</dict>
+
+<dict>
+	<key>[PinkySwear1]</key>
+	<string>gestures_21</string>
+</dict>
+
+<dict>
+	<key>[PinkySwear2]</key>
+	<string>gestures_22</string>
+</dict>
+
+<dict>
+	<key>[PinkySwear3]</key>
+	<string>gestures_23</string>
+</dict>
+
+<dict>
+	<key>[RockOn1]</key>
+	<string>gestures_24</string>
+</dict>
+
+<dict>
+	<key>[RockOn2]</key>
+	<string>gestures_25</string>
+</dict>
+
+<dict>
+	<key>[RockOn3]</key>
+	<string>gestures_26</string>
+</dict>
+
+<dict>
+	<key>[Shaka1]</key>
+	<string>gestures_27</string>
+</dict>
+
+<dict>
+	<key>[Shaka2]</key>
+	<string>gestures_28</string>
+</dict>
+
+<dict>
+	<key>[Shaka3]</key>
+	<string>gestures_29</string>
+</dict>
+
+<dict>
+	<key>[Shocker1]</key>
+	<string>gestures_30</string>
+</dict>
+
+<dict>
+	<key>[Shocker2]</key>
+	<string>gestures_31</string>
+</dict>
+
+<dict>
+	<key>[Shocker3]</key>
+	<string>gestures_32</string>
+</dict>
+
+<dict>
+	<key>[ThumbsDown1]</key>
+	<string>gestures_33</string>
+</dict>
+
+<dict>
+	<key>[ThumbsDown2]</key>
+	<string>gestures_34</string>
+</dict>
+
+<dict>
+	<key>[ThumbsDown3]</key>
+	<string>gestures_35</string>
+</dict>
+
+<dict>
+	<key>[ThumbsUp1]</key>
+	<string>gestures_36</string>
+</dict>
+
+<dict>
+	<key>[ThumbsUp2]</key>
+	<string>gestures_37</string>
+</dict>
+
+<dict>
+	<key>[ThumbsUp3]</key>
+	<string>gestures_38</string>
+</dict>
+
+<dict>
+	<key>[VulcanSalute1]</key>
+	<string>gestures_39</string>
+</dict>
+
+<dict>
+	<key>[VulcanSalute2]</key>
+	<string>gestures_40</string>
+</dict>
+
+<dict>
+	<key>[VulcanSalute3]</key>
+	<string>gestures_41</string>
+</dict>
+</array>
+</plist>

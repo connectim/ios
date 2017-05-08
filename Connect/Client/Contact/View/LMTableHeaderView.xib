@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="16B2657" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="LMTableHeaderView"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="dlz-tX-PYI" customClass="LMTableHeaderView">
+            <rect key="frame" x="0.0" y="0.0" width="382" height="40"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <subviews>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Eeo-3o-IC1">
+                    <rect key="frame" x="10" y="10" width="40" height="20"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ShareArrow" translatesAutoresizingMaskIntoConstraints="NO" id="rqq-xY-KnS">
+                    <rect key="frame" x="358.5" y="11" width="13.5" height="19"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="13.5" id="UGr-R7-UbB"/>
+                        <constraint firstAttribute="height" constant="18.5" id="sFa-Dv-Cr9"/>
+                    </constraints>
+                </imageView>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wdC-dt-VZg">
+                    <rect key="frame" x="0.0" y="0.0" width="382" height="40"/>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    <connections>
+                        <action selector="buttonClick:" destination="dlz-tX-PYI" eventType="touchUpInside" id="t1H-r2-KVD"/>
+                    </connections>
+                </button>
+            </subviews>
+            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="rqq-xY-KnS" secondAttribute="trailing" constant="10" id="20J-vc-Ioa"/>
+                <constraint firstAttribute="trailing" secondItem="wdC-dt-VZg" secondAttribute="trailing" id="Fva-DH-7Gd"/>
+                <constraint firstItem="rqq-xY-KnS" firstAttribute="centerY" secondItem="dlz-tX-PYI" secondAttribute="centerY" id="I06-LQ-7ZL"/>
+                <constraint firstItem="Eeo-3o-IC1" firstAttribute="centerY" secondItem="dlz-tX-PYI" secondAttribute="centerY" id="eV6-7c-fgm"/>
+                <constraint firstItem="wdC-dt-VZg" firstAttribute="top" secondItem="dlz-tX-PYI" secondAttribute="top" id="fOC-vf-aYX"/>
+                <constraint firstAttribute="bottom" secondItem="wdC-dt-VZg" secondAttribute="bottom" id="fks-Aw-OaB"/>
+                <constraint firstItem="wdC-dt-VZg" firstAttribute="leading" secondItem="dlz-tX-PYI" secondAttribute="leading" id="p0T-yJ-vr6"/>
+                <constraint firstItem="Eeo-3o-IC1" firstAttribute="leading" secondItem="dlz-tX-PYI" secondAttribute="leading" constant="10" id="sf7-Lf-39m"/>
+            </constraints>
+            <nil key="simulatedStatusBarMetrics"/>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="displayLble" destination="Eeo-3o-IC1" id="9cm-jx-19B"/>
+            </connections>
+            <point key="canvasLocation" x="-158" y="-337"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="ShareArrow" width="13" height="18"/>
+    </resources>
+</document>

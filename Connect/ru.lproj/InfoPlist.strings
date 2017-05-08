@@ -1,0 +1,15 @@
+/* 
+  InfoPlist.strings
+  Connect
+
+  Created by MoHuilin on 2016/12/12.
+  Copyright © 2016年 Connect. All rights reserved.
+*/
+NSCameraUsageDescription = "Connect Holp для доступа к вашей камере";
+NSContactsUsageDescription = "Connect Holp для доступа к вашим контактам";
+NSLocationAlwaysUsageDescription = "Connect Holp для доступа к вашему местоположению";
+NSMicrophoneUsageDescription = "Connect Holp для доступа к вашему микрофону";
+NSPhotoLibraryUsageDescription = "Connect Holp для доступа к вашей библиотеке фотографий";
+translationKey = "Перевод";
+scanKey = "Сканирование";
+paymentKey = "Оплата";

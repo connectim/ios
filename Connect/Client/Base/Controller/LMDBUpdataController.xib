@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="16B2657" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="LMDBUpdataController">
+            <connections>
+                <outlet property="displayImage" destination="SIr-gn-SnN" id="2gR-Js-Jfa"/>
+                <outlet property="displayLable" destination="7aJ-GP-HtQ" id="rtq-7A-oa6"/>
+                <outlet property="tipLable" destination="b2J-4L-lnh" id="usC-I9-D11"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="SIr-gn-SnN">
+                    <rect key="frame" x="148" y="200" width="80" height="80"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="80" id="GW7-pC-L4V"/>
+                        <constraint firstAttribute="height" constant="80" id="xCx-vc-x6P"/>
+                    </constraints>
+                </imageView>
+                <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7aJ-GP-HtQ">
+                    <rect key="frame" x="0.0" y="317" width="375" height="25"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="25" id="thQ-nI-anH"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="b2J-4L-lnh">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="64"/>
+                    <color key="backgroundColor" cocoaTouchSystemColor="darkTextColor"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="64" id="Y5C-Mb-TdO"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="SIr-gn-SnN" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="7vy-Db-kL6"/>
+                <constraint firstAttribute="trailing" secondItem="b2J-4L-lnh" secondAttribute="trailing" id="9rm-ds-b8F"/>
+                <constraint firstItem="7aJ-GP-HtQ" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="FIB-dZ-gBO"/>
+                <constraint firstAttribute="trailing" secondItem="7aJ-GP-HtQ" secondAttribute="trailing" id="O9B-QC-Wt4"/>
+                <constraint firstItem="b2J-4L-lnh" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="TFw-qG-NIG"/>
+                <constraint firstItem="7aJ-GP-HtQ" firstAttribute="top" secondItem="SIr-gn-SnN" secondAttribute="bottom" constant="37" id="WJO-GX-veK"/>
+                <constraint firstItem="b2J-4L-lnh" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="djw-HJ-K5Q"/>
+                <constraint firstItem="SIr-gn-SnN" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="200" id="pFd-t0-Btc"/>
+            </constraints>
+            <point key="canvasLocation" x="-314" y="-425"/>
+        </view>
+    </objects>
+</document>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11201" systemVersion="15G1004" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="ZPB-lD-1N6" customClass="SetAvatarCell">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="80"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="ZPB-lD-1N6" id="D4N-Nu-raZ">
+                <frame key="frameInset" width="320" height="79"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="头像" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="i3m-Tw-Jb0">
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="default_user_avatar.png" translatesAutoresizingMaskIntoConstraints="NO" id="a4t-CK-XRe">
+                        <constraints>
+                            <constraint firstAttribute="height" constant="60" id="Abq-Vn-nEk"/>
+                            <constraint firstAttribute="width" constant="60" id="okW-ss-L0n"/>
+                        </constraints>
+                    </imageView>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="set_grey_right_arrow" translatesAutoresizingMaskIntoConstraints="NO" id="JQl-Te-6r6">
+                        <constraints>
+                            <constraint firstAttribute="width" constant="9" id="1ET-jf-WUI"/>
+                            <constraint firstAttribute="height" constant="14" id="UvT-Bo-mDw"/>
+                        </constraints>
+                    </imageView>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="JQl-Te-6r6" firstAttribute="leading" secondItem="a4t-CK-XRe" secondAttribute="trailing" constant="15" id="A0k-rL-Ddk"/>
+                    <constraint firstAttribute="trailingMargin" secondItem="JQl-Te-6r6" secondAttribute="trailing" constant="3" id="Ngx-pj-wG3"/>
+                    <constraint firstItem="i3m-Tw-Jb0" firstAttribute="centerY" secondItem="D4N-Nu-raZ" secondAttribute="centerY" id="dXH-3x-W6R"/>
+                    <constraint firstItem="JQl-Te-6r6" firstAttribute="centerY" secondItem="D4N-Nu-raZ" secondAttribute="centerY" id="igh-ep-juF"/>
+                    <constraint firstItem="a4t-CK-XRe" firstAttribute="centerY" secondItem="D4N-Nu-raZ" secondAttribute="centerY" id="uzr-pS-kQq"/>
+                    <constraint firstItem="i3m-Tw-Jb0" firstAttribute="leading" secondItem="D4N-Nu-raZ" secondAttribute="leadingMargin" constant="5" id="vdI-ui-gC7"/>
+                </constraints>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="avatarView" destination="a4t-CK-XRe" id="Lxy-Jy-aP1"/>
+                <outlet property="titleLabel" destination="i3m-Tw-Jb0" id="be9-gd-rVG"/>
+            </connections>
+            <point key="canvasLocation" x="430" y="246"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <image name="default_user_avatar.png" width="162" height="163"/>
+        <image name="set_grey_right_arrow" width="13" height="18"/>
+    </resources>
+</document>

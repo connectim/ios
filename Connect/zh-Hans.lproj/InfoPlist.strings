@@ -1,0 +1,16 @@
+/* 
+  InfoPlist.strings
+  Connect
+
+  Created by MoHuilin on 2016/12/12.
+  Copyright © 2016年 Connect. All rights reserved.
+*/
+
+NSCameraUsageDescription = "Connect希望访问你的相机";
+NSContactsUsageDescription = "Connect希望访问你的通讯录";
+NSLocationAlwaysUsageDescription = "Connect希望获取你的位置";
+NSMicrophoneUsageDescription = "Connect希望访问你的麦克风";
+NSPhotoLibraryUsageDescription = "Connect希望访问你的相册";
+translationKey = "转账";
+scanKey = "扫一扫";
+paymentKey = "收款";

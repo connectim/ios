@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="12118" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12086"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="j5g-P7-sh7" customClass="PhoneContactCell">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="66"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="j5g-P7-sh7" id="Xs1-Qq-bGv">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="66"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TJl-Zf-eol">
+                        <rect key="frame" x="87" y="8" width="42.5" height="20.5"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="phone" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="4QR-B7-FKK">
+                        <rect key="frame" x="87" y="37" width="48.5" height="20.5"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <color key="textColor" red="0.66666666666666663" green="0.66666666666666663" blue="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="56o-wS-fRR">
+                        <rect key="frame" x="18" y="8" width="49.5" height="49.5"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="IMD-hz-UHD" customClass="BEMCheckBox">
+                                <rect key="frame" x="5" y="10" width="30" height="30"/>
+                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="30" id="BzW-Kc-UUG"/>
+                                    <constraint firstAttribute="width" secondItem="IMD-hz-UHD" secondAttribute="height" multiplier="1:1" id="hEo-Mh-8cz"/>
+                                </constraints>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="IMD-hz-UHD" firstAttribute="leading" secondItem="56o-wS-fRR" secondAttribute="leading" constant="5" id="DTP-mg-6hj"/>
+                            <constraint firstItem="IMD-hz-UHD" firstAttribute="centerY" secondItem="56o-wS-fRR" secondAttribute="centerY" id="FVK-1A-3OV"/>
+                            <constraint firstAttribute="width" secondItem="56o-wS-fRR" secondAttribute="height" multiplier="1:1" id="Iwh-mh-i5k"/>
+                        </constraints>
+                    </view>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="56o-wS-fRR" firstAttribute="top" secondItem="Xs1-Qq-bGv" secondAttribute="topMargin" id="G3h-cw-UNm"/>
+                    <constraint firstAttribute="bottomMargin" secondItem="56o-wS-fRR" secondAttribute="bottom" id="UH7-Eb-1QL"/>
+                    <constraint firstItem="TJl-Zf-eol" firstAttribute="leading" secondItem="56o-wS-fRR" secondAttribute="trailing" constant="20" id="WGH-Sp-mPA"/>
+                    <constraint firstItem="TJl-Zf-eol" firstAttribute="leading" secondItem="56o-wS-fRR" secondAttribute="trailing" constant="20" id="mmc-eH-Y0L"/>
+                    <constraint firstAttribute="trailingMargin" relation="greaterThanOrEqual" secondItem="4QR-B7-FKK" secondAttribute="trailing" constant="10" id="mye-ba-DIS"/>
+                    <constraint firstItem="56o-wS-fRR" firstAttribute="leading" secondItem="Xs1-Qq-bGv" secondAttribute="leadingMargin" constant="10" id="ng8-G7-E3u"/>
+                    <constraint firstAttribute="bottomMargin" secondItem="4QR-B7-FKK" secondAttribute="bottom" id="psf-vh-Xm3"/>
+                    <constraint firstAttribute="trailingMargin" relation="greaterThanOrEqual" secondItem="TJl-Zf-eol" secondAttribute="trailing" constant="10" id="tKX-kf-CWk"/>
+                    <constraint firstItem="4QR-B7-FKK" firstAttribute="leading" secondItem="56o-wS-fRR" secondAttribute="trailing" constant="20" id="wmS-lB-hmF"/>
+                    <constraint firstItem="TJl-Zf-eol" firstAttribute="top" secondItem="Xs1-Qq-bGv" secondAttribute="topMargin" id="xgq-zA-L4p"/>
+                </constraints>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="bottomView" destination="56o-wS-fRR" id="Ueb-Ux-GYz"/>
+                <outlet property="checkBox" destination="IMD-hz-UHD" id="Y1c-2J-eKx"/>
+                <outlet property="checkBoxWidth" destination="BzW-Kc-UUG" id="Wg8-KH-PYk"/>
+                <outlet property="nameLabel" destination="TJl-Zf-eol" id="xhu-lV-g44"/>
+                <outlet property="phoneLabel" destination="4QR-B7-FKK" id="uM2-dO-YuI"/>
+            </connections>
+            <point key="canvasLocation" x="464" y="267"/>
+        </tableViewCell>
+    </objects>
+</document>

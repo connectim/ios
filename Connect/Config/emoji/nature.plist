@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+
+<dict>
+	<key>[Acorn]</key>
+	<string>nature_0</string>
+</dict>
+
+<dict>
+	<key>[Bonsai]</key>
+	<string>nature_1</string>
+</dict>
+
+<dict>
+	<key>[Cactus]</key>
+	<string>nature_2</string>
+</dict>
+
+<dict>
+	<key>[Cloudy]</key>
+	<string>nature_3</string>
+</dict>
+
+<dict>
+	<key>[Clover]</key>
+	<string>nature_4</string>
+</dict>
+
+<dict>
+	<key>[Earth]</key>
+	<string>nature_5</string>
+</dict>
+
+<dict>
+	<key>[Earthquake]</key>
+	<string>nature_6</string>
+</dict>
+
+<dict>
+	<key>[FallingLeaf]</key>
+	<string>nature_7</string>
+</dict>
+
+<dict>
+	<key>[Fire]</key>
+	<string>nature_8</string>
+</dict>
+
+<dict>
+	<key>[Flood]</key>
+	<string>nature_9</string>
+</dict>
+
+<dict>
+	<key>[Flower2]</key>
+	<string>nature_10</string>
+</dict>
+
+<dict>
+	<key>[Flower]</key>
+	<string>nature_11</string>
+</dict>
+
+<dict>
+	<key>[FlowerPot]</key>
+	<string>nature_12</string>
+</dict>
+
+<dict>
+	<key>[Flowers]</key>
+	<string>nature_13</string>
+</dict>
+
+<dict>
+	<key>[Forest]</key>
+	<string>nature_14</string>
+</dict>
+
+<dict>
+	<key>[Grass]</key>
+	<string>nature_15</string>
+</dict>
+
+<dict>
+	<key>[Growing]</key>
+	<string>nature_16</string>
+</dict>
+
+<dict>
+	<key>[Hot]</key>
+	<string>nature_17</string>
+</dict>
+
+<dict>
+	<key>[Island]</key>
+	<string>nature_18</string>
+</dict>
+
+<dict>
+	<key>[Leaf]</key>
+	<string>nature_19</string>
+</dict>
+
+<dict>
+	<key>[Lightning]</key>
+	<string>nature_20</string>
+</dict>
+
+<dict>
+	<key>[MapleLeaf]</key>
+	<string>nature_21</string>
+</dict>
+
+<dict>
+	<key>[Marijuana]</key>
+	<string>nature_22</string>
+</dict>
+
+<dict>
+	<key>[Moon]</key>
+	<string>nature_23</string>
+</dict>
+
+<dict>
+	<key>[Mountain]</key>
+	<string>nature_24</string>
+</dict>
+
+<dict>
+	<key>[Mushroom]</key>
+	<string>nature_25</string>
+</dict>
+
+<dict>
+	<key>[PalmTree]</key>
+	<string>nature_26</string>
+</dict>
+
+<dict>
+	<key>[PartlyCloudy]</key>
+	<string>nature_27</string>
+</dict>
+
+<dict>
+	<key>[PineTree]</key>
+	<string>nature_28</string>
+</dict>
+
+<dict>
+	<key>[Plant]</key>
+	<string>nature_29</string>
+</dict>
+
+<dict>
+	<key>[Rainbow]</key>
+	<string>nature_30</string>
+</dict>
+
+<dict>
+	<key>[Raining]</key>
+	<string>nature_31</string>
+</dict>
+
+<dict>
+	<key>[Rose]</key>
+	<string>nature_32</string>
+</dict>
+
+<dict>
+	<key>[ShootingStar]</key>
+	<string>nature_33</string>
+</dict>
+
+<dict>
+	<key>[Snowing]</key>
+	<string>nature_34</string>
+</dict>
+
+<dict>
+	<key>[SolarPower]</key>
+	<string>nature_35</string>
+</dict>
+
+<dict>
+	<key>[Succulent]</key>
+	<string>nature_36</string>
+</dict>
+
+<dict>
+	<key>[Sun]</key>
+	<string>nature_37</string>
+</dict>
+
+<dict>
+	<key>[Sunrise]</key>
+	<string>nature_38</string>
+</dict>
+
+<dict>
+	<key>[Sunset]</key>
+	<string>nature_39</string>
+</dict>
+
+<dict>
+	<key>[Tornado]</key>
+	<string>nature_40</string>
+</dict>
+
+<dict>
+	<key>[Tree]</key>
+	<string>nature_41</string>
+</dict>
+
+<dict>
+	<key>[Volcano]</key>
+	<string>nature_42</string>
+</dict>
+
+<dict>
+	<key>[Waterfall]</key>
+	<string>nature_43</string>
+</dict>
+
+<dict>
+	<key>[Watering]</key>
+	<string>nature_44</string>
+</dict>
+
+<dict>
+	<key>[Wave]</key>
+	<string>nature_45</string>
+</dict>
+
+<dict>
+	<key>[WindPower]</key>
+	<string>nature_46</string>
+</dict>
+
+<dict>
+	<key>[Windy]</key>
+	<string>nature_47</string>
+</dict>
+
+<dict>
+	<key>[Wood]</key>
+	<string>nature_48</string>
+</dict>
+</array>
+</plist>

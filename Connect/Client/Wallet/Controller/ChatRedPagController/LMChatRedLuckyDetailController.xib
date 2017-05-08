@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11542" systemVersion="16B2555" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11524"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="LMChatRedLuckyDetailController">
+            <connections>
+                <outlet property="descriptionLabel" destination="Jss-Um-XTu" id="neT-B1-0si"/>
+                <outlet property="icon" destination="8cq-39-R6b" id="kGt-iZ-tBg"/>
+                <outlet property="moneyValue" destination="YcQ-qs-UUj" id="09s-9g-kkF"/>
+                <outlet property="nameLabel" destination="12m-7P-1Ip" id="xlH-Xc-LPm"/>
+                <outlet property="redLuckyListTableView" destination="DIL-K1-jho" id="K2D-Zm-tez"/>
+                <outlet property="redLuckyStatusLabel" destination="f20-oh-EV4" id="iMr-Lu-SI1"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="luckbag_backgroud" translatesAutoresizingMaskIntoConstraints="NO" id="vT9-Jb-Wk6">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="105"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="105" id="yza-D2-rI7"/>
+                    </constraints>
+                </imageView>
+                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="default_user_avatar" translatesAutoresizingMaskIntoConstraints="NO" id="8cq-39-R6b">
+                    <rect key="frame" x="159" y="75" width="57.5" height="58"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="57.5" id="hHa-JE-ydl"/>
+                        <constraint firstAttribute="height" constant="58" id="iKs-LU-iPl"/>
+                    </constraints>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                            <integer key="value" value="29"/>
+                        </userDefinedRuntimeAttribute>
+                        <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
+                    </userDefinedRuntimeAttributes>
+                </imageView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="绝命毒师 发出的红包" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="12m-7P-1Ip">
+                    <rect key="frame" x="116.5" y="155" width="142" height="18"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <color key="textColor" red="0.086274509803921567" green="0.10196078431372549" blue="0.12941176470588234" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="恭喜发财" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Jss-Um-XTu">
+                    <rect key="frame" x="151" y="188" width="73.5" height="21.5"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                    <color key="textColor" red="0.70196078431372544" green="0.70980392156862748" blue="0.74117647058823533" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0.123456789" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YcQ-qs-UUj">
+                    <rect key="frame" x="70" y="224.5" width="235" height="45.5"/>
+                    <fontDescription key="fontDescription" type="system" weight="medium" pointSize="38"/>
+                    <color key="textColor" red="0.086274509803921567" green="0.10196078431372549" blue="0.12941176470588234" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="f20-oh-EV4">
+                    <rect key="frame" x="187.5" y="285" width="0.0" height="0.0"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <color key="textColor" red="1" green="0.42352941176470588" blue="0.3529411764705882" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" translatesAutoresizingMaskIntoConstraints="NO" id="DIL-K1-jho">
+                    <rect key="frame" x="0.0" y="300" width="375" height="367"/>
+                    <color key="backgroundColor" red="0.93725490199999995" green="0.93725490199999995" blue="0.95686274510000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                </tableView>
+            </subviews>
+            <color key="backgroundColor" red="0.94509803921568625" green="0.94509803921568625" blue="0.94509803921568625" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstAttribute="bottom" secondItem="DIL-K1-jho" secondAttribute="bottom" id="COK-UT-NmO"/>
+                <constraint firstItem="8cq-39-R6b" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="DhK-9H-zqt"/>
+                <constraint firstItem="DIL-K1-jho" firstAttribute="top" secondItem="f20-oh-EV4" secondAttribute="bottom" constant="15" id="EoZ-Nb-Oc6"/>
+                <constraint firstItem="vT9-Jb-Wk6" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="MXC-hM-T8x"/>
+                <constraint firstItem="YcQ-qs-UUj" firstAttribute="top" secondItem="Jss-Um-XTu" secondAttribute="bottom" constant="15" id="OYO-ki-Vcm"/>
+                <constraint firstItem="12m-7P-1Ip" firstAttribute="top" secondItem="8cq-39-R6b" secondAttribute="bottom" constant="22" id="OsH-9f-YVF"/>
+                <constraint firstItem="12m-7P-1Ip" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="Rav-0v-W4W"/>
+                <constraint firstAttribute="trailing" secondItem="vT9-Jb-Wk6" secondAttribute="trailing" id="TEJ-3M-bjd"/>
+                <constraint firstItem="DIL-K1-jho" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="Xps-K5-sFJ"/>
+                <constraint firstItem="Jss-Um-XTu" firstAttribute="top" secondItem="12m-7P-1Ip" secondAttribute="bottom" constant="15" id="alM-gO-N9p"/>
+                <constraint firstItem="f20-oh-EV4" firstAttribute="top" secondItem="YcQ-qs-UUj" secondAttribute="bottom" constant="15" id="cce-OA-K4T"/>
+                <constraint firstItem="8cq-39-R6b" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="75" id="gZ2-kd-xQ3"/>
+                <constraint firstItem="Jss-Um-XTu" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="krD-YR-5jP"/>
+                <constraint firstItem="YcQ-qs-UUj" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="qZP-JE-Cd3"/>
+                <constraint firstAttribute="trailing" secondItem="DIL-K1-jho" secondAttribute="trailing" id="sHM-eZ-IpJ"/>
+                <constraint firstItem="vT9-Jb-Wk6" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="xwE-0W-Z2z"/>
+                <constraint firstItem="f20-oh-EV4" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="zxZ-8w-nGp"/>
+            </constraints>
+        </view>
+    </objects>
+    <resources>
+        <image name="default_user_avatar" width="162" height="163"/>
+        <image name="luckbag_backgroud" width="375" height="106"/>
+    </resources>
+</document>

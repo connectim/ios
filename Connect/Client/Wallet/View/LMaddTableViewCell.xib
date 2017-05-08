@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11762" systemVersion="16B2657" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="57" id="KGk-i7-Jjw" customClass="LMaddTableViewCell">
+            <rect key="frame" x="0.0" y="0.0" width="325" height="57"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="325" height="56"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="rNR-ux-hVX">
+                        <rect key="frame" x="20" y="9" width="38" height="38"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="38" id="ZUP-wE-Cug"/>
+                            <constraint firstAttribute="width" constant="38" id="rNV-5D-JHr"/>
+                        </constraints>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="转账给我的好友" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5M4-nz-ZAc">
+                        <rect key="frame" x="73" y="18" width="242" height="20"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+                <constraints>
+                    <constraint firstAttribute="trailing" secondItem="5M4-nz-ZAc" secondAttribute="trailing" constant="10" id="4Lu-wr-XJD"/>
+                    <constraint firstItem="rNR-ux-hVX" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="Ipy-Xo-VKm"/>
+                    <constraint firstItem="rNR-ux-hVX" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="20" id="aJM-ns-tMe"/>
+                    <constraint firstItem="5M4-nz-ZAc" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" id="p9Y-cT-b7G"/>
+                    <constraint firstItem="5M4-nz-ZAc" firstAttribute="leading" secondItem="rNR-ux-hVX" secondAttribute="trailing" constant="15" id="pSH-hX-Ac0"/>
+                </constraints>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="iconImageView" destination="rNR-ux-hVX" id="QCo-Vt-vW0"/>
+                <outlet property="titleLabel" destination="5M4-nz-ZAc" id="eaH-s3-ww9"/>
+            </connections>
+            <point key="canvasLocation" x="124" y="-18"/>
+        </tableViewCell>
+    </objects>
+</document>
