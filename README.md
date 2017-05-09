@@ -13,6 +13,8 @@ It protects your chatting contents from being eavesdropped by any third party su
 It protects your personal data such as telephone numbers and friends from being utilized by any third party such as marketing personnel and advertisers.
 Considering "PRISM" scandal as well as multiple network fraud cases caused by information leakage, each of us should defending "freedom of speech" and "personal privacy”.
 So [Connect](https://www.connect.im/) is suitable for everyone.
+[Connect](https://www.connect.im/) is available for [android](https://github.com/connectim/Android)
+[Connect](https://www.connect.im/) is available for [Appstore](https://itunes.apple.com/app/connect-p2p-encrypted-instant/id1181365735)
 
 ## Encryption
 [Connect](https://www.connect.im/) uses advanced and open-source symmetric encryption algorithms to secure both parties' information and the communication between the client and the server, and anyone can authenticate.
@@ -36,6 +38,11 @@ The encrypted communication channel established by the above process ensures tha
 
 
 ## How to use?
+
+you need download wallet lib from [here]() ,import wallet lib:
+1.  import boost lib:drag include dir into project, Build settings->Header search paths ,add path $(SRCROOT)/Connect/include
+2.  import openssl lib:drag include1 dir into project, Build settings->Header search paths ,add path $(SRCROOT)/Connect/include1
+3.  import other source:drag AllKey dir into project, Build settings->LLVM -Language-C++ ,Change c++ Language Dialect to Compiler Default ,and  change c++ Standard Libray to libc++(LLVM C++ standard libary C++11 suport)
 
 ## Referencing
 * [Protobuf](https://github.com/google/protobuf)
