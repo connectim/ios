@@ -2,9 +2,9 @@
   <img src="https://avatars0.githubusercontent.com/u/21214996?v=3" alt="Connect" title="Connect">
 </p>
 
-[![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.png?v=103)](https://github.com/ellerbrock/open-source-badges/)
-[![MIT Licence](https://badges.frapsoft.com/os/mit/mit.png?v=103)](https://opensource.org/licenses/mit-license.php)
-[![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)](https://github.com/sindresorhus/awesome)
+![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.png?v=103)
+![MIT Licence](https://badges.frapsoft.com/os/mit/mit.png?v=103)
+![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)
 
 [![Appstore](https://camo.githubusercontent.com/3e3f8a72477f8cc617e3e1bcd105a4598ad04706/68747470733a2f2f6d727061746977692e6769746875622e696f2f6170702d6261646765732f61707073746f72652e706e67)](https://itunes.apple.com/app/connect-p2p-encrypted-instant/id1181365735)
 [![Google play](https://camo.githubusercontent.com/878bb7c41c81ec4528a0a6f4cfd6ec470da14f22/68747470733a2f2f6d727061746977692e6769746875622e696f2f6170702d6261646765732f706c617973746f72652e706e67)](https://play.google.com/store/apps/details?id=connect.im)
