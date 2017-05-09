@@ -20,6 +20,7 @@
 #import "SystemTool.h"
 #import "YYImageCache.h"
 #import "LMHistoryCacheManager.h"
+#import "LMUUID.h"
 
 
 #define kMaxSendOutTime (30)
@@ -797,6 +798,7 @@ static dispatch_once_t onceToken;
     deviceId.deviceId = uuid.UUIDString;
     deviceId.deviceName = [UIDevice currentDevice].name;
     deviceId.locale = [[NSLocale currentLocale] objectForKey:NSLocaleLanguageCode];
+    deviceId.uuid = [LMUUID uuid];
     // channel
     if ([SystemTool isNationChannel]) {
         deviceId.cv = 1;

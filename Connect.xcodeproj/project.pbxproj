@@ -967,6 +967,7 @@
 		D98FD7E21D264E470048E29E /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D98FD7E11D264E470048E29E /* CoreGraphics.framework */; };
 		D98FD7E41D264E550048E29E /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D98FD7E31D264E550048E29E /* Security.framework */; };
 		D98FD7E61D264E710048E29E /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D98FD7E51D264E710048E29E /* libz.tbd */; };
+		D9AFBD821EC1B60D00E1FAAE /* LMUUID.m in Sources */ = {isa = PBXBuildFile; fileRef = D9AFBD811EC1B60D00E1FAAE /* LMUUID.m */; };
 		D9B084B71E810DDC0067EC4A /* AboutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D9B084871E810DDC0067EC4A /* AboutViewController.m */; };
 		D9B084B81E810DDC0067EC4A /* AccountAndSafetyPage.m in Sources */ = {isa = PBXBuildFile; fileRef = D9B0848A1E810DDC0067EC4A /* AccountAndSafetyPage.m */; };
 		D9B084B91E810DDC0067EC4A /* BoundOrUnboundPhonePage.m in Sources */ = {isa = PBXBuildFile; fileRef = D9B0848C1E810DDC0067EC4A /* BoundOrUnboundPhonePage.m */; };
@@ -12471,6 +12472,8 @@
 		D98FD7E11D264E470048E29E /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		D98FD7E31D264E550048E29E /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		D98FD7E51D264E710048E29E /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		D9AFBD801EC1B60D00E1FAAE /* LMUUID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LMUUID.h; sourceTree = "<group>"; };
+		D9AFBD811EC1B60D00E1FAAE /* LMUUID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LMUUID.m; sourceTree = "<group>"; };
 		D9B084861E810DDC0067EC4A /* AboutViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutViewController.h; sourceTree = "<group>"; };
 		D9B084871E810DDC0067EC4A /* AboutViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutViewController.m; sourceTree = "<group>"; };
 		D9B084891E810DDC0067EC4A /* AccountAndSafetyPage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AccountAndSafetyPage.h; sourceTree = "<group>"; };
@@ -14086,6 +14089,8 @@
 				D92232381E822BF800D67110 /* StringTool.m */,
 				D92232391E822BF800D67110 /* SystemTool.h */,
 				D922323A1E822BF800D67110 /* SystemTool.m */,
+				D9AFBD801EC1B60D00E1FAAE /* LMUUID.h */,
+				D9AFBD811EC1B60D00E1FAAE /* LMUUID.m */,
 			);
 			path = Tool;
 			sourceTree = "<group>";
@@ -33192,6 +33197,7 @@
 				D95C02F01E8102FF006C5C8A /* GBPingSummary.m in Sources */,
 				D92232991E822BF800D67110 /* UITextView+ExtensionRange.m in Sources */,
 				1923503F1E811F520022D844 /* CellGroup.m in Sources */,
+				D9AFBD821EC1B60D00E1FAAE /* LMUUID.m in Sources */,
 				D97FDCB41E86664800B161C8 /* YYTextRubyAnnotation.m in Sources */,
 				D962DDD21EC19D02004B2066 /* aestab.c in Sources */,
 				D9222D6B1E82283400D67110 /* GroupDBManager.m in Sources */,

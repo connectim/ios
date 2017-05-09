@@ -1983,6 +1983,7 @@ typedef GPB_ENUM(DeviceInfo_FieldNumber) {
   DeviceInfo_FieldNumber_DeviceName = 2,
   DeviceInfo_FieldNumber_Locale = 3,
   DeviceInfo_FieldNumber_Cv = 4,
+  DeviceInfo_FieldNumber_Uuid = 5,
 };
 
 @interface DeviceInfo : GPBMessage
@@ -1994,6 +1995,8 @@ typedef GPB_ENUM(DeviceInfo_FieldNumber) {
 @property(nonatomic, readwrite, copy, null_resettable) NSString *locale;
 
 @property(nonatomic, readwrite) int32_t cv;
+
+@property(nonatomic, readwrite, copy, null_resettable) NSString *uuid;
 
 @end
 

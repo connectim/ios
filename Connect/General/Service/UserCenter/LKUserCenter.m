@@ -226,7 +226,8 @@ static LKUserCenter *center = nil;
     [[LMConversionManager sharedManager] clearAllModel];
     [GCDQueue executeInMainQueue:^{
         PhoneLoginPage *phonePage = [[PhoneLoginPage alloc] init];
-        LocalAccountLoginPage *page = [[LocalAccountLoginPage alloc] init];
+        NSArray *users = [[MMAppSetting sharedSetting] getKeyChainUsers];
+        LocalAccountLoginPage *page = [[LocalAccountLoginPage alloc] initWithLocalUsers:users];
         AppDelegate *app = (AppDelegate *)[UIApplication sharedApplication].delegate;
         app.window.rootViewController = nil;
         UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:phonePage];
