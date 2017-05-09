@@ -14,22 +14,38 @@ build/
 xcuserdata
 profile
 *.moved-aside
-DerivedData
+DerivedData/
 .idea/
 Tests/Pods
 Tests/Podfile.lock
 Tests/AFNetworking Tests.xcodeproj/xcshareddata/xcschemes/
 AFNetworking.framework.zip
 
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+*.moved-aside
+*.xccheckout
+*.xcscmblueprint
+
 # Fastlane
-/fastlane/report.xml
-/fastlane/.env*private*
-fastlane/test-output/*
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
 
 #wallet
 Connect/Support/Allkey
 Connect/Support/include
 Connect/Support/include1
+#test
+Connect.IMUITests
+ConnectTests
+ConnectUITests
+#pod
+Pods/
 
 Carthage/Build
 
