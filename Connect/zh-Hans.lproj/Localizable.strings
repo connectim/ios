@@ -134,7 +134,6 @@
 "Chat Unencrypted"="未加密";
 "Chat Unkonw message"="[未知消息]";
 "Chat Unpaid"="未支付";
-"Chat Update Data"="更新数据库";
 "Chat Update Database"="更新数据库";
 "Chat Updating Database"="正在更新数据";
 "Chat User already in group"="用户已经在群组中";
@@ -163,11 +162,13 @@
 "Chat latitude longitude"="纬度 %+.6f, 经度 %+.6f\n";
 "Chat may be a phone number you can"="%@ 可能是个电话，你可以";
 "Chat members"="(%d 人)";
+"Chat one device can only grab a luckypackage"="一个设备只能抢一个红包";
 "Chat opened Lucky Packet of"="%@领取了%@的红包";
 "Chat paid the bill to"="%@支付了%@的账单";
 "Chat paid the crowd founding to"="%@支付了%@的众筹账单";
 "Chat send a snap chat message"="你发送一条阅后即焚消息";
 "Chat set the self destruct timer to"="%@开启阅后即焚%@后删除消息";
+"Chat system luckypackage have been frozen"="红包被系统管理员暂停";
 "Chat the day before yesterday time"="前天 %@";
 "Chat video limit"="视频过长\n不能分享超过%d分钟的视频";
 "Chat video tip"="视频过长";
@@ -649,7 +650,9 @@
 "Wallet Scan to pay me"="扫码向你付款";
 "Wallet Select friends"="选择好友";
 "Wallet Send Lucky Packet to"="向%@发送红包";
+"Wallet Send a bitcoin transfer link"="发送比特币转账链接";
 "Wallet Send a lucky packet"="发送比特币红包链接";
+"Wallet Send bitcoin BTC"="发送bitcoin\n %@ BTC";
 "Wallet Send the payment connection"="发送个人收款连接";
 "Wallet Sent"="已发送";
 "Wallet Sent to friend"="单人红包";
@@ -708,8 +711,5 @@
 "Wallet transfer man"="转账(%d)";
 "Wallet transferOutVia return"="退回转账";
 "Wallet transferOutVia return Success"="退回转账成功";
-"Wallet Send bitcoin BTC" = "发送bitcoin\n %@ BTC";
-"Wallet Send bitcoin" = "发送bitcoin";
-"Wallet Over time" = "过期";
 "app name"="Connect";
 "app name im"="CONNECT.IM";
