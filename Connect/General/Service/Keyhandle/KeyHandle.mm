@@ -8,7 +8,6 @@
 
 #import "KeyHandle.h"
 //Note: This class does not reference too many other methods of the class. May be encapsulated
-#define sUserDefaults [NSUserDefaults standardUserDefaults]
 
 extern "C" {
 #include "bip39.h"

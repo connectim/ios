@@ -22,7 +22,6 @@
 #import "NSUserDefaults+SafeAccess.h"
 #import "Masonry.h"
 #import "Adapter.h"
-#import "AutoFrameLabel.h"
 #import "UINavigationController+LM.h"
 #import "KQXPasswordInputTipView.h"
 #import "KQXPasswordInputController.h"
@@ -62,7 +61,6 @@ static const DDLogLevel ddLogLevel = DDLogLevelOff;
 #import "KeyHandle.h"
 #import "SetGlobalHandler.h"
 #import "NSString+hash.h"
-#import "CIMainCache.h"
 #import "RegexKit.h"
 #import "PayTool.h"
 

@@ -460,24 +460,18 @@
 		D922306F1E822A3100D67110 /* message_box_blue.textClipping in Resources */ = {isa = PBXBuildFile; fileRef = D9222F621E822A3000D67110 /* message_box_blue.textClipping */; };
 		D92230701E822A3100D67110 /* instant_message.wav in Resources */ = {isa = PBXBuildFile; fileRef = D9222F641E822A3000D67110 /* instant_message.wav */; };
 		D92232541E822BF800D67110 /* Adapter.m in Sources */ = {isa = PBXBuildFile; fileRef = D92230741E822BF700D67110 /* Adapter.m */; };
-		D92232551E822BF800D67110 /* AutoFrameLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = D92230761E822BF700D67110 /* AutoFrameLabel.m */; };
 		D92232561E822BF800D67110 /* BEMAnimationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D92230791E822BF700D67110 /* BEMAnimationManager.m */; };
 		D92232571E822BF800D67110 /* BEMCheckBox.m in Sources */ = {isa = PBXBuildFile; fileRef = D922307B1E822BF700D67110 /* BEMCheckBox.m */; };
 		D92232581E822BF800D67110 /* BEMPathManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D922307D1E822BF700D67110 /* BEMPathManager.m */; };
 		D92232591E822BF800D67110 /* ChineseToPinyin.m in Sources */ = {isa = PBXBuildFile; fileRef = D922307F1E822BF700D67110 /* ChineseToPinyin.m */; };
 		D922325A1E822BF800D67110 /* DACircularProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = D92230821E822BF700D67110 /* DACircularProgressView.m */; };
 		D922325B1E822BF800D67110 /* DALabeledCircularProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = D92230841E822BF700D67110 /* DALabeledCircularProgressView.m */; };
-		D922325C1E822BF800D67110 /* FXBlurView.m in Sources */ = {isa = PBXBuildFile; fileRef = D92230861E822BF700D67110 /* FXBlurView.m */; };
 		D922325D1E822BF800D67110 /* GestureLockItem.m in Sources */ = {isa = PBXBuildFile; fileRef = D92230891E822BF700D67110 /* GestureLockItem.m */; };
 		D922325E1E822BF800D67110 /* GestureLockView.m in Sources */ = {isa = PBXBuildFile; fileRef = D922308B1E822BF700D67110 /* GestureLockView.m */; };
 		D922325F1E822BF800D67110 /* LCNewFeatureVC.m in Sources */ = {isa = PBXBuildFile; fileRef = D922308E1E822BF700D67110 /* LCNewFeatureVC.m */; };
 		D92232601E822BF800D67110 /* LMCustomBtn.m in Sources */ = {isa = PBXBuildFile; fileRef = D92230901E822BF700D67110 /* LMCustomBtn.m */; };
-		D92232611E822BF800D67110 /* LMQRcodePopView.m in Sources */ = {isa = PBXBuildFile; fileRef = D92230921E822BF700D67110 /* LMQRcodePopView.m */; };
 		D92232621E822BF800D67110 /* MMProgressWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = D92230941E822BF700D67110 /* MMProgressWebView.m */; };
-		D92232631E822BF800D67110 /* PopActionSheet.m in Sources */ = {isa = PBXBuildFile; fileRef = D92230961E822BF700D67110 /* PopActionSheet.m */; };
-		D92232641E822BF800D67110 /* PopMeunView.m in Sources */ = {isa = PBXBuildFile; fileRef = D92230981E822BF800D67110 /* PopMeunView.m */; };
 		D92232651E822BF800D67110 /* StitchingImage.m in Sources */ = {isa = PBXBuildFile; fileRef = D922309A1E822BF800D67110 /* StitchingImage.m */; };
-		D92232661E822BF800D67110 /* SwipeView.m in Sources */ = {isa = PBXBuildFile; fileRef = D922309C1E822BF800D67110 /* SwipeView.m */; };
 		D92232671E822BF800D67110 /* TBActionBackground.m in Sources */ = {isa = PBXBuildFile; fileRef = D92230A01E822BF800D67110 /* TBActionBackground.m */; };
 		D92232681E822BF800D67110 /* TBActionButton.m in Sources */ = {isa = PBXBuildFile; fileRef = D92230A21E822BF800D67110 /* TBActionButton.m */; };
 		D92232691E822BF800D67110 /* TBActionContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = D92230A41E822BF800D67110 /* TBActionContainer.m */; };
@@ -533,7 +527,6 @@
 		D922329C1E822BF800D67110 /* UIView+Toast.m in Sources */ = {isa = PBXBuildFile; fileRef = D92231191E822BF800D67110 /* UIView+Toast.m */; };
 		D922329D1E822BF800D67110 /* AddressBookCallBack.m in Sources */ = {isa = PBXBuildFile; fileRef = D922311C1E822BF800D67110 /* AddressBookCallBack.m */; };
 		D922329E1E822BF800D67110 /* MMAppSetting.m in Sources */ = {isa = PBXBuildFile; fileRef = D922311F1E822BF800D67110 /* MMAppSetting.m */; };
-		D922329F1E822BF800D67110 /* CIMainCache.m in Sources */ = {isa = PBXBuildFile; fileRef = D92231211E822BF800D67110 /* CIMainCache.m */; };
 		D92232A01E822BF800D67110 /* GJCFFileDownloadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D92231241E822BF800D67110 /* GJCFFileDownloadManager.m */; };
 		D92232A11E822BF800D67110 /* GJCFFileDownloadTask.m in Sources */ = {isa = PBXBuildFile; fileRef = D92231261E822BF800D67110 /* GJCFFileDownloadTask.m */; };
 		D92232A21E822BF800D67110 /* GJCFFileUploadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D922312C1E822BF800D67110 /* GJCFFileUploadManager.m */; };
@@ -560,14 +553,12 @@
 		D92232B71E822BF800D67110 /* LMRetweetMessageManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D92231651E822BF800D67110 /* LMRetweetMessageManager.m */; };
 		D92232B81E822BF900D67110 /* SingleAFNetworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D92231671E822BF800D67110 /* SingleAFNetworkManager.m */; };
 		D92232B91E822BF900D67110 /* MyLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = D92231691E822BF800D67110 /* MyLogFormatter.m */; };
-		D92232BA1E822BF900D67110 /* NetServiceTool.m in Sources */ = {isa = PBXBuildFile; fileRef = D922316B1E822BF800D67110 /* NetServiceTool.m */; };
 		D92232BB1E822BF900D67110 /* NetWorkOperationTool.m in Sources */ = {isa = PBXBuildFile; fileRef = D922316D1E822BF800D67110 /* NetWorkOperationTool.m */; };
 		D92232BC1E822BF900D67110 /* NetWorkTool.m in Sources */ = {isa = PBXBuildFile; fileRef = D922316F1E822BF800D67110 /* NetWorkTool.m */; };
 		D92232BD1E822BF900D67110 /* PayTool.m in Sources */ = {isa = PBXBuildFile; fileRef = D92231711E822BF800D67110 /* PayTool.m */; };
 		D92232BE1E822BF900D67110 /* KTSContactsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D92231741E822BF800D67110 /* KTSContactsManager.m */; };
 		D92232BF1E822BF900D67110 /* ServerCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = D92231761E822BF800D67110 /* ServerCenter.m */; };
 		D92232C01E822BF900D67110 /* LKUserCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = D922317A1E822BF800D67110 /* LKUserCenter.m */; };
-		D92232C21E822BF900D67110 /* AesGCMTool.m in Sources */ = {isa = PBXBuildFile; fileRef = D922317F1E822BF800D67110 /* AesGCMTool.m */; };
 		D92232C31E822BF900D67110 /* amrFileCodec.mm in Sources */ = {isa = PBXBuildFile; fileRef = D92231821E822BF800D67110 /* amrFileCodec.mm */; };
 		D92232C41E822BF900D67110 /* libopencore-amrnb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D92231871E822BF800D67110 /* libopencore-amrnb.a */; };
 		D92232C51E822BF900D67110 /* libopencore-amrwb.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D92231881E822BF800D67110 /* libopencore-amrwb.a */; };
@@ -577,9 +568,7 @@
 		D92232C91E822BF900D67110 /* BadgeNumberManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D92231911E822BF800D67110 /* BadgeNumberManager.m */; };
 		D92232CA1E822BF900D67110 /* BadgeNumberStore.m in Sources */ = {isa = PBXBuildFile; fileRef = D92231931E822BF800D67110 /* BadgeNumberStore.m */; };
 		D92232CB1E822BF900D67110 /* BarCodeTool.m in Sources */ = {isa = PBXBuildFile; fileRef = D92231951E822BF800D67110 /* BarCodeTool.m */; };
-		D92232CC1E822BF900D67110 /* BtcTool.m in Sources */ = {isa = PBXBuildFile; fileRef = D92231971E822BF800D67110 /* BtcTool.m */; };
 		D92232CD1E822BF900D67110 /* CameraTool.m in Sources */ = {isa = PBXBuildFile; fileRef = D92231991E822BF800D67110 /* CameraTool.m */; };
-		D92232CE1E822BF900D67110 /* CommonGetPostTool.m in Sources */ = {isa = PBXBuildFile; fileRef = D922319C1E822BF800D67110 /* CommonGetPostTool.m */; };
 		D92232CF1E822BF900D67110 /* ConnectTool.m in Sources */ = {isa = PBXBuildFile; fileRef = D922319E1E822BF800D67110 /* ConnectTool.m */; };
 		D92232D01E822BF900D67110 /* FLAnimatedImage.m in Sources */ = {isa = PBXBuildFile; fileRef = D92231A11E822BF800D67110 /* FLAnimatedImage.m */; };
 		D92232D11E822BF900D67110 /* FLAnimatedImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = D92231A31E822BF800D67110 /* FLAnimatedImageView.m */; };
@@ -652,7 +641,6 @@
 		D92233261E824A0200D67110 /* NSArray+Util.m in Sources */ = {isa = PBXBuildFile; fileRef = D92233251E824A0200D67110 /* NSArray+Util.m */; };
 		D92233331E83DBC300D67110 /* RedBagNetWorkTool.m in Sources */ = {isa = PBXBuildFile; fileRef = D922332C1E83DBC300D67110 /* RedBagNetWorkTool.m */; };
 		D92233341E83DBC300D67110 /* SetGlobalHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = D922332E1E83DBC300D67110 /* SetGlobalHandler.m */; };
-		D92233351E83DBC300D67110 /* UserNetWorkTool.m in Sources */ = {isa = PBXBuildFile; fileRef = D92233301E83DBC300D67110 /* UserNetWorkTool.m */; };
 		D92233361E83DBC300D67110 /* WallteNetWorkTool.m in Sources */ = {isa = PBXBuildFile; fileRef = D92233321E83DBC300D67110 /* WallteNetWorkTool.m */; };
 		D943CD5C1EB083B100BE94EF /* GcmDataModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D943CD5B1EB083B100BE94EF /* GcmDataModel.m */; };
 		D943CD7A1EB0866C00BE94EF /* GJGCChatSystemNotiCellStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = D943CD681EB0866C00BE94EF /* GJGCChatSystemNotiCellStyle.m */; };
@@ -1813,8 +1801,6 @@
 		D9222F641E822A3000D67110 /* instant_message.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = instant_message.wav; sourceTree = "<group>"; };
 		D92230731E822BF700D67110 /* Adapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Adapter.h; sourceTree = "<group>"; };
 		D92230741E822BF700D67110 /* Adapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Adapter.m; sourceTree = "<group>"; };
-		D92230751E822BF700D67110 /* AutoFrameLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutoFrameLabel.h; sourceTree = "<group>"; };
-		D92230761E822BF700D67110 /* AutoFrameLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AutoFrameLabel.m; sourceTree = "<group>"; };
 		D92230781E822BF700D67110 /* BEMAnimationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BEMAnimationManager.h; sourceTree = "<group>"; };
 		D92230791E822BF700D67110 /* BEMAnimationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BEMAnimationManager.m; sourceTree = "<group>"; };
 		D922307A1E822BF700D67110 /* BEMCheckBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BEMCheckBox.h; sourceTree = "<group>"; };
@@ -1827,8 +1813,6 @@
 		D92230821E822BF700D67110 /* DACircularProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DACircularProgressView.m; sourceTree = "<group>"; };
 		D92230831E822BF700D67110 /* DALabeledCircularProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DALabeledCircularProgressView.h; sourceTree = "<group>"; };
 		D92230841E822BF700D67110 /* DALabeledCircularProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DALabeledCircularProgressView.m; sourceTree = "<group>"; };
-		D92230851E822BF700D67110 /* FXBlurView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FXBlurView.h; sourceTree = "<group>"; };
-		D92230861E822BF700D67110 /* FXBlurView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FXBlurView.m; sourceTree = "<group>"; };
 		D92230881E822BF700D67110 /* GestureLockItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GestureLockItem.h; sourceTree = "<group>"; };
 		D92230891E822BF700D67110 /* GestureLockItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GestureLockItem.m; sourceTree = "<group>"; };
 		D922308A1E822BF700D67110 /* GestureLockView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GestureLockView.h; sourceTree = "<group>"; };
@@ -1837,18 +1821,10 @@
 		D922308E1E822BF700D67110 /* LCNewFeatureVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LCNewFeatureVC.m; sourceTree = "<group>"; };
 		D922308F1E822BF700D67110 /* LMCustomBtn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LMCustomBtn.h; sourceTree = "<group>"; };
 		D92230901E822BF700D67110 /* LMCustomBtn.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LMCustomBtn.m; sourceTree = "<group>"; };
-		D92230911E822BF700D67110 /* LMQRcodePopView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LMQRcodePopView.h; sourceTree = "<group>"; };
-		D92230921E822BF700D67110 /* LMQRcodePopView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LMQRcodePopView.m; sourceTree = "<group>"; };
 		D92230931E822BF700D67110 /* MMProgressWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MMProgressWebView.h; sourceTree = "<group>"; };
 		D92230941E822BF700D67110 /* MMProgressWebView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMProgressWebView.m; sourceTree = "<group>"; };
-		D92230951E822BF700D67110 /* PopActionSheet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PopActionSheet.h; sourceTree = "<group>"; };
-		D92230961E822BF700D67110 /* PopActionSheet.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PopActionSheet.m; sourceTree = "<group>"; };
-		D92230971E822BF800D67110 /* PopMeunView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PopMeunView.h; sourceTree = "<group>"; };
-		D92230981E822BF800D67110 /* PopMeunView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PopMeunView.m; sourceTree = "<group>"; };
 		D92230991E822BF800D67110 /* StitchingImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StitchingImage.h; sourceTree = "<group>"; };
 		D922309A1E822BF800D67110 /* StitchingImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StitchingImage.m; sourceTree = "<group>"; };
-		D922309B1E822BF800D67110 /* SwipeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SwipeView.h; sourceTree = "<group>"; };
-		D922309C1E822BF800D67110 /* SwipeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwipeView.m; sourceTree = "<group>"; };
 		D922309F1E822BF800D67110 /* TBActionBackground.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TBActionBackground.h; sourceTree = "<group>"; };
 		D92230A01E822BF800D67110 /* TBActionBackground.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TBActionBackground.m; sourceTree = "<group>"; };
 		D92230A11E822BF800D67110 /* TBActionButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TBActionButton.h; sourceTree = "<group>"; };
@@ -1962,8 +1938,6 @@
 		D922311C1E822BF800D67110 /* AddressBookCallBack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddressBookCallBack.m; sourceTree = "<group>"; };
 		D922311E1E822BF800D67110 /* MMAppSetting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MMAppSetting.h; sourceTree = "<group>"; };
 		D922311F1E822BF800D67110 /* MMAppSetting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMAppSetting.m; sourceTree = "<group>"; };
-		D92231201E822BF800D67110 /* CIMainCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIMainCache.h; sourceTree = "<group>"; };
-		D92231211E822BF800D67110 /* CIMainCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CIMainCache.m; sourceTree = "<group>"; };
 		D92231231E822BF800D67110 /* GJCFFileDownloadManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GJCFFileDownloadManager.h; sourceTree = "<group>"; };
 		D92231241E822BF800D67110 /* GJCFFileDownloadManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GJCFFileDownloadManager.m; sourceTree = "<group>"; };
 		D92231251E822BF800D67110 /* GJCFFileDownloadTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GJCFFileDownloadTask.h; sourceTree = "<group>"; };
@@ -2019,8 +1993,6 @@
 		D92231671E822BF800D67110 /* SingleAFNetworkManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SingleAFNetworkManager.m; sourceTree = "<group>"; };
 		D92231681E822BF800D67110 /* MyLogFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MyLogFormatter.h; sourceTree = "<group>"; };
 		D92231691E822BF800D67110 /* MyLogFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MyLogFormatter.m; sourceTree = "<group>"; };
-		D922316A1E822BF800D67110 /* NetServiceTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetServiceTool.h; sourceTree = "<group>"; };
-		D922316B1E822BF800D67110 /* NetServiceTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NetServiceTool.m; sourceTree = "<group>"; };
 		D922316C1E822BF800D67110 /* NetWorkOperationTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetWorkOperationTool.h; sourceTree = "<group>"; };
 		D922316D1E822BF800D67110 /* NetWorkOperationTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NetWorkOperationTool.m; sourceTree = "<group>"; };
 		D922316E1E822BF800D67110 /* NetWorkTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetWorkTool.h; sourceTree = "<group>"; };
@@ -2033,8 +2005,6 @@
 		D92231761E822BF800D67110 /* ServerCenter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ServerCenter.m; sourceTree = "<group>"; };
 		D92231791E822BF800D67110 /* LKUserCenter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LKUserCenter.h; sourceTree = "<group>"; };
 		D922317A1E822BF800D67110 /* LKUserCenter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LKUserCenter.m; sourceTree = "<group>"; };
-		D922317E1E822BF800D67110 /* AesGCMTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AesGCMTool.h; sourceTree = "<group>"; };
-		D922317F1E822BF800D67110 /* AesGCMTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AesGCMTool.m; sourceTree = "<group>"; };
 		D92231811E822BF800D67110 /* amrFileCodec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = amrFileCodec.h; sourceTree = "<group>"; };
 		D92231821E822BF800D67110 /* amrFileCodec.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = amrFileCodec.mm; sourceTree = "<group>"; };
 		D92231831E822BF800D67110 /* dec_if.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dec_if.h; sourceTree = "<group>"; };
@@ -2055,12 +2025,8 @@
 		D92231931E822BF800D67110 /* BadgeNumberStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BadgeNumberStore.m; sourceTree = "<group>"; };
 		D92231941E822BF800D67110 /* BarCodeTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BarCodeTool.h; sourceTree = "<group>"; };
 		D92231951E822BF800D67110 /* BarCodeTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BarCodeTool.m; sourceTree = "<group>"; };
-		D92231961E822BF800D67110 /* BtcTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BtcTool.h; sourceTree = "<group>"; };
-		D92231971E822BF800D67110 /* BtcTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BtcTool.m; sourceTree = "<group>"; };
 		D92231981E822BF800D67110 /* CameraTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CameraTool.h; sourceTree = "<group>"; };
 		D92231991E822BF800D67110 /* CameraTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CameraTool.m; sourceTree = "<group>"; };
-		D922319B1E822BF800D67110 /* CommonGetPostTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommonGetPostTool.h; sourceTree = "<group>"; };
-		D922319C1E822BF800D67110 /* CommonGetPostTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommonGetPostTool.m; sourceTree = "<group>"; };
 		D922319D1E822BF800D67110 /* ConnectTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConnectTool.h; sourceTree = "<group>"; };
 		D922319E1E822BF800D67110 /* ConnectTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConnectTool.m; sourceTree = "<group>"; };
 		D92231A01E822BF800D67110 /* FLAnimatedImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FLAnimatedImage.h; sourceTree = "<group>"; };
@@ -2212,8 +2178,6 @@
 		D922332C1E83DBC300D67110 /* RedBagNetWorkTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RedBagNetWorkTool.m; sourceTree = "<group>"; };
 		D922332D1E83DBC300D67110 /* SetGlobalHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SetGlobalHandler.h; sourceTree = "<group>"; };
 		D922332E1E83DBC300D67110 /* SetGlobalHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SetGlobalHandler.m; sourceTree = "<group>"; };
-		D922332F1E83DBC300D67110 /* UserNetWorkTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserNetWorkTool.h; sourceTree = "<group>"; };
-		D92233301E83DBC300D67110 /* UserNetWorkTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserNetWorkTool.m; sourceTree = "<group>"; };
 		D92233311E83DBC300D67110 /* WallteNetWorkTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WallteNetWorkTool.h; sourceTree = "<group>"; };
 		D92233321E83DBC300D67110 /* WallteNetWorkTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WallteNetWorkTool.m; sourceTree = "<group>"; };
 		D943CD5A1EB083B100BE94EF /* GcmDataModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GcmDataModel.h; sourceTree = "<group>"; };
@@ -13541,26 +13505,14 @@
 				D92230B41E822BF800D67110 /* TemView */,
 				D92230731E822BF700D67110 /* Adapter.h */,
 				D92230741E822BF700D67110 /* Adapter.m */,
-				D92230751E822BF700D67110 /* AutoFrameLabel.h */,
-				D92230761E822BF700D67110 /* AutoFrameLabel.m */,
 				D922307E1E822BF700D67110 /* ChineseToPinyin.h */,
 				D922307F1E822BF700D67110 /* ChineseToPinyin.m */,
-				D92230851E822BF700D67110 /* FXBlurView.h */,
-				D92230861E822BF700D67110 /* FXBlurView.m */,
 				D922308F1E822BF700D67110 /* LMCustomBtn.h */,
 				D92230901E822BF700D67110 /* LMCustomBtn.m */,
-				D92230911E822BF700D67110 /* LMQRcodePopView.h */,
-				D92230921E822BF700D67110 /* LMQRcodePopView.m */,
 				D92230931E822BF700D67110 /* MMProgressWebView.h */,
 				D92230941E822BF700D67110 /* MMProgressWebView.m */,
-				D92230951E822BF700D67110 /* PopActionSheet.h */,
-				D92230961E822BF700D67110 /* PopActionSheet.m */,
-				D92230971E822BF800D67110 /* PopMeunView.h */,
-				D92230981E822BF800D67110 /* PopMeunView.m */,
 				D92230991E822BF800D67110 /* StitchingImage.h */,
 				D922309A1E822BF800D67110 /* StitchingImage.m */,
-				D922309B1E822BF800D67110 /* SwipeView.h */,
-				D922309C1E822BF800D67110 /* SwipeView.m */,
 				D92230C81E822BF800D67110 /* UAProgressView.h */,
 				D92230C91E822BF800D67110 /* UAProgressView.m */,
 				D92230CA1E822BF800D67110 /* UUImageAvatarBrowser.h */,
@@ -13829,16 +13781,12 @@
 				D92231781E822BF800D67110 /* UserCenter */,
 				D922311B1E822BF800D67110 /* AddressBookCallBack.h */,
 				D922311C1E822BF800D67110 /* AddressBookCallBack.m */,
-				D92231201E822BF800D67110 /* CIMainCache.h */,
-				D92231211E822BF800D67110 /* CIMainCache.m */,
 				D92231311E822BF800D67110 /* FXKeychain.h */,
 				D92231321E822BF800D67110 /* FXKeychain.m */,
 				D922315B1E822BF800D67110 /* Language.h */,
 				D922315C1E822BF800D67110 /* Language.m */,
 				D92231681E822BF800D67110 /* MyLogFormatter.h */,
 				D92231691E822BF800D67110 /* MyLogFormatter.m */,
-				D922316A1E822BF800D67110 /* NetServiceTool.h */,
-				D922316B1E822BF800D67110 /* NetServiceTool.m */,
 				D922316C1E822BF800D67110 /* NetWorkOperationTool.h */,
 				D922316D1E822BF800D67110 /* NetWorkOperationTool.m */,
 				D922316E1E822BF800D67110 /* NetWorkTool.h */,
@@ -13847,8 +13795,6 @@
 				D922332C1E83DBC300D67110 /* RedBagNetWorkTool.m */,
 				D922332D1E83DBC300D67110 /* SetGlobalHandler.h */,
 				D922332E1E83DBC300D67110 /* SetGlobalHandler.m */,
-				D922332F1E83DBC300D67110 /* UserNetWorkTool.h */,
-				D92233301E83DBC300D67110 /* UserNetWorkTool.m */,
 				D92233311E83DBC300D67110 /* WallteNetWorkTool.h */,
 				D92233321E83DBC300D67110 /* WallteNetWorkTool.m */,
 				D92231701E822BF800D67110 /* PayTool.h */,
@@ -14063,16 +14009,10 @@
 				D92232081E822BF800D67110 /* GJCUImageBrowser */,
 				D922321A1E822BF800D67110 /* GJCURoundCornerView */,
 				D922323C1E822BF800D67110 /* TZImagePickerController */,
-				D922317E1E822BF800D67110 /* AesGCMTool.h */,
-				D922317F1E822BF800D67110 /* AesGCMTool.m */,
 				D92231941E822BF800D67110 /* BarCodeTool.h */,
 				D92231951E822BF800D67110 /* BarCodeTool.m */,
-				D92231961E822BF800D67110 /* BtcTool.h */,
-				D92231971E822BF800D67110 /* BtcTool.m */,
 				D92231981E822BF800D67110 /* CameraTool.h */,
 				D92231991E822BF800D67110 /* CameraTool.m */,
-				D922319B1E822BF800D67110 /* CommonGetPostTool.h */,
-				D922319C1E822BF800D67110 /* CommonGetPostTool.m */,
 				D922319D1E822BF800D67110 /* ConnectTool.h */,
 				D922319E1E822BF800D67110 /* ConnectTool.m */,
 				D92231A41E822BF800D67110 /* FxFileUtility.h */,
@@ -32784,7 +32724,6 @@
 				D9222F921E822A3000D67110 /* NSObject+MJKeyValue.m in Sources */,
 				D9222FCA1E822A3100D67110 /* UIBarButtonItem+YYAdd.m in Sources */,
 				D9222F861E822A3000D67110 /* MASViewConstraint.m in Sources */,
-				D92232CE1E822BF900D67110 /* CommonGetPostTool.m in Sources */,
 				D9222FC01E822A3100D67110 /* NSNumber+YYAdd.m in Sources */,
 				D95C04851E810902006C5C8A /* LMMessageTextView.m in Sources */,
 				D95C04831E810902006C5C8A /* LMCollectionEmojiTip.m in Sources */,
@@ -32890,7 +32829,6 @@
 				D95C02FF1E8102FF006C5C8A /* StreamParser.m in Sources */,
 				19234FEE1E811C220022D844 /* ScanQRCodePage.m in Sources */,
 				D9B084BA1E810DDC0067EC4A /* ChangeLoginPassPage.m in Sources */,
-				D922325C1E822BF800D67110 /* FXBlurView.m in Sources */,
 				D95C02F71E8102FF006C5C8A /* Message.m in Sources */,
 				1923529B1E81275B0022D844 /* LMChatRedLuckyViewController.m in Sources */,
 				192350BD1E81213F0022D844 /* LMSetMoneyResultViewController.m in Sources */,
@@ -32969,7 +32907,6 @@
 				D962DDE21EC19D02004B2066 /* core.cpp in Sources */,
 				192350711E81200D0022D844 /* SelectCountryCell.m in Sources */,
 				D92232581E822BF800D67110 /* BEMPathManager.m in Sources */,
-				D92232CC1E822BF900D67110 /* BtcTool.m in Sources */,
 				D9B084C61E810DDC0067EC4A /* CommonSetPage.m in Sources */,
 				192350B01E81213F0022D844 /* LMBaseViewController.m in Sources */,
 				D95C045B1E810902006C5C8A /* LMWalletLinkCell.m in Sources */,
@@ -32988,7 +32925,6 @@
 				D92232691E822BF800D67110 /* TBActionContainer.m in Sources */,
 				D95C03701E8108D8006C5C8A /* LMVerifyTableHeadView.m in Sources */,
 				D962DDD51EC19D02004B2066 /* bip32.c in Sources */,
-				D92232BA1E822BF900D67110 /* NetServiceTool.m in Sources */,
 				19234F6E1E81160A0022D844 /* SearchPage.m in Sources */,
 				D962DDD91EC19D02004B2066 /* hmac.c in Sources */,
 				19234F461E8113D60022D844 /* LMRegisterPrivkeyBackupTipView.m in Sources */,
@@ -32996,7 +32932,6 @@
 				D92232F41E822BF900D67110 /* GJCFStringUitil.m in Sources */,
 				D95C03761E8108D8006C5C8A /* SelectContactCardController.m in Sources */,
 				D922329C1E822BF800D67110 /* UIView+Toast.m in Sources */,
-				D922329F1E822BF800D67110 /* CIMainCache.m in Sources */,
 				D95C048C1E810902006C5C8A /* GJGCImageResizeHelper.m in Sources */,
 				19234FE61E811BDA0022D844 /* ConnectLabel.m in Sources */,
 				D97FDCBC1E86664800B161C8 /* YYTextUtilities.m in Sources */,
@@ -33015,7 +32950,6 @@
 				192350DD1E8121A20022D844 /* LMLabels.m in Sources */,
 				D95C046E1E810902006C5C8A /* GJGCChatInputBarItem.m in Sources */,
 				D92232D51E822BF900D67110 /* GJCFAssetsPickerConstans.m in Sources */,
-				D92232551E822BF800D67110 /* AutoFrameLabel.m in Sources */,
 				D92232BD1E822BF900D67110 /* PayTool.m in Sources */,
 				1923518E1E81247E0022D844 /* ShareMessageModel.m in Sources */,
 				D922327D1E822BF800D67110 /* NSDictionary+JSONString.m in Sources */,
@@ -33052,7 +32986,6 @@
 				D95C02EE1E8102FF006C5C8A /* CommandOutTimeTool.m in Sources */,
 				D9B084E61E810E5A0067EC4A /* PaddingTextField.m in Sources */,
 				F1CC2ED91E95F0BA0045FBB7 /* NSArray+LMSafeMethod.m in Sources */,
-				D92233351E83DBC300D67110 /* UserNetWorkTool.m in Sources */,
 				1923503D1E811F520022D844 /* BaseCell.m in Sources */,
 				D9222FDC1E822A3100D67110 /* CALayer+YYWebImage.m in Sources */,
 				D92232961E822BF800D67110 /* UIScreen+Frame.m in Sources */,
@@ -33096,7 +33029,6 @@
 				D92232871E822BF800D67110 /* NSString+Pinyin.m in Sources */,
 				D9222F7E1E822A3000D67110 /* GCDQueue.m in Sources */,
 				D9222D6D1E82283400D67110 /* LMBaseSSDBManager.mm in Sources */,
-				D92232631E822BF800D67110 /* PopActionSheet.m in Sources */,
 				D92232E21E822BF900D67110 /* GJCFAssetsPickerViewController.m in Sources */,
 				19234FBC1E8119BB0022D844 /* LMConnectStatusView.m in Sources */,
 				D9222FED1E822A3100D67110 /* YYReachability.m in Sources */,
@@ -33105,7 +33037,6 @@
 				D92232B51E822BF800D67110 /* ChatMessageFileManager.m in Sources */,
 				D97FDCA91E86664800B161C8 /* YYTextDebugOption.m in Sources */,
 				D95C046C1E810902006C5C8A /* ChatInputMicButton.m in Sources */,
-				D92232611E822BF800D67110 /* LMQRcodePopView.m in Sources */,
 				D95C04721E810902006C5C8A /* GJGCChatInputExpandEmojiPanelMenuBarDataSource.m in Sources */,
 				D92233151E822BF900D67110 /* TZPhotoPreviewCell.m in Sources */,
 				D92232761E822BF800D67110 /* UAProgressView.m in Sources */,
@@ -33145,11 +33076,9 @@
 				D9222FF21E822A3100D67110 /* YYTransaction.m in Sources */,
 				D9222FCE1E822A3100D67110 /* UIDevice+YYAdd.m in Sources */,
 				D9B084B91E810DDC0067EC4A /* BoundOrUnboundPhonePage.m in Sources */,
-				D92232C21E822BF900D67110 /* AesGCMTool.m in Sources */,
 				D92232681E822BF800D67110 /* TBActionButton.m in Sources */,
 				D95C04481E810902006C5C8A /* GJGCChatFriendAcceptGroupCallCell.m in Sources */,
 				D92232DB1E822BF900D67110 /* GJCFAssetsPickerAlbumsCell.m in Sources */,
-				D92232641E822BF800D67110 /* PopMeunView.m in Sources */,
 				D962DDCE1EC19D02004B2066 /* base58.cpp in Sources */,
 				D9222F8D1E822A3000D67110 /* MJProperty.m in Sources */,
 				D95C03641E8108D8006C5C8A /* GJGCChatGroupViewController.m in Sources */,
@@ -33215,7 +33144,6 @@
 				1923506A1E81200D0022D844 /* AddFriendCell.m in Sources */,
 				D92232E51E822BF900D67110 /* GJCFCoreTextContentView.m in Sources */,
 				192352951E81275B0022D844 /* KQXPasswordInputTipView.m in Sources */,
-				D92232661E822BF800D67110 /* SwipeView.m in Sources */,
 				D9222F9F1E822A3000D67110 /* MSSBrowseRemindView.m in Sources */,
 				D95C04931E810902006C5C8A /* LKAnnotation.m in Sources */,
 				D92232DE1E822BF900D67110 /* GJCFAssetsPickerScrollView.m in Sources */,
