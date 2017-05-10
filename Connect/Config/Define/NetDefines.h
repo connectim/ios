@@ -6,20 +6,10 @@
 //  Copyright © 2016年 Connect.  All rights reserved.
 //
 
-#define RequestTimeout 10
-#define codeResultKey @"code"
-#define messageResultKey @"message"
-#define bodyResultKey @"body"
-#define dataResultKey @"data"
-#define signResultKey @"sign"
-
-#define dataKeyString @"\"data\":"
-
-#define successCode 2000
-#define SOCKET_TIME_OUT 20
-#define SOCKET_READ_TIME_OUT 60
-
 //=========== server config ==============
+#define RequestTimeout 10
+#define successCode 2000
+
 #define APIVersion @"v1"
 #define SOCKET_HOST @"sandbox.connect.im"
 #define baseServer  @"https://sandbox.connect.im"
@@ -39,6 +29,9 @@
 //============= socket protocol version =============
 #define socketProtocolVersion 1
 //============= socket protocol version =============
+
+#define SOCKET_TIME_OUT 20
+#define SOCKET_READ_TIME_OUT 60
 
 // fedback address
 #define FeedBackUrl [NSString stringWithFormat:@"https://www.connect.im/mobile/feedback/%@",[LKUserCenter shareCenter].currentLoginUser.address]
@@ -132,76 +125,11 @@
  */
 #define PhoneGetPhoneCode baseServer "/connect/" APIVersion "/sms/send"
 
-
-#define GetPhoneCodeUrl baseServer "/api/sms/text"
-
 #define SignInUrl baseServer "/api/sign_in"
 
 #define UploadAvatarUrl baseServer "/api/upload_avatar"
 
-#define serInfoUrl baseServer "/api/sys"
-
 #define signUpUrl baseServer "/api/sign_up"
-
-#define checkQrcodeUrl baseServer "/api/" APIVersion "/pub/check"
-
-/**
- URL: /api/" APIVersion "/friends
- Method: GET
- Protect: True
- */
-#define friendsUrl baseServer "/api/" APIVersion "/friends"
-
-/**
- Check if the friend data is updated
-   1. API definition
-   URL: / api / v1 / friends / check
-   Method: GET
-   Protect: True
-   Params:
- 
- */
-#define checkFriendsUrl baseServer "/api/" APIVersion "/friends/check"
-
-/**
- Interface description
-   PATH: / api / v1 / friend_request
-   METHOD: POST
-   Data Format: JSON
- */
-#define FriendRequestUrl baseServer "/api/" APIVersion "/friend_request"
-/**
- Interface description
-   PATH: / api / v1 / friend_requests
-   METHOD: GET
-   Data Format: JSON
- */
-#define FriendRequestsListUrl baseServer "/api/" APIVersion "/friend_requests"
-
-/**
- Interface description
-   PATH: / api / v1 / friend_request / option
-   METHOD: POST
-   Data Format: JSON
- */
-#define FriendRequesOptionUrl baseServer "/api/" APIVersion "/friend_request/option"
-
-/**
- Interface description
-   Path: / api / v1 / phonebook
-   Request method: POST
-   Data Format: JSON
-   Whether you need to sign: True
- */
-#define PhoneBookUploadUrl baseServer "/api/" APIVersion "/phonebook"
-
-/**
- Interface description
-   PATH: / api / v1 / tags
-   METHOD: GET
-   Data Format: JSON
- */
-#define GetTagsUrl baseServer "/api/" APIVersion "/tags"
 
 /**
  Interface description
@@ -527,24 +455,6 @@
  */
 #define GroupRemoveCommonUrl baseServer "/connect/" APIVersion "/group/remove_common"
 
-
-/**
- Common group list
-  
-   Interface description
-  
-   PATH: / connect / v1 / group / list
-   METHOD: POST
-   Data Format: Protobuf
-   Request parameter
-  
-   Protobuf file: IMRequest
-
- 
- */
-
-#define GroupListUrl baseServer "/connect/" APIVersion "/group/list"
-
 #pragma mark - External red envelopes
 
 /**
@@ -811,20 +721,6 @@
    Data format: Protobuf
  */
 #define WallteBillingReciveUrl baseServer "/wallet/" APIVersion "/billing/recive"
-/**
- Address information query
-  
-   Interface description
-  
-   PATH: / blockchain / v1 / address /: id
-   METHOD: GET
-   Data Format: Protobuf
-   Request parameter
-  
-   Protobuf file: QueryAddress
-
- */
-#define WallteAddressSearchUrl baseServer "/blockchain/" APIVersion "/address"
 
 /**
  Address transaction record
@@ -840,27 +736,6 @@
  */
 #define WalletAddressTransRecodsUrl baseServer "/blockchain/" APIVersion "/address/%@/tx?page=%ld&pagesize=%ld"
 
-/**
- Add the purse address
-  
-   Interface description
-  
-   PATH: / wallet / v1 / sub_wallet / add
-   METHOD: POST
-   Data Format: Protobuf
- */
-#define WalletSubWithAddUrl baseServer "/wallet/" APIVersion "/sub_wallet/add"
-
-/**
- Get the sublet transaction information
-  
-   Interface description
-  
-   PATH: / wallet / v1 / sub_wallet / list
-   METHOD: POST
-   Data Format: Protobuf
- */
-#define WalletSubListUrl baseServer "/wallet/" APIVersion "/sub_wallet/list"
 /**
  address book
  
@@ -906,20 +781,7 @@
  */
 #define Walletaddress_bookTagUrl baseServer "/wallet/" APIVersion "/address_book/tag"
 
-
-/**
- Set the sublet label
-  
-   Interface description
-  
-   PATH: / wallet / v1 / sub_wallet / tag
-   METHOD: POST
-   Data Format: Protobuf
- */
-#define WalletSubTagUrl baseServer "/wallet/" APIVersion "/sub_wallet/tag"
 #pragma mark - contacts
-
-
 /**
  Interface description
   
@@ -990,37 +852,6 @@
  */
 #define ContactBlackListUrl baseServer "/connect/" APIVersion "/blacklist/list"
 
-
-/**
- Set up session information
-  
-   Interface description
-  
-   PATH: / connect / v1 / session
-   METHOD: POST
-   Data Format: Protobuf
-   Request parameter
-  
-   Protobuf file: IMRequest
-
- */
-
-#define ContactSessionSetUrl baseServer "/connect/" APIVersion "/session"
-
-
-/**
- Interface Description Get Session
-  
-   PATH: / connect / v1 / session / query
-   METHOD: POST
-   Data Format: Protobuf
-   Request parameter
-  
-   Protobuf file: IMRequest
-
- */
-#define ContactSessionQueryUrl baseServer "/connect/" APIVersion "/session/query"
-
 /**
  Set privacy
   
@@ -1066,23 +897,6 @@
 */
 #define ContactSyncPrivacyUrl baseServer "/connect/" APIVersion "/setting/privacy/info"
 
-
-/**
- Delete friends relationship
-  
-   Interface description
-  
-   PATH: / connect / v1 / relationship / remove
-   METHOD: POST
-   Data Format: Protobuf
-   Request parameter
-  
-   Protobuf file: IMRequest
-  
-   Add the member Protobuf file: UserIdentifier
-
- */
-#define ContactRemoveRelationshipUrl baseServer "/connect/" APIVersion "/relationship/remove"
 
 /**
  Update user avatar
@@ -1249,23 +1063,6 @@
    Protobuf file: IMRequest
  */
 #define SetUpdataUserInfo baseServer "/connect/" APIVersion "/setting/userinfo"
-
-
-/**
- Push the devicetoken binding interface
-  
-   Interface description
-  
-   PATH: / connect / v1 / device / bind
-   METHOD: POST
-   Data Format: Protobuf
-   Request parameter
-  
-   Protobuf file: IMRequest
- */
-
-#define ConnectDeviceBind baseServer "/connect/" APIVersion "/device/bind"
-
 
 // ===========================exchange rate=================================//
 /**
@@ -1447,4 +1244,3 @@
  Protobuf file: SendMobileCode
  */
 #define GetRecommandFriendUrl baseServer "/connect/" APIVersion "/users/recommend"
-
