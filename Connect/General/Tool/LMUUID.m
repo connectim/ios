@@ -18,7 +18,6 @@ static NSString *const kKeychainUDIDItemIdentifier  = @"UDID";   /* Replace with
 + (NSString *)uuid {
     if (kUDIDValue == nil) {
         @synchronized ([self class]) {
-            [[FXKeychain defaultKeychain] removeObjectForKey:kKeychainUDIDItemIdentifier];
             NSString *uuid = [[FXKeychain defaultKeychain] objectForKey:kKeychainUDIDItemIdentifier];;
             if (uuid) {
                 kUDIDValue = uuid;
