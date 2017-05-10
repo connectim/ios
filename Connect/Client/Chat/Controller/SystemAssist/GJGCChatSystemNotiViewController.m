@@ -194,6 +194,20 @@
                     }];
                 }
                     break;
+                case 7://system luckypackage have been frozen
+                {
+                    [GCDQueue executeInMainQueue:^{
+                        [MBProgressHUD showToastwithText:LMLocalizedString(@"Chat system luckypackage have been frozen", nil) withType:ToastTypeFail showInView:self.view complete:nil];
+                    }];
+                }
+                    break;
+                case 8://one device can only grab a luckypackage
+                {
+                    [GCDQueue executeInMainQueue:^{
+                        [MBProgressHUD showToastwithText:LMLocalizedString(@"Chat one device can only grab a luckypackage", nil) withType:ToastTypeFail showInView:self.view complete:nil];
+                    }];
+                }
+                    break;
                 default:
                     break;
             }
