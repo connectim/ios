@@ -89,11 +89,6 @@
     if (!GJCFStringIsNull(msgPost.msgData.chatPubKey) &&
             msgPost.msgData.salt.length == 64 &&
             msgPost.msgData.ver.length == 64) { //double random
-
-        DDLogInfo(@"recive ::messageData.salt %@ \n messageData.ver %@  messageData.chatPubKey %@", [StringTool hexStringFromData:msgPost.msgData.salt],
-                [StringTool hexStringFromData:msgPost.msgData.ver],
-                msgPost.msgData.chatPubKey);
-
         messageString = [ConnectTool decodePeerImMessageGcmData:msgPost.msgData.cipherData publickey:msgPost.msgData.chatPubKey salt:msgPost.msgData.salt ver:msgPost.msgData.ver];
     } else if (!GJCFStringIsNull(msgPost.msgData.chatPubKey) &&
             msgPost.msgData.salt.length == 64 &&

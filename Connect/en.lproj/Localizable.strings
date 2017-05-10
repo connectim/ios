@@ -134,7 +134,6 @@
 "Chat Unencrypted"="Unencrypted";
 "Chat Unkonw message"="[Unkonw message]";
 "Chat Unpaid"="Unpaid";
-"Chat Update Data"="Update Database";
 "Chat Update Database"="Update Database";
 "Chat Updating Database"="Updating Database";
 "Chat User already in group"="User already in group";
@@ -163,11 +162,13 @@
 "Chat latitude longitude"="latitude %+.6f, longitude %+.6f\n";
 "Chat may be a phone number you can"="%@ may be a phone number, you can";
 "Chat members"="(%d members)";
+"Chat one device can only grab a luckypackage"="one device can only grab a luckypackage";
 "Chat opened Lucky Packet of"="%@’ve opened Lucky Packet of %@";
 "Chat paid the bill to"="%@ paid the bill to %@";
 "Chat paid the crowd founding to"="%@ paid the crowd-founding to %@";
 "Chat send a snap chat message"="You sent a read & burn message";
 "Chat set the self destruct timer to"="%@ set the self-destruct timer to %@";
+"Chat system luckypackage have been frozen"="system luckypackage have been frozen";
 "Chat the day before yesterday time"="Chat the day before yesterday time %@";
 "Chat video limit"="video is too long\n no more than %d minute";
 "Chat video tip"="video is too long";
@@ -648,7 +649,9 @@
 "Wallet Scan to pay me"="Scan to pay me";
 "Wallet Select friends"="Select friends";
 "Wallet Send Lucky Packet to"="Send to %@";
+"Wallet Send a bitcoin transfer link"="Send a bitcoin transfer link";
 "Wallet Send a lucky packet"="Send a lucky packet";
+"Wallet Send bitcoin BTC"="Send bitcoin\n%@ BTC";
 "Wallet Send the payment connection"="Click to pay";
 "Wallet Sent"="Sent";
 "Wallet Sent to friend"="Sent to friend";
@@ -707,8 +710,5 @@
 "Wallet transfer man"="Transfer (%d)";
 "Wallet transferOutVia return"="Refund the transfer";
 "Wallet transferOutVia return Success"="Refund successfully";
-"Wallet Send bitcoin BTC" = "Send bitcoin\n%@ BTC";
-"Wallet Send bitcoin" = "Send bitcoin";
-"Wallet Over time" = "Expired";
 "app name"="Connect";
 "app name im"="CONNECT.IM";

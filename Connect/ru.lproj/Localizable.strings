@@ -162,11 +162,13 @@
 "Chat latitude longitude"="Широта% +. 6f, долгота% +. 6f \ n";
 "Chat may be a phone number you can"="%@ может быть номером телефона, вы можете";
 "Chat members"="(%d человек)";
+"Chat one device can only grab a luckypackage"="Устройство может только захватить красный конверт";
 "Chat opened Lucky Packet of"="Денежный подарок %@  был получен %@";
 "Chat paid the bill to"="Счет %@ был оплачен %@";
 "Chat paid the crowd founding to"="Счет краудфандинга %@ был оплачен %@";
 "Chat send a snap chat message"="Ты отправил сообщение, которое после прочтения самоуничтожится";
 "Chat set the self destruct timer to"="После открытия текста %@  и после уничтожения %@, информировать об удалении ";
+"Chat system luckypackage have been frozen"="Красный конверт подвешен системный администратор";
 "Chat the day before yesterday time"="позавчера %@";
 "Chat video limit"="Видео слишком длинное/ n не должно превышать  %d минут";
 "Chat video tip"="Видео слишком длинное";
@@ -647,7 +649,9 @@
 "Wallet Scan to pay me"="Отсканировать код для передачи мне оплаты";
 "Wallet Select friends"="Выбрать друга";
 "Wallet Send Lucky Packet to"="Отправить \"Денежный подарок\" %@";
+"Wallet Send a bitcoin transfer link"="Перевести денежные средства по ссылке биткоина";
 "Wallet Send a lucky packet"="Отправить \"Денежный подарок\" по ссылки биткоина";
+"Wallet Send bitcoin BTC"="Передающая Bitcoin \n% s BTC";
 "Wallet Send the payment connection"="Соединение для отправки личных средств ";
 "Wallet Sent"="Отправлено";
 "Wallet Sent to friend"="Личный \"Денежный подарок\"";
@@ -706,8 +710,5 @@
 "Wallet transfer man"="Перевод денежных средств %d)";
 "Wallet transferOutVia return"="Возврат перечисленных денежных средств";
 "Wallet transferOutVia return Success"="Успешный возврат перечисленных денежных средств";
-"Wallet Send bitcoin BTC" = "Передающая Bitcoin \n %@ BTC";
-"Wallet Send bitcoin" = "Передающая Bitcoin";
-"Wallet Over time" = "Истек";
 "app name"="Connect";
 "app name im"="CONNECT.IM";

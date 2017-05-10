@@ -2,8 +2,15 @@
   <img src="https://avatars0.githubusercontent.com/u/21214996?v=3" alt="Connect" title="Connect">
 </p>
 
-## Introduction
+![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.png?v=103)
+![MIT Licence](https://badges.frapsoft.com/os/mit/mit.png?v=103)
+![Awesome](https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg)
 
+[![Appstore](https://camo.githubusercontent.com/3e3f8a72477f8cc617e3e1bcd105a4598ad04706/68747470733a2f2f6d727061746977692e6769746875622e696f2f6170702d6261646765732f61707073746f72652e706e67)](https://itunes.apple.com/app/connect-p2p-encrypted-instant/id1181365735)
+[![Google play](https://camo.githubusercontent.com/878bb7c41c81ec4528a0a6f4cfd6ec470da14f22/68747470733a2f2f6d727061746977692e6769746875622e696f2f6170702d6261646765732f706c617973746f72652e706e67)](https://play.google.com/store/apps/details?id=connect.im)
+
+
+## Introduction
 [Connect](https://www.connect.im/) is an open source point-to-point encryption instant messaging APP.
 You can use [Connect](https://www.connect.im/) to send texts, voices, pictures, videos and even Bitcoin.
 In both one-on-one chat and group chat, all the messages including text, picture, voices, video, etc. are sent via the shared key encryption negotiated by both sides of the chat.
@@ -13,6 +20,7 @@ It protects your chatting contents from being eavesdropped by any third party su
 It protects your personal data such as telephone numbers and friends from being utilized by any third party such as marketing personnel and advertisers.
 Considering "PRISM" scandal as well as multiple network fraud cases caused by information leakage, each of us should defending "freedom of speech" and "personal privacy”.
 So [Connect](https://www.connect.im/) is suitable for everyone.
+[Connect](https://www.connect.im/) is available for [android](https://github.com/connectim/Android)
 
 ## Encryption
 [Connect](https://www.connect.im/) uses advanced and open-source symmetric encryption algorithms to secure both parties' information and the communication between the client and the server, and anyone can authenticate.
@@ -36,6 +44,11 @@ The encrypted communication channel established by the above process ensures tha
 
 
 ## How to use?
+
+you need download wallet lib from [here]() ,import wallet lib:
+1.  import boost lib:drag include dir into project, Build settings->Header search paths ,add path $(SRCROOT)/Connect/include
+2.  import openssl lib:drag include1 dir into project, Build settings->Header search paths ,add path $(SRCROOT)/Connect/include1
+3.  import other source:drag AllKey dir into project, Build settings->LLVM -Language-C++ ,Change c++ Language Dialect to Compiler Default ,and  change c++ Standard Libray to libc++(LLVM C++ standard libary C++11 suport)
 
 ## Referencing
 * [Protobuf](https://github.com/google/protobuf)

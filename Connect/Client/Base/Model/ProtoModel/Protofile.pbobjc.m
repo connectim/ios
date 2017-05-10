@@ -6645,6 +6645,7 @@ typedef struct CommandDetail__storage_ {
 @dynamic deviceName;
 @dynamic locale;
 @dynamic cv;
+@dynamic uuid;
 
 typedef struct DeviceInfo__storage_ {
   uint32_t _has_storage_[1];
@@ -6652,6 +6653,7 @@ typedef struct DeviceInfo__storage_ {
   NSString *deviceId;
   NSString *deviceName;
   NSString *locale;
+  NSString *uuid;
 } DeviceInfo__storage_;
 
 // This method is threadsafe because it is initially called
@@ -6695,6 +6697,15 @@ typedef struct DeviceInfo__storage_ {
         .offset = (uint32_t)offsetof(DeviceInfo__storage_, cv),
         .flags = GPBFieldOptional,
         .dataType = GPBDataTypeInt32,
+      },
+      {
+        .name = "uuid",
+        .dataTypeSpecific.className = NULL,
+        .number = DeviceInfo_FieldNumber_Uuid,
+        .hasIndex = 4,
+        .offset = (uint32_t)offsetof(DeviceInfo__storage_, uuid),
+        .flags = GPBFieldOptional,
+        .dataType = GPBDataTypeString,
       },
     };
     GPBDescriptor *localDescriptor =
