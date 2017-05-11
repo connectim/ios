@@ -870,6 +870,7 @@
 		D9E857071D48A3E0001C35A2 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D9E857061D48A3E0001C35A2 /* MapKit.framework */; };
 		E39C2CB69BB018BF89D2831C /* libPods-ConnectTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0AA05F3C052536B3AAD8C0B5 /* libPods-ConnectTests.a */; };
 		F116E9601EA06AA500DCAED4 /* LMMessageExtendManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F116E95F1EA06AA500DCAED4 /* LMMessageExtendManager.m */; };
+		F156BB621EC4681B00512743 /* LMlockGestureViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F156BB611EC4681B00512743 /* LMlockGestureViewController.m */; };
 		F16FD7B81EC3205B002F9395 /* allocators.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F16FADB31EC3203E002F9395 /* allocators.cpp */; };
 		F16FD7B91EC3205B002F9395 /* base58.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F16FADB51EC3203E002F9395 /* base58.cpp */; };
 		F16FD7BA1EC3205B002F9395 /* aes_modes.c in Sources */ = {isa = PBXBuildFile; fileRef = F16FADBA1EC3203E002F9395 /* aes_modes.c */; };
@@ -2635,6 +2636,8 @@
 		DB39D5B93F12A5570FB2900B /* Pods-ConnectTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ConnectTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-ConnectTests/Pods-ConnectTests.release.xcconfig"; sourceTree = "<group>"; };
 		F116E95E1EA06AA500DCAED4 /* LMMessageExtendManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LMMessageExtendManager.h; sourceTree = "<group>"; };
 		F116E95F1EA06AA500DCAED4 /* LMMessageExtendManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LMMessageExtendManager.m; sourceTree = "<group>"; };
+		F156BB601EC4681B00512743 /* LMlockGestureViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LMlockGestureViewController.h; sourceTree = "<group>"; };
+		F156BB611EC4681B00512743 /* LMlockGestureViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LMlockGestureViewController.m; sourceTree = "<group>"; };
 		F16FADB31EC3203E002F9395 /* allocators.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = allocators.cpp; sourceTree = "<group>"; };
 		F16FADB41EC3203E002F9395 /* allocators.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = allocators.h; sourceTree = "<group>"; };
 		F16FADB51EC3203E002F9395 /* base58.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = base58.cpp; sourceTree = "<group>"; };
@@ -14721,6 +14724,8 @@
 				19234F3F1E8113D60022D844 /* SetUserInfoPage.m */,
 				19234F401E8113D60022D844 /* VertifyCodePage.h */,
 				19234F411E8113D60022D844 /* VertifyCodePage.m */,
+				F156BB601EC4681B00512743 /* LMlockGestureViewController.h */,
+				F156BB611EC4681B00512743 /* LMlockGestureViewController.m */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -33027,6 +33032,7 @@
 				D922327D1E822BF800D67110 /* NSDictionary+JSONString.m in Sources */,
 				D95C043C1E810902006C5C8A /* GJGCChatBaseConstans.m in Sources */,
 				D95C04471E810902006C5C8A /* CrowdfundReceiptCell.m in Sources */,
+				F156BB621EC4681B00512743 /* LMlockGestureViewController.m in Sources */,
 				D9222FEB1E822A3100D67110 /* YYGestureRecognizer.m in Sources */,
 				D9222FEA1E822A3100D67110 /* YYFileHash.m in Sources */,
 				19234FC01E811A290022D844 /* RecentChatModel.m in Sources */,
