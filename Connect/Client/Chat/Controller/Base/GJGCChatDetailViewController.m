@@ -353,7 +353,7 @@
                 [weakSelf changeFrameAndPositionWhenKeyBoardHidenIsShowInputMeunPanel:isPanelReserve];
             } else {
                 if (keyboardEndFrame.size.height > kMeunBarHeight) {
-                    panel.bottom = GJCFSystemScreenHeight - keyboardEndFrame.size.height + kMeunBarHeight + self.statusOffset;
+                    panel.bottom = GJCFSystemScreenHeight - keyboardEndFrame.size.height + kMeunBarHeight + weakSelf.statusOffset;
                     weakSelf.chatListTable.height = panel.top;
                 }
                 [weakSelf scrollToBottom:YES];
