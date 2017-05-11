@@ -10,8 +10,8 @@
 #import "GestureLockView.h"
 #import "GestureThumbView.h"
 
-#define kMaxTryTime 4
-#define kMaxSpaceTime 30
+#define MAX_TRYTIME  (int)4
+#define MAX_SPACE_TIME (int)30
 
 @interface GestureSetPage () <GestureLockViewDelegate>
 
@@ -27,7 +27,7 @@
 
 @property(nonatomic, assign) GestureActionType actionType;
 
-@property(nonatomic, strong) UIButton *otherVertifyButton; // other vertification
+@property(nonatomic, strong) UIButton *loginPassButton; // other vertification
 
 @property(nonatomic, weak) UITextField *passTextField; // pass
 
@@ -68,7 +68,6 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
 
-
     [self.view endEditing:YES];
 }
 
@@ -76,16 +75,15 @@
     [super viewDidLoad];
     self.view.backgroundColor = XCColor(241, 241, 241);
 
-
     NSTimeInterval erroTime = [[MMAppSetting sharedSetting] getLastErroGestureTime];
     if (erroTime > 0) {
         NSTimeInterval currentTime = [[NSDate date] timeIntervalSince1970];
-        if (currentTime - erroTime > kMaxSpaceTime) { // More than 30 seconds can try again
+        if (currentTime - erroTime > MAX_SPACE_TIME) { // More than 30 seconds can try again
             [[MMAppSetting sharedSetting] removeLastErroGestureTime];
         } else {
             __weak __typeof(&*self) weakSelf = self;
             [GCDQueue executeInMainQueue:^{
-                [MBProgressHUD showToastwithText:[NSString stringWithFormat:LMLocalizedString(@"Set Please try again after seconds", nil), (int) (kMaxSpaceTime - (currentTime - erroTime))] withType:ToastTypeFail showInView:weakSelf.view complete:^{
+                [MBProgressHUD showToastwithText:[NSString stringWithFormat:LMLocalizedString(@"Set Please try again after seconds", nil), (int) (MAX_SPACE_TIME - (currentTime - erroTime))] withType:ToastTypeFail showInView:weakSelf.view complete:^{
                     [weakSelf.navigationController popViewControllerAnimated:YES];
                 }];
             }];
@@ -109,8 +107,7 @@
 }
 
 - (void)setup {
-
-
+    
     UIImageView *lockViewShotView = [[UIImageView alloc] init];
     lockViewShotView.image = [UIImage imageNamed:@"setting_gesture_default"];
     lockViewShotView.frame = AUTO_RECT(323, 250, 104, 104);
@@ -142,56 +139,53 @@
 
 - (void)dealloc {
     self.gestureLockView.delegate = nil;
+    [self.gestureLockView removeFromSuperview];
     self.gestureLockView = nil;
 }
 
 
 - (void)reload {
-    if (self.actionType == GestureActionTypeSet) {
-        self.title = LMLocalizedString(@"Set Draw Pattern", nil);
-        self.lockViewShotView.hidden = NO;
-        self.tipLabel.textColor = [UIColor blackColor];
-        self.tipLabel.text = LMLocalizedString(@"Set Draw your pattern", nil);
-        self.tipLabel.hidden = NO;
-    } else if (self.actionType == GestureActionTypeCancel || self.actionType == GestureActionTypeChange) {
-        self.title = LMLocalizedString(@"Set Draw Pattern", nil);
-        self.lockViewShotView.hidden = YES;
-        self.tipLabel.text = LMLocalizedString(@"Set Draw your pattern", nil);
-        self.tipLabel.textColor = [UIColor blackColor];
-        self.tipLabel.hidden = NO;
-
-        [self.view addSubview:self.otherVertifyButton];
-        self.otherVertifyButton.bottom = DEVICE_SIZE.height - 45;
-        self.otherVertifyButton.width = DEVICE_SIZE.width;
-
-        self.otherVertifyButton.height = AUTO_HEIGHT(45);
-    } else if (self.actionType == GestureActionTypeVertify) {
-        self.title = LMLocalizedString(@"Set Draw Pattern", nil);
-        self.lockViewShotView.hidden = YES;
-        self.tipLabel.text = LMLocalizedString(@"Set Draw your pattern", nil);
-        self.tipLabel.textColor = [UIColor blackColor];
-        self.tipLabel.hidden = NO;
-
-        [self.view addSubview:self.otherVertifyButton];
-        self.otherVertifyButton.bottom = DEVICE_SIZE.height - 45;
-        self.otherVertifyButton.width = DEVICE_SIZE.width;
-        self.otherVertifyButton.height = AUTO_HEIGHT(45);
+    switch (self.actionType) {
+        case GestureActionTypeSet:{
+            self.title = LMLocalizedString(@"Set Draw Pattern", nil);
+            self.lockViewShotView.hidden = NO;
+            self.tipLabel.textColor = [UIColor blackColor];
+            self.tipLabel.text = LMLocalizedString(@"Set Draw your pattern", nil);
+            self.tipLabel.hidden = NO;
+        }
+            break;
+        case GestureActionTypeChange:
+        case GestureActionTypeCancel:{
+            self.title = LMLocalizedString(@"Set Draw Pattern", nil);
+            self.lockViewShotView.hidden = YES;
+            self.tipLabel.text = LMLocalizedString(@"Set Draw your pattern", nil);
+            self.tipLabel.textColor = [UIColor blackColor];
+            self.tipLabel.hidden = NO;
+            
+            [self.view addSubview:self.loginPassButton];
+            self.loginPassButton.bottom = DEVICE_SIZE.height - 45;
+            self.loginPassButton.width = DEVICE_SIZE.width;
+            self.loginPassButton.height = AUTO_HEIGHT(45);
+        }
+            break;
+        default:
+            break;
     }
 }
 
-- (UIButton *)otherVertifyButton {
-    if (!_otherVertifyButton) {
-        _otherVertifyButton = [[UIButton alloc] init];
-        [_otherVertifyButton setTitle:LMLocalizedString(@"Set Use Login Password", nil) forState:UIControlStateNormal];
-        [_otherVertifyButton setTitleColor:[UIColor colorWithRed:0.200 green:0.576 blue:0.965 alpha:1.000] forState:UIControlStateNormal];
-        _otherVertifyButton.titleLabel.font = [UIFont systemFontOfSize:FONT_SIZE(32)];
-        [_otherVertifyButton addTarget:self action:@selector(otherWayToVerfy) forControlEvents:UIControlEventTouchUpInside];
+- (UIButton *)loginPassButton {
+    if (!_loginPassButton) {
+        _loginPassButton = [[UIButton alloc] init];
+        [_loginPassButton setTitle:LMLocalizedString(@"Set Use Login Password", nil) forState:UIControlStateNormal];
+        [_loginPassButton setTitleColor:[UIColor colorWithRed:0.200 green:0.576 blue:0.965 alpha:1.000] forState:UIControlStateNormal];
+        _loginPassButton.titleLabel.font = [UIFont systemFontOfSize:FONT_SIZE(32)];
+        [_loginPassButton addTarget:self action:@selector(loginPassAction) forControlEvents:UIControlEventTouchUpInside];
     }
 
-    return _otherVertifyButton;
+    return _loginPassButton;
 }
 
-- (void)otherWayToVerfy {
+- (void)loginPassAction {
 
     __weak __typeof(&*self) weakSelf = self;
     AccountInfo *loginUser = [[LKUserCenter shareCenter] currentLoginUser];
@@ -235,19 +229,6 @@
                             weakSelf.tipLabel.textColor = [UIColor blackColor];
                             [weakSelf reload];
                         }];
-                    }
-                        break;
-                    case GestureActionTypeVertify: {
-                        [GCDQueue executeInMainQueue:^{
-                            weakSelf.tipLabel.textColor = [UIColor colorWithRed:0.400 green:1.000 blue:0.400 alpha:1.000];
-                            weakSelf.tipLabel.hidden = YES;
-                            weakSelf.tipLabel.text = LMLocalizedString(@"Set Verify Success", nil);
-                            [MBProgressHUD showToastwithText:weakSelf.tipLabel.text withType:ToastTypeSuccess showInView:weakSelf.view complete:nil];
-                        }];
-
-                        if (self.ComleteBlock) {
-                            self.ComleteBlock(YES);
-                        }
                     }
                         break;
 
@@ -350,10 +331,10 @@
                 self.tipLabel.text = LMLocalizedString(@"Set Draw your pattern", nil);
                 self.tipLabel.hidden = NO;
                 [GCDQueue executeInMainQueue:^{
-                    [MBProgressHUD showToastwithText:[NSString stringWithFormat:LMLocalizedString(@"Set Password incorrect you have chance", nil), kMaxTryTime - self.tryTimes + 1] withType:ToastTypeFail showInView:weakSelf.view complete:nil];
+                    [MBProgressHUD showToastwithText:[NSString stringWithFormat:LMLocalizedString(@"Set Password incorrect you have chance", nil), MAX_TRYTIME - self.tryTimes + 1] withType:ToastTypeFail showInView:weakSelf.view complete:nil];
 
                 }];
-                if (self.tryTimes >= kMaxTryTime) {
+                if (self.tryTimes >= MAX_TRYTIME) {
                     self.tipLabel.text = LMLocalizedString(@"Login Password incorrect", nil);
                     self.tipLabel.hidden = YES;
                     [[MMAppSetting sharedSetting] setLastErroGestureTime:[[NSDate date] timeIntervalSince1970]];
@@ -388,10 +369,10 @@
                 self.tipLabel.text = LMLocalizedString(@"Set Draw your pattern", nil);
                 self.tipLabel.hidden = NO;
                 [GCDQueue executeInMainQueue:^{
-                    [MBProgressHUD showToastwithText:[NSString stringWithFormat:LMLocalizedString(@"Set Password incorrect you have chance", nil), kMaxTryTime - self.tryTimes + 1] withType:ToastTypeFail showInView:weakSelf.view complete:nil];
+                    [MBProgressHUD showToastwithText:[NSString stringWithFormat:LMLocalizedString(@"Set Password incorrect you have chance", nil), MAX_TRYTIME - self.tryTimes + 1] withType:ToastTypeFail showInView:weakSelf.view complete:nil];
 
                 }];
-                if (self.tryTimes >= kMaxTryTime) {
+                if (self.tryTimes >= MAX_TRYTIME) {
                     self.tipLabel.text = LMLocalizedString(@"Login Password incorrect", nil);
                     self.tipLabel.hidden = YES;
                     [[MMAppSetting sharedSetting] setLastErroGestureTime:[[NSDate date] timeIntervalSince1970]];
@@ -406,49 +387,6 @@
             }
         }
             break;
-
-        case GestureActionTypeVertify: {
-            [self.thumbView reset];
-            self.thumbView.password = path;
-            if ([[MMAppSetting sharedSetting] vertifyGesturePass:path]) {
-                self.tipLabel.textColor = [UIColor colorWithRed:0.400 green:1.000 blue:0.400 alpha:1.000];
-                self.tipLabel.text = LMLocalizedString(@"Set Verify Success", nil);
-                self.tipLabel.hidden = YES;
-                [GCDQueue executeInMainQueue:^{
-                    [MBProgressHUD showToastwithText:weakSelf.tipLabel.text withType:ToastTypeSuccess showInView:weakSelf.view complete:nil];
-
-                }];
-                if (self.ComleteBlock) {
-                    self.ComleteBlock(YES);
-                }
-            } else {
-                self.tipLabel.textColor = [UIColor blackColor];
-                self.tipLabel.text = LMLocalizedString(@"Set Draw your pattern", nil);
-                self.tipLabel.hidden = NO;
-                [GCDQueue executeInMainQueue:^{
-                    [MBProgressHUD showToastwithText:[NSString stringWithFormat:LMLocalizedString(@"Set Password incorrect you have chance", nil), kMaxTryTime - self.tryTimes] withType:ToastTypeFail showInView:weakSelf.view complete:nil];
-
-                }];
-                if (self.tryTimes >= kMaxTryTime) {
-                    self.tipLabel.text = LMLocalizedString(@"Login Password incorrect", nil);
-                    self.tipLabel.hidden = YES;
-                    [GCDQueue executeInMainQueue:^{
-                        [MBProgressHUD showToastwithText:weakSelf.tipLabel.text withType:ToastTypeFail showInView:weakSelf.view complete:^{
-                            [self.navigationController popViewControllerAnimated:YES];
-                        }];
-
-                    }];
-                    [[MMAppSetting sharedSetting] setLastErroGestureTime:[[NSDate date] timeIntervalSince1970]];
-                }
-                if (self.ComleteBlock) {
-                    self.ComleteBlock(NO);
-                }
-                self.tryTimes++;
-
-            }
-        }
-            break;
-
         default:
             break;
     }

@@ -11,7 +11,7 @@
 #import <Bugly/Bugly.h>
 #import <KSCrash/KSCrashInstallationStandard.h>
 #import "IMService.h"
-#import "GestureSetPage.h"
+#import "LMlockGestureViewController.h"
 #import "PLeakSniffer.h"
 #import "RecentChatDBManager.h"
 #import "BadgeNumberManager.h"
@@ -132,7 +132,6 @@
     if (SYSTEM_VERSION_GREATER_THAN(@"9.0")) {
         shortcutItem = [launchOptions objectForKey:UIApplicationLaunchOptionsShortcutItemKey];
         if (![[MMAppSetting sharedSetting] haveGesturePass] && [[MMAppSetting sharedSetting] haveLoginAddress]) {
-            UIViewController *mainController = self.mainTabController;
             UIApplicationShortcutItem *item = (UIApplicationShortcutItem *) shortcutItem;
             SendNotify(@"ShortcutNotInbackgroundNotification", item.type);
         }
@@ -202,14 +201,13 @@
     __weak __typeof(&*self) weakSelf = self;
     if ([[MMAppSetting sharedSetting] haveGesturePass]) {
         int __block count = 0;
-        GestureSetPage *page = [[GestureSetPage alloc] initWithAction:GestureActionTypeVertify complete:^(BOOL result) {
+        LMlockGestureViewController *lockGesturePage = [[LMlockGestureViewController alloc] initWithAction:^(BOOL result) {
             if (result) {
                 [GCDQueue executeInMainQueue:^{
                     if ([[MMAppSetting sharedSetting] haveLoginAddress]) {
                         [[LKUserCenter shareCenter] showCurrentPage];
                         if (shortcutItem) {
                             if (SYSTEM_VERSION_GREATER_THAN(@"9.0")) {
-                                UIViewController *mainController = self.mainTabController;
                                 SendNotify(@"ShortcutNotInbackgroundNotification", shortcutItem.type);
                             }
                         }
@@ -230,14 +228,13 @@
                 }];
             }
         }];
-        self.window.rootViewController = page;
+        self.window.rootViewController = lockGesturePage;
     } else {
         if (![self.window.rootViewController isKindOfClass:[MainTabController class]]) {
             [GCDQueue executeInMainQueue:^{
                 if (!GJCFStringIsNull([[MMAppSetting sharedSetting] getLoginAddress])) {
                     if (shortcutItem) {
                         if (SYSTEM_VERSION_GREATER_THAN(@"9.0")) {
-                            UIViewController *mainController = self.mainTabController;
                             SendNotify(@"ShortcutNotInbackgroundNotification", shortcutItem.type);
                         }
                     }
@@ -250,7 +247,6 @@
         } else {
             if (shortcutItem) {
                 if (SYSTEM_VERSION_GREATER_THAN(@"9.0")) {
-                    UIViewController *mainController = self.mainTabController;
                     SendNotify(@"ShortcutNotInbackgroundNotification", shortcutItem.type);
                 }
             }
