@@ -249,7 +249,6 @@
                 if (SYSTEM_VERSION_GREATER_THAN(@"9.0")) {
                     SendNotify(@"ShortcutNotInbackgroundNotification", shortcutItem.type);
                 }
-                DDLogInfo(@" sasdasd");
             }
             self.window.rootViewController = self.mainTabController;
         }
