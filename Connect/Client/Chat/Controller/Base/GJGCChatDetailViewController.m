@@ -20,6 +20,8 @@
 @property(nonatomic, assign) BOOL isScrolledToBottom;
 @property(nonatomic, assign) CGFloat inputBarHeight;
 
+@property (nonatomic ,assign) CGFloat statusOffset;
+
 @end
 
 @implementation GJGCChatDetailViewController
@@ -31,7 +33,8 @@
         self.inputBarHeight = AUTO_HEIGHT(100);
 
         [self initDataManager];
-
+        CGFloat statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
+        self.statusOffset = (statusBarHeight == 20?0:-20);
     }
     return self;
 }
@@ -122,6 +125,20 @@
     RegisterNotify(GroupAdminChangeNotification, @selector(groupAdmingChange));
     RegisterNotify(@"deleteGroupReviewedMessageNotification", @selector(deleteReviewMessage:));
     RegisterNotify(ConnnectGroupDismissNotification, @selector(groupdissmiss:));
+    
+    RegisterNotify(UIApplicationDidChangeStatusBarFrameNotification, @selector(statusBarFrameChange:));
+}
+
+- (void)statusBarFrameChange:(NSNotification *)note{
+    [self.view endEditing:YES];
+    CGFloat statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
+    self.statusOffset = (statusBarHeight == 20?0:-20);
+
+    //reset frame
+    self.chatListTable.frame = (CGRect) {0, 0, GJCFSystemScreenWidth, GJCFSystemScreenHeight - self.inputBarHeight + self.statusOffset};
+    self.inputPanel.frame = (CGRect) {0, GJCFSystemScreenHeight - self.inputPanel.inputBarHeight + self.statusOffset, GJCFSystemScreenWidth, self.inputBarHeight + kMeunBarHeight};
+    
+    [self scrollToBottom:YES];
 }
 
 - (void)groupdissmiss:(NSNotification *)note{
@@ -316,8 +333,8 @@
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapTableView)];
     [self.chatListTable addGestureRecognizer:tap];
     tap.delegate = self;
-    self.chatListTable.frame = (CGRect) {0, 0, GJCFSystemScreenWidth, GJCFSystemScreenHeight - self.inputBarHeight};
-    self.chatListTable.contentInset = UIEdgeInsetsMake(64, 0, 0, 0);
+    self.chatListTable.frame = (CGRect) {0, 0, GJCFSystemScreenWidth, GJCFSystemScreenHeight - self.inputBarHeight + self.statusOffset};
+    self.chatListTable.contentInset = UIEdgeInsetsMake(64 , 0, 0, 0);
     /* scroll to bottom */
     if (self.dataSourceManager.totalCount > 0) {
         [self.chatListTable reloadData];
@@ -325,7 +342,7 @@
     }
     
     self.inputPanel = [[GJGCChatInputPanel alloc] initWithPanelDelegate:self];
-    self.inputPanel.frame = (CGRect) {0, GJCFSystemScreenHeight - self.inputPanel.inputBarHeight, GJCFSystemScreenWidth, self.inputBarHeight + kMeunBarHeight};
+    self.inputPanel.frame = (CGRect) {0, GJCFSystemScreenHeight - self.inputPanel.inputBarHeight + self.statusOffset, GJCFSystemScreenWidth, self.inputBarHeight + kMeunBarHeight};
 
     [self.inputPanel configInputPanelKeyboardFrameChange:^(GJGCChatInputPanel *panel, CGRect keyboardBeginFrame, CGRect keyboardEndFrame, NSTimeInterval duration, BOOL isPanelReserve) {
         if (panel.hidden || weakSelf.willDisappear) {
@@ -336,7 +353,7 @@
                 [weakSelf changeFrameAndPositionWhenKeyBoardHidenIsShowInputMeunPanel:isPanelReserve];
             } else {
                 if (keyboardEndFrame.size.height > kMeunBarHeight) {
-                    panel.bottom = GJCFSystemScreenHeight - keyboardEndFrame.size.height + kMeunBarHeight;
+                    panel.bottom = GJCFSystemScreenHeight - keyboardEndFrame.size.height + kMeunBarHeight + self.statusOffset;
                     weakSelf.chatListTable.height = panel.top;
                 }
                 [weakSelf scrollToBottom:YES];
@@ -447,7 +464,7 @@
     } else {
         barShowHeight = self.inputPanel.height;
     }
-    self.inputPanel.top = GJCFSystemScreenHeight - barShowHeight;
+    self.inputPanel.top = GJCFSystemScreenHeight - barShowHeight + self.statusOffset;
     self.chatListTable.height = self.inputPanel.top;
     [self scrollToBottom:YES];
 }
