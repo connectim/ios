@@ -39,7 +39,11 @@ typedef NS_ENUM(NSInteger ,UnspentErrorType) {
 
 @interface LMUnspentCheckTool : NSObject
 
-#pragma mark - method
+
++ (NSInteger)estimateFeeWithUnspentLength:(NSInteger)len sendLength:(NSInteger)sendLen;
+
++ (BOOL)haveDustWithAmount:(long long)amount;
+
 // To determine whether it can be packaged
 + (BOOL)checkPackgeWithRawTrancation:(LMRawTransactionModel *)rawTrancation;
 

@@ -9,14 +9,10 @@
 #import "CameraSessionView.h"
 #import "CaptureSessionManager.h"
 
-#import "FXBlurView.h"
-
 
 @interface CameraSessionView () <CaptureSessionManagerDelegate, UIGestureRecognizerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate> {
     UIImageView *_imageView;
     UIImage *_image;
-    FXBlurView *_overView;
-
     NSData *_imageData;
 
     UIButton *switchCameraBtn;

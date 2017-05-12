@@ -7,9 +7,22 @@
 //
 
 #import "LMUnspentCheckTool.h"
-#import "BtcTool.h"
 
 @implementation LMUnspentCheckTool
+
++ (NSInteger)estimateFeeWithUnspentLength:(NSInteger)txs_length sendLength:(NSInteger)sentToLength{
+    
+    // Add a zero address
+    sentToLength += 1;
+    
+    NSInteger txSize = 148 * txs_length + 34 * sentToLength + 10;
+    double estimateFee = (txSize + 20 + 4 + 34 + 4) / 1000.0 * [[MMAppSetting sharedSetting] getEstimatefee];
+    return estimateFee * pow(10, 8);
+}
+
++ (BOOL)haveDustWithAmount:(long long)amount{
+    return (amount * 1000 / (3 * 182)) < [[MMAppSetting sharedSetting] getEstimatefee] * pow(10, 8) * 5 / 10;
+}
 
 + (LMRawTransactionModel *)getRawTransactionWithUnspent:(UnspentOrderResponse *)unSpent
                                           changeAddress:(NSString *)address
@@ -54,7 +67,7 @@
         tranction.unspentErrorType = UnspentErrorTypeLackofBalance;
         return tranction;
     }
-    BOOL changeIsDust = [BtcTool haveDustWithAmount:change];
+    BOOL changeIsDust = [self haveDustWithAmount:change];
     // Change the amount of the address is too small
     if (!addDustToFee && change > 0 && changeIsDust) {
         tranction.unspentErrorType = UnspentErrorTypeChangeDust;
@@ -79,7 +92,7 @@
     for (NSDictionary *temD in toAddresses) {
         // Calculate whether there is a dirty deal in the transfer amount
         NSDecimalNumber *amount = [NSDecimalNumber decimalNumberWithString:[temD valueForKey:@"amount"]];
-        if ([BtcTool haveDustWithAmount:[[[NSDecimalNumber alloc] initWithLongLong:pow(10, 8)]
+        if ([self haveDustWithAmount:[[[NSDecimalNumber alloc] initWithLongLong:pow(10, 8)]
                                          decimalNumberByMultiplyingBy:amount].longLongValue]) {
             tranction.unspentErrorType = UnspentErrorTypeTransferAmountDust;
             return tranction;
@@ -92,7 +105,7 @@
     
     // The fee is too low
     if (!autoCaluateFee) {
-        NSInteger estimateFee = [BtcTool estimateFeeWithUnspentLength:tvsArr.count sendLength:sendToLen];
+        NSInteger estimateFee = [self estimateFeeWithUnspentLength:tvsArr.count sendLength:sendToLen];
         if (estimateFee > unSpent.fee) {
             tranction.unspentErrorType = UnspentErrorTypeSmallFee;
             return tranction;
@@ -127,7 +140,7 @@
             rawTrancation.unspentErrorType = UnspentErrorTypeNoError;
         }
     } else{
-        NSInteger estimateFee = [BtcTool estimateFeeWithUnspentLength:rawTrancation.unspent.unspentsArray.count sendLength:toAddresses.count + 1];
+        NSInteger estimateFee = [self estimateFeeWithUnspentLength:rawTrancation.unspent.unspentsArray.count sendLength:toAddresses.count + 1];
         if (estimateFee > rawTrancation.unspent.fee) {
             rawTrancation.unspentErrorType = UnspentErrorTypeSmallFee;
         }else{
@@ -149,7 +162,7 @@
 //To determine whether the zero address is dirty
 + (LMRawTransactionModel *)checkChangeDustWithRawTrancation:(LMRawTransactionModel *)rawTrancation{
     NSInteger change = rawTrancation.unspent.unspentAmount - rawTrancation.unspent.amount - rawTrancation.unspent.fee;
-    BOOL changeIsDust = [BtcTool haveDustWithAmount:change];
+    BOOL changeIsDust = [self haveDustWithAmount:change];
     // Change the amount of the address is too small
     if (change > 0 && changeIsDust) {
         rawTrancation.unspentErrorType = UnspentErrorTypeChangeDust;
@@ -165,7 +178,7 @@
     for (NSDictionary *temD in toAddresses) {
         // Calculate whether there is a dirty deal in the transfer amount
         NSDecimalNumber *amount = [NSDecimalNumber decimalNumberWithString:[temD valueForKey:@"amount"]];
-        if ([BtcTool haveDustWithAmount:[[[NSDecimalNumber alloc] initWithLongLong:pow(10, 8)]
+        if ([self haveDustWithAmount:[[[NSDecimalNumber alloc] initWithLongLong:pow(10, 8)]
                                          decimalNumberByMultiplyingBy:amount].longLongValue]) {
             
             return YES;

@@ -21,7 +21,6 @@
 #import "UserDBManager.h"
 #import "GroupDBManager.h"
 #import "MMMessage.h"
-#import "CommonGetPostTool.h"
 
 
 @class GJGCChatDetailDataSourceManager;

@@ -603,13 +603,15 @@ CREATE_SHARED_MANAGER(LMConversionManager)
         return;
     }
     BOOL needSyncBadge = NO;
+    BOOL needReload = NO;
     RecentChatModel *recentModel = [[SessionManager sharedManager] getRecentChatWithIdentifier:conversationIdentifier];
     if (recentModel.unReadCount != 0) {
         recentModel.unReadCount = 0;
         [[RecentChatDBManager sharedManager] clearUnReadCountWithIdetifier:conversationIdentifier];
         needSyncBadge = YES;
+        needReload = YES;
     }
-    BOOL needReload = NO;
+    
     if (recentModel.groupNoteMyself) {
         recentModel.groupNoteMyself = NO;
         [[RecentChatDBManager sharedManager] clearGroupNoteMyselfWithIdentifer:recentModel.identifier];
