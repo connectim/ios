@@ -22,8 +22,8 @@
 #import "CommonClausePage.h"
 #import "StringTool.h"
 
-#define BitCoinStr @"bitcoin:"
-#define AmountTip  @"?amount"
+#define BIT_COIN_STR @"bitcoin:"
+#define AMOUNT_TIP  @"?amount"
 
 @interface LMHandleScanResultManager ()
 
@@ -39,8 +39,12 @@ CREATE_SHARED_MANAGER(LMHandleScanResultManager)
 
 - (void)handleScanResult:(NSString *)resultStr controller:(UIViewController *)controller {
     self.controller = controller;
-    if ([self isHttpNetWork:resultStr]) {  //network url
+    if ([self isHttpNetWork:resultStr]) {
+        
+        resultStr = @"http://103.72.146.8:5502/share/v1/group?token=791e28ac769faf1f103648801aa0db01670cb146bc295502a7a3191b6bd080bf67fbd37ff8a0af1d3f339e7ae9e4ec1bce4f9ba746bf3ffc48860767ac627c42";
+        [self handleHttpUrl:resultStr];
         [self loadWeb:resultStr];
+        
     } else {
         if ([resultStr hasPrefix:@"group:"]) {
             NSArray *array = [[resultStr stringByReplacingOccurrencesOfString:@"group:" withString:@""] componentsSeparatedByString:@"/"];
@@ -48,23 +52,30 @@ CREATE_SHARED_MANAGER(LMHandleScanResultManager)
                 [self appleyToGroupWithQrarray:array hash:resultStr];
             }
         } else {
-            if ([controller isKindOfClass:[MainWalletPage class]]) {
-                [self handleWalletWithResult:resultStr];
-            } else {
-                [self search:resultStr];
-            }
+            [self search:resultStr];
         }
     }
 }
-
+- (BOOL)isGroupHttp:(NSString *)resultStr {
+    
+    //parser
+    NSURL* url = [NSURL URLWithString:resultStr];
+    if ([resultStr containsString:@"group?"] && [resultStr containsString:@"token="] && [url.host isEqualToString:SOCKET_HOST]) {
+        return YES;
+    }
+    return NO;
+    
+}
 - (void)loadWeb:(NSString *)resultStr {
+    
     CommonClausePage *page = [[CommonClausePage alloc] initWithUrl:resultStr];
     page.hidesBottomBarWhenPushed = YES;
     [self.controller.navigationController pushViewController:page animated:YES];
-
+    
 }
 
 - (BOOL)isHttpNetWork:(NSString *)resultStr {
+    
     NSString *pattern = [StringTool regHttp];
     NSRegularExpression *regException = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionCaseInsensitive error:nil];
     NSArray *resultArray = [regException matchesInString:resultStr options:NSMatchingReportCompletion range:NSMakeRange(0, resultStr.length)];
@@ -77,65 +88,69 @@ CREATE_SHARED_MANAGER(LMHandleScanResultManager)
     }
     return NO;
 }
-
-- (void)handleWalletWithResult:(NSString *)resultStr {
+- (void)handleHttpUrl:(NSString *)resultStr {
     /*
      "connectim://transfer?token="
      "connectim://packet?token="
      */
-    if ([resultStr hasPrefix:@"http"]) {
+    
         NSDictionary *parameters = [[NSURL URLWithString:resultStr] parameters];
         NSString *token = [parameters valueForKey:@"token"];
         if (!GJCFStringIsNull(token)) {
             if ([resultStr containsString:@"transfer"]) {
                 NSString *urlString = [NSString stringWithFormat:@"connectim://transfer?token=%@", token];
                 [HandleUrlManager handleOpenURL:[NSURL URLWithString:urlString]];
+                return;
             } else if ([resultStr containsString:@"packet"]) {
                 NSString *urlString = [NSString stringWithFormat:@"connectim://packet?token=%@", token];
                 [HandleUrlManager handleOpenURL:[NSURL URLWithString:urlString]];
+                return;
             } else if ([resultStr containsString:@"group"]) {
                 NSString *urlString = [NSString stringWithFormat:@"connectim://group?token=%@", token];
                 [HandleUrlManager handleOpenURL:[NSURL URLWithString:urlString]];
+                return;
+            } else if ([self isGroupHttp:resultStr]) {
+                [self applyToGroupWithToken:token];
+                return;
             }
-        } else {
-            [MBProgressHUD showToastwithText:LMLocalizedString(@"Parameter error", nil) withType:ToastTypeFail showInView:self.controller.view complete:nil];
         }
+}
+- (void)handWalletWithKeyWord:(NSString *)resultStr{
+    
+    [MBProgressHUD showLoadingMessageToView:self.controller.view];
+    if ([resultStr containsString:BIT_COIN_STR] && [resultStr containsString:AMOUNT_TIP]) {
+        NSString *parm = [resultStr substringFromIndex:[resultStr rangeOfString:@"?"].location + 1];
+        NSString *key = [parm componentsSeparatedByString:@"="].firstObject;
+        NSString *amount = [parm substringFromIndex:(key.length + 1)];
+        NSString *address = [resultStr substringWithRange:NSMakeRange([resultStr rangeOfString:@":"].location + 1, [resultStr rangeOfString:@"?"].location - [resultStr rangeOfString:@":"].location - 1)];
+        self.resultContent = address;
+        self.money = [NSDecimalNumber decimalNumberWithString:amount];
     } else {
-        [MBProgressHUD showLoadingMessageToView:self.controller.view];
-        if ([resultStr containsString:BitCoinStr] && [resultStr containsString:AmountTip]) {
-            NSString *parm = [resultStr substringFromIndex:[resultStr rangeOfString:@"?"].location + 1];
-            NSString *key = [parm componentsSeparatedByString:@"="].firstObject;
-            NSString *amount = [parm substringFromIndex:(key.length + 1)];
-            NSString *address = [resultStr substringWithRange:NSMakeRange([resultStr rangeOfString:@":"].location + 1, [resultStr rangeOfString:@"?"].location - [resultStr rangeOfString:@":"].location - 1)];
-            self.resultContent = address;
-            self.money = [NSDecimalNumber decimalNumberWithString:amount];
+        self.resultContent = resultStr;
+        self.money = 0;
+        
+    }
+    
+    if (![KeyHandle checkAddress:self.resultContent]) {
+        [MBProgressHUD hideHUDForView:self.controller.view];
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:LMLocalizedString(@"Wallet Result is not a bitcoin address", nil) message:LMLocalizedString(@"Login Please check that your input is correct", nil) preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *unBoundAction = [UIAlertAction actionWithTitle:LMLocalizedString(@"Common OK", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *_Nonnull action) {
+            
+        }];
+        [alertController addAction:unBoundAction];
+        [self.controller presentViewController:alertController animated:YES completion:nil];
+    } else {
+        if (self.money.doubleValue > 0) {
+            [self GetMoneyUserInfo];
         } else {
-            self.resultContent = resultStr;
-            self.money = 0;
-
-        }
-
-        if (![KeyHandle checkAddress:self.resultContent]) {
-            [MBProgressHUD hideHUDForView:self.controller.view];
-            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:LMLocalizedString(@"Wallet Result is not a bitcoin address", nil) message:LMLocalizedString(@"Login Please check that your input is correct", nil) preferredStyle:UIAlertControllerStyleAlert];
-            UIAlertAction *unBoundAction = [UIAlertAction actionWithTitle:LMLocalizedString(@"Common OK", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *_Nonnull action) {
-
-            }];
-            [alertController addAction:unBoundAction];
-            [self.controller presentViewController:alertController animated:YES completion:nil];
-        } else {
-            if (self.money.doubleValue > 0) {
-                [self GetMoneyUserInfo];
-            } else {
-                [self GetUserInfo];
-            }
+            [self GetUserInfo];
         }
     }
-}
 
+}
 - (void)GetUserInfo {
 
-    self.resultContent = [self.resultContent stringByReplacingOccurrencesOfString:BitCoinStr withString:@""];
+    self.resultContent = [self.resultContent stringByReplacingOccurrencesOfString:BIT_COIN_STR withString:@""];
     if (![KeyHandle checkAddress:self.resultContent]) {
         [MBProgressHUD hideHUDForView:self.controller.view];
         [GCDQueue executeInMainQueue:^{
@@ -185,25 +200,27 @@ CREATE_SHARED_MANAGER(LMHandleScanResultManager)
 #pragma mark --get user info by address
 
 - (void)baseQRcodeResultAddressSearchUserInformation:(NSString *)address haveAmount:(BOOL)haveAmount {
+    
+    __weak typeof(self)weakSelf = self;
     SearchUser *usrAddInfo = [[SearchUser alloc] init];
     usrAddInfo.criteria = address;
     [NetWorkOperationTool POSTWithUrlString:ContactUserSearchUrl postProtoData:usrAddInfo.data complete:^(id response) {
         [GCDQueue executeInMainQueue:^{
-            [MBProgressHUD hideHUDForView:self.controller.view];
+            [MBProgressHUD hideHUDForView:weakSelf.controller.view];
         }];
         NSError *error;
         HttpResponse *respon = (HttpResponse *) response;
         if (respon.code == 2404) {
             LMBitAddressViewController *page = [[LMBitAddressViewController alloc] init];
             page.address = address;
-            if ([address containsString:BitCoinStr]) {
-                page.address = [address stringByReplacingOccurrencesOfString:BitCoinStr withString:@""];
+            if ([address containsString:BIT_COIN_STR]) {
+                page.address = [address stringByReplacingOccurrencesOfString:BIT_COIN_STR withString:@""];
             }
-            if (self.money.doubleValue > 0) {
-                page.amountString = self.money.stringValue;
+            if (weakSelf.money.doubleValue > 0) {
+                page.amountString = weakSelf.money.stringValue;
             }
             page.hidesBottomBarWhenPushed = YES;
-            [self.controller.navigationController pushViewController:page animated:YES];
+            [weakSelf.controller.navigationController pushViewController:page animated:YES];
             return;
         }
         if (respon.code != successCode) {
@@ -222,27 +239,27 @@ CREATE_SHARED_MANAGER(LMHandleScanResultManager)
                 //transfer to user with amount
                 LMSetMoneyResultViewController *unsetVc = [[LMSetMoneyResultViewController alloc] init];
                 unsetVc.info = accoutInfo;
-                if ([self.money doubleValue] > 0) {
-                    unsetVc.trasferAmount = self.money;
+                if ([weakSelf.money doubleValue] > 0) {
+                    unsetVc.trasferAmount = weakSelf.money;
                 }
-                [self.controller.navigationController pushViewController:unsetVc animated:YES];
+                [weakSelf.controller.navigationController pushViewController:unsetVc animated:YES];
             } else {
                 //transfer to user
                 LMUnSetMoneyResultViewController *unsetVc = [[LMUnSetMoneyResultViewController alloc] init];
                 unsetVc.info = accoutInfo;
-                [self.controller.navigationController pushViewController:unsetVc animated:YES];
+                [weakSelf.controller.navigationController pushViewController:unsetVc animated:YES];
             }
             if (error) {
 
-                [MBProgressHUD showToastwithText:LMLocalizedString(@"ErrorCode Error", nil) withType:ToastTypeFail showInView:self.controller.view complete:^{
+                [MBProgressHUD showToastwithText:LMLocalizedString(@"ErrorCode Error", nil) withType:ToastTypeFail showInView:weakSelf.controller.view complete:^{
 
                 }];
             }
         }
     }                                  fail:^(NSError *error) {
         [GCDQueue executeInMainQueue:^{
-            [MBProgressHUD hideHUDForView:self.controller.view];
-            [MBProgressHUD showToastwithText:LMLocalizedString(@"Server Error", nil) withType:ToastTypeFail showInView:self.controller.view complete:^{
+            [MBProgressHUD hideHUDForView:weakSelf.controller.view];
+            [MBProgressHUD showToastwithText:LMLocalizedString(@"Server Error", nil) withType:ToastTypeFail showInView:weakSelf.controller.view complete:^{
 
             }];
         }];
@@ -251,22 +268,30 @@ CREATE_SHARED_MANAGER(LMHandleScanResultManager)
 
 
 - (void)search:(NSString *)text {
-    //Adapt btc.com
-    NSString *keyWord = [text stringByReplacingOccurrencesOfString:BitCoinStr withString:@""];;
+    
+    __weak typeof(self)weakSelf = self;
+    // Adapt btc.com
+    NSString *keyWord = [text stringByReplacingOccurrencesOfString:BIT_COIN_STR withString:@""];;
     if (![KeyHandle checkAddress:keyWord]) {
         if (![RegexKit vilidatePhoneNum:text region:nil]) {
-            [self handleWalletWithResult:text];
+            
+            // for example addresss?amount=0.05
+            [self handWalletWithKeyWord:text];
             return;
+
         }
-    } else {
+    } else {   // Pure address
+        
         AccountInfo *localUser = [[UserDBManager sharedManager] getUserByAddress:text];
         if (localUser) {
+            
             [GCDQueue executeInMainQueue:^{
                 [self showDetailPageWithUser:localUser];
             }];
             return;
         }
     }
+    
     [GCDQueue executeInMainQueue:^{
         [MBProgressHUD showMessage:LMLocalizedString(@"Common Loading", nil) toView:self.controller.view];
     }];
@@ -274,12 +299,12 @@ CREATE_SHARED_MANAGER(LMHandleScanResultManager)
     search.criteria = keyWord;
     [NetWorkOperationTool POSTWithUrlString:ContactUserSearchUrl postProtoData:search.data complete:^(id response) {
         HttpResponse *hResponse = (HttpResponse *) response;
-
         [GCDQueue executeInMainQueue:^{
-            [MBProgressHUD hideHUDForView:self.controller.view];
+            [MBProgressHUD hideHUDForView:weakSelf.controller.view];
         }];
         if (hResponse.code != successCode) {
-            if ([text containsString:BitCoinStr] && [text containsString:AmountTip]) {
+            if ([text containsString:BIT_COIN_STR] && [text containsString:AMOUNT_TIP]) {
+                
                 NSString *parm = [text substringFromIndex:[text rangeOfString:@"?"].location + 1];
                 NSString *key = [parm componentsSeparatedByString:@"="].firstObject;
                 NSString *amount = [parm substringFromIndex:(key.length + 1)];
@@ -288,12 +313,12 @@ CREATE_SHARED_MANAGER(LMHandleScanResultManager)
                 [GCDQueue executeInMainQueue:^{
                     if ([KeyHandle checkAddress:address]) {
                         LMBitAddressViewController *page = [[LMBitAddressViewController alloc] init];
-                        page.address = [text stringByReplacingOccurrencesOfString:BitCoinStr withString:@""];
+                        page.address = [text stringByReplacingOccurrencesOfString:BIT_COIN_STR withString:@""];
                         if (decimalAmount.doubleValue > 0) {
                             page.amountString = [decimalAmount stringValue];
                         }
                         page.hidesBottomBarWhenPushed = YES;
-                        [self.controller.navigationController pushViewController:page animated:YES];
+                        [weakSelf.controller.navigationController pushViewController:page animated:YES];
                         return;
                     }
                     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:LMLocalizedString(@"Wallet No match user", nil) message:LMLocalizedString(@"Login Please check that your input is correct", nil) preferredStyle:UIAlertControllerStyleAlert];
@@ -301,11 +326,15 @@ CREATE_SHARED_MANAGER(LMHandleScanResultManager)
 
                     }];
                     [alertController addAction:unBoundAction];
-                    [self.controller presentViewController:alertController animated:YES completion:nil];
+                    [weakSelf.controller presentViewController:alertController animated:YES completion:nil];
                 }];
-            } else {
+                
+            } else { // Other platform registered address
+                
                 if ([KeyHandle checkAddress:keyWord]) {
-                    [self handleWalletWithResult:text];
+                    
+                    [weakSelf handWalletWithKeyWord:text];
+                    
                 }
             }
             return;
@@ -322,13 +351,13 @@ CREATE_SHARED_MANAGER(LMHandleScanResultManager)
                 userInfo.pub_key = user.pubKey;
                 userInfo.address = user.address;
                 userInfo.stranger = YES;
-                [self showDetailPageWithUser:userInfo];
+                [weakSelf showDetailPageWithUser:userInfo];
             }];
         }
     }                                  fail:^(NSError *error) {
         [GCDQueue executeInMainQueue:^{
-            [MBProgressHUD hideHUDForView:self.controller.view];
-            [MBProgressHUD showToastwithText:LMLocalizedString(@"Server Error", nil) withType:ToastTypeFail showInView:self.controller.view complete:^{
+            [MBProgressHUD hideHUDForView:weakSelf.controller.view];
+            [MBProgressHUD showToastwithText:LMLocalizedString(@"Server Error", nil) withType:ToastTypeFail showInView:weakSelf.controller.view complete:^{
 
             }];
         }];
@@ -336,17 +365,23 @@ CREATE_SHARED_MANAGER(LMHandleScanResultManager)
 }
 
 - (void)showDetailPageWithUser:(AccountInfo *)userInfo {
+    
     if (!userInfo.stranger) {
+        
         UserDetailPage *page = [[UserDetailPage alloc] initWithUser:userInfo];
         page.hidesBottomBarWhenPushed = YES;
         [self.controller.navigationController pushViewController:page animated:YES];
+        
 
     } else {
+        
         InviteUserPage *page = [[InviteUserPage alloc] initWithUser:userInfo];
         page.sourceType = UserSourceTypeQrcode;
         page.hidesBottomBarWhenPushed = YES;
         [self.controller.navigationController pushViewController:page animated:YES];
+        
     }
+    
 }
 
 - (void)appleyToGroupWithQrarray:(NSArray *)array hash:(NSString *)resultStr {
@@ -355,5 +390,10 @@ CREATE_SHARED_MANAGER(LMHandleScanResultManager)
     page.hidesBottomBarWhenPushed = YES;
     [self.controller.navigationController pushViewController:page animated:YES];
 }
-
+- (void)applyToGroupWithToken:(NSString *)strToken {
+    LMApplyJoinToGroupViewController *page = [[LMApplyJoinToGroupViewController alloc]
+                                              initWithGroupToken:strToken];
+    page.hidesBottomBarWhenPushed = YES;
+    [self.controller.navigationController pushViewController:page animated:YES];
+}
 @end

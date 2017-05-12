@@ -12,7 +12,6 @@
 
 + (instancetype)sharedManager;
 
-
 - (void)handleScanResult:(NSString *)resultStr controller:(UIViewController *)controller;
 
 @end
