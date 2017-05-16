@@ -12,6 +12,19 @@
 #import "CommonClausePage.h"
 #import "YYImageCache.h"
 
+
+typedef NS_ENUM(NSUInteger,PacketStatus) {
+    PacketStatusWaitOpen               = 1 << 0,
+    PacketStatusOverTimeAndBack        = 1 << 1,
+    PacketStatusOverTime               = 1 << 2,
+    PacketStatusWaitArrivalYourWallet  = 1 << 3,
+    PacketStatusIsDone                 = 1 << 4,
+    PacketStatusIsArrivalYourWallet    = 1 << 5,
+    PacketStatusNotDisPlay             = 1 << 6
+    
+    
+};
+
 static NSString *cellIdentifier = @"cellIdentifier";
 
 @interface LMChatRedLuckyDetailController () <UITableViewDelegate, UITableViewDataSource>
@@ -22,14 +35,13 @@ static NSString *cellIdentifier = @"cellIdentifier";
 @property(weak, nonatomic) IBOutlet UILabel *redLuckyStatusLabel;
 @property(weak, nonatomic) IBOutlet UITableView *redLuckyListTableView;
 @property(strong, nonatomic) NSArray *statusStrings;
-@property(strong, nonatomic) NSArray *statusColors;
 @property(strong, nonatomic) NSMutableArray *dataArray;
 @property(strong, nonatomic) AccountInfo *accountInfo;
 @property(nonatomic, copy) NSString *moneyString;
 @property(nonatomic, assign) long long garbedMoney;
 @property(nonatomic, strong) RedPackageInfo *redLuckyInfo;
 @property(nonatomic, assign) BOOL isFromHistory;
-
+@property(nonatomic, assign) PacketStatus packetStatus;
 @end
 
 @implementation LMChatRedLuckyDetailController
@@ -120,25 +132,12 @@ static NSString *cellIdentifier = @"cellIdentifier";
                 LMLocalizedString(@"Chat Bitcoin has been return to your wallet", nil),
                 LMLocalizedString(@"Chat Lucky packet Overtime", nil),
                 LMLocalizedString(@"Chat Lucky packet transfering to your wallet", nil),
-                LMLocalizedString(@"Wallet Good luck next time", nil),
+                LMLocalizedString(@"Wallet Good luck next time",nil),
+                LMLocalizedString(@"Wallet Lucky packet transferred to your wallet",nil)
         ];
     }
     return _statusStrings;
 }
-
-- (NSArray *)statusColors {
-    if (!_statusColors) {
-        _statusColors = @[
-                [UIColor lightGrayColor],
-                [UIColor lightGrayColor],
-                [UIColor lightGrayColor],
-                [UIColor lightGrayColor],
-                [UIColor lightGrayColor],
-        ];
-    }
-    return _statusColors;
-}
-
 - (NSMutableArray *)dataArray {
     if (!_dataArray) {
         _dataArray = @[].mutableCopy;
@@ -263,88 +262,104 @@ static NSString *cellIdentifier = @"cellIdentifier";
 }
 
 - (void)originalConfigure {
-    BOOL loginUserisSender = [self.redLuckyInfo.redpackage.sendAddress isEqualToString:[[LKUserCenter shareCenter] currentLoginUser].address];
-
-    if (loginUserisSender) {
-        if (self.redLuckyInfo.redpackage.expired) { // Own the & & overtime
-            _redLuckyStatusLabel.text = self.statusStrings[2];
-            [_redLuckyStatusLabel setTextColor:self.statusColors[2]];
-            _redLuckyStatusLabel.hidden = NO;
-            if (self.redLuckyInfo.redpackage.refund) { // red packet
-                _redLuckyStatusLabel.text = self.statusStrings[1];
-                [_redLuckyStatusLabel setTextColor:self.statusColors[1]];
-                _redLuckyStatusLabel.hidden = NO;
-            }
-        } else if (self.redLuckyInfo.gradHistoryArray.count == 0) { // Red envelopes did not receive, is made their own
-            _redLuckyStatusLabel.text = self.statusStrings[0];
-            [_redLuckyStatusLabel setTextColor:self.statusColors[0]];
-            _redLuckyStatusLabel.hidden = NO;
-        } else if (self.redLuckyInfo.gradHistoryArray.count == self.redLuckyInfo.redpackage.size) { // Red envelope has been finished
-            _redLuckyStatusLabel.hidden = YES;
+    
+    switch (self.packetStatus) {
+        case PacketStatusWaitOpen:
+        {
+            self.redLuckyStatusLabel.text = self.statusStrings[0];
+          
         }
-        if (self.redLuckyInfo.redpackage.category == 1) { // Group red envelopes
-            for (GradRedPackageHistroy *his in self.redLuckyInfo.gradHistoryArray) {
-                if ([his.userinfo.address isEqualToString:[[LKUserCenter shareCenter] currentLoginUser].address]) {
-                    _redLuckyStatusLabel.text = self.statusStrings[3];
-                    [_redLuckyStatusLabel setTextColor:self.statusColors[3]];
-                    _redLuckyStatusLabel.hidden = NO;
-                    if (!GJCFStringIsNull(self.redLuckyInfo.redpackage.txid)) { // This value, that the final system has been playing money
-                        _redLuckyStatusLabel.hidden = YES;
-                    }
-                    break;
-                } else {
-                    if (self.redLuckyInfo.redpackage.expired) {
-                        _redLuckyStatusLabel.text = self.statusStrings[2];
-                        [_redLuckyStatusLabel setTextColor:self.statusColors[2]];
-                        _redLuckyStatusLabel.hidden = NO;
-                    } else if (self.redLuckyInfo.gradHistoryArray.count == self.redLuckyInfo.redpackage.size) {
-                        _redLuckyStatusLabel.text = self.statusStrings[4];
-                        [_redLuckyStatusLabel setTextColor:self.statusColors[4]];
-                        _redLuckyStatusLabel.hidden = NO;
-                    } else {
-                        _redLuckyStatusLabel.hidden = YES;
-                    }
-                }
-            }
+            break;
+        case PacketStatusOverTimeAndBack:
+        {
+            self.redLuckyStatusLabel.text = self.statusStrings[1];
+            
         }
-    } else {
-        if (self.redLuckyInfo.gradHistoryArray.count == 0 && self.redLuckyInfo.redpackage.expired) {
-            _redLuckyStatusLabel.text = self.statusStrings[2];
-            [_redLuckyStatusLabel setTextColor:self.statusColors[2]];
-            _redLuckyStatusLabel.hidden = NO;
-        } else {
-            for (GradRedPackageHistroy *his in self.redLuckyInfo.gradHistoryArray) {
-                if ([his.userinfo.address isEqualToString:[[LKUserCenter shareCenter] currentLoginUser].address]) {
-                    _redLuckyStatusLabel.text = self.statusStrings[3];
-                    [_redLuckyStatusLabel setTextColor:self.statusColors[3]];
-                    _redLuckyStatusLabel.hidden = NO;
-                    if (!GJCFStringIsNull(self.redLuckyInfo.redpackage.txid)) { // This value, that the final system has been playing money
-                        _redLuckyStatusLabel.hidden = YES;
-                    }
-                    break;
-                } else {
-                    if (self.redLuckyInfo.redpackage.expired) {
-                        _redLuckyStatusLabel.text = self.statusStrings[2];
-                        [_redLuckyStatusLabel setTextColor:self.statusColors[2]];
-                        _redLuckyStatusLabel.hidden = NO;
-                    } else if (self.redLuckyInfo.gradHistoryArray.count == self.redLuckyInfo.redpackage.size) {//Red envelope has been finished
-                        _redLuckyStatusLabel.text = self.statusStrings[4];
-                        [_redLuckyStatusLabel setTextColor:self.statusColors[4]];
-                        _redLuckyStatusLabel.hidden = NO;
-                    } else {
-                        _redLuckyStatusLabel.hidden = YES;
-                    }
-                }
-            }
+            break;
+        case PacketStatusOverTime:
+        {
+            self.redLuckyStatusLabel.text = self.statusStrings[2];
+            
         }
+            break;
+        case PacketStatusWaitArrivalYourWallet:
+        {
+            self.redLuckyStatusLabel.text = self.statusStrings[3];
+            
+        }
+            break;
+        case PacketStatusIsDone:
+        {
+            self.redLuckyStatusLabel.text = self.statusStrings[4];
+            
+        }
+            break;
+        case PacketStatusIsArrivalYourWallet:
+        {
+            self.redLuckyStatusLabel.text = self.statusStrings[5];
+            
+        }
+            break;
+        case PacketStatusNotDisPlay:
+        {
+            
+            self.redLuckyStatusLabel.hidden = YES;
+        }
+            break;
+            
+        default:
+            break;
     }
-    if (_redLuckyStatusLabel.hidden) {
-        [_redLuckyStatusLabel mas_updateConstraints:^(MASConstraintMaker *make) {
+    
+    if (self.redLuckyStatusLabel.hidden) {
+        [self.redLuckyStatusLabel mas_updateConstraints:^(MASConstraintMaker *make) {
             make.height.mas_equalTo(0);
         }];
     }
-}
 
+}
+- (NSUInteger)getPacketStatus {
+    for (GradRedPackageHistroy *his in self.redLuckyInfo.gradHistoryArray) {
+        if ([his.userinfo.address isEqualToString:[[LKUserCenter shareCenter] currentLoginUser].address]) {
+            
+            if (GJCFStringIsNull(self.redLuckyInfo.redpackage.txid)) {
+                
+                return PacketStatusWaitArrivalYourWallet;
+                
+            }else {
+                
+                return PacketStatusIsArrivalYourWallet;
+            }
+            break;
+        } else {   // not contain myself
+            
+            if (self.redLuckyInfo.gradHistoryArray.count == self.redLuckyInfo.redpackage.size) {
+                
+                return PacketStatusIsDone;
+                
+            }else {
+                if (self.redLuckyInfo.redpackage.expired) {
+                    BOOL loginUserisSender = [self.redLuckyInfo.redpackage.sendAddress isEqualToString:[[LKUserCenter shareCenter] currentLoginUser].address];
+                    if (loginUserisSender) {
+                        
+                        return PacketStatusOverTime;
+                        
+                    }else {
+                        
+                        return PacketStatusOverTimeAndBack;
+                        
+                    }
+                    
+                }else {
+                    
+                    return PacketStatusWaitOpen;
+                }
+            }
+        }
+    }
+    
+    return PacketStatusNotDisPlay;
+}
 #pragma mark - uitableview delegate && data source
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
