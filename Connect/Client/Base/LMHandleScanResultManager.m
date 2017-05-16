@@ -7,11 +7,8 @@
 //
 
 #import "LMHandleScanResultManager.h"
-#import "LMTranHisViewController.h"
 #import "NetWorkOperationTool.h"
 #import "UserDBManager.h"
-#import "LMSetMoneyResultViewController.h"
-#import "LMUnSetMoneyResultViewController.h"
 #import "LMBitAddressViewController.h"
 #import "NSURL+Param.h"
 #import "HandleUrlManager.h"
@@ -98,21 +95,24 @@ CREATE_SHARED_MANAGER(LMHandleScanResultManager)
 }
 - (void)handWalletWithKeyWord:(NSString *)resultStr{
     
-    [MBProgressHUD showLoadingMessageToView:self.controller.view];
     if ([resultStr containsString:AMOUNT_TIP]) {
+        
         NSString *parm = [resultStr substringFromIndex:[resultStr rangeOfString:@"?"].location + 1];
         NSString *key = [parm componentsSeparatedByString:@"="].firstObject;
         NSString *amount = [parm substringFromIndex:(key.length + 1)];
         NSString *address = [resultStr substringWithRange:NSMakeRange([resultStr rangeOfString:@":"].location + 1, [resultStr rangeOfString:@"?"].location - [resultStr rangeOfString:@":"].location - 1)];
         self.resultContent = address;
         self.money = [NSDecimalNumber decimalNumberWithString:amount];
+        
     } else {
+        
         self.resultContent = [resultStr stringByReplacingOccurrencesOfString:BIT_COIN_STR withString:@""];
         self.money = 0;
         
     }
 
     if (![KeyHandle checkAddress:self.resultContent]) {
+        
         [MBProgressHUD hideHUDForView:self.controller.view];
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:LMLocalizedString(@"Wallet Result is not a bitcoin address", nil) message:LMLocalizedString(@"Login Please check that your input is correct", nil) preferredStyle:UIAlertControllerStyleAlert];
         UIAlertAction *unBoundAction = [UIAlertAction actionWithTitle:LMLocalizedString(@"Common OK", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *_Nonnull action) {
@@ -120,6 +120,7 @@ CREATE_SHARED_MANAGER(LMHandleScanResultManager)
         }];
         [alertController addAction:unBoundAction];
         [self.controller presentViewController:alertController animated:YES completion:nil];
+        
     } else {
 
         [self getUserInfoWithStr:self.resultContent IsContainBtc:YES];
@@ -168,24 +169,29 @@ CREATE_SHARED_MANAGER(LMHandleScanResultManager)
             
             NSData *data = [ConnectTool decodeHttpResponse:respon];
             if (data) {
+                
                 UserInfo *info = [[UserInfo alloc] initWithData:data error:&error];
                 [self strangerWithInfo:info isContainBtc:isContainBtc];
                 
         }else {
+            
             [GCDQueue executeInMainQueue:^{
                 [MBProgressHUD showToastwithText:[LMErrorCodeTool showWalletErrorStringWithCode:respon.code withUrl:ContactUserSearchUrl] withType:ToastTypeFail showInView:weakSelf.controller.view complete:^{
                     
                 }];
             }];
+            
             }
         }
-            }                                  fail:^(NSError *error) {
+    }   fail:^(NSError *error) {
+        
         [GCDQueue executeInMainQueue:^{
             [MBProgressHUD hideHUDForView:weakSelf.controller.view];
             [MBProgressHUD showToastwithText:LMLocalizedString(@"Server Error", nil) withType:ToastTypeFail showInView:weakSelf.controller.view complete:^{
                 
             }];
         }];
+        
     }];
 }
 - (void)strangerWithInfo:(UserInfo *)info isContainBtc:(BOOL)isContainBtc{
