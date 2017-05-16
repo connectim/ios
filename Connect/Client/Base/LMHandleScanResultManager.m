@@ -38,11 +38,16 @@ CREATE_SHARED_MANAGER(LMHandleScanResultManager)
 - (void)handleScanResult:(NSString *)resultStr controller:(UIViewController *)controller {
     self.controller = controller;
     if ([self isHttpNetWork:resultStr]) {
+        
         [self handleHttpUrl:resultStr];
+        
     } else {
         if ([resultStr hasPrefix:@"group:"]) {
+            
             [self appleyToGroupWithStr:resultStr];
+            
         } else {
+            
             [self search:resultStr];
         }
     }
@@ -61,7 +66,9 @@ CREATE_SHARED_MANAGER(LMHandleScanResultManager)
     NSRegularExpression *regException = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionCaseInsensitive error:nil];
     NSArray *resultArray = [regException matchesInString:resultStr options:NSMatchingReportCompletion range:NSMakeRange(0, resultStr.length)];
     if (resultArray.count > 0) {
+        
         return YES;
+        
     }
     return NO;
 }
@@ -77,17 +84,23 @@ CREATE_SHARED_MANAGER(LMHandleScanResultManager)
         NSString* localHost = [[baseServer componentsSeparatedByString:@"//"] lastObject];
         if (!GJCFStringIsNull(token) && [strHost isEqualToString:localHost]) {
             if ([resultStr containsString:@"transfer"]) {
+                
                 NSString *urlString = [NSString stringWithFormat:@"connectim://transfer?token=%@", token];
                 [HandleUrlManager handleOpenURL:[NSURL URLWithString:urlString]];
                 return;
+                
             } else if ([resultStr containsString:@"packet"]) {
+                
                 NSString *urlString = [NSString stringWithFormat:@"connectim://packet?token=%@", token];
                 [HandleUrlManager handleOpenURL:[NSURL URLWithString:urlString]];
                 return;
+                
             } else if ([resultStr containsString:@"group"]) {
+                
                 NSString *urlString = [NSString stringWithFormat:@"connectim://group?token=%@", token];
                 [HandleUrlManager handleOpenURL:[NSURL URLWithString:urlString]];
                 return;
+                
             }
         }
     
@@ -171,7 +184,7 @@ CREATE_SHARED_MANAGER(LMHandleScanResultManager)
             if (data) {
                 
                 UserInfo *info = [[UserInfo alloc] initWithData:data error:&error];
-                [self strangerWithInfo:info isContainBtc:isContainBtc];
+                [weakSelf strangerWithInfo:info isContainBtc:isContainBtc];
                 
         }else {
             
@@ -234,7 +247,9 @@ CREATE_SHARED_MANAGER(LMHandleScanResultManager)
     
     LMChatSingleTransferViewController *singleVc = [[LMChatSingleTransferViewController alloc] init];
     if (self.money.doubleValue > 0) {
+        
         singleVc.trasferAmount = self.money;
+        
     }
     singleVc.info = info;
     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:singleVc];
@@ -270,10 +285,12 @@ CREATE_SHARED_MANAGER(LMHandleScanResultManager)
     
     NSArray *array = [[resultStr stringByReplacingOccurrencesOfString:@"group:" withString:@""] componentsSeparatedByString:@"/"];
     if (array.count == 4) {
+        
         LMApplyJoinToGroupViewController *page = [[LMApplyJoinToGroupViewController alloc]
                                                   initWithGroupIdentifier:[array objectAtIndex:0] hashP:resultStr];
         page.hidesBottomBarWhenPushed = YES;
         [self.controller.navigationController pushViewController:page animated:YES];
+        
     }
 }
 
