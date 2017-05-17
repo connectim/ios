@@ -20,7 +20,6 @@ typedef NS_ENUM(NSUInteger,PacketStatus) {
     PacketStatusWaitArrivalYourWallet  = 1 << 3,
     PacketStatusIsDone                 = 1 << 4,
     PacketStatusIsArrivalYourWallet    = 1 << 5,
-    PacketStatusNotDisPlay             = 1 << 6
     
 };
 
@@ -282,6 +281,9 @@ static NSString *cellIdentifier = @"cellIdentifier";
 /* packetStatusLable display*/
 - (void)packetStatusLable {
     
+    self.packetStatus = [self getPacketStatus];
+    self.redLuckyStatusLabel.hidden = NO;
+    
     switch (self.packetStatus) {
         case PacketStatusWaitOpen:
         {
@@ -321,13 +323,6 @@ static NSString *cellIdentifier = @"cellIdentifier";
             self.redLuckyStatusLabel.textColor = GJCFQuickHexColor(@"007aff");
         }
             break;
-        case PacketStatusNotDisPlay:
-        {
-            
-            self.redLuckyStatusLabel.hidden = YES;
-        }
-            break;
-            
         default:
             break;
     }
@@ -341,7 +336,7 @@ static NSString *cellIdentifier = @"cellIdentifier";
 }
 /* getStatus*/
 - (NSUInteger)getPacketStatus {
-    
+   
     for (GradRedPackageHistroy *his in self.redLuckyInfo.gradHistoryArray) {
         if ([his.userinfo.address isEqualToString:[[LKUserCenter shareCenter] currentLoginUser].address]) {
             
@@ -354,36 +349,33 @@ static NSString *cellIdentifier = @"cellIdentifier";
                 return PacketStatusIsArrivalYourWallet;
             }
             break;
-        } else {   // not contain myself
-            
-            if (self.redLuckyInfo.gradHistoryArray.count == self.redLuckyInfo.redpackage.size) {
-                
-                return PacketStatusIsDone;
-                
-            }else {
-                if (self.redLuckyInfo.redpackage.expired) {
-                    
-                    BOOL loginUserisSender = [self.redLuckyInfo.redpackage.sendAddress isEqualToString:[[LKUserCenter shareCenter] currentLoginUser].address];
-                    
-                    if (loginUserisSender) {
-                        
-                        return PacketStatusOverTime;
-                        
-                    }else {
-                        
-                        return PacketStatusOverTimeAndBack;
-                        
-                    }
-                    
-                }else {
-                    
-                    return PacketStatusWaitOpen;
-                }
-            }
         }
     }
     
-    return PacketStatusNotDisPlay;
+    if (self.redLuckyInfo.gradHistoryArray.count == self.redLuckyInfo.redpackage.size) {
+        
+        return PacketStatusIsDone;
+        
+    }else {
+        if (self.redLuckyInfo.redpackage.expired) {
+            
+            BOOL loginUserisSender = [self.redLuckyInfo.redpackage.sendAddress isEqualToString:[[LKUserCenter shareCenter] currentLoginUser].address];
+            
+            if (loginUserisSender) {
+                
+                return PacketStatusOverTime;
+                
+            }else {
+                
+                return PacketStatusOverTimeAndBack;
+                
+            }
+            
+        }else {
+            
+            return PacketStatusWaitOpen;
+        }
+    }
 }
 #pragma mark - UItableview delegate && data source
 
