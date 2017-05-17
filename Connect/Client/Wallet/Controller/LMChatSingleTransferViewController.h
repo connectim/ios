@@ -20,4 +20,10 @@
  *  get transfer message
  */
 @property(nonatomic, copy) void (^didGetTransferMoney)(NSString *money, NSString *hashId, NSString *notes);
+/**
+ *  trasferAmount
+ */
+@property(nonatomic, strong) NSDecimalNumber *trasferAmount;
+
+
 @end
