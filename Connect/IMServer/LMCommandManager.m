@@ -28,6 +28,10 @@
 #import "LMMessageAdapter.h"
 #import "LMMessageSendManager.h"
 
+@implementation SendCommandModel
+
+@end
+
 @interface LMCommandManager ()
 
 @property(nonatomic, strong) dispatch_queue_t commandSendStatusQueue;
@@ -63,7 +67,7 @@ CREATE_SHARED_MANAGER(LMCommandManager)
             for (SendCommandModel *sendComModel in sendMessageModels) {
                 int long long currentTime = [[NSDate date] timeIntervalSince1970];
                 int long long sendDuration = currentTime - sendComModel.sendTime;
-                if (sendDuration >= 10) {
+                if (sendDuration >= SOCKET_TIME_OUT) {
                     if (sendComModel.callBack) {
                         sendComModel.callBack([NSError errorWithDomain:@"over_time" code:-1 userInfo:nil],nil);
                     }
@@ -1394,12 +1398,23 @@ CREATE_SHARED_MANAGER(LMCommandManager)
 }
 
 - (void)deviceTokenUnbind:(Message *)msg {
-    CommandStauts *status = [CommandStauts parseFromData:msg.body error:nil];
+    Command *command = [Command parseFromData:msg.body error:nil];
+    CommandStauts *status = [CommandStauts parseFromData:command.detail error:nil];
+    SendCommandModel *sendComModel = [self.sendingCommands valueForKey:command.msgId];
     if (status.status != 0) {
         DDLogInfo(@"unbind device token success");
+        if (sendComModel.callBack) {
+            sendComModel.callBack(nil,nil);
+        }
     } else {
         DDLogError(@"unbind device token failed");
+        if (sendComModel.callBack) {
+            sendComModel.callBack([NSError errorWithDomain:@"Undingfail" code:-1 userInfo:nil],nil);
+        }
     }
+    //remove command
+    [self.sendingCommands removeObjectForKey:command.msgId];
+    [[IMService instance] sendIMBackAck:command.msgId];
 }
 
 - (void)acceptRequestSuccessDetail:(NSData *)decodeData {
@@ -1449,11 +1464,5 @@ CREATE_SHARED_MANAGER(LMCommandManager)
     
     [[IMService instance] sendIMBackAck:command.msgId];
 }
-
-
-
-@end
-
-@implementation SendCommandModel
 
 @end
