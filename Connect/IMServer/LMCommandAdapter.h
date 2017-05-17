@@ -7,7 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "Message.h"
 
 @interface LMCommandAdapter : NSObject
+
++ (Message *)sendAdapterWithExtension:(unsigned char)extension sendData:(GPBMessage *)sendData;
 
 @end

@@ -7,7 +7,13 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "Protofile.pbobjc.h"
+#import "MMMessage.h"
 
 @interface LMMessageAdapter : NSObject
+
++ (GPBMessage *)sendAdapterIMPostWithMessage:(MMMessage *)message talkType:(GJGCChatFriendTalkType)talkType ecdhKey:(NSString *)ecdhKey;
+
++ (MessagePost *)sendAdapterIMReadAckPostWithMessage:(MMMessage *)message;
 
 @end

@@ -8,45 +8,15 @@
 #import "TCPConnection.h"
 #import "MMMessage.h"
 #import "Protofile.pbobjc.h"
-
-typedef void (^SendCommandComplete)(NSError *erro, id data);
-
-@class GcmData;
-
-@protocol IMPeerMessageHandler <NSObject>
-- (BOOL)handleMessage:(MessagePost *)msg;
-
-- (BOOL)handleBatchMessages:(NSArray *)messages;
-
-- (BOOL)handleMessageFailure:(MessagePost *)msg;
-@end
-
-@protocol IMGroupMessageHandler <NSObject>
-
-- (BOOL)handleGroupInviteMessage:(MessagePost *)msg;
-
-- (BOOL)handleBatchGroupInviteMessage:(NSArray *)messages;
-
-- (BOOL)handleMessage:(MessagePost *)msg;
-
-- (BOOL)handleBatchGroupMessage:(NSArray *)messages;
-
-@end
-
+#import "LMSocketHandleDelegate.h"
+#import "LMCommandManager.h"
 
 @interface IMService : TCPConnection
 
 @property(nonatomic, copy) NSString *deviceToken;
 @property(nonatomic, copy) void (^RegisterDeviceTokenComplete)(NSString *deviceToken);
 
-@property(nonatomic, weak) id <IMPeerMessageHandler> peerMessageHandler;
-@property(nonatomic, weak) id <IMGroupMessageHandler> groupMessageHandler;
-
 + (IMService *)instance;
-
-- (BOOL)sendPeerMessage:(MessagePost *)msg;
-
-- (BOOL)sendGroupMessage:(MessagePost *)msg;
 
 /**
  * set friend info
@@ -55,14 +25,14 @@ typedef void (^SendCommandComplete)(NSError *erro, id data);
  * @param commonContact
  * @param complete
  */
-- (void)setFriendInfoWithAddress:(NSString *)address remark:(NSString *)remark commonContact:(BOOL)commonContact comlete:(void (^)(NSError *erro, id data))complete;
+- (void)setFriendInfoWithAddress:(NSString *)address remark:(NSString *)remark commonContact:(BOOL)commonContact comlete:(SendCommandCallback)complete;
 
 /**
  * delete friend
  * @param address
  * @param complete
  */
-- (void)deleteFriendWithAddress:(NSString *)address comlete:(void (^)(NSError *erro, id data))complete;
+- (void)deleteFriendWithAddress:(NSString *)address comlete:(SendCommandCallback)complete;
 
 /**
  * add new friend
@@ -71,7 +41,7 @@ typedef void (^SendCommandComplete)(NSError *erro, id data);
  * @param source
  * @param complete
  */
-- (void)addNewFiendWithInviteUser:(AccountInfo *)inviteUser tips:(NSString *)tips source:(int)source comlete:(void (^)(NSError *erro, id data))complete;
+- (void)addNewFiendWithInviteUser:(AccountInfo *)inviteUser tips:(NSString *)tips source:(int)source comlete:(SendCommandCallback)complete;
 
 
 /**
@@ -79,14 +49,14 @@ typedef void (^SendCommandComplete)(NSError *erro, id data);
  * @param token
  * @param complete
  */
-- (void)reciveMoneyWihtToken:(NSString *)token complete:(SendCommandComplete)complete;
+- (void)reciveMoneyWihtToken:(NSString *)token complete:(SendCommandCallback)complete;
 
 /**
  * open outer luckypackage
  * @param token
  * @param complete
  */
-- (void)openRedPacketWihtToken:(NSString *)token complete:(SendCommandComplete)complete;
+- (void)openRedPacketWihtToken:(NSString *)token complete:(SendCommandCallback)complete;
 
 /**
  * Get all contacts from the server,
@@ -94,13 +64,13 @@ typedef void (^SendCommandComplete)(NSError *erro, id data);
  * @param version
  * @param complete
  */
-- (void)getFriendsWithVersion:(NSString *)version comlete:(void (^)(NSError *erro, id data))complete;
+- (void)getFriendsWithVersion:(NSString *)version comlete:(SendCommandCallback)complete;
 
 /**
  * sync contacts
  * @param complete
  */
-- (void)syncFriendsWithComlete:(void (^)(NSError *erro, id data))complete;
+- (void)syncFriendsWithComlete:(SendCommandCallback)complete;
 
 /**
  * Accept an invitation for a new friend
@@ -110,14 +80,14 @@ typedef void (^SendCommandComplete)(NSError *erro, id data);
  */
 - (void)acceptAddRequestWithAddress:(NSString *)address
                              source:(int)source
-                            comlete:(void (^)(NSError *erro, id data))complete;
+                            comlete:(SendCommandCallback)complete;
 
 /**
  * get chat user random chat cookie ,Session encryption
  * @param chatUser
  * @param complete
  */
-- (void)getUserCookieWihtChatUser:(AccountInfo *)chatUser complete:(SendCommandComplete)complete;
+- (void)getUserCookieWihtChatUser:(AccountInfo *)chatUser complete:(SendCommandCallback)complete;
 
 /**
  * sync number of unread messages
@@ -198,14 +168,14 @@ typedef void (^SendCommandComplete)(NSError *erro, id data);
  * @param complete
  */
 - (void)setRecommandUserNoInterestAdress:(NSString *)address
-                                 comlete:(void (^)(NSError *erro, id data))complete;
+                                 comlete:(SendCommandCallback)complete;
 
 /**
  * when user logout , you need unbind device token
  * @param deviceToken
  * @param complete
  */
-- (void)unBindDeviceTokenWithDeviceToken:(NSString *)deviceToken complete:(void (^)(NSError *error))complete;
+- (void)unBindDeviceTokenWithDeviceToken:(NSString *)deviceToken complete:(SendCommandCallback)complete;
 
 #pragma mark - Session
 
@@ -214,7 +184,7 @@ typedef void (^SendCommandComplete)(NSError *erro, id data);
  * @param address
  * @param complete
  */
-- (void)addNewSessionWithAddress:(NSString *)address complete:(SendCommandComplete)complete;
+- (void)addNewSessionWithAddress:(NSString *)address complete:(SendCommandCallback)complete;
 
 /**
  * update session
@@ -222,17 +192,20 @@ typedef void (^SendCommandComplete)(NSError *erro, id data);
  * @param mute
  * @param complete
  */
-- (void)openOrCloseSesionMuteWithAddress:(NSString *)address mute:(BOOL)mute complete:(SendCommandComplete)complete;
+- (void)openOrCloseSesionMuteWithAddress:(NSString *)address mute:(BOOL)mute complete:(SendCommandCallback)complete;
 
 /**
  * delete session
  * @param address
  * @param complete
  */
-- (void)deleteSessionWithAddress:(NSString *)address complete:(SendCommandComplete)complete;
+- (void)deleteSessionWithAddress:(NSString *)address complete:(SendCommandCallback)complete;
 
-//^^^ test ^^^
-- (void)transactionStatusChangeNoti:(Message *)msg;
+- (void)uploadCookie;
+
+- (void)sendOfflineAck:(NSString *)messageid type:(int)type;
+- (void)sendOnlineBackAck:(NSString *)msgID type:(int)type;
+- (void)sendIMBackAck:(NSString *)msgID;
 
 @end
 

@@ -275,6 +275,7 @@
 }
 
 - (void)publishConnectState:(int)state {
+    self.connectState = state;
     [GCDQueue executeInMainQueue:^{
         for (id <TCPConnectionObserver> ob in self.connectionObservers) {
             if ([ob respondsToSelector:@selector(onConnectState:)]) {
