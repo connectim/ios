@@ -50,7 +50,7 @@
             for (SendMessageModel *sendMessageModel in sendMessageModels) {
                 int long long currentTime = [[NSDate date] timeIntervalSince1970];
                 int long long sendDuration = currentTime - sendMessageModel.sendTime;
-                if (sendDuration >= 10) {
+                if (sendDuration >= SOCKET_TIME_OUT) {
                     //update message send status
                     sendMessageModel.sendMsg.sendstatus = GJGCChatFriendSendMessageStatusFaild;
                     
@@ -74,7 +74,7 @@ CREATE_SHARED_MANAGER(LMMessageSendManager)
 - (void)addSendingMessage:(MMMessage *)message callBack:(SendMessageCallBlock)callBack{
     SendMessageModel *sendMessageModel = [SendMessageModel new];
     sendMessageModel.sendMsg = message;
-    sendMessageModel.sendTime = message.sendtime;
+    sendMessageModel.sendTime = [[NSDate date] timeIntervalSince1970];
     sendMessageModel.callBack = callBack;
     
     //save to send queue
