@@ -44,9 +44,9 @@
 
 - (void)showMainTabPage:(id)userInfo {
 
+    self.window.rootViewController = nil;
     if (userInfo) {
         self.currentUser = userInfo;
-        self.window.rootViewController = nil;
         NSString *olddbPath = [MMGlobal getDBFile:self.currentUser.pub_key.sha256String];
         if (GJCFFileIsExist(olddbPath)) {
             self.window.rootViewController = [[LMDBUpdataController alloc] initWithUpdateComplete:^(BOOL complete) {
@@ -58,7 +58,9 @@
             self.window.rootViewController = self.mainTabController;
         }
     } else {
-        self.window.rootViewController = [[UINavigationController alloc] initWithRootViewController:[[PhoneLoginPage alloc] init]];
+        
+        PhoneLoginPage* phoneVc = [[PhoneLoginPage alloc]init];
+        self.window.rootViewController = [[UINavigationController alloc] initWithRootViewController:phoneVc];
     }
 }
 
