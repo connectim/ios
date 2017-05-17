@@ -22,13 +22,12 @@ typedef NS_ENUM(NSUInteger,PacketStatus) {
     PacketStatusIsArrivalYourWallet    = 1 << 5,
     PacketStatusNotDisPlay             = 1 << 6
     
-    
 };
 
 static NSString *cellIdentifier = @"cellIdentifier";
 
 @interface LMChatRedLuckyDetailController () <UITableViewDelegate, UITableViewDataSource>
-@property(weak, nonatomic) IBOutlet UIImageView *icon;             // headview
+@property(weak, nonatomic) IBOutlet UIImageView *icon;
 @property(weak, nonatomic) IBOutlet UILabel *nameLabel;
 @property(weak, nonatomic) IBOutlet UILabel *descriptionLabel;
 @property(weak, nonatomic) IBOutlet UILabel *moneyValue;
@@ -37,24 +36,26 @@ static NSString *cellIdentifier = @"cellIdentifier";
 @property(strong, nonatomic) NSArray *statusStrings;
 @property(strong, nonatomic) NSMutableArray *dataArray;
 @property(strong, nonatomic) AccountInfo *accountInfo;
-@property(nonatomic, copy) NSString *moneyString;
-@property(nonatomic, assign) long long garbedMoney;
-@property(nonatomic, strong) RedPackageInfo *redLuckyInfo;
-@property(nonatomic, assign) BOOL isFromHistory;
-@property(nonatomic, assign) PacketStatus packetStatus;
+@property(copy, nonatomic) NSString *moneyString;
+@property(assign, nonatomic) long long garbedMoney;
+@property(strong, nonatomic) RedPackageInfo *redLuckyInfo;
+@property(assign, nonatomic) BOOL isFromHistory;
+@property(assign, nonatomic) PacketStatus packetStatus;
 @end
 
 @implementation LMChatRedLuckyDetailController
 
-#pragma mark - initial method
+#pragma mark - system method
 
 - (instancetype)initWithUserInfo:(AccountInfo *)info redLuckyInfo:(RedPackageInfo *)redLuckyInfo {
     self = [super init];
     if (self) {
+        
         _accountInfo = info;
         _dataArray = @[].mutableCopy;
         self.redLuckyInfo = redLuckyInfo;
         for (GradRedPackageHistroy *history in redLuckyInfo.gradHistoryArray) {
+            
             self.garbedMoney += history.amount;
             UserInfo *userGranded = history.userinfo;
             AccountInfo *userInfo = [self openRedPackgeUserWithAddress:userGranded.address];
@@ -67,12 +68,15 @@ static NSString *cellIdentifier = @"cellIdentifier";
             userModel.dateString = timeString;
             userModel.moneyString = [PayTool getBtcStringWithAmount:history.amount];
             if ([userGranded.address isEqualToString:[[LKUserCenter shareCenter] currentLoginUser].address]) {
+                
                 self.moneyString = userModel.moneyString;
             }
             NSString *avatar = userGranded.avatar;
             if (userInfo) {
+                
                 userModel.userName = userInfo.groupShowName;
                 avatar = userInfo.avatar;
+                
             }
             userModel.iconURLString = avatar;
             [self.dataArray objectAddObject:userModel];
@@ -82,14 +86,18 @@ static NSString *cellIdentifier = @"cellIdentifier";
             // red packet
             LMRedLuckyDetailModel *winerModel = [self.dataArray firstObject];
             for (LMRedLuckyDetailModel *model in self.dataArray) {
+                
                 if (model.moneyString.doubleValue >= winerModel.moneyString.doubleValue) {
+                    
                     winerModel = model;
                 }
             }
             winerModel.winer = YES;
         }
         if (redLuckyInfo.redpackage.category == 0 &&
+            
                 !redLuckyInfo.redpackage.system) { // per packet display money system is not
+            
             self.moneyString = [NSString stringWithFormat:@"%@", [PayTool getBtcStringWithAmount:redLuckyInfo.redpackage.money]];
         }
     }
@@ -97,36 +105,57 @@ static NSString *cellIdentifier = @"cellIdentifier";
 }
 
 - (instancetype)initWithUserInfo:(AccountInfo *)info redLuckyInfo:(RedPackageInfo *)redLuckyInfo isFromHistory:(BOOL)isFromHistory {
+    
     if (self = [self initWithUserInfo:info redLuckyInfo:redLuckyInfo]) {
+        
         self.isFromHistory = isFromHistory;
     }
     return self;
 }
-
-- (AccountInfo *)openRedPackgeUserWithAddress:(NSString *)address {
-    AccountInfo *findUser = nil;
-    for (AccountInfo *user in self.groupMembers) {
-        if ([user.address isEqualToString:address]) {
-
-            findUser = user;
-            break;
-        }
-    }
-
-    return findUser;
-}
-
 - (instancetype)init {
     [NSException raise:@"use  sharedRecLuckyDetailControllerWithUserInfo:dataArray:redLuckyStatusStyle: " format:@"Need to pass in user information。"];
     return nil;
 }
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:YES];
+    
+    [self.navigationController.navigationBar setShadowImage:[UIImage new]];
+    [self.navigationController.navigationBar lt_setBackgroundColor:[UIColor clearColor]];
+}
 
-#pragma mark --
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    
+    // set backimage
+    [self.navigationController.navigationBar lt_reset];
+    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"top_background"] forBarMetrics:UIBarMetricsDefault];
+}
 
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    [self setTitle:LMLocalizedString(@"Wallet Packet", nil)];
+    [self tableViewConfigure];
+    [self topAction];
+    if (self.isFromHistory) {
+        
+        if (self.redLuckyInfo.redpackage.typ == 1 && !self.redLuckyInfo.redpackage.expired && self.redLuckyInfo.redpackage.remainSize != 0) {
+            
+            [self setNavigationRight:@"wallet_share_payment"];
+            
+        }
+    } else {
+        
+        [self addCloseBarItem];
+        
+    }
+}
 #pragma mark - lazy loading
 
 - (NSArray *)statusStrings {
     if (!_statusStrings) {
+        
         _statusStrings = @[
                 LMLocalizedString(@"Chat Waitting for open", nil),
                 LMLocalizedString(@"Chat Bitcoin has been return to your wallet", nil),
@@ -135,6 +164,7 @@ static NSString *cellIdentifier = @"cellIdentifier";
                 LMLocalizedString(@"Wallet Good luck next time",nil),
                 LMLocalizedString(@"Wallet Lucky packet transferred to your wallet",nil)
         ];
+        
     }
     return _statusStrings;
 }
@@ -145,39 +175,21 @@ static NSString *cellIdentifier = @"cellIdentifier";
     return _dataArray;
 }
 
-#pragma mark --
-
 #pragma mark - life cycle
 
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:YES];
-    [self.navigationController.navigationBar setShadowImage:[UIImage new]];
-    [self.navigationController.navigationBar lt_setBackgroundColor:[UIColor clearColor]];
-}
-
-- (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-    // set backimage
-    [self.navigationController.navigationBar lt_reset];
-    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"top_background"] forBarMetrics:UIBarMetricsDefault];
-}
-
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    [self setTitle:LMLocalizedString(@"Wallet Packet", nil)];
-    [self tableViewConfigure];
-    [self originalSetting];
-    [self originalConfigure];
-    if (self.isFromHistory) {
-        if (self.redLuckyInfo.redpackage.typ == 1 && !self.redLuckyInfo.redpackage.expired && self.redLuckyInfo.redpackage.remainSize != 0) {
-            [self setNavigationRight:@"wallet_share_payment"];
+- (AccountInfo *)openRedPackgeUserWithAddress:(NSString *)address {
+    AccountInfo *findUser = nil;
+    for (AccountInfo *user in self.groupMembers) {
+        
+        if ([user.address isEqualToString:address]) {
+            
+            findUser = user;
+            break;
         }
-    } else {
-        [self addCloseBarItem];
     }
+    
+    return findUser;
 }
-
 - (void)doRight:(id)sender {
     NSString *title = [NSString stringWithFormat:@"%@ send lucky packet via Connect", [[LKUserCenter shareCenter] currentLoginUser].username];
 
@@ -196,108 +208,117 @@ static NSString *cellIdentifier = @"cellIdentifier";
 
 #pragma mark - methods
 
-- (void)originalSetting {
-    [_icon setContentMode:UIViewContentModeScaleAspectFit];
-    [_icon.layer setBorderWidth:1.f];
-    [_icon.layer setBorderColor:[UIColor lightGrayColor].CGColor];
+- (void)topAction {
+    
+    self.icon.contentMode = UIViewContentModeScaleAspectFit;
+    self.icon.layer.borderWidth = 1.0;
+    self.icon.layer.borderColor = [UIColor lightGrayColor].CGColor;
 
     if (self.redLuckyInfo.redpackage.system) {
-        [self.icon setImage:[UIImage imageNamed:@"connect_logo"]];
-        [_nameLabel setText:[NSString stringWithFormat:LMLocalizedString(@"Wallet Lucky packet from", nil), LMLocalizedString(@"Wallet Connect term", nil)]];
+        
+        self.icon.image = [UIImage imageNamed:@"connect_logo"];
+        self.nameLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Lucky packet from", nil), LMLocalizedString(@"Wallet Connect term", nil)];
+        
     } else {
+        
         [self.icon setPlaceholderImageWithAvatarUrl:_accountInfo.avatar];
-        [_nameLabel setText:[NSString stringWithFormat:LMLocalizedString(@"Wallet Lucky packet from", nil), _accountInfo.username]];
+         self.nameLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Lucky packet from", nil), _accountInfo.username];
     }
 
     if (GJCFStringIsNull(self.redLuckyInfo.redpackage.tips)) {
-        _descriptionLabel.text = LMLocalizedString(@"Wallet Best wishes", nil);
+        
+        self.descriptionLabel.text = LMLocalizedString(@"Wallet Best wishes", nil);
+        
     } else {
-        [_descriptionLabel setText:[NSString stringWithFormat:@"%@:%@", LMLocalizedString(@"Wallet Note", nil), self.redLuckyInfo.redpackage.tips]];
+        
+        self.descriptionLabel.text = [NSString stringWithFormat:@"%@:%@", LMLocalizedString(@"Wallet Note", nil), self.redLuckyInfo.redpackage.tips];
     }
     if (!GJCFStringIsNull(self.moneyString)) {
+        
         NSString *str = [NSString stringWithFormat:LMLocalizedString(@"%@BTC", nil), self.moneyString];
         NSMutableAttributedString *attrStr = [[NSMutableAttributedString alloc] initWithString:str];
         [attrStr addAttribute:NSFontAttributeName value:[UIFont systemFontOfSize:FONT_SIZE(30)] range:[str rangeOfString:@"BTC"]];
-        _moneyValue.attributedText = attrStr;
-        _moneyValue.hidden = NO;
+        self.moneyValue.attributedText = attrStr;
+        self.moneyValue.hidden = NO;
+        
     } else {
-        _moneyValue.hidden = YES;
-        [_moneyValue mas_updateConstraints:^(MASConstraintMaker *make) {
+        self.moneyValue.hidden = YES;
+        [self.moneyValue mas_updateConstraints:^(MASConstraintMaker *make) {
             make.height.mas_equalTo(0);
         }];
     }
+    
+     [self packetStatusLable];
 }
 
-// Whether to remove the navigationBar bottom black line
+/* Whether to remove the navigationBar bottom black line*/
 - (void)makeBlackLineInNavigationBarHidden:(BOOL)hidden {
+    
     if ([self.navigationController.navigationBar respondsToSelector:@selector(setBackgroundImage:forBarMetrics:)]) {
 
         NSArray *list = self.navigationController.navigationBar.subviews;
-
         for (id obj in list) {
 
             if ([obj isKindOfClass:[UIImageView class]]) {
 
                 UIImageView *imageView = (UIImageView *) obj;
-
                 imageView.hidden = hidden;
+                
             }
         }
     }
 }
 
 - (void)tableViewConfigure {
-    [_redLuckyListTableView setDelegate:self];
-    _redLuckyListTableView.rowHeight = AUTO_HEIGHT(130);
-    [_redLuckyListTableView setDataSource:self];
-    [_redLuckyListTableView setBackgroundColor:[UIColor colorWithHexString:@"EAEBEE"]];
-    [_redLuckyListTableView setTableFooterView:[UIView new]];
-    [_redLuckyListTableView registerNib:[UINib nibWithNibName:@"LMRecLuckyDetailCell" bundle:nil] forCellReuseIdentifier:cellIdentifier];
+    
+    self.redLuckyListTableView.delegate = self;
+    self.redLuckyListTableView.rowHeight = AUTO_HEIGHT(130);
+    self.redLuckyListTableView.dataSource = self;
+    self.redLuckyListTableView.backgroundColor = [UIColor colorWithHexString:@"EAEBEE"];
+    self.redLuckyListTableView.tableFooterView = [UIView new];
+    [self.redLuckyListTableView registerNib:[UINib nibWithNibName:@"LMRecLuckyDetailCell" bundle:nil] forCellReuseIdentifier:cellIdentifier];
 
 }
-
-// If it is overtime to receive the need to hide the amount
-- (void)makeMoneyLabelHidden:(BOOL)hidden {
-    [_moneyValue setHidden:hidden];
-}
-
-- (void)originalConfigure {
+/* packetStatusLable display*/
+- (void)packetStatusLable {
     
     switch (self.packetStatus) {
         case PacketStatusWaitOpen:
         {
             self.redLuckyStatusLabel.text = self.statusStrings[0];
+            self.redLuckyStatusLabel.textColor = GJCFQuickHexColor(@"ff6c5a");
           
         }
             break;
         case PacketStatusOverTimeAndBack:
         {
             self.redLuckyStatusLabel.text = self.statusStrings[1];
+            self.redLuckyStatusLabel.textColor = GJCFQuickHexColor(@"ff6c5a");
             
         }
             break;
         case PacketStatusOverTime:
         {
             self.redLuckyStatusLabel.text = self.statusStrings[2];
-            
+            self.redLuckyStatusLabel.textColor = GJCFQuickHexColor(@"ff6c5a");
         }
             break;
         case PacketStatusWaitArrivalYourWallet:
         {
             self.redLuckyStatusLabel.text = self.statusStrings[3];
-            
+            self.redLuckyStatusLabel.textColor = GJCFQuickHexColor(@"007aff");
         }
             break;
         case PacketStatusIsDone:
         {
             self.redLuckyStatusLabel.text = self.statusStrings[4];
-            
+            self.redLuckyStatusLabel.textColor = GJCFQuickHexColor(@"007aff");
         }
             break;
         case PacketStatusIsArrivalYourWallet:
         {
             self.redLuckyStatusLabel.text = self.statusStrings[5];
-            
+            self.redLuckyStatusLabel.textColor = GJCFQuickHexColor(@"007aff");
         }
             break;
         case PacketStatusNotDisPlay:
@@ -318,7 +339,9 @@ static NSString *cellIdentifier = @"cellIdentifier";
     }
 
 }
+/* getStatus*/
 - (NSUInteger)getPacketStatus {
+    
     for (GradRedPackageHistroy *his in self.redLuckyInfo.gradHistoryArray) {
         if ([his.userinfo.address isEqualToString:[[LKUserCenter shareCenter] currentLoginUser].address]) {
             
@@ -339,7 +362,9 @@ static NSString *cellIdentifier = @"cellIdentifier";
                 
             }else {
                 if (self.redLuckyInfo.redpackage.expired) {
+                    
                     BOOL loginUserisSender = [self.redLuckyInfo.redpackage.sendAddress isEqualToString:[[LKUserCenter shareCenter] currentLoginUser].address];
+                    
                     if (loginUserisSender) {
                         
                         return PacketStatusOverTime;
@@ -360,10 +385,11 @@ static NSString *cellIdentifier = @"cellIdentifier";
     
     return PacketStatusNotDisPlay;
 }
-#pragma mark - uitableview delegate && data source
+#pragma mark - UItableview delegate && data source
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
     if (section != 0) {
+        
         return 0.01f;
     }
 
@@ -389,10 +415,12 @@ static NSString *cellIdentifier = @"cellIdentifier";
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [self.dataArray count];
+    
+    return self.dataArray.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
     LMRecLuckyDetailCell *dCell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier forIndexPath:indexPath];
     LMRedLuckyDetailModel *model = self.dataArray[indexPath.row];
     [dCell.icon setPlaceholderImageWithAvatarUrl:model.iconURLString];
@@ -404,8 +432,10 @@ static NSString *cellIdentifier = @"cellIdentifier";
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     if (!GJCFStringIsNull(self.redLuckyInfo.redpackage.txid)) {
+        
         NSString *url = [NSString stringWithFormat:@"%@%@", txDetailBaseUrl, self.redLuckyInfo.redpackage.txid];
         CommonClausePage *page = [[CommonClausePage alloc] initWithUrl:url];
         page.title = LMLocalizedString(@"Wallet Packet", nil);
