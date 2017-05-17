@@ -394,6 +394,7 @@
 
 
     [RedBagNetWorkTool sendRedBagWithSendAddress:[[LKUserCenter shareCenter] currentLoginUser].address privkey:[[LKUserCenter shareCenter] currentLoginUser].prikey fee:[[MMAppSetting sharedSetting] getTranferFee] identifer:weakSelf.reciverIdentifier money:[PayTool getPOW8Amount:money] size:size category:weakSelf.style type:type tips:note complete:^(OrdinaryRedPackage *ordinaryRed, UnspentOrderResponse *unspent, NSArray *toAddresses, NSError *error) {
+        
         [LMPayCheck payCheck:nil withVc:weakSelf withTransferType:TransferTypeRedPag unSpent:unspent withArray:toAddresses withMoney:money withNote:note withType:type withRedPackage:ordinaryRed withError:error];
     }];
 }

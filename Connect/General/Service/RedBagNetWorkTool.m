@@ -17,6 +17,7 @@
 #import "WallteNetWorkTool.h"
 #import "UIAlertController+Blocks.h"
 #import "NSObject+CurrentViewController.h"
+#import "LMPayCheck.h"
 
 
 @implementation RedBagNetWorkTool
@@ -84,6 +85,8 @@
                                    @"amount":[[[NSDecimalNumber alloc] initWithLongLong:money + fee]
                                               decimalNumberByDividingBy:
                                               [[NSDecimalNumber alloc] initWithLongLong:pow(10, 8)]].stringValue}];
+        
+        [LMPayCheck dirtyAlertWithAddress:toAddresses withController:[self getCurrentVC]];
         
         [WallteNetWorkTool unspentV2WithAddress:address fee:fee toAddress:toAddresses
                  createRawTranscationModelComplete:^(UnspentOrderResponse *unspent, NSError *error) {

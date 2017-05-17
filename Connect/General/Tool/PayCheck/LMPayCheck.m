@@ -304,7 +304,7 @@
  *   Click the relevant button to verify the legitimacy
  *
  */
-+(NSInteger)checkMoneyNumber:(NSDecimalNumber*)number withTransfer:(BOOL)flag
++ (NSInteger)checkMoneyNumber:(NSDecimalNumber*)number withTransfer:(BOOL)flag
 {
     // All the ratio of the conversion rate by bit currency
     if (flag) {  // transfer
@@ -325,5 +325,19 @@
         }
     }
     return MoneyTypeCommon;;
+}
+/**
+ *   Turned out the amount of dirty check and alert
+ *
+ */
++ (void)dirtyAlertWithAddress:(NSArray* )toAddresses withController:(UIViewController*)controller {
+    
+    BOOL amountDust = [LMUnspentCheckTool checkToAddressAmountDustWithToAddresses:toAddresses];
+    if (amountDust) {
+        [GCDQueue executeInMainQueue:^{
+            [MBProgressHUD showToastwithText:LMLocalizedString(@"Wallet Amount is too small", nil) withType:ToastTypeFail showInView:controller.view complete:nil];
+        }];
+        return;
+    }
 }
 @end

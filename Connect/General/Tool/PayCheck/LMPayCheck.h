@@ -41,7 +41,10 @@ typedef NS_ENUM(NSUInteger,MoneyType) {
  *   Click the relevant button to verify the legitimacy
  *
  */
-+(NSInteger)checkMoneyNumber:(NSDecimalNumber*)number withTransfer:(BOOL)flag;
-
-
++ (NSInteger)checkMoneyNumber:(NSDecimalNumber*)number withTransfer:(BOOL)flag;
+/**
+ *   Turned out the amount of dirty check and alert
+ *
+ */
++ (void)dirtyAlertWithAddress:(NSArray* )toAddresses withController:(UIViewController*)controller;
 @end

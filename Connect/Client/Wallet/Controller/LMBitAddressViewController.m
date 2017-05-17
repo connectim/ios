@@ -201,6 +201,9 @@
     }];
 
     NSArray *toAddresses = @[@{@"address": self.addressTextField.text, @"amount": money.stringValue}];
+    
+    [LMPayCheck dirtyAlertWithAddress:toAddresses withController:self];
+    
     AccountInfo *ainfo = [[LKUserCenter shareCenter] currentLoginUser];
     [WallteNetWorkTool unspentV2WithAddress:ainfo.address fee:[[MMAppSetting sharedSetting] getTranferFee] toAddress:toAddresses createRawTranscationModelComplete:^(UnspentOrderResponse *unspent, NSError *error) {
         [LMPayCheck payCheck:nil withVc:weakSelf withTransferType:TransferTypeBitAddress unSpent:unspent withArray:toAddresses withMoney:money withNote:note withType:0 withRedPackage:nil withError:error];
