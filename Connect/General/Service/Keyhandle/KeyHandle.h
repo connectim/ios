@@ -9,8 +9,6 @@
 #import <Foundation/Foundation.h>
 #import <CoreGraphics/CoreGraphics.h>
 
-@class GcmData;
-
 @interface KeyHandle : NSObject
 
 @property (nonatomic,strong) NSString *privKeyStr;
@@ -19,38 +17,63 @@
 
 +(instancetype)defautKey;
 
-//Create a new private key
+/**
+ * Create a new private key
+ *
+ */
 +(NSString *)creatNewPrivkey;
 
-//data turn hexstring
+/**
+ * data to hexstring
+ *
+ */
 + (NSString *)hexStringFromData:(NSData *)myD;
 
+/**
+ * hex to data
+ *
+ */
 + (NSData *)hexStringToData:(NSString *)hex;
 
+/**
+ * get raw privkey
+ *
+ */
 + (NSString *)getRawPrivkey:(NSString *)privkey;
 
-// Create a new private key
+/**
+ * Create a new private key
+ *
+ */
 +(NSString *)creatNewPrivkeyByRandomStr:(NSString *)randomStr;
 
-// Get the public key through the private key
+/**
+ * Get the public key through the private key
+ *
+ */
 +(NSString *)createPubkeyByPrikey:(NSString *)prikey;
 
-// A method of obtaining an address from a private key
+/**
+ * A method of obtaining an address from a private key
+ *
+ */
 +(NSString *)getAddressByPrivKey:(NSString *)prvkey;
-
-// Get the address through the public key
+/**
+ * Get the address through the public key
+ *
+ */
 +(NSString *)getAddressByPubkey:(NSString *)pubkey;
-
-// Generate random numbers
+/**
+ * Generate random numbers
+ *
+ */
 +(NSData *)createRandom512bits;
 
-+(NSString *)getMaxRandomWithGesture:(NSString *)gestureStr andSysRandomStr:(NSString *)sysRandomStr;
-
-+(NSString *)getSHA256WithString:(NSString *)string;
-
-
+/**
+ * decode encypt prikey with password
+ *
+ */
 + (NSDictionary *)decodePrikeyGetDict:(NSString *) encodeStr withPassword:(NSString *)password;
-
 
 /**
    * Encrypt private key
@@ -62,15 +85,6 @@
    * @return
  */
 +(NSString *)getEncodePrikey:(NSString *)privkey withBitAddress :(NSString *) bitAddress password:(NSString *)password;
-/**
-   * Local decryption
-   *
-   * @param encodeStr Encryption string
-   * @param password user password
-   *
-   * @return true and false
- */
-+(BOOL)decodePrikey:(NSString *) encodeStr withPassword:(NSString *)password;
 
 /**
  * Check the legitimacy of the private key
@@ -85,63 +99,31 @@
 
 + (NSString *)getHash256:(NSString *)string;
 
-+ (NSString *)getHash256Byte:(NSData *)string;
-
-#pragma mark -ECC
-/**
- *  ECC Encryption Elliptic Curve Encryption Algorithm
- */
-+(NSString *)ECC_EncryptWithPrivkey:(NSString *)privkey_ Pubkey:(NSString *)pubkey_ InputStr:(NSString *)inputStr_;
-
-/**
- *  ECC decryption
- */
-+(NSString *)ECC_DecryptWithPrivkey:(NSString *)privkey_ Pubkey:(NSString *)pubkey_ InputEncryptStr:(NSString *)inputEncryptStr_;
-
-
-
 /**
  *  ECDH shared key generation
  */
-
 + (NSString *)getECDHkeyUsePrivkey:(NSString *)privkey PublicKey:(NSString *)pubkey;
-
-
-+ (NSString *)ORXWithAstring:(NSString *)astr Bstring:(NSString *)bstr;
-
-+ (NSString *)cdxtalkPBKDF2HMACSHA512Password:(NSString *)pwd salt:(NSString *) salt;
 
 #pragma mark AES encryption and decryption functions
 
 + (NSDictionary *)xtalkEncodeAES_GCM:(NSString *)password data:(NSString *)dataStr aad:(NSString *)add iv:(NSString *) iv;
 + (NSDictionary *)xtalkEncodeAES_GCM:(NSString *)password withNSdata:(NSData *)data aad:(NSString *)aad iv:(NSString *) iv;
 + (NSString *)xtalkDecodeAES_GCM:(NSString *)password data:(NSString *)dataStr aad:(NSString *)add iv:(NSString *) iv tag:(NSString *)tagin;
-
-+ (NSString *)xtalkEncodeAES:(NSString *)password data:(NSString *)dataStr;
-+ (NSString *)xtalkDecodeAES:(NSString *)password data:(NSString *)dataStr;
-
 + (NSData *)xtalkDecodeAES_GCMWithPassword:(NSString *)password data:(NSString *)dataStr aad:(NSString *)aad iv:(NSString *) iv tag:(NSString *)tagin;
 
 #pragma mark - Signature verification signature function
 + (NSString *)signHashWithPrivkey:(NSString *)privkey data:(NSString *)data;
 + (BOOL)verifyWithPublicKey:(NSString *)publicKey originData:(NSString *)data signData:(NSString *)signData;
 
-+ (BOOL)verfyWithPublicKey:(NSString *)pub signData:(NSString *)signData;
-
-
 #pragma mark - Obtain the private key via the encryption string and password
-+(NSString *)getUserIDWithEncodePrivkey:(NSString *) encodeStr withPassword:(NSString *)password;
-
-+(NSString *)getPrikeyWithEncodePrivkey:(NSString *) encodeStr withPassword:(NSString *)password;
-
-
 + (NSString *)getBtcPrivKeyFromRawPrivKey:(NSString *)rawPrivkey;
 
+/**
+ *  local encrypt password
+ */
 + (NSString *)getPassByPrikey:(NSString *)prikey;
 
 #pragma mark - wallet
-+ (void)testSignTransfer;
-
 /**
    * Packaged transactions
    *
@@ -150,8 +132,6 @@
    * @param serverFee fee
  */
 + (NSString *)packTransactionWithTvsArray:(NSArray *)tvsArray outputs:(NSDictionary *)outputs privkeys:(NSArray *)privkeys serverFee:(double)serverFee;
-
-
 /**
      Signature trading
    *
@@ -162,7 +142,6 @@
    * @return
  */
 + (NSString *)signRawTranscationWithTvsArray:(NSArray *)tvsArray privkeys:(NSArray *)privkeys rawTranscation:(NSString *)rawTranscation;
-
 /**
    * Create the original transaction
    *
@@ -173,10 +152,7 @@
  */
 + (NSString *)createRawTranscationWithTvsArray:(NSArray *)tvsArray outputs:(NSDictionary *)outputs;
 
-
-
 #pragma mark - Encryption decryption method
-+ (GcmData *)xtalkEncodeAES_GCMWithPassword:(NSData *)password data:(NSData *)data aad:(NSData *)aad;
 + (NSDictionary *)xtalkEncodeAES_GCMWithPassword:(NSData *)password originData:(NSData *)data aad:(NSData *)aad;
 + (NSData *)getECDHkeyWithPrivkey:(NSString *)privkey publicKey:(NSString *)pubkey;
 + (NSData *)getAes256KeyByECDHKeyAndSalt:(NSData *)password salt:(NSData *)salt;
