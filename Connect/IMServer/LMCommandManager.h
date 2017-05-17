@@ -13,9 +13,9 @@ typedef void (^SendCommandCallback)(NSError *error, id data);
 
 @interface SendCommandModel : NSObject
 
-@property (nonatomic ,strong) Message *sendMsg;
-@property (nonatomic ,assign) long long sendTime;
-@property (nonatomic ,copy) SendCommandCallback callBack;
+@property(nonatomic, strong) Message *sendMsg;
+@property(nonatomic, assign) long long sendTime;
+@property(nonatomic, copy) SendCommandCallback callBack;
 
 @end
 

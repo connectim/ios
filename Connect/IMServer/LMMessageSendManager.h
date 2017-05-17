@@ -14,9 +14,9 @@ typedef void(^SendMessageCallBlock)(MMMessage *message, NSError *error);
 
 @interface SendMessageModel : NSObject
 
-@property (nonatomic ,strong) MMMessage *sendMsg;
-@property (nonatomic ,assign) long long sendTime;
-@property (nonatomic ,copy) SendMessageCallBlock callBack;
+@property(nonatomic, strong) MMMessage *sendMsg;
+@property(nonatomic, assign) long long sendTime;
+@property(nonatomic, copy) SendMessageCallBlock callBack;
 
 @end
 

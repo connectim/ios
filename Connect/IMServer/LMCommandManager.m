@@ -15,18 +15,11 @@
 #import "ConnectTool.h"
 #import "PeerMessageHandler.h"
 #import "GroupMessageHandler.h"
-#import "AppDelegate.h"
-#import "NSString+DictionaryValue.h"
 #import "SystemMessageHandler.h"
 #import "NSData+Gzip.h"
 #import "CIImageCacheManager.h"
-#import "SystemTool.h"
 #import "YYImageCache.h"
 #import "LMHistoryCacheManager.h"
-#import "LMUUID.h"
-#import "LMCommandAdapter.h"
-#import "LMMessageAdapter.h"
-#import "LMMessageSendManager.h"
 
 @implementation SendCommandModel
 
@@ -35,7 +28,7 @@
 @interface LMCommandManager ()
 
 @property(nonatomic, strong) dispatch_queue_t commandSendStatusQueue;
-@property (nonatomic ,strong) NSMutableDictionary *sendingCommands;
+@property(nonatomic, strong) NSMutableDictionary *sendingCommands;
 
 
 //check message outtime
@@ -48,12 +41,12 @@
 
 CREATE_SHARED_MANAGER(LMCommandManager)
 
-- (instancetype)init{
+- (instancetype)init {
     if (self = [super init]) {
         _sendingCommands = [NSMutableDictionary dictionary];
-        
+
         _commandSendStatusQueue = dispatch_queue_create("_imserver_message_sendstatus_queue", DISPATCH_QUEUE_SERIAL);
-        
+
         //relash source
         __weak __typeof(&*self) weakSelf = self;
         _reflashSendStatusSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, _commandSendStatusQueue);
@@ -69,7 +62,7 @@ CREATE_SHARED_MANAGER(LMCommandManager)
                 int long long sendDuration = currentTime - sendComModel.sendTime;
                 if (sendDuration >= SOCKET_TIME_OUT) {
                     if (sendComModel.callBack) {
-                        sendComModel.callBack([NSError errorWithDomain:@"over_time" code:-1 userInfo:nil],nil);
+                        sendComModel.callBack([NSError errorWithDomain:@"over_time" code:-1 userInfo:nil], nil);
                     }
                     [weakSelf.sendingCommands removeObjectForKey:sendComModel.sendMsg.msgIdentifer];
                 }
@@ -81,15 +74,15 @@ CREATE_SHARED_MANAGER(LMCommandManager)
     return self;
 }
 
-- (void)addSendingMessage:(Message *)commandMsg callBack:(SendCommandCallback)callBack{
+- (void)addSendingMessage:(Message *)commandMsg callBack:(SendCommandCallback)callBack {
     SendCommandModel *sendComModel = [SendCommandModel new];
     sendComModel.sendMsg = commandMsg;
     sendComModel.sendTime = [[NSDate date] timeIntervalSince1970];
     sendComModel.callBack = callBack;
-    
+
     //save to send queue
     [self.sendingCommands setValue:sendComModel forKey:commandMsg.msgIdentifer];
-    
+
     //open reflash
     if (!self.reflashSendStatusSourceActive) {
         dispatch_resume(self.reflashSendStatusSource);
@@ -98,7 +91,7 @@ CREATE_SHARED_MANAGER(LMCommandManager)
 }
 
 
-- (void)sendCommandSuccessWithCallbackMsg:(Message *)callBackMsg{
+- (void)sendCommandSuccessWithCallbackMsg:(Message *)callBackMsg {
     [GCDQueue executeInQueue:self.commandSendStatusQueue block:^{
         switch (callBackMsg.extension) {
             case BM_GETOFFLINE_EXT: {
@@ -178,18 +171,17 @@ CREATE_SHARED_MANAGER(LMCommandManager)
     }];
 }
 
-- (void)sendCommandFailedWithMsgId:(NSString *)messageId{
+- (void)sendCommandFailedWithMsgId:(NSString *)messageId {
     [GCDQueue executeInQueue:self.commandSendStatusQueue block:^{
         SendCommandModel *sendModel = [self.sendingCommands valueForKey:messageId];
         if (sendModel.callBack) {
             NSError *error = [NSError errorWithDomain:@"imserver" code:-1 userInfo:nil];
-            sendModel.callBack(error,nil);
+            sendModel.callBack(error, nil);
         }
         //remove
         [self.sendingCommands removeObjectForKey:messageId];
     }];
 }
-
 
 
 #pragma mark - privket method
@@ -230,13 +222,13 @@ CREATE_SHARED_MANAGER(LMCommandManager)
                                 [offLineNomarlMessages objectAddObject:post];
                             }
                                 break;
-                                
+
                             case BM_IM_SEND_GROUPINFO_EXT: //group create
                             {
                                 [offLineCreateGroupMessages objectAddObject:post];
                             }
                                 break;
-                                
+
                             case BM_IM_GROUPMESSAGE_EXT: //group message
                             {
                                 [offLinGroupMessages objectAddObject:post];
@@ -258,15 +250,15 @@ CREATE_SHARED_MANAGER(LMCommandManager)
                 break;
         }
     }
-    
+
     [[GroupMessageHandler instance] handleBatchGroupInviteMessage:offLineCreateGroupMessages];
-    
+
     [[PeerMessageHandler instance] handleBatchMessages:offLineNomarlMessages];
-    
+
     [[GroupMessageHandler instance] handleBatchGroupMessage:offLinGroupMessages];
-    
+
     [[SystemMessageHandler instance] handleBatchMessages:offLineRoobtMessages];
-    
+
     for (OfflineMsg *messageDetail in offlinemsg.offlineMsgsArray) {
         int type = messageDetail.body.type;
         [[IMService instance] sendOfflineAck:messageDetail.msgId type:type];
@@ -319,7 +311,7 @@ CREATE_SHARED_MANAGER(LMCommandManager)
             if (!error) {
                 operation = [NSString stringWithFormat:@"%@/%@", redNotice.sender, redNotice.receiver];
                 hashId = redNotice.hashId;
-                
+
                 chatMessage = [[ChatMessageInfo alloc] init];
                 chatMessage.messageId = [ConnectTool generateMessageId];
                 if (redNotice.category == 1) {
@@ -350,7 +342,7 @@ CREATE_SHARED_MANAGER(LMCommandManager)
             if (!error) {
                 operation = [NSString stringWithFormat:@"%@/%@", bill.receiver, bill.sender];
                 hashId = bill.hashId;
-                
+
                 chatMessage = [[ChatMessageInfo alloc] init];
                 chatMessage.messageId = [ConnectTool generateMessageId];
                 identifier = [[UserDBManager sharedManager] getUserPubkeyByAddress:bill.sender]; //sender  payer
@@ -393,7 +385,7 @@ CREATE_SHARED_MANAGER(LMCommandManager)
                 operation = [NSString stringWithFormat:@"%@/%@", bill.sender, bill.receiver];
                 hashId = bill.hashId;
                 identifier = bill.groupId;
-                
+
                 chatMessage = [[ChatMessageInfo alloc] init];
                 chatMessage.messageId = [ConnectTool generateMessageId];
                 chatMessage.messageOwer = bill.groupId;
@@ -409,9 +401,9 @@ CREATE_SHARED_MANAGER(LMCommandManager)
                 message.sendstatus = GJGCChatFriendSendMessageStatusSuccess;
                 chatMessage.message = message;
                 [[MessageDBManager sharedManager] saveMessage:chatMessage];
-                
+
                 [[LMMessageExtendManager sharedManager] updateMessageExtendPayCount:(int) (bill.crowdfunding.size - bill.crowdfunding.remainSize) status:(int) bill.crowdfunding.status withHashId:bill.crowdfunding.hashId];
-                
+
                 if (bill.crowdfunding.remainSize == 0) { //crowding complete
                     crowdfunding = bill.crowdfunding;
                     ChatMessageInfo *chatMessage = [[ChatMessageInfo alloc] init];
@@ -436,7 +428,7 @@ CREATE_SHARED_MANAGER(LMCommandManager)
             break;
     }
     if (hashId) {
-        
+
         NSMutableDictionary *noteDict = [NSMutableDictionary dictionary];
         [noteDict setObject:hashId forKey:@"hashId"];
         [noteDict setObject:chatMessage forKey:@"chatMessage"];
@@ -447,7 +439,7 @@ CREATE_SHARED_MANAGER(LMCommandManager)
         [noteDict setObject:identifier forKey:@"identifier"];
         SendNotify(TransactionStatusChangeNotification, (noteDict));
     }
-    
+
     //send ack
     [[IMService instance] sendOnlineBackAck:notice.msgId type:msg.typechar];
 }
@@ -474,9 +466,9 @@ CREATE_SHARED_MANAGER(LMCommandManager)
         DDLogError(@"decode message failed");
         return;
     }
-    
+
     NSError *error = nil;
-    
+
     Command *command = [Command parseFromData:decodeData error:&error];
     if (error) {
         return;
@@ -492,7 +484,7 @@ CREATE_SHARED_MANAGER(LMCommandManager)
         if (GJCFStringIsNull(receveRequest.sender.address)) {
             return;
         }
-        
+
         AccountInfo *newFriend = [[AccountInfo alloc] init];
         newFriend.username = receveRequest.sender.username;
         newFriend.avatar = receveRequest.sender.avatar;
@@ -501,24 +493,24 @@ CREATE_SHARED_MANAGER(LMCommandManager)
         newFriend.message = tips;
         newFriend.source = receveRequest.source;
         newFriend.status = RequestFriendStatusAccept;
-        
+
         [[UserDBManager sharedManager] saveNewFriend:newFriend];
         [GCDQueue executeInMainQueue:^{
             SendNotify(kNewFriendRequestNotification, newFriend);
         }];
     } else {
-        AddFriendRequest *addReuqest = (AddFriendRequest *)oriMsg.sendOriginInfo;
+        AddFriendRequest *addReuqest = (AddFriendRequest *) oriMsg.sendOriginInfo;
         if (command.errNo == 1) { //add myself error
             if (sendComModel.callBack) {
                 sendComModel.callBack([NSError errorWithDomain:@"" code:1 userInfo:nil], nil);
             }
-        } else{
+        } else {
             if (sendComModel.callBack) {
                 sendComModel.callBack(nil, addReuqest.address);
             }
         }
     }
-    
+
     //remove command
     [self.sendingCommands removeObjectForKey:command.msgId];
     //ack
@@ -530,15 +522,15 @@ CREATE_SHARED_MANAGER(LMCommandManager)
     if (!decodeData) {
         return;
     }
-    
+
     NSError *error = nil;
     Command *command = [Command parseFromData:decodeData error:&error];
     if (error) {
         return;
     }
-    
+
     GroupChange *groupChange = [GroupChange parseFromData:command.detail error:nil];
-    
+
     [GCDQueue executeInGlobalQueue:^{
         [self handleGroupInfoDetailChange:groupChange messageId:command.msgId];
     }];
@@ -561,7 +553,7 @@ CREATE_SHARED_MANAGER(LMCommandManager)
                     NSError *error = nil;
                     Group *group = [Group parseFromData:groupChange.detail error:&error];
                     if (!error && group) {
-                        
+
                         if (!lmGroup) {
                             return;
                         }
@@ -584,7 +576,7 @@ CREATE_SHARED_MANAGER(LMCommandManager)
                     if (lmGroup.groupMembers.count < 9) {
                         [[YYImageCache sharedCache] removeImageForKey:lmGroup.avatarUrl];
                     }
-                    
+
                     if (groupChange.inviteBy && groupChange.inviteBy.username) {
                         NSMutableArray *newUsers = [NSMutableArray array];
                         NSMutableString *welcomeTip = [NSMutableString string];
@@ -604,13 +596,13 @@ CREATE_SHARED_MANAGER(LMCommandManager)
                                 [welcomeTip appendString:@"、"];
                             }
                         }
-                        
+
                         if ([groupChange.inviteBy.address isEqualToString:[[LKUserCenter shareCenter] currentLoginUser].address]) {
                             groupChange.inviteBy.username = LMLocalizedString(@"Chat You", nil);
                         }
-                        
+
                         NSString *myChatTip = [NSString stringWithFormat:LMLocalizedString(@"Link invited to the group chat", nil), groupChange.inviteBy.username, welcomeTip];
-                        
+
                         ChatMessageInfo *chatMessage = [[ChatMessageInfo alloc] init];
                         chatMessage.messageId = [ConnectTool generateMessageId];
                         chatMessage.messageOwer = groupChange.identifier;
@@ -627,15 +619,15 @@ CREATE_SHARED_MANAGER(LMCommandManager)
                         message.sendstatus = GJGCChatFriendSendMessageStatusSuccess;
                         chatMessage.message = message;
                         [[MessageDBManager sharedManager] saveMessage:chatMessage];
-                        
+
                         [[RecentChatDBManager sharedManager] createNewChatWithIdentifier:groupChange.identifier groupChat:YES lastContentShowType:0 lastContent:[GJGCChatFriendConstans lastContentMessageWithType:message.type textMessage:message.content] ecdhKey:lmGroup.groupEcdhKey talkName:lmGroup.groupName];
-                        
+
                         if ([[SessionManager sharedManager].chatSession isEqualToString:groupChange.identifier]) {
                             SendNotify(GroupNewMemberEnterNotification, chatMessage);
                         }
-                        
+
                         LMGroupInfo *lmGroupTem = [[GroupDBManager sharedManager] addMember:newUsers ToGroupChat:groupChange.identifier];
-                        
+
                         NSMutableArray *temA = [NSMutableArray arrayWithArray:lmGroupTem.groupMembers];
                         NSMutableArray *avatars = [NSMutableArray array];
                         for (AccountInfo *member in temA) {
@@ -651,7 +643,7 @@ CREATE_SHARED_MANAGER(LMCommandManager)
                             newUser.address = userInfo.address;
                             newUser.pub_key = userInfo.pubKey;
                             [newUsers objectAddObject:newUser];
-                            
+
                             ChatMessageInfo *chatMessage = [[ChatMessageInfo alloc] init];
                             chatMessage.messageId = [ConnectTool generateMessageId];
                             chatMessage.messageOwer = groupChange.identifier;
@@ -668,15 +660,15 @@ CREATE_SHARED_MANAGER(LMCommandManager)
                             message.sendstatus = GJGCChatFriendSendMessageStatusSuccess;
                             chatMessage.message = message;
                             [[MessageDBManager sharedManager] saveMessage:chatMessage];
-                            
+
                             [[RecentChatDBManager sharedManager] createNewChatWithIdentifier:groupChange.identifier groupChat:YES lastContentShowType:0 lastContent:[GJGCChatFriendConstans lastContentMessageWithType:message.type textMessage:message.content] ecdhKey:lmGroup.groupEcdhKey talkName:lmGroup.groupName];
-                            
+
                             if ([[SessionManager sharedManager].chatSession isEqualToString:groupChange.identifier]) {
                                 SendNotify(GroupNewMemberEnterNotification, chatMessage);
                             }
                         }
                         LMGroupInfo *lmGroupTem = [[GroupDBManager sharedManager] addMember:newUsers ToGroupChat:groupChange.identifier];
-                        
+
                         NSMutableArray *temA = [NSMutableArray arrayWithArray:lmGroupTem.groupMembers];
                         NSMutableArray *avatars = [NSMutableArray array];
                         for (AccountInfo *member in temA) {
@@ -686,15 +678,15 @@ CREATE_SHARED_MANAGER(LMCommandManager)
                     }
                 }
                     break;
-                    
+
                 case 2: {
                     NSError *error = nil;
                     QuitGroupUserAddress *quitAddresses = [QuitGroupUserAddress parseFromData:groupChange.detail error:&error];
-                    
+
                     if (lmGroup.groupMembers.count - quitAddresses.addressesArray.count < 9) {
                         [[YYImageCache sharedCache] removeImageForKey:lmGroup.avatarUrl];
                     }
-                    
+
                     if (!error) {
                         if (!lmGroup) {
                             return;
@@ -712,18 +704,18 @@ CREATE_SHARED_MANAGER(LMCommandManager)
                             }
                         }
                         [lmGroup.groupMembers.mutableCopy removeObjectsInArray:willDeleteMember];
-                        
+
                         NSArray *groupArray = [[GroupDBManager sharedManager] getgroupMemberByGroupIdentifier:groupChange.identifier];
                         if (groupArray.count <= 1) {
                             [[GroupDBManager sharedManager] deletegroupWithGroupId:groupChange.identifier];
                         }
-                        
+
                         [[CIImageCacheManager sharedInstance] uploadGroupAvatarWithGroupIdentifier:groupChange.identifier groupMembers:avatars];
-                        
+
                     }
                 }
                     break;
-                    
+
                 case 3: {
                     NSError *error = nil;
                     ChangeGroupNick *changeNick = [ChangeGroupNick parseFromData:groupChange.detail error:&error];
@@ -734,12 +726,12 @@ CREATE_SHARED_MANAGER(LMCommandManager)
                         for (AccountInfo *member in lmGroup.groupMembers) {
                             if ([member.address isEqualToString:changeNick.address]) {
                                 member.groupNickName = changeNick.nick;
-                                
+
                                 [[GroupDBManager sharedManager] updateGroupMembserNick:changeNick.nick address:changeNick.address groupId:lmGroup.groupIdentifer];
                                 break;
                             }
                         }
-                        
+
                     }
                 }
                     break;
@@ -752,7 +744,7 @@ CREATE_SHARED_MANAGER(LMCommandManager)
                         }
                         for (AccountInfo *member in lmGroup.groupMembers) {
                             if ([member.address isEqualToString:attorn.address]) {
-                                
+
                                 ChatMessageInfo *chatMessage = [[ChatMessageInfo alloc] init];
                                 chatMessage.messageId = [ConnectTool generateMessageId];
                                 chatMessage.messageOwer = attorn.identifier;
@@ -769,12 +761,12 @@ CREATE_SHARED_MANAGER(LMCommandManager)
                                 message.sendstatus = GJGCChatFriendSendMessageStatusSuccess;
                                 chatMessage.message = message;
                                 [[MessageDBManager sharedManager] saveMessage:chatMessage];
-                                
+
                                 [[RecentChatDBManager sharedManager] createNewChatWithIdentifier:groupChange.identifier groupChat:YES lastContentShowType:1 lastContent:message.content ecdhKey:lmGroup.groupEcdhKey talkName:lmGroup.groupName];
                                 member.roleInGroup = 1;
-                                
+
                                 [[GroupDBManager sharedManager] setGroupNewAdmin:member.address groupId:lmGroup.groupIdentifer];
-                                
+
                                 if ([[SessionManager sharedManager].chatSession isEqualToString:attorn.identifier]) {
                                     SendNotify(GroupAdminChangeNotification, chatMessage);
                                 }
@@ -788,7 +780,7 @@ CREATE_SHARED_MANAGER(LMCommandManager)
                 default:
                     break;
             }
-            
+
             if (lmGroup.groupMembers.count != groupChange.count) {
                 [SetGlobalHandler downGroupInfoWithGroupIdentifer:groupChange.identifier complete:^(NSError *error) {
                     if (!error) {
@@ -806,7 +798,7 @@ CREATE_SHARED_MANAGER(LMCommandManager)
                     }];
                 }
             }
-            
+
             //ack
             [[IMService instance] sendIMBackAck:msgId];
         }
@@ -814,7 +806,7 @@ CREATE_SHARED_MANAGER(LMCommandManager)
 }
 
 - (void)createChatWithHashId:(NSString *)hashId sender:(UserInfo *)sender reciver:(UserInfo *)reciver Amount:(long long)amount isOutTransfer:(BOOL)isOutTransfer {
-    
+
     if (GJCFStringIsNull(hashId) || !reciver || !sender) {
         return;
     }
@@ -824,13 +816,13 @@ CREATE_SHARED_MANAGER(LMCommandManager)
     reciverUser.pub_key = reciver.pubKey;
     reciverUser.avatar = reciver.avatar;
     reciverUser.username = reciver.username;
-    
+
     AccountInfo *senderUser = [[AccountInfo alloc] init];
     senderUser.address = sender.address;
     senderUser.pub_key = sender.pubKey;
     senderUser.avatar = sender.avatar;
     senderUser.username = sender.username;
-    
+
     if ([sender.address isEqualToString:[[LKUserCenter shareCenter] currentLoginUser].address]) {
         message = [[MessageDBManager sharedManager] createSendtoOtherTransactionMessageWithMessageOwer:reciverUser hashId:hashId monney:[PayTool getBtcStringWithAmount:amount] isOutTransfer:isOutTransfer];
         if ([[UserDBManager sharedManager] isFriendByAddress:reciverUser.address]) {
@@ -841,7 +833,7 @@ CREATE_SHARED_MANAGER(LMCommandManager)
         } else {
             [[RecentChatDBManager sharedManager] createNewChatNoRelationShipWihtRegisterUser:reciverUser];
         }
-        
+
     } else {
         message = [[MessageDBManager sharedManager] createSendtoMyselfTransactionMessageWithMessageOwer:senderUser hashId:hashId monney:[PayTool getBtcStringWithAmount:amount] isOutTransfer:isOutTransfer];
         if ([[UserDBManager sharedManager] isFriendByAddress:senderUser.address]) {
@@ -863,7 +855,7 @@ CREATE_SHARED_MANAGER(LMCommandManager)
     }
     //remove command
     [self.sendingCommands removeObjectForKey:command.msgId];
-    
+
     [[IMService instance] sendIMBackAck:command.msgId];
 }
 
@@ -876,17 +868,17 @@ CREATE_SHARED_MANAGER(LMCommandManager)
     }
     msg.msgIdentifer = command.msgId;
     NSString *version = @"";
-    
+
     SendCommandModel *sendComModel = [self.sendingCommands valueForKey:command.msgId];
     Message *oriMsg = sendComModel.sendMsg;
-    
+
     if ([oriMsg.sendOriginInfo isKindOfClass:[NSString class]] &&
-        [oriMsg.sendOriginInfo isEqualToString:@"syncfriend"]) {
+            [oriMsg.sendOriginInfo isEqualToString:@"syncfriend"]) {
         SyncUserRelationship *syncRalation = [SyncUserRelationship parseFromData:command.detail error:&error];
         if (error) {
             return;
         }
-        
+
         RelationShip *friendList = syncRalation.relationShip;
         if (error) {
             return;
@@ -909,18 +901,18 @@ CREATE_SHARED_MANAGER(LMCommandManager)
                     [usersM objectAddObject:user];
                 }
             }
-            
+
             [[UserDBManager sharedManager] batchSaveUsers:temA];
-            
+
             if (sendComModel.callBack) {
                 sendComModel.callBack(nil, usersM);
             }
-            
+
         }];
         version = friendList.version;
     } else {
         if ([[[MMAppSetting sharedSetting] getContactVersion] isEqualToString:@""] ||
-            [[[MMAppSetting sharedSetting] getContactVersion] isEqualToString:@"0"]) {
+                [[[MMAppSetting sharedSetting] getContactVersion] isEqualToString:@"0"]) {
             SyncUserRelationship *syncRalation = [SyncUserRelationship parseFromData:command.detail error:&error];
             if (error) {
                 return;
@@ -929,7 +921,7 @@ CREATE_SHARED_MANAGER(LMCommandManager)
             RelationShip *friendList = syncRalation.relationShip;
             //common group
             UserCommonGroups *userGroups = syncRalation.userCommonGroups;
-            
+
             NSMutableArray *users = @[].mutableCopy;
             for (FriendInfo *friend in friendList.friendsArray) {
                 AccountInfo *user = [[AccountInfo alloc] init];
@@ -945,7 +937,7 @@ CREATE_SHARED_MANAGER(LMCommandManager)
             if (users.count) {
                 [[UserDBManager sharedManager] batchSaveUsers:users];
             }
-            
+
             for (GroupInfo *groupInfo in userGroups.groupsArray) {
                 NSString *groupKey = nil;
                 if (!GJCFStringIsNull(groupInfo.ecdh)) {
@@ -959,7 +951,7 @@ CREATE_SHARED_MANAGER(LMCommandManager)
                         groupKey = [[NSString alloc] initWithData:ecdh encoding:NSUTF8StringEncoding];
                     }
                 }
-                
+
                 if (GJCFStringIsNull(groupKey)) {
                     NSArray *temA = [groupInfo.backup componentsSeparatedByString:@"/"];
                     if (temA.count == 2) {
@@ -987,7 +979,7 @@ CREATE_SHARED_MANAGER(LMCommandManager)
                 lmGroup.isGroupVerify = groupInfo.group.reviewed;
                 lmGroup.summary = groupInfo.group.summary;
                 lmGroup.avatarUrl = groupInfo.group.avatar;
-                
+
                 NSMutableArray *AccoutInfoArray = [NSMutableArray array];
                 for (GroupMember *member in groupInfo.membersArray) {
                     AccountInfo *accountInfo = [[AccountInfo alloc] init];
@@ -1000,7 +992,7 @@ CREATE_SHARED_MANAGER(LMCommandManager)
                     [AccoutInfoArray objectAddObject:accountInfo];
                 }
                 lmGroup.groupMembers = AccoutInfoArray;
-                
+
                 [[GroupDBManager sharedManager] savegroup:lmGroup];
             }
             if ([[[MMAppSetting sharedSetting] getContactVersion] isEqualToString:@""]) {
@@ -1022,7 +1014,7 @@ CREATE_SHARED_MANAGER(LMCommandManager)
                 return;
             }
             NSMutableArray *addUsers = [NSMutableArray array];
-            
+
             for (ChangeRecord *record in changes.changeRecordsArray) {
                 if ([record.category isEqualToString:@"del"]) {
                     [[UserDBManager sharedManager] deleteUserByAddress:record.address];
@@ -1048,63 +1040,63 @@ CREATE_SHARED_MANAGER(LMCommandManager)
             version = changes.version;
         }
     }
-    
+
     [[MMAppSetting sharedSetting] saveContactVersion:version];
     [GCDQueue executeInMainQueue:^{
         SendNotify(kFriendListChangeNotification, nil);
     }];
-    
+
     //remove command
     [self.sendingCommands removeObjectForKey:command.msgId];
-    
+
     [[IMService instance] sendIMBackAck:command.msgId];
 }
 
 
 - (void)handleHandleDeleteUser:(Message *)msg {
-    
+
     NSError *error = nil;
     Command *command = [Command parseFromData:msg.body error:&error];
     if (error) {
         return;
     }
-    
+
     SendCommandModel *sendComModel = [self.sendingCommands valueForKey:command.msgId];
     Message *oriMsg = sendComModel.sendMsg;
-    
-    
-    RemoveRelationship *removeFriend = (RemoveRelationship *)oriMsg.sendOriginInfo;
+
+
+    RemoveRelationship *removeFriend = (RemoveRelationship *) oriMsg.sendOriginInfo;
     AccountInfo *deleteUser = [[UserDBManager sharedManager] getUserByAddress:removeFriend.address];
-    
+
     //delete user
     [[UserDBManager sharedManager] deleteUserBypubkey:deleteUser.pub_key];
-    
+
     [GCDQueue executeInMainQueue:^{
         SendNotify(ConnnectContactDidChangeDeleteUserNotification, deleteUser);
     }];
-    
+
     if (command.errNo > 0) {
         if (sendComModel.callBack) {
             sendComModel.callBack([NSError errorWithDomain:command.msg code:command.errNo userInfo:nil], nil);
         }
-        
-    } else{
+
+    } else {
         if (sendComModel.callBack) {
             sendComModel.callBack(nil, oriMsg.sendOriginInfo);
         }
         [[IMService instance] getFriendsWithVersion:[[MMAppSetting sharedSetting] getContactVersion] comlete:^(NSError *erro, id data) {
-            
+
         }];
     }
-    
+
     //remove command
     [self.sendingCommands removeObjectForKey:command.msgId];
-    
+
     [[IMService instance] sendIMBackAck:command.msgId];
 }
 
 - (void)handleSetUserInfo:(Message *)msg {
-    
+
     NSError *error = nil;
     Command *command = [Command parseFromData:msg.body error:&error];
     if (error) {
@@ -1114,10 +1106,10 @@ CREATE_SHARED_MANAGER(LMCommandManager)
     if (sendComModel.callBack) {
         sendComModel.callBack(nil, nil);
     }
-    
+
     //remove command
     [self.sendingCommands removeObjectForKey:command.msgId];
-    
+
     [[IMService instance] sendIMBackAck:command.msgId];
 }
 
@@ -1129,7 +1121,7 @@ CREATE_SHARED_MANAGER(LMCommandManager)
     }
     //remove command
     [self.sendingCommands removeObjectForKey:command.msgId];
-    
+
     [[IMService instance] sendIMBackAck:command.msgId];
 }
 
@@ -1146,21 +1138,21 @@ CREATE_SHARED_MANAGER(LMCommandManager)
     }
     //remove command
     [self.sendingCommands removeObjectForKey:command.msgId];
-    
+
     [[IMService instance] sendIMBackAck:command.msgId];
-    
+
     switch (msg.extension) {
         case BM_CREATE_SESSION: {
-            
+
         }
             break;
         case BM_SETMUTE_SESSION: {
-            
+
         }
             break;
-            
+
         case BM_DELETE_SESSION: {
-            
+
         }
             break;
         default:
@@ -1190,11 +1182,11 @@ CREATE_SHARED_MANAGER(LMCommandManager)
         case 0: {
             message = LMLocalizedString(@"Chat Accept success", nil);
         }
-            
+
         default:
             break;
     }
-    
+
     [GCDQueue executeInMainQueue:^{
         UIWindow *window = [[UIApplication sharedApplication] keyWindow];
         window.userInteractionEnabled = YES;
@@ -1221,7 +1213,7 @@ CREATE_SHARED_MANAGER(LMCommandManager)
     if (error) {
         return;
     }
-    
+
     NSString *message = LMLocalizedString(@"Link Unknown error", nil);
     switch (command.errNo) {
         case 0: {
@@ -1235,7 +1227,7 @@ CREATE_SHARED_MANAGER(LMCommandManager)
                 system.username = @"Connect";
                 redPackgeinfo.sender = system;
             }
-            
+
             AccountInfo *senderUser = [[UserDBManager sharedManager] getUserByPublickey:redPackgeinfo.sender.pubKey];
             if (!senderUser) {
                 senderUser = [[AccountInfo alloc] init];
@@ -1245,7 +1237,7 @@ CREATE_SHARED_MANAGER(LMCommandManager)
             senderUser.avatar = redPackgeinfo.sender.avatar;
             senderUser.username = redPackgeinfo.sender.username;
             if (![[MessageDBManager sharedManager] isMessageIsExistWithMessageId:redPackgeinfo.msgId messageOwer:redPackgeinfo.sender.pubKey]) {
-                
+
                 MMMessage *messageInfo = [[MMMessage alloc] init];
                 messageInfo.message_id = redPackgeinfo.msgId;
                 messageInfo.sendtime = [[NSDate date] timeIntervalSince1970] * 1000;
@@ -1265,7 +1257,7 @@ CREATE_SHARED_MANAGER(LMCommandManager)
                 chatMessage.sendstatus = GJGCChatFriendSendMessageStatusSuccess;
                 chatMessage.senderAddress = senderUser.address;
                 [[MessageDBManager sharedManager] saveMessage:chatMessage];
-                
+
                 if (!senderUser.stranger) {
                     RecentChatModel *model = [[RecentChatDBManager sharedManager] createNewChatWithIdentifier:senderUser.pub_key groupChat:NO lastContentShowType:0 lastContent:[GJGCChatFriendConstans lastContentMessageWithType:messageInfo.type textMessage:nil]];
                     [GCDQueue executeInMainQueue:^{
@@ -1274,16 +1266,16 @@ CREATE_SHARED_MANAGER(LMCommandManager)
                 } else {
                     [[RecentChatDBManager sharedManager] createNewChatNoRelationShipWihtRegisterUser:senderUser];
                 }
-                
+
                 [GCDQueue executeInMainQueue:^{
                     SendNotify(ConnectGetOuterRedpackgeNotification, (@{@"senderUser": senderUser,
-                                                                        @"hashid": redPackgeinfo.hashId}));
+                            @"hashid": redPackgeinfo.hashId}));
                 }];
             } else {
-                
+
                 [GCDQueue executeInMainQueue:^{
                     SendNotify(ConnectGetOuterRedpackgeNotification, (@{@"senderUser": senderUser,
-                                                                        @"hashid": redPackgeinfo.hashId}));
+                            @"hashid": redPackgeinfo.hashId}));
                 }];
             }
         }
@@ -1325,7 +1317,7 @@ CREATE_SHARED_MANAGER(LMCommandManager)
     }
     SendCommandModel *sendComModel = [self.sendingCommands valueForKey:command.msgId];
     Message *oriMsg = sendComModel.sendMsg;
-    
+
     if (sendComModel.callBack) {
         if (command.errNo > 0) {
             sendComModel.callBack([NSError errorWithDomain:command.msg code:command.errNo userInfo:nil], nil);
@@ -1333,11 +1325,11 @@ CREATE_SHARED_MANAGER(LMCommandManager)
             sendComModel.callBack(nil, oriMsg.sendOriginInfo);
         }
     }
-    
-    
+
+
     //remove command
     [self.sendingCommands removeObjectForKey:command.msgId];
-    
+
     [[IMService instance] sendIMBackAck:command.msgId];
 }
 
@@ -1355,7 +1347,7 @@ CREATE_SHARED_MANAGER(LMCommandManager)
     }
     //remove command
     [self.sendingCommands removeObjectForKey:command.msgId];
-    
+
 //    [[IMService instance] sendIMBackAck:command.msgId];
 }
 
@@ -1393,7 +1385,7 @@ CREATE_SHARED_MANAGER(LMCommandManager)
     }
     //remove command
     [self.sendingCommands removeObjectForKey:command.msgId];
-    
+
     [[IMService instance] sendIMBackAck:command.msgId];
 }
 
@@ -1404,12 +1396,12 @@ CREATE_SHARED_MANAGER(LMCommandManager)
     if (status.status != 0) {
         DDLogInfo(@"unbind device token success");
         if (sendComModel.callBack) {
-            sendComModel.callBack(nil,nil);
+            sendComModel.callBack(nil, nil);
         }
     } else {
         DDLogError(@"unbind device token failed");
         if (sendComModel.callBack) {
-            sendComModel.callBack([NSError errorWithDomain:@"Undingfail" code:-1 userInfo:nil],nil);
+            sendComModel.callBack([NSError errorWithDomain:@"Undingfail" code:-1 userInfo:nil], nil);
         }
     }
     //remove command
@@ -1440,28 +1432,28 @@ CREATE_SHARED_MANAGER(LMCommandManager)
         }
             break;
         default:
-            
+
             break;
     }
-    
+
     if (sendComModel.callBack) {
         sendComModel.callBack(nil, oriMsg.sendOriginInfo);
     }
     ReceiveAcceptFriendRequest *syncRalation = [ReceiveAcceptFriendRequest parseFromData:command.detail error:nil];
-    
+
     DDLogInfo(@"accpet success");
-    
+
     [[UserDBManager sharedManager] updateNewFriendStatusAddress:syncRalation.address withStatus:RequestFriendStatusAdded];
     [[IMService instance] getFriendsWithVersion:[[MMAppSetting sharedSetting] getContactVersion] comlete:^(NSError *erro, id data) {
-        
+
         [GCDQueue executeInMainQueue:^{
             SendNotify(kAcceptNewFriendRequestNotification, data);
         }];
     }];
-    
+
     //remove command
     [self.sendingCommands removeObjectForKey:command.msgId];
-    
+
     [[IMService instance] sendIMBackAck:command.msgId];
 }
 

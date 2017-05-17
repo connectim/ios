@@ -7,23 +7,21 @@
 //
 
 #import "LMMessageAdapter.h"
-#import "GJGCChatContentBaseModel.h"
 #import "StringTool.h"
 #import "ConnectTool.h"
 #import "GroupDBManager.h"
 
 @implementation LMMessageAdapter
 
-+ (GPBMessage *)sendAdapterIMPostWithMessage:(MMMessage *)message talkType:(GJGCChatFriendTalkType)talkType ecdhKey:(NSString *)ecdhKey{
++ (GPBMessage *)sendAdapterIMPostWithMessage:(MMMessage *)message talkType:(GJGCChatFriendTalkType)talkType ecdhKey:(NSString *)ecdhKey {
     if (!message) {
         return nil;
     }
-    
+
     NSString *messageString = [message mj_JSONString];
-    
+
     switch (talkType) {
-        case GJGCChatFriendTalkTypePrivate:
-        {
+        case GJGCChatFriendTalkTypePrivate: {
             GcmData *userToUserData = nil;
             MessageData *messageData = [[MessageData alloc] init];
             messageData.receiverAddress = message.user_id;
@@ -37,8 +35,8 @@
                 messageData.ver = reciverChatCookie.salt;
                 userToUserData = [ConnectTool createPeerIMGcmWithData:messageString chatPubkey:message.publicKey];
             } else if (!reciverChatCookie
-                       && [SessionManager sharedManager].loginUserChatCookie
-                       && chatCookieExpire) {
+                    && [SessionManager sharedManager].loginUserChatCookie
+                    && chatCookieExpire) {
                 messageData.chatPubKey = [SessionManager sharedManager].loginUserChatCookie.chatPubKey;
                 messageData.salt = [SessionManager sharedManager].loginUserChatCookie.salt;
                 userToUserData = [ConnectTool createHalfRandomPeerIMGcmWithData:messageString chatPubkey:message.publicKey];
@@ -51,13 +49,12 @@
             messagePost.pubKey = [LKUserCenter shareCenter].currentLoginUser.pub_key;
             messagePost.msgData = messageData;
             messagePost.sign = sign;
-            
+
             return messagePost;
         }
             break;
-            
-        case GJGCChatFriendTalkTypeGroup:
-        {
+
+        case GJGCChatFriendTalkTypeGroup: {
             NSString *messageString = [message mj_JSONString];
             if (GJCFStringIsNull(ecdhKey)) {
                 ecdhKey = [[GroupDBManager sharedManager] getGroupEcdhKeyByGroupIdentifier:message.publicKey];
@@ -69,21 +66,20 @@
             messageData.receiverAddress = message.publicKey;
             messageData.msgId = message.message_id;
             messageData.typ = message.type;
-            
-            
+
+
             NSString *sign = [ConnectTool signWithData:messageData.data];
-            
+
             MessagePost *messagePost = [[MessagePost alloc] init];
             messagePost.sign = sign;
             messagePost.pubKey = [LKUserCenter shareCenter].currentLoginUser.pub_key;
             messagePost.msgData = messageData;
-            
+
             return messagePost;
         }
             break;
-            
-        case GJGCChatFriendTalkTypePostSystem:
-        {
+
+        case GJGCChatFriendTalkTypePostSystem: {
             GPBMessage *msg = nil;
             switch (message.type) {
                 case GJGCChatFriendContentTypeText: {
@@ -99,7 +95,7 @@
                     msg = voiceMsg;
                 }
                     break;
-                    
+
                 case GJGCChatFriendContentTypeImage: {
                     Image *image = [[Image alloc] init];
                     image.URL = message.content;
@@ -108,7 +104,7 @@
                     msg = image;
                 }
                     break;
-                    
+
                 case GJGCChatFriendContentTypeMapLocation: {
                     /*
                      @{@"locationLatitude":@(messageContent.locationLatitude),
@@ -125,30 +121,30 @@
                 default:
                     break;
             }
-            
+
             MSMessage *msMessage = [[MSMessage alloc] init];
             msMessage.msgId = message.message_id;
             msMessage.body = msg.data;
             msMessage.category = message.type;
-            
+
             IMTransferData *imTransferData = [ConnectTool createTransferWithEcdhKey:[ServerCenter shareCenter].extensionPass data:msMessage.data aad:nil];
-            
+
             return imTransferData;
         }
             break;
         default:
             break;
     }
-    
+
     return nil;
 }
 
-+ (MessagePost *)sendAdapterIMReadAckPostWithMessage:(MMMessage *)message{
-    
++ (MessagePost *)sendAdapterIMReadAckPostWithMessage:(MMMessage *)message {
+
     if (!message) {
         return nil;
     }
-    
+
     NSString *messageString = [message mj_JSONString];
     GcmData *userToUserData = [ConnectTool createGcmWithData:messageString publickey:message.publicKey needEmptySalt:YES];
     MessageData *messageData = [[MessageData alloc] init];
@@ -156,13 +152,13 @@
     messageData.receiverAddress = message.user_id;
     messageData.msgId = message.message_id;
     messageData.typ = message.type;
-    
+
     NSString *sign = [ConnectTool signWithData:messageData.data];
     MessagePost *messagePost = [[MessagePost alloc] init];
     messagePost.pubKey = [LKUserCenter shareCenter].currentLoginUser.pub_key;
     messagePost.msgData = messageData;
     messagePost.sign = sign;
-    
+
     return messagePost;
 }
 
