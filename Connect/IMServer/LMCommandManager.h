@@ -23,12 +23,30 @@ typedef void (^SendCommandCallback)(NSError *error, id data);
 
 + (instancetype)sharedManager;
 
+/**
+ * add sending command message to queue
+ * @param commandMsg
+ * @param callBack
+ */
 - (void)addSendingMessage:(Message *)commandMsg callBack:(SendCommandCallback)callBack;
 
+/**
+ * get command ack,server handled and send ack back
+ * @param callBackMsg
+ */
 - (void)sendCommandSuccessWithCallbackMsg:(Message *)callBackMsg;
 
+/**
+ * command send failed ,remove comand and callback
+ * @param msgId
+ */
 - (void)sendCommandFailedWithMsgId:(NSString *)msgId;
 
+/**
+ * transaction statue change
+ * like transaction confirm , stranger transfer ,payment etc...
+ * @param msg
+ */
 - (void)transactionStatusChangeNoti:(Message *)msg;
 
 @end

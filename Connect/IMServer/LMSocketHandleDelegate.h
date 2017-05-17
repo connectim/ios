@@ -11,18 +11,10 @@
 @class Message;
 @class MessagePost;
 
-@protocol LMSocketHandleDelegate <NSObject>
-
-- (void)handleMessage:(Message *)msg;
-- (void)sendAck;
-
-@end
-
 @protocol IMPeerMessageHandler <NSObject>
 
 - (BOOL)handleMessage:(MessagePost *)msg;
 - (BOOL)handleBatchMessages:(NSArray *)messages;
-- (BOOL)handleMessageFailure:(MessagePost *)msg;
 
 @end
 

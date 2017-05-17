@@ -201,10 +201,29 @@
  */
 - (void)deleteSessionWithAddress:(NSString *)address complete:(SendCommandCallback)complete;
 
+/**
+ * upload login suer chat cookie
+ */
 - (void)uploadCookie;
 
+/**
+ * send offlien message ack ,use when get offline message
+ * @param messageid
+ * @param type
+ */
 - (void)sendOfflineAck:(NSString *)messageid type:(int)type;
+
+/**
+ * send online ack
+ * @param msgID
+ * @param type
+ */
 - (void)sendOnlineBackAck:(NSString *)msgID type:(int)type;
+
+/**
+ * send online ack type:defalut 0
+ * @param msgID
+ */
 - (void)sendIMBackAck:(NSString *)msgID;
 
 @end

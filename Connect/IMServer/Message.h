@@ -20,7 +20,6 @@
 #define BM_IM_UNARRIVE_EXT 0x05
 #define BM_IM_NO_RALATIONSHIP_EXT 0x06
 #define BM_TRASACTION_NOTI_EXT 0x07 //deprecated
-#define BM_REDBAG_NOTI_EXT 0x08 //deprecated
 #define BM_SERVER_NOTE_EXT 0x09 //trasaction note
 
 //========= heart beat ========
@@ -86,8 +85,17 @@
 @property(nonatomic) id originData; //origindata
 @property(nonatomic, strong) id sendOriginInfo; //send data
 
+/**
+ * pack socket data
+ * @return
+ */
 - (NSMutableData *)pack;
 
+/**
+ * unpack socket data to message
+ * @param data
+ * @return
+ */
 - (BOOL)unpack:(NSData *)data;
 
 @end

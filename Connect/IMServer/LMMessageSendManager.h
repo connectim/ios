@@ -24,12 +24,30 @@ typedef void(^SendMessageCallBlock)(MMMessage *message, NSError *error);
 
 + (instancetype)sharedManager;
 
+/**
+ * add sending message to queue
+ * @param message
+ * @param callBack
+ */
 - (void)addSendingMessage:(MMMessage *)message callBack:(SendMessageCallBlock)callBack;
 
+/**
+ * message send success and callback
+ * @param messageId
+ */
 - (void)messageSendSuccessMessageId:(NSString *)messageId;
 
+/**
+ * message send failed
+ * @param messageId
+ */
 - (void)messageSendFailedMessageId:(NSString *)messageId;
 
+/**
+ * message send failed
+ * cause your friend remove you , you are not in group
+ * @param rejectMsg
+ */
 - (void)messageRejectedMessage:(RejectMessage *)rejectMsg;
 
 @end

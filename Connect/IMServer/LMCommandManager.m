@@ -58,7 +58,7 @@ CREATE_SHARED_MANAGER(LMCommandManager)
             }
             NSArray *sendMessageModels = weakSelf.sendingCommands.allValues.copy;
             for (SendCommandModel *sendComModel in sendMessageModels) {
-                int long long currentTime = [[NSDate date] timeIntervalSince1970];
+                int long long currentTime = (long long int) [[NSDate date] timeIntervalSince1970];
                 int long long sendDuration = currentTime - sendComModel.sendTime;
                 if (sendDuration >= SOCKET_TIME_OUT) {
                     if (sendComModel.callBack) {
@@ -77,7 +77,7 @@ CREATE_SHARED_MANAGER(LMCommandManager)
 - (void)addSendingMessage:(Message *)commandMsg callBack:(SendCommandCallback)callBack {
     SendCommandModel *sendComModel = [SendCommandModel new];
     sendComModel.sendMsg = commandMsg;
-    sendComModel.sendTime = [[NSDate date] timeIntervalSince1970];
+    sendComModel.sendTime = (long long int) [[NSDate date] timeIntervalSince1970];
     sendComModel.callBack = callBack;
 
     //save to send queue
@@ -322,12 +322,12 @@ CREATE_SHARED_MANAGER(LMCommandManager)
                 chatMessage.messageOwer = identifier;//transaction.idetifier;
                 chatMessage.messageType = GJGCChatFriendContentTypeStatusTip;
                 chatMessage.sendstatus = GJGCChatFriendSendMessageStatusSuccess;
-                chatMessage.createTime = (long long) ([[NSDate date] timeIntervalSince1970] * 1000);
+                chatMessage.createTime = (NSInteger) (long long) ([[NSDate date] timeIntervalSince1970] * 1000);
                 MMMessage *message = [[MMMessage alloc] init];
                 message.type = GJGCChatFriendContentTypeStatusTip;
                 message.content = operation;
                 message.ext1 = @(notice.category);
-                message.sendtime = [[NSDate date] timeIntervalSince1970] * 1000;
+                message.sendtime = (long long int) ([[NSDate date] timeIntervalSince1970] * 1000);
                 message.message_id = chatMessage.messageId;
                 message.sendstatus = GJGCChatFriendSendMessageStatusSuccess;
                 chatMessage.message = message;
@@ -353,12 +353,12 @@ CREATE_SHARED_MANAGER(LMCommandManager)
                 chatMessage.messageOwer = identifier;
                 chatMessage.messageType = GJGCChatFriendContentTypeStatusTip;
                 chatMessage.sendstatus = GJGCChatFriendSendMessageStatusSuccess;
-                chatMessage.createTime = ([[NSDate date] timeIntervalSince1970] * 1000);
+                chatMessage.createTime = (NSInteger) ([[NSDate date] timeIntervalSince1970] * 1000);
                 MMMessage *message = [[MMMessage alloc] init];
                 message.type = GJGCChatFriendContentTypeStatusTip;
                 message.content = operation;
                 message.ext1 = @(notice.category);
-                message.sendtime = [[NSDate date] timeIntervalSince1970] * 1000;
+                message.sendtime = (long long int) ([[NSDate date] timeIntervalSince1970] * 1000);
                 message.message_id = chatMessage.messageId;
                 message.sendstatus = GJGCChatFriendSendMessageStatusSuccess;
                 chatMessage.message = message;
@@ -391,7 +391,7 @@ CREATE_SHARED_MANAGER(LMCommandManager)
                 chatMessage.messageOwer = bill.groupId;
                 chatMessage.messageType = GJGCChatFriendContentTypeStatusTip;
                 chatMessage.sendstatus = GJGCChatFriendSendMessageStatusSuccess;
-                chatMessage.createTime = ([[NSDate date] timeIntervalSince1970] * 1000);
+                chatMessage.createTime = (NSInteger) ([[NSDate date] timeIntervalSince1970] * 1000);
                 MMMessage *message = [[MMMessage alloc] init];
                 message.type = GJGCChatFriendContentTypeStatusTip;
                 message.content = operation;
@@ -893,7 +893,7 @@ CREATE_SHARED_MANAGER(LMCommandManager)
                 user.pub_key = friend.pubKey;
                 user.avatar = friend.avatar;
                 user.isOffenContact = friend.common;
-                user.source = friend.source;
+                user.source = (UserSourceType) friend.source;
                 user.remarks = friend.remark;
                 if (![usersM containsObject:user]) {
                     [temA objectAddObject:user];

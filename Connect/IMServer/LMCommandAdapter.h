@@ -11,6 +11,12 @@
 
 @interface LMCommandAdapter : NSObject
 
+/**
+ * Encapsulates the data body of the command message
+ * @param extension
+ * @param sendData
+ * @return
+ */
 + (Message *)sendAdapterWithExtension:(unsigned char)extension sendData:(GPBMessage *)sendData;
 
 @end
