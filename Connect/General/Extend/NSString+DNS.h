@@ -10,4 +10,6 @@
 
 @interface NSString (DNS)
 
+-(NSString*)IPString;
+
 @end

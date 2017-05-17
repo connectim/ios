@@ -52,20 +52,20 @@
     self.inviteMessage =  [StringTool filterStr:self.inviteMessage];
     [[IMService instance] addNewFiendWithInviteUser:self.user tips:self.inviteMessage source:self.sourceType comlete:^(NSError *erro, id data) {
         if (!erro) {
-            AccountInfo *user = (AccountInfo *) data;
-            if (![user.address isEqualToString:weakSelf.user.address]) {
+            NSString *adress = (NSString *)data;
+            if (![adress isEqualToString:weakSelf.user.address]) {
                 return;
             }
             [GCDQueue executeInMainQueue:^{
                 // data delete
                 if (weakSelf.sourceType == UserSourceTypeRecommend) {
-                    user.recommandStatus = 2;
-                    [[LMRecommandFriendManager sharedManager] updateRecommandFriendStatus:2 withAddress:user.address];
+                    weakSelf.user.recommandStatus = 2;
+                    [[LMRecommandFriendManager sharedManager] updateRecommandFriendStatus:2 withAddress:weakSelf.user.address];
                 }
                 [MBProgressHUD showToastwithText:LMLocalizedString(@"Link Add Successful", nil) withType:ToastTypeSuccess showInView:weakSelf.view complete:^{
                     [weakSelf.navigationController popViewControllerAnimated:YES];
                 }];
-                SendNotify(ConnnectSendAddRequestSuccennNotification, user);
+                SendNotify(ConnnectSendAddRequestSuccennNotification, weakSelf.user);
             }];
         } else {
             if (erro.code == 1) {

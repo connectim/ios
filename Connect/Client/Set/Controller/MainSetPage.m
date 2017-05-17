@@ -171,11 +171,11 @@
         }
     }             afterDelaySecs:20.f];
 
-    [[IMService instance] unBindDeviceTokenWithDeviceToken:[IMService instance].deviceToken complete:^(NSError *error) {
+    [[IMService instance] unBindDeviceTokenWithDeviceToken:[IMService instance].deviceToken complete:^(NSError *erro, id data) {
         [GCDQueue executeInMainQueue:^{
             [MBProgressHUD hideHUDForView:weakSelf.view];
         }];
-        if (!error) {
+        if (!erro) {
             block = nil;
             [[LKUserCenter shareCenter] loginOutByServerWithInfo:nil];
         } else {
