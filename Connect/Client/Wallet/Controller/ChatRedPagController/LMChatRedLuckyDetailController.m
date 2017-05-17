@@ -288,39 +288,39 @@ static NSString *cellIdentifier = @"cellIdentifier";
         case PacketStatusWaitOpen:
         {
             self.redLuckyStatusLabel.text = self.statusStrings[0];
-            self.redLuckyStatusLabel.textColor = GJCFQuickHexColor(@"ff6c5a");
+            self.redLuckyStatusLabel.textColor = LMBasicPacketStatusRed;
           
         }
             break;
         case PacketStatusOverTimeAndBack:
         {
             self.redLuckyStatusLabel.text = self.statusStrings[1];
-            self.redLuckyStatusLabel.textColor = GJCFQuickHexColor(@"ff6c5a");
+            self.redLuckyStatusLabel.textColor = LMBasicPacketStatusRed;
             
         }
             break;
         case PacketStatusOverTime:
         {
             self.redLuckyStatusLabel.text = self.statusStrings[2];
-            self.redLuckyStatusLabel.textColor = GJCFQuickHexColor(@"ff6c5a");
+            self.redLuckyStatusLabel.textColor = LMBasicPacketStatusRed;
         }
             break;
         case PacketStatusWaitArrivalYourWallet:
         {
             self.redLuckyStatusLabel.text = self.statusStrings[3];
-            self.redLuckyStatusLabel.textColor = GJCFQuickHexColor(@"007aff");
+            self.redLuckyStatusLabel.textColor = LMBasicPacketStatusBlue;
         }
             break;
         case PacketStatusIsDone:
         {
             self.redLuckyStatusLabel.text = self.statusStrings[4];
-            self.redLuckyStatusLabel.textColor = GJCFQuickHexColor(@"007aff");
+            self.redLuckyStatusLabel.textColor = LMBasicPacketStatusBlue;
         }
             break;
         case PacketStatusIsArrivalYourWallet:
         {
             self.redLuckyStatusLabel.text = self.statusStrings[5];
-            self.redLuckyStatusLabel.textColor = GJCFQuickHexColor(@"007aff");
+            self.redLuckyStatusLabel.textColor = LMBasicPacketStatusBlue;
         }
             break;
         default:
