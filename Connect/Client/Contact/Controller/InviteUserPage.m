@@ -22,7 +22,6 @@
 @property(nonatomic, copy) NSString *inviteMessage;
 
 
-
 @end
 
 @implementation InviteUserPage
@@ -45,42 +44,45 @@
 }
 
 - (void)addfriendAction {
-    __weak __typeof(&*self) weakSelf = self;
     if (self.sourceType == 0) {
         self.sourceType = self.user.source;
     }
-    self.inviteMessage =  [StringTool filterStr:self.inviteMessage];
-    [[IMService instance] addNewFiendWithInviteUser:self.user tips:self.inviteMessage source:self.sourceType comlete:^(NSError *erro, id data) {
-        if (!erro) {
-            NSString *adress = (NSString *)data;
-            if (![adress isEqualToString:weakSelf.user.address]) {
+    self.inviteMessage = [StringTool filterStr:self.inviteMessage];
+    [MBProgressHUD showLoadingMessageToView:self.view];
+
+    [[IMService instance] addNewFiendWithInviteUser:self.user tips:self.inviteMessage source:self.sourceType comlete:^(NSError *error, id data) {
+        if (!error) {
+            NSString *adress = (NSString *) data;
+            if (![adress isEqualToString:self.user.address]) {
+                [GCDQueue executeInMainQueue:^{
+                    [MBProgressHUD hideHUDForView:self.view];
+                }];
                 return;
             }
             [GCDQueue executeInMainQueue:^{
                 // data delete
-                if (weakSelf.sourceType == UserSourceTypeRecommend) {
-                    weakSelf.user.recommandStatus = 2;
-                    [[LMRecommandFriendManager sharedManager] updateRecommandFriendStatus:2 withAddress:weakSelf.user.address];
+                if (self.sourceType == UserSourceTypeRecommend) {
+                    self.user.recommandStatus = 2;
+                    [[LMRecommandFriendManager sharedManager] updateRecommandFriendStatus:2 withAddress:self.user.address];
                 }
-                [MBProgressHUD showToastwithText:LMLocalizedString(@"Link Add Successful", nil) withType:ToastTypeSuccess showInView:weakSelf.view complete:^{
-                    [weakSelf.navigationController popViewControllerAnimated:YES];
+                [MBProgressHUD showToastwithText:LMLocalizedString(@"Link Add Successful", nil) withType:ToastTypeSuccess showInView:self.view complete:^{
+                    [self.navigationController popViewControllerAnimated:YES];
                 }];
-                SendNotify(ConnnectSendAddRequestSuccennNotification, weakSelf.user);
+                SendNotify(ConnnectSendAddRequestSuccennNotification, self.user);
             }];
         } else {
-            if (erro.code == 1) {
+            if (error.code == 1) {
                 //owner add owner
                 [GCDQueue executeInMainQueue:^{
-                    [MBProgressHUD showToastwithText:LMLocalizedString(@"Wallet You are a narcissism", nil) withType:ToastTypeFail showInView:weakSelf.view complete:nil];
+                    [MBProgressHUD showToastwithText:LMLocalizedString(@"Wallet You are a narcissism", nil) withType:ToastTypeFail showInView:self.view complete:nil];
                 }];
             } else {
                 [GCDQueue executeInMainQueue:^{
-                    [MBProgressHUD showToastwithText:LMLocalizedString(@"Network Server error", nil) withType:ToastTypeCommon showInView:weakSelf.view complete:nil];
+                    [MBProgressHUD showToastwithText:LMLocalizedString(@"Network Server error", nil) withType:ToastTypeCommon showInView:self.view complete:nil];
                 }];
             }
         }
     }];
-
 }
 
 - (void)configTableView {
