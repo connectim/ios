@@ -216,10 +216,10 @@
         [[CIImageCacheManager sharedInstance] removeContactAvatarCacheWithUrl:self.user.avatar];
         [GCDQueue executeInMainQueue:^{
             [MBProgressHUD hideHUDForView:self.view];
-            if (!error && [data isEqualToString:self.user.address]) {
+            if (!error) {
                 [self.navigationController popToRootViewControllerAnimated:YES];
-            } else if (error) {
-                [self.navigationController popToRootViewControllerAnimated:YES];
+            } else {
+                [MBProgressHUD showToastwithText:LMLocalizedString(@"Network equest failed please try again later", nil) withType:ToastTypeFail showInView:self.view complete:nil];
             }
         }];
     }];

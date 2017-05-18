@@ -17,14 +17,6 @@
 #define SOCKET_PORT 19090
 #define DefaultHeadUrl @"https://short.connect.im/avatar/v1/b040e0a970bc6d80b675586c5a55f9e9109168ba.png"
 
-//#define SOCKET_HOST @"im.connect.im"
-//#define baseServer  @"https://short.connect.im"
-//#define SOCKET_HOST @"103.14.33.61"
-//#define baseServer  @"https://23.248.163.173"
-//#define ServerPublickey @"038bf4f74a5aaad532179c9714e2fa6ac8342b5b2c608572e4a12e8708401e0632"
-//#define SOCKET_PORT 19090
-//#define DefaultHeadUrl @"https://short.connect.im/avatar/" APIVersion "/b040e0a970bc6d80b675586c5a55f9e9109168ba.png"
-
 #define nationalAppDownloadUrl @"https://connect.im/guide"
 #define appstoreAppDownloadUrl @"https://itunes.apple.com/app/connect-p2p-encrypted-instant/id1181365735"
 #define appOpensourceUrl       @"https://www.connect.im/mobile/developer"
