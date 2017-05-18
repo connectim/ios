@@ -8,8 +8,8 @@
 
 #ifndef LMSocketHandleDelegate_h
 #define LMSocketHandleDelegate_h
-@class Message;
 @class MessagePost;
+@class ChatMessageInfo;
 
 @protocol IMPeerMessageHandler <NSObject>
 
@@ -26,5 +26,13 @@
 - (BOOL)handleBatchGroupMessage:(NSArray *)messages;
 
 @end
+
+@protocol SystemMessageHandlerGetNewMessage <NSObject>
+
+- (void)getNewSystemMessage:(ChatMessageInfo *)message;
+- (void)getNewSystemMessages:(NSArray *)messages;
+
+@end
+
 
 #endif /* LMSocketHandleDelegate_h */

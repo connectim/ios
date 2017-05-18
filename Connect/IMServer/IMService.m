@@ -25,15 +25,11 @@
 @property(nonatomic, assign) BOOL delaySendIsSuspend;
 @property(nonatomic, strong) dispatch_queue_t messageSendQueue;
 @property(nonatomic, assign) BOOL messageSendIsSuspend;
-@property(nonatomic, strong) dispatch_queue_t offLineMessageQueue;
 @property(nonatomic, copy) BOOL (^HeartBeatBlock)();
 //frist connect
 @property(nonatomic, strong) NSData *sendSalt;
 @property(nonatomic, copy) NSString *randomPrivkey;
 @property(nonatomic, copy) NSString *randomPublickey;
-
-//login out
-@property(nonatomic, copy) SendCommandCallback UnBindDeviceTokenComplete;
 
 @end
 
@@ -277,7 +273,7 @@ static dispatch_once_t onceToken;
     [self publishConnectState:STATE_GETOFFLINE];
     
     Message *msg = [LMCommandAdapter sendAdapterWithExtension:BM_GETOFFLINE_EXT sendData:nil];
-    [self sendCommandWithDelayCallBlock:^(IMService *imserverSelf) {
+    [self sendCommandWithDelay:YES callBlock:^(IMService *imserverSelf) {
         [imserverSelf sendCommandWith:msg comlete:nil];
     }];
 }
@@ -307,7 +303,7 @@ static dispatch_once_t onceToken;
 
         Message *m = [LMCommandAdapter sendAdapterWithExtension:BM_UPLOAD_CHAT_COOKIE_EXT sendData:cookie];
         m.sendOriginInfo = cookieData;
-        [self sendCommandWithDelayCallBlock:^(IMService *imserverSelf) {
+        [self sendCommandWithDelay:YES callBlock:^(IMService *imserverSelf) {
             [imserverSelf sendCommandWith:m comlete:nil];
         }];
     } else {
@@ -330,7 +326,7 @@ static dispatch_once_t onceToken;
     
     Message *m = [LMCommandAdapter sendAdapterWithExtension:BM_FRIEND_CHAT_COOKIE_EXT sendData:chatInfoAddress];
     m.sendOriginInfo = chatUser;
-    [self sendCommandWithDelayCallBlock:^(IMService *imserverSelf) {
+    [self sendCommandWithDelay:YES callBlock:^(IMService *imserverSelf) {
         [imserverSelf sendCommandWith:m comlete:complete];
     }];
 }
@@ -350,9 +346,8 @@ static dispatch_once_t onceToken;
         appInfo.model = [MMGlobal getCurrentDeviceModel];
         
         Message *m = [LMCommandAdapter sendAdapterWithExtension:BM_UPLOAD_APPINFO_EXT sendData:appInfo];
-        [self sendCommandWithDelayCallBlock:^(IMService *imserverSelf) {
-//            [imserverSelf sendCommandWith:m comlete:nil]; //
-            [imserverSelf sendMessage:m]; // do not need callback
+        [self sendCommandWithDelay:YES callBlock:^(IMService *imserverSelf) {
+            [imserverSelf sendCommandWith:m comlete:nil];
         }];
     }
 }
@@ -365,7 +360,7 @@ static dispatch_once_t onceToken;
     session.address = address;
     
     Message *m = [LMCommandAdapter sendAdapterWithExtension:BM_CREATE_SESSION sendData:session];
-    [self sendCommandWithDelayCallBlock:^(IMService *imserverSelf) {
+    [self sendCommandWithDelay:YES callBlock:^(IMService *imserverSelf) {
         [imserverSelf sendCommandWith:m comlete:complete];
     }];
 }
@@ -377,7 +372,7 @@ static dispatch_once_t onceToken;
     billingToken.token = token;
     
     Message *m = [LMCommandAdapter sendAdapterWithExtension:BM_OUTER_TRANSFER_EXT sendData:billingToken];
-    [self sendCommandWithDelayCallBlock:^(IMService *imserverSelf) {
+    [self sendCommandWithDelay:YES callBlock:^(IMService *imserverSelf) {
         [imserverSelf sendCommandWith:m comlete:complete];
     }];
 }
@@ -392,7 +387,7 @@ static dispatch_once_t onceToken;
 
     Message *m = [LMCommandAdapter sendAdapterWithExtension:BM_RECOMMADN_NOTINTEREST_EXT sendData:notInterest];
     m.sendOriginInfo = address;
-    [self sendCommandWithDelayCallBlock:^(IMService *imserverSelf) {
+    [self sendCommandWithDelay:YES callBlock:^(IMService *imserverSelf) {
         [imserverSelf sendCommandWith:m comlete:complete];
     }];
 
@@ -404,7 +399,7 @@ static dispatch_once_t onceToken;
     luckyToken.token = token;
     
     Message *m = [LMCommandAdapter sendAdapterWithExtension:BM_OUTER_REDPACKET_EXT sendData:luckyToken];
-    [self sendCommandWithDelayCallBlock:^(IMService *imserverSelf) {
+    [self sendCommandWithDelay:YES callBlock:^(IMService *imserverSelf) {
         [imserverSelf sendCommandWith:m comlete:complete];
     }];
 }
@@ -418,7 +413,7 @@ static dispatch_once_t onceToken;
     updateSession.flag = mute;
     
     Message *m = [LMCommandAdapter sendAdapterWithExtension:BM_SETMUTE_SESSION sendData:updateSession];
-    [self sendCommandWithDelayCallBlock:^(IMService *imserverSelf) {
+    [self sendCommandWithDelay:YES callBlock:^(IMService *imserverSelf) {
         [imserverSelf sendCommandWith:m comlete:complete];
     }];
 }
@@ -431,7 +426,7 @@ static dispatch_once_t onceToken;
     manageSession.address = address;
     
     Message *m = [LMCommandAdapter sendAdapterWithExtension:BM_DELETE_SESSION sendData:manageSession];
-    [self sendCommandWithDelayCallBlock:^(IMService *imserverSelf) {
+    [self sendCommandWithDelay:YES callBlock:^(IMService *imserverSelf) {
         [imserverSelf sendCommandWith:m comlete:complete];
     }];
 }
@@ -454,9 +449,9 @@ static dispatch_once_t onceToken;
     addReuqest.tips = tipGcmData;
     addReuqest.source = source;
 
-    
     Message *m = [LMCommandAdapter sendAdapterWithExtension:BM_NEWFRIEND_EXT sendData:addReuqest];
-    [self sendCommandWithDelayCallBlock:^(IMService *imserverSelf) {
+    m.sendOriginInfo = inviteUser.address;
+    [self sendCommandWithDelay:YES callBlock:^(IMService *imserverSelf) {
         [imserverSelf sendCommandWith:m comlete:complete];
     }];
 
@@ -479,7 +474,7 @@ static dispatch_once_t onceToken;
     relation.version = version;
 
     Message *m = [LMCommandAdapter sendAdapterWithExtension:BM_FRIENDLIST_EXT sendData:relation];
-    [self sendCommandWithDelayCallBlock:^(IMService *imserverSelf) {
+    [self sendCommandWithDelay:YES callBlock:^(IMService *imserverSelf) {
         [imserverSelf sendCommandWith:m comlete:complete];
     }];
 }
@@ -494,7 +489,7 @@ static dispatch_once_t onceToken;
     //sync contact
     Message *m = [LMCommandAdapter sendAdapterWithExtension:BM_FRIENDLIST_EXT sendData:relation];
     m.sendOriginInfo = @"syncfriend";
-    [self sendCommandWithDelayCallBlock:^(IMService *imserverSelf) {
+    [self sendCommandWithDelay:YES callBlock:^(IMService *imserverSelf) {
         [imserverSelf sendCommandWith:m comlete:complete];
     }];
 }
@@ -509,7 +504,7 @@ static dispatch_once_t onceToken;
     
     Message *m = [LMCommandAdapter sendAdapterWithExtension:BM_ACCEPT_NEWFRIEND_EXT sendData:acceptRequest];
     m.sendOriginInfo = address;
-    [self sendCommandWithDelayCallBlock:^(IMService *imserverSelf) {
+    [self sendCommandWithDelay:YES callBlock:^(IMService *imserverSelf) {
         [imserverSelf sendCommandWith:m comlete:complete];
     }];
 }
@@ -522,7 +517,8 @@ static dispatch_once_t onceToken;
     removeFriend.address = address;
 
     Message *m = [LMCommandAdapter sendAdapterWithExtension:BM_DELETE_FRIEND_EXT sendData:removeFriend];
-    [self sendCommandWithDelayCallBlock:^(IMService *imserverSelf) {
+    m.sendOriginInfo = address;
+    [self sendCommandWithDelay:YES callBlock:^(IMService *imserverSelf) {
         [imserverSelf sendCommandWith:m comlete:complete];
     }];
 }
@@ -536,7 +532,7 @@ static dispatch_once_t onceToken;
     setFriend.remark = remark;
 
     Message *m = [LMCommandAdapter sendAdapterWithExtension:BM_SET_FRIENDINFO_EXT sendData:setFriend];
-    [self sendCommandWithDelayCallBlock:^(IMService *imserverSelf) {
+    [self sendCommandWithDelay:YES callBlock:^(IMService *imserverSelf) {
         [imserverSelf sendCommandWith:m comlete:complete];
     }];
 }
@@ -552,7 +548,7 @@ static dispatch_once_t onceToken;
     
     Message *m = [LMCommandAdapter sendAdapterWithExtension:BM_SYNCBADGENUMBER_EXT sendData:badge];
     m.sendOriginInfo = @(badgeNumber);
-    [self sendCommandWithDelayCallBlock:^(IMService *imserverSelf) {
+    [self sendCommandWithDelay:YES callBlock:^(IMService *imserverSelf) {
         [imserverSelf sendCommandWith:m comlete:nil];
     }];
 }
@@ -572,51 +568,42 @@ static dispatch_once_t onceToken;
 
 #pragma mark - Command-send command
 
-- (void)sendCommandWithDelayCallBlock:(void (^)(IMService *imserverSelf))callBlock {
-    if (self.connectState == STATE_CONNECTED || self.connectState == STATE_GETOFFLINE) {
-        if (callBlock) {
-            callBlock(self);
-        }
-    } else {
-        if (!self.delaySendCommondQueue) {
-            self.delaySendCommondQueue = dispatch_queue_create("delaysendqueue", DISPATCH_QUEUE_CONCURRENT);
-        }
-        if (!self.delaySendIsSuspend) {
-            dispatch_suspend(self.delaySendCommondQueue);
-            self.delaySendIsSuspend = YES;
-        }
-        dispatch_async(self.delaySendCommondQueue, ^{
+- (void)sendCommandWithDelay:(BOOL)delay callBlock:(void (^)(IMService *imserverSelf))callBlock {
+    if (delay) {
+        if (self.connectState == STATE_CONNECTED || self.connectState == STATE_GETOFFLINE) {
             if (callBlock) {
                 callBlock(self);
             }
-        });
+        } else {
+            if (!self.delaySendCommondQueue) {
+                self.delaySendCommondQueue = dispatch_queue_create("delaysendqueue", DISPATCH_QUEUE_CONCURRENT);
+            }
+            if (!self.delaySendIsSuspend) {
+                dispatch_suspend(self.delaySendCommondQueue);
+                self.delaySendIsSuspend = YES;
+            }
+            dispatch_async(self.delaySendCommondQueue, ^{
+                if (callBlock) {
+                    callBlock(self);
+                }
+            });
+        }
+    } else{
+        if (callBlock) {
+            callBlock(self);
+        }
     }
-
 }
 
 #pragma mark - Command-bind device token
 
 - (void)bindDeviceTokenWithDeviceToken:(NSString *)deviceToken {
-
-    [self sendCommandWithDelayCallBlock:^(IMService *imserverSelf) {
-        DeviceToken *deviceT = [[DeviceToken alloc] init];
-        deviceT.apnsDeviceToken = deviceToken;
-        deviceT.pushType = @"APNS";
-
-        Command *command = [[Command alloc] init];
-        command.msgId = [ConnectTool generateMessageId];
-        command.detail = deviceT.data;
-
-        IMTransferData *request = [ConnectTool createTransferWithEcdhKey:[ServerCenter shareCenter].extensionPass data:command.data aad:nil];
-
-        Message *m = [[Message alloc] init];
-        m.msgIdentifer = command.msgId;
-        m.originData = command.data;
-        m.sendOriginInfo = deviceToken;
-        m.typechar = BM_COMMAND_TYPE;
-        m.extension = BM_BINDDEVICETOKEN_EXT;
-        m.len = (int) [request data].length;
-        m.body = [request data];
+    DeviceToken *deviceT = [[DeviceToken alloc] init];
+    deviceT.apnsDeviceToken = deviceToken;
+    deviceT.pushType = @"APNS";
+    Message *m = [LMCommandAdapter sendAdapterWithExtension:BM_BINDDEVICETOKEN_EXT sendData:deviceT];
+    m.sendOriginInfo = deviceToken;
+    [self sendCommandWithDelay:YES callBlock:^(IMService *imserverSelf) {
         [imserverSelf sendCommandWith:m comlete:nil];
     }];
 }
@@ -625,15 +612,14 @@ static dispatch_once_t onceToken;
 
 - (void)unBindDeviceTokenWithDeviceToken:(NSString *)deviceToken complete:(SendCommandCallback)complete {
     
-    self.UnBindDeviceTokenComplete = complete;
     DeviceToken *deviceT = [[DeviceToken alloc] init];
     deviceT.apnsDeviceToken = deviceToken;
     deviceT.pushType = @"APNS";
     
     Message *m = [LMCommandAdapter sendAdapterWithExtension:BM_UNBINDDEVICETOKEN_EXT sendData:deviceT];
     m.sendOriginInfo = deviceToken;
-    [self sendCommandWithDelayCallBlock:^(IMService *imserverSelf) {
-        [imserverSelf sendCommandWith:m comlete:nil];
+    [self sendCommandWithDelay:NO callBlock:^(IMService *imserverSelf) {
+        [imserverSelf sendCommandWith:m comlete:complete];
     }];
 }
 
