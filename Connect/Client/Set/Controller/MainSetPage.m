@@ -155,37 +155,24 @@
     // in the case of simulator
     [[LKUserCenter shareCenter] loginOutByServerWithInfo:nil];
 #else
-    // Unzip the deviceToken binding
     [MBProgressHUD showMessage:LMLocalizedString(@"Set Logging out", nil) toView:self.view];
-
-    // block
-    void __block (^block)();
-    block = ^{
-        [[LKUserCenter shareCenter] loginOutByServerWithInfo:nil];
-    };
-
-    // timeout quit
-    [GCDQueue executeInMainQueue:^{
-        if (block) {
-            block();
-        }
-    }             afterDelaySecs:20.f];
-
-    [[IMService instance] unBindDeviceTokenWithDeviceToken:[IMService instance].deviceToken complete:^(NSError *erro, id data) {
+    [[IMService instance] unBindDeviceTokenWithDeviceToken:[IMService instance].deviceToken complete:^(NSError *error, id data) {
         [GCDQueue executeInMainQueue:^{
             [MBProgressHUD hideHUDForView:weakSelf.view];
         }];
-        if (!erro) {
-            block = nil;
+        if (!error) {
             [[LKUserCenter shareCenter] loginOutByServerWithInfo:nil];
         } else {
-            [GCDQueue executeInMainQueue:^{
-                [MBProgressHUD showToastwithText:LMLocalizedString(@"Log Out Fail,Check net!", nil) withType:ToastTypeFail showInView:weakSelf.view complete:nil];
-            }];
+            if (error.code == OVER_TIME_CODE) {
+                [[LKUserCenter shareCenter] loginOutByServerWithInfo:nil];
+            } else{
+                [GCDQueue executeInMainQueue:^{
+                    [MBProgressHUD showToastwithText:LMLocalizedString(@"Log Out Fail,Check net!", nil) withType:ToastTypeFail showInView:weakSelf.view complete:nil];
+                }];
+            }
         }
     }];
 #endif
-
 }
 
 

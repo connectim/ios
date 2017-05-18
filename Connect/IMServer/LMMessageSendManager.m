@@ -55,7 +55,7 @@
                     sendMessageModel.sendMsg.sendstatus = GJGCChatFriendSendMessageStatusFaild;
 
                     if (sendMessageModel.callBack) {
-                        sendMessageModel.callBack(sendMessageModel.sendMsg, [NSError errorWithDomain:@"over_time" code:-1 userInfo:nil]);
+                        sendMessageModel.callBack(sendMessageModel.sendMsg, [NSError errorWithDomain:@"over_time" code:OVER_TIME_CODE userInfo:nil]);
                     }
 
                     [weakSelf.sendingMessages removeObjectForKey:sendMessageModel.sendMsg.message_id];

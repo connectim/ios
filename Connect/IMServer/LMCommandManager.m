@@ -62,7 +62,7 @@ CREATE_SHARED_MANAGER(LMCommandManager)
                 int long long sendDuration = currentTime - sendComModel.sendTime;
                 if (sendDuration >= SOCKET_TIME_OUT) {
                     if (sendComModel.callBack) {
-                        sendComModel.callBack([NSError errorWithDomain:@"over_time" code:-1 userInfo:nil], nil);
+                        sendComModel.callBack([NSError errorWithDomain:@"over_time" code:OVER_TIME_CODE userInfo:nil], nil);
                     }
                     [weakSelf.sendingCommands removeObjectForKey:sendComModel.sendMsg.msgIdentifer];
                 }
