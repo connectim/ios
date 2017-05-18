@@ -47,4 +47,9 @@ typedef NS_ENUM(NSUInteger,MoneyType) {
  *
  */
 + (BOOL)dirtyAlertWithAddress:(NSArray* )toAddresses withController:(UIViewController*)controller;
+/**
+ *   get Suitable fee
+ *
+ */
++ (double)getSuitAbleFee:(double)fee;
 @end

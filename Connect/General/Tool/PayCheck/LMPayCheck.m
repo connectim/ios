@@ -78,17 +78,7 @@
                             break;
                         case 2: //click button
                         {
-                            /*
-                            rawModel.unspent.fee = [[MMAppSetting sharedSetting] getMaxTranferFee]; // set max
-                            // blance check
-                            BOOL balance = [LMUnspentCheckTool checkBlanceEnoughithRawTrancation:rawModel];
-                            if (!balance) {
-                                transferViewVc.comfrimButton.enabled = YES;
-                                [GCDQueue executeInMainQueue:^{
-                                    [MBProgressHUD showToastwithText:LMLocalizedString(@"Wallet Insufficient balance", nil) withType:ToastTypeFail showInView:transferViewVc.view complete:nil];
-                                }];
-                            } else {
-                                */
+                            rawModel.unspent.fee = [[MMAppSetting sharedSetting] getMaxTranferFee];
                                 switch (transferType) {
                                         // Check for change
                                     case TransferTypeOuterTransfer:  // External transfer
@@ -142,8 +132,7 @@
                                     default:
                                         break;
                                 }
-                                
-                            //}
+
                         }
                             break;
                         default:
@@ -333,5 +322,19 @@
         }];
     }
     return amountDust;
+}
+/**
+ *   get Suitable fee
+ *
+ */
++ (double)getSuitAbleFee:(double)fee {
+    
+    double addFee = fee;
+    if ([[MMAppSetting sharedSetting] canAutoCalculateTransactionFee]) {
+        if (fee > [[MMAppSetting sharedSetting] getMaxTranferFee]) {
+            addFee = (double)[[MMAppSetting sharedSetting] getMaxTranferFee];
+        }
+    }
+    return addFee;
 }
 @end

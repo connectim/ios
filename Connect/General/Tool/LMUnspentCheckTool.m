@@ -149,7 +149,7 @@
 //To determine whether the zero address is dirty
 + (LMRawTransactionModel *)checkChangeDustWithRawTrancation:(LMRawTransactionModel *)rawTrancation{
     NSInteger change = rawTrancation.unspent.unspentAmount - rawTrancation.unspent.amount - rawTrancation.unspent.fee;
-    
+    //judge is exiset myself
     for (NSDictionary *temD in rawTrancation.toAddresses) {
         NSString *address = [temD valueForKey:@"address"];
         if ([address isEqualToString:[[LKUserCenter shareCenter] currentLoginUser].address]) {

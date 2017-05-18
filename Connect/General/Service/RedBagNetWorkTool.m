@@ -80,9 +80,9 @@
         ordinaryRed.category = category;
         ordinaryRed.money = money;
         ordinaryRed.type = type;
-        
+        double addFee = [LMPayCheck getSuitAbleFee:fee];
         NSArray *toAddresses = @[@{@"address":pendRedBag.address,
-                                   @"amount":[[[NSDecimalNumber alloc] initWithLongLong:money + fee]
+                                   @"amount":[[[NSDecimalNumber alloc] initWithLongLong:money + addFee]
                                               decimalNumberByDividingBy:
                                               [[NSDecimalNumber alloc] initWithLongLong:pow(10, 8)]].stringValue}];
         

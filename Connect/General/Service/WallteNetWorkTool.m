@@ -141,9 +141,6 @@ createRawTranscationModelComplete:(void (^)(UnspentOrderResponse *unspent,NSErro
     
     if (feeValue < 0) {
         feeValue = [[MMAppSetting sharedSetting] getTranferFee];
-        if (feeValue < 0) {
-            feeValue = [MINNER_FEE longLongValue];
-        }
     }
     if (toAddresses.count <= 0) {
         if (complete) {
@@ -836,8 +833,11 @@ createRawTranscationModelComplete:^(UnspentOrderResponse *unspent, NSError *erro
         ordinaryRed.hashId = pendRedBag.hashId;
         ordinaryRed.tips = tips;
         ordinaryRed.money = money;
+        //judge is auto
+        double addFee = [LMPayCheck getSuitAbleFee:fee];
+
         NSArray* toAddressArray = @[@{@"address":pendRedBag.address,
-                                      @"amount":[[[NSDecimalNumber alloc] initWithLongLong:ordinaryRed.money + fee]
+                                      @"amount":[[[NSDecimalNumber alloc] initWithLongLong:ordinaryRed.money + addFee]
                                                                                decimalNumberByDividingBy:
                                                  [[NSDecimalNumber alloc] initWithLongLong:pow(10, 8)]].stringValue}];
         

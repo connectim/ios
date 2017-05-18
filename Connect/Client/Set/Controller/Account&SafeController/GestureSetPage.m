@@ -73,7 +73,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.view.backgroundColor = XCColor(241, 241, 241);
+    self.view.backgroundColor = LMBasicLightGray;
 
     NSTimeInterval erroTime = [[MMAppSetting sharedSetting] getLastErroGestureTime];
     if (erroTime > 0) {

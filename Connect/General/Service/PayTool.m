@@ -152,34 +152,17 @@
     }
 }
 - (void)payVerfifyFingerWithComplete:(void (^)(BOOL result,NSString *errorMsg))complete{
+    
+    // Free payment
     if ([[MMAppSetting sharedSetting] isCanNoPassPay]) {
         if(complete){
             complete(YES,nil);
         }
-        return;
-    }
-    if (![[MMAppSetting sharedSetting] isHaveSyncPaySet]) {
-        // Download payment setup data
-        [SetGlobalHandler getPaySetComplete:^(NSError *erro) {
-            if (erro) {
-                if (complete) {
-                    complete(NO,erro.domain);
-                }
-            } else{
-                if ([[MMAppSetting sharedSetting]  needFingerPay]) {
-                    [[WJTouchID touchID] startWJTouchIDWithMessage:LMLocalizedString(@"Wallet Finger pay", nil) fallbackTitle:LMLocalizedString(@"Login Password", nil) delegate:self];
-                } else{
-                    if (complete) {
-                        complete(NO,nil);
-                    }
-                }
-            }
-        }];
-    } else{
-        if ([[MMAppSetting sharedSetting]  needFingerPay]) {
-            self.VerfifyComplete = complete;
+    }else {
+        // Fingerprint payment
+        if ([[MMAppSetting sharedSetting] needFingerPay]) {
             [[WJTouchID touchID] startWJTouchIDWithMessage:LMLocalizedString(@"Wallet Finger pay", nil) fallbackTitle:LMLocalizedString(@"Login Password", nil) delegate:self];
-        } else{
+        }else {
             if (complete) {
                 complete(NO,nil);
             }
