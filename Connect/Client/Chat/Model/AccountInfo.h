@@ -56,7 +56,7 @@ typedef void(^AccountOperationWithUserInfo)(id userInfo);
 
 @property (nonatomic ,copy) NSString *message;
 @property (nonatomic ,strong) NSNumber *times;
-@property (nonatomic ,assign) UserSourceType source;
+@property (nonatomic ,assign) int32_t source;
 @property (nonatomic ,assign) RequestFriendStatus status;
 @property (nonatomic ,copy) AccountOperation customOperation;
 @property (nonatomic ,copy) AccountOperationWithUserInfo customOperationWithInfo;

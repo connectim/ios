@@ -184,4 +184,12 @@
  */
 - (void)updateMessageTimeWithMessageOwer:(NSString *)ower messageId:(NSString *)messageId;
 
+
+/**
+ * get message send status
+ * @param ower
+ * @param messageId
+ */
+- (GJGCChatFriendSendMessageStatus)getMessageSendStatusByMessageid:(NSString *)messageid messageOwer:(NSString *)messageOwer;
+
 @end

@@ -387,15 +387,20 @@
             }];
         }
     }];
-    __weak __typeof(&*self) weakSelf = self;
-    [[IMService instance] acceptAddRequestWithAddress:address source:source comlete:^(NSError *erro, id data) {
+
+    //accept new friend request
+    [MBProgressHUD showLoadingMessageToView:self.view];
+    [[IMService instance] acceptAddRequestWithAddress:address source:source comlete:^(NSError *error, id data) {
         [GCDQueue executeInMainQueue:^{
-            if (erro) {
+            if (error) {
                 [GCDQueue executeInMainQueue:^{
-                    [MBProgressHUD showToastwithText:LMLocalizedString(@"Network Server error", nil) withType:ToastTypeFail showInView:weakSelf.view complete:nil];
+                    [MBProgressHUD showToastwithText:LMLocalizedString(@"Network Server error", nil) withType:ToastTypeFail showInView:self.view complete:nil];
                 }];
             } else {
-                [weakSelf reloadCellWithAddress:data];
+                [GCDQueue executeInMainQueue:^{
+                    [MBProgressHUD hideHUDForView:self.view];
+                }];
+                [self reloadCellWithAddress:data];
             }
         }];
     }];
@@ -568,15 +573,18 @@
     }
 }
 
-#pragma mark - 不感兴趣处理
+#pragma mark - not intereste any more
 
 - (void)NotInterestedWithAddress:(NSString *)oldAddress {
-    __weak typeof(self) weakSelf = self;
-    [[IMService instance] setRecommandUserNoInterestAdress:oldAddress comlete:^(NSError *erro, id data) {
-        if (erro == nil) {
+    [MBProgressHUD showLoadingMessageToView:self.view];
+    [[IMService instance] setRecommandUserNoInterestAdress:oldAddress comlete:^(NSError *error, id data) {
+        if (error == nil) {
+            [GCDQueue executeInMainQueue:^{
+                [MBProgressHUD hideHUDForView:self.view];
+            }];
             NSString *address = (NSString *) data;
             [[LMRecommandFriendManager sharedManager] updateRecommandFriendStatus:3 withAddress:address];
-            [weakSelf creatAllArray];
+            [self creatAllArray];
         } else {
             [GCDQueue executeInMainQueue:^{
                 [MBProgressHUD showToastwithText:LMLocalizedString(@"Link Operation failed", nil) withType:ToastTypeFail showInView:self.view complete:nil];
