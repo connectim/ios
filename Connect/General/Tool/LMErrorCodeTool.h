@@ -50,7 +50,13 @@ typedef NS_ENUM(NSInteger,ErrorCodeType)
     ErrorCodeType2502    =  2502,
     ErrorCodeType2460    =  2460,
     ErrorCodeType2461    =  2461,
-    ErrorCodeType2462    =  2462
+    ErrorCodeType2462    =  2462,
+    ErrorCodeType2616    =  2616,
+    ErrorCodeType2618    =  2618,
+    ErrorCodeType2664    =  2664,
+    ErrorCodeType2665    =  2665,
+    ErrorCodeType2666    =  2666
+    
 };
 #import <Foundation/Foundation.h>
 @interface LMErrorCodeTool : NSObject
@@ -65,31 +71,29 @@ typedef NS_ENUM(NSInteger,ErrorCodeType)
 @end
 // Declare the private method
 @interface LMErrorCodeTool (Private)
-//---------------------------- The following methods are not used for external use------------------------------------
-
 /**
  
  Registered login type error message display (this method is not available for external use)
  
  */
-+(NSString*)showLoginOrRegErrorStringWithCode:(ErrorCodeType)errorCodeType withUrl:(NSString*)url;
+//+(NSString*)showLoginOrRegErrorStringWithCode:(ErrorCodeType)errorCodeType withUrl:(NSString*)url;
 /**
  
  Contact type error message display (this method is not available for external use)
  
  */
-+(NSString*)showContactErrorStringWithCode:(ErrorCodeType)errorCodeType withUrl:(NSString*)url;
+//+(NSString*)showContactErrorStringWithCode:(ErrorCodeType)errorCodeType withUrl:(NSString*)url;
 /**
  
 Wallet type error message display (this method is not available for external use)
  */
-+(NSString*)showWalletErrorStringWithCode:(ErrorCodeType)errorCodeType withUrl:(NSString*)url;
+//+(NSString*)showWalletErrorStringWithCode:(ErrorCodeType)errorCodeType withUrl:(NSString*)url;
 /**
  
  Set type error message display (this method is not available for external use)
  
  */
-+(NSString*)showSetErrorStringWithCode:(ErrorCodeType)errorCodeType withUrl:(NSString*)url;
+//+(NSString*)showSetErrorStringWithCode:(ErrorCodeType)errorCodeType withUrl:(NSString*)url;
 
 @end
 

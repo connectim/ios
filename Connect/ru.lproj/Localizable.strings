@@ -202,6 +202,7 @@
 "ErrorCode Request Error"="Ошибка запроса";
 "ErrorCode Resource rule validation failed"="Сбой при проверки правил источника";
 "ErrorCode Signature error"="Ошибка подписи";
+"ErrorCode The fee is too low"="Плата слишком низкая";
 "ErrorCode The format is invalid"="Недопустимый формат";
 "ErrorCode The phone number already exists"="Телефоный номер уже есть";
 "ErrorCode The public key does not match"="Открытый ключ не соответствует";
@@ -209,6 +210,8 @@
 "ErrorCode The resource has expired"="Источник просрочен";
 "ErrorCode The resource is not exist"="Источник не существует";
 "ErrorCode Token does not match"="Token не совпадают";
+"ErrorCode Transaction information is incorrect"="Информация о транзакциях неверна";
+"ErrorCode Version information is repeated"="Информация о версии повтора";
 "ErrorCode backup key password hint incomplete"="Резервная копия ключа и пароля являются неполными";
 "ErrorCode data error"="Ошибка данных";
 "ErrorCode dust"="Нечестная операционная сделка";

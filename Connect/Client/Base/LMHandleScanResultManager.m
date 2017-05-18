@@ -189,7 +189,7 @@ CREATE_SHARED_MANAGER(LMHandleScanResultManager)
         }else {
             
             [GCDQueue executeInMainQueue:^{
-                [MBProgressHUD showToastwithText:[LMErrorCodeTool showWalletErrorStringWithCode:respon.code withUrl:ContactUserSearchUrl] withType:ToastTypeFail showInView:weakSelf.controller.view complete:^{
+                [MBProgressHUD showToastwithText:[LMErrorCodeTool showToastErrorType:ToastErrorTypeContact withErrorCode:respon.code withUrl:ContactUserSearchUrl] withType:ToastTypeFail showInView:weakSelf.controller.view complete:^{
                     
                 }];
             }];
