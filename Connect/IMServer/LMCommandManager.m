@@ -25,6 +25,7 @@
 
 @end
 
+
 @interface LMCommandManager ()
 
 @property(nonatomic, strong) dispatch_queue_t commandSendStatusQueue;
@@ -75,98 +76,114 @@ CREATE_SHARED_MANAGER(LMCommandManager)
 }
 
 - (void)addSendingMessage:(Message *)commandMsg callBack:(SendCommandCallback)callBack {
-    SendCommandModel *sendComModel = [SendCommandModel new];
-    sendComModel.sendMsg = commandMsg;
-    sendComModel.sendTime = (long long int) [[NSDate date] timeIntervalSince1970];
-    sendComModel.callBack = callBack;
-
-    //save to send queue
-    [self.sendingCommands setValue:sendComModel forKey:commandMsg.msgIdentifer];
-
-    //open reflash
-    if (!self.reflashSendStatusSourceActive) {
-        dispatch_resume(self.reflashSendStatusSource);
-        self.reflashSendStatusSourceActive = YES;
+    if (commandMsg.extension != BM_UPLOAD_APPINFO_EXT) {
+        SendCommandModel *sendComModel = [SendCommandModel new];
+        sendComModel.sendMsg = commandMsg;
+        sendComModel.sendTime = (long long int) [[NSDate date] timeIntervalSince1970];
+        sendComModel.callBack = callBack;
+        
+        //save to send queue
+        [self.sendingCommands setValue:sendComModel forKey:commandMsg.msgIdentifer];
+        
+        //open reflash
+        if (!self.reflashSendStatusSourceActive) {
+            dispatch_resume(self.reflashSendStatusSource);
+            self.reflashSendStatusSourceActive = YES;
+        }
     }
 }
 
 
 - (void)sendCommandSuccessWithCallbackMsg:(Message *)callBackMsg {
     [GCDQueue executeInQueue:self.commandSendStatusQueue block:^{
+        Command *command = nil;
+        if (callBackMsg.extension != BM_GETOFFLINE_EXT) {
+            NSError *error = nil;
+            command = [Command parseFromData:callBackMsg.body error:&error];
+            if (error) {
+                return;
+            }
+        }
         switch (callBackMsg.extension) {
             case BM_GETOFFLINE_EXT: {
                 [self handleOfflineMessage:callBackMsg];
             }
                 break;
             case BM_UNBINDDEVICETOKEN_EXT: {
-                [self deviceTokenUnbind:callBackMsg];
+                [self deviceTokenUnbind:command];
             }
                 break;
             case BM_BINDDEVICETOKEN_EXT: {
-                [self deviceTokenBind:callBackMsg];
+                [self deviceTokenBind:command];
             }
                 break;
             case BM_NEWFRIEND_EXT: {
-                [self newFriendRequestDetailHandle:callBackMsg.body];
+                [self newFriendRequestDetailHandle:command];
             }
                 break;
             case BM_FRIENDLIST_EXT: {
-                [self handleFriendslist:callBackMsg];
+                [self handleFriendslist:command];
             }
                 break;
             case BM_ACCEPT_NEWFRIEND_EXT: {
-                [self acceptRequestSuccessDetail:callBackMsg.body];
+                [self acceptRequestSuccessDetail:command];
             }
                 break;
             case BM_DELETE_FRIEND_EXT: {
-                [self handleHandleDeleteUser:callBackMsg];
+                [self handleHandleDeleteUser:command];
             }
                 break;
             case BM_SET_FRIENDINFO_EXT: {
-                [self handleSetUserInfo:callBackMsg];
+                [self handleSetUserInfo:command];
             }
                 break;
             case BM_GROUPINFO_CHANGE_EXT: {
-                [self handleGroupInfoChangeWithData:callBackMsg.body];
+                [self handleGroupInfoChangeWithData:command];
             }
                 break;
             case BM_SYNCBADGENUMBER_EXT: {
-                [self handldSyncBadgeNumber:callBackMsg];
+                [self handldSyncBadgeNumber:command];
             }
                 break;
             case BM_CREATE_SESSION: {
-                [self handldSessionBackCall:callBackMsg];
+                [self handldSessionBackCall:command];
             }
                 break;
             case BM_SETMUTE_SESSION: {
-                [self handldSessionBackCall:callBackMsg];
+                [self handldSessionBackCall:command];
             }
                 break;
             case BM_DELETE_SESSION: {
-                [self handldSessionBackCall:callBackMsg];
+                [self handldSessionBackCall:command];
             }
                 break;
             case BM_OUTER_TRANSFER_EXT: {
-                [self handldOuterTransfer:callBackMsg];
+                [self handldOuterTransfer:command];
             }
                 break;
             case BM_OUTER_REDPACKET_EXT: {
-                [self handldOuterRedpacket:callBackMsg];
+                [self handldOuterRedpacket:command];
             }
                 break;
             case BM_RECOMMADN_NOTINTEREST_EXT: {
-                [self handleRcommandNointeret:callBackMsg];
+                [self handleRcommandNointeret:command];
             }
                 break;
             case BM_UPLOAD_CHAT_COOKIE_EXT: {
-                [self uploadCookieAck:callBackMsg];
+                [self uploadCookieAck:command];
             }
                 break;
             case BM_FRIEND_CHAT_COOKIE_EXT:
-                [self chatUserCookie:callBackMsg];
+                [self chatUserCookie:command];
                 break;
             default:
                 break;
+        }
+        if (command) {
+            //remove command
+            [self.sendingCommands removeObjectForKey:command.msgId];
+            //ack
+            [[IMService instance] sendIMBackAck:command.msgId];
         }
     }];
 }
@@ -174,12 +191,14 @@ CREATE_SHARED_MANAGER(LMCommandManager)
 - (void)sendCommandFailedWithMsgId:(NSString *)messageId {
     [GCDQueue executeInQueue:self.commandSendStatusQueue block:^{
         SendCommandModel *sendModel = [self.sendingCommands valueForKey:messageId];
-        if (sendModel.callBack) {
-            NSError *error = [NSError errorWithDomain:@"imserver" code:-1 userInfo:nil];
-            sendModel.callBack(error, nil);
+        if (sendModel.sendMsg.extension != BM_UNBINDDEVICETOKEN_EXT) {
+            if (sendModel.callBack) {
+                NSError *error = [NSError errorWithDomain:@"imserver_error" code:-1 userInfo:nil];
+                sendModel.callBack(error, nil);
+            }
+            //remove
+            [self.sendingCommands removeObjectForKey:messageId];
         }
-        //remove
-        [self.sendingCommands removeObjectForKey:messageId];
     }];
 }
 
@@ -445,37 +464,33 @@ CREATE_SHARED_MANAGER(LMCommandManager)
 }
 
 - (void)handldOfflineCmdData:(NSData *)data cmdType:(int)cmdType {
+    
+    NSError *error = nil;
+    Command *command = [Command parseFromData:data error:&error];
+    if (error) {
+        return;
+    }
     switch (cmdType) {
         case BM_ACCEPT_NEWFRIEND_EXT: {
-            [self acceptRequestSuccessDetail:data];
+            [self acceptRequestSuccessDetail:command];
         }
             break;
         case BM_NEWFRIEND_EXT:
-            [self newFriendRequestDetailHandle:data];
+            [self newFriendRequestDetailHandle:command];
             break;
         case BM_GROUPINFO_CHANGE_EXT:
-            [self handleGroupInfoChangeWithData:data];
+            [self handleGroupInfoChangeWithData:command];
             break;
         default:
             break;
     }
 }
 
-- (void)newFriendRequestDetailHandle:(NSData *)decodeData {
-    if (!decodeData) {
-        DDLogError(@"decode message failed");
-        return;
-    }
-
-    NSError *error = nil;
-
-    Command *command = [Command parseFromData:decodeData error:&error];
-    if (error) {
-        return;
-    }
+- (void)newFriendRequestDetailHandle:(Command *)command {
     SendCommandModel *sendComModel = [self.sendingCommands valueForKey:command.msgId];
     Message *oriMsg = sendComModel.sendMsg;
     if (!oriMsg) {
+        NSError *error = nil;
         ReceiveFriendRequest *receveRequest = [ReceiveFriendRequest parseFromData:command.detail error:&error];
         if (error) {
             return;
@@ -499,41 +514,22 @@ CREATE_SHARED_MANAGER(LMCommandManager)
             SendNotify(kNewFriendRequestNotification, newFriend);
         }];
     } else {
-        AddFriendRequest *addReuqest = (AddFriendRequest *) oriMsg.sendOriginInfo;
         if (command.errNo == 1) { //add myself error
             if (sendComModel.callBack) {
                 sendComModel.callBack([NSError errorWithDomain:@"" code:1 userInfo:nil], nil);
             }
         } else {
             if (sendComModel.callBack) {
-                sendComModel.callBack(nil, addReuqest.address);
+                sendComModel.callBack(nil, oriMsg.sendOriginInfo);
             }
         }
     }
-
-    //remove command
-    [self.sendingCommands removeObjectForKey:command.msgId];
-    //ack
-    [[IMService instance] sendIMBackAck:command.msgId];
 }
 
 
-- (void)handleGroupInfoChangeWithData:(NSData *)decodeData {
-    if (!decodeData) {
-        return;
-    }
-
-    NSError *error = nil;
-    Command *command = [Command parseFromData:decodeData error:&error];
-    if (error) {
-        return;
-    }
-
+- (void)handleGroupInfoChangeWithData:(Command *)command {
     GroupChange *groupChange = [GroupChange parseFromData:command.detail error:nil];
-
-    [GCDQueue executeInGlobalQueue:^{
-        [self handleGroupInfoDetailChange:groupChange messageId:command.msgId];
-    }];
+    [self handleGroupInfoDetailChange:groupChange messageId:command.msgId];
 }
 
 /**
@@ -798,9 +794,6 @@ CREATE_SHARED_MANAGER(LMCommandManager)
                     }];
                 }
             }
-
-            //ack
-            [[IMService instance] sendIMBackAck:msgId];
         }
     }];
 }
@@ -847,33 +840,19 @@ CREATE_SHARED_MANAGER(LMCommandManager)
     }
 }
 
-- (void)deviceTokenBind:(Message *)msg {
-    NSError *error = nil;
-    Command *command = [Command parseFromData:msg.body error:&error];
-    if (error) {
-        return;
-    }
-    //remove command
-    [self.sendingCommands removeObjectForKey:command.msgId];
-
-    [[IMService instance] sendIMBackAck:command.msgId];
+- (void)deviceTokenBind:(Command *)command{
+    
 }
 
 
-- (void)handleFriendslist:(Message *)msg {
-    NSError *error = nil;
-    Command *command = [Command parseFromData:msg.body error:&error];
-    if (error) {
-        return;
-    }
-    msg.msgIdentifer = command.msgId;
+- (void)handleFriendslist:(Command *)command {
     NSString *version = @"";
-
     SendCommandModel *sendComModel = [self.sendingCommands valueForKey:command.msgId];
     Message *oriMsg = sendComModel.sendMsg;
 
     if ([oriMsg.sendOriginInfo isKindOfClass:[NSString class]] &&
             [oriMsg.sendOriginInfo isEqualToString:@"syncfriend"]) {
+        NSError *error = nil;
         SyncUserRelationship *syncRalation = [SyncUserRelationship parseFromData:command.detail error:&error];
         if (error) {
             return;
@@ -913,6 +892,7 @@ CREATE_SHARED_MANAGER(LMCommandManager)
     } else {
         if ([[[MMAppSetting sharedSetting] getContactVersion] isEqualToString:@""] ||
                 [[[MMAppSetting sharedSetting] getContactVersion] isEqualToString:@"0"]) {
+            NSError *error = nil;
             SyncUserRelationship *syncRalation = [SyncUserRelationship parseFromData:command.detail error:&error];
             if (error) {
                 return;
@@ -1008,7 +988,7 @@ CREATE_SHARED_MANAGER(LMCommandManager)
             }
             version = friendList.version;
         } else {
-            error = nil;
+            NSError *error = nil;
             ChangeRecords *changes = [ChangeRecords parseFromData:command.detail error:&error];
             if (error) {
                 return;
@@ -1045,28 +1025,15 @@ CREATE_SHARED_MANAGER(LMCommandManager)
     [GCDQueue executeInMainQueue:^{
         SendNotify(kFriendListChangeNotification, nil);
     }];
-
-    //remove command
-    [self.sendingCommands removeObjectForKey:command.msgId];
-
-    [[IMService instance] sendIMBackAck:command.msgId];
 }
 
 
-- (void)handleHandleDeleteUser:(Message *)msg {
-
-    NSError *error = nil;
-    Command *command = [Command parseFromData:msg.body error:&error];
-    if (error) {
-        return;
-    }
+- (void)handleHandleDeleteUser:(Command *)command {
 
     SendCommandModel *sendComModel = [self.sendingCommands valueForKey:command.msgId];
     Message *oriMsg = sendComModel.sendMsg;
-
-
-    RemoveRelationship *removeFriend = (RemoveRelationship *) oriMsg.sendOriginInfo;
-    AccountInfo *deleteUser = [[UserDBManager sharedManager] getUserByAddress:removeFriend.address];
+    
+    AccountInfo *deleteUser = [[UserDBManager sharedManager] getUserByAddress:oriMsg.sendOriginInfo];
 
     //delete user
     [[UserDBManager sharedManager] deleteUserBypubkey:deleteUser.pub_key];
@@ -1079,7 +1046,6 @@ CREATE_SHARED_MANAGER(LMCommandManager)
         if (sendComModel.callBack) {
             sendComModel.callBack([NSError errorWithDomain:command.msg code:command.errNo userInfo:nil], nil);
         }
-
     } else {
         if (sendComModel.callBack) {
             sendComModel.callBack(nil, oriMsg.sendOriginInfo);
@@ -1088,85 +1054,28 @@ CREATE_SHARED_MANAGER(LMCommandManager)
 
         }];
     }
-
-    //remove command
-    [self.sendingCommands removeObjectForKey:command.msgId];
-
-    [[IMService instance] sendIMBackAck:command.msgId];
 }
 
-- (void)handleSetUserInfo:(Message *)msg {
-
-    NSError *error = nil;
-    Command *command = [Command parseFromData:msg.body error:&error];
-    if (error) {
-        return;
-    }
+- (void)handleSetUserInfo:(Command *)command {
     SendCommandModel *sendComModel = [self.sendingCommands valueForKey:command.msgId];
     if (sendComModel.callBack) {
         sendComModel.callBack(nil, nil);
     }
-
-    //remove command
-    [self.sendingCommands removeObjectForKey:command.msgId];
-
-    [[IMService instance] sendIMBackAck:command.msgId];
 }
 
-- (void)handldSyncBadgeNumber:(Message *)msg {
-    NSError *error = nil;
-    Command *command = [Command parseFromData:msg.body error:&error];
-    if (error) {
-        return;
-    }
-    //remove command
-    [self.sendingCommands removeObjectForKey:command.msgId];
-
-    [[IMService instance] sendIMBackAck:command.msgId];
+- (void)handldSyncBadgeNumber:(Command *)command {
+    
 }
 
-- (void)handldSessionBackCall:(Message *)msg {
-    NSError *error = nil;
-    Command *command = [Command parseFromData:msg.body error:&error];
-    if (error) {
-        DDLogError(@"can not parse data。。");
-        return;
-    }
+- (void)handldSessionBackCall:(Command *)command {
     SendCommandModel *sendComModel = [self.sendingCommands valueForKey:command.msgId];
     if (sendComModel.callBack) {
         sendComModel.callBack(nil, nil);
     }
-    //remove command
-    [self.sendingCommands removeObjectForKey:command.msgId];
-
-    [[IMService instance] sendIMBackAck:command.msgId];
-
-    switch (msg.extension) {
-        case BM_CREATE_SESSION: {
-
-        }
-            break;
-        case BM_SETMUTE_SESSION: {
-
-        }
-            break;
-
-        case BM_DELETE_SESSION: {
-
-        }
-            break;
-        default:
-            break;
-    }
 }
 
 
-- (void)handldOuterTransfer:(Message *)msg {
-    NSError *error = nil;
-    Command *command = [Command parseFromData:msg.body error:&error];
-    if (error) {
-        return;
-    }
+- (void)handldOuterTransfer:(Command *)command {
     NSString *message = LMLocalizedString(@"Link Unknown error", nil);
     switch (command.errNo) {
         case 1://transfer not exists
@@ -1201,19 +1110,10 @@ CREATE_SHARED_MANAGER(LMCommandManager)
         }
         [hud hide:YES afterDelay:2.f];
     }];
-    //remove command
-    [self.sendingCommands removeObjectForKey:command.msgId];
-    [[IMService instance] sendIMBackAck:command.msgId];
 }
 
 
-- (void)handldOuterRedpacket:(Message *)msg {
-    NSError *error = nil;
-    Command *command = [Command parseFromData:msg.body error:&error];
-    if (error) {
-        return;
-    }
-
+- (void)handldOuterRedpacket:(Command *)command {
     NSString *message = LMLocalizedString(@"Link Unknown error", nil);
     switch (command.errNo) {
         case 0: {
@@ -1309,15 +1209,9 @@ CREATE_SHARED_MANAGER(LMCommandManager)
     [[IMService instance] sendIMBackAck:command.msgId];
 }
 
-- (void)handleRcommandNointeret:(Message *)msg {
-    NSError *error = nil;
-    Command *command = [Command parseFromData:msg.body error:&error];
-    if (error) {
-        return;
-    }
+- (void)handleRcommandNointeret:(Command *)command {
     SendCommandModel *sendComModel = [self.sendingCommands valueForKey:command.msgId];
     Message *oriMsg = sendComModel.sendMsg;
-
     if (sendComModel.callBack) {
         if (command.errNo > 0) {
             sendComModel.callBack([NSError errorWithDomain:command.msg code:command.errNo userInfo:nil], nil);
@@ -1325,19 +1219,11 @@ CREATE_SHARED_MANAGER(LMCommandManager)
             sendComModel.callBack(nil, oriMsg.sendOriginInfo);
         }
     }
-
-
-    //remove command
-    [self.sendingCommands removeObjectForKey:command.msgId];
-
-    [[IMService instance] sendIMBackAck:command.msgId];
 }
 
-- (void)uploadCookieAck:(Message *)msg {
-    Command *command = [Command parseFromData:msg.body error:nil];
+- (void)uploadCookieAck:(Command *)command {
     SendCommandModel *sendComModel = [self.sendingCommands valueForKey:command.msgId];
     Message *oriMsg = sendComModel.sendMsg;
-    msg.msgIdentifer = command.msgId;
     if (command.errNo == 0) {
         [[LMHistoryCacheManager sharedManager] cacheChatCookie:[SessionManager sharedManager].loginUserChatCookie];
         [[LMHistoryCacheManager sharedManager] cacheLeastChatCookie:oriMsg.sendOriginInfo];
@@ -1345,21 +1231,16 @@ CREATE_SHARED_MANAGER(LMCommandManager)
         //note ui ,time error
         [SessionManager sharedManager].loginUserChatCookie = nil;
     }
-    //remove command
-    [self.sendingCommands removeObjectForKey:command.msgId];
-
-//    [[IMService instance] sendIMBackAck:command.msgId];
 }
 
-- (void)chatUserCookie:(Message *)msg {
-    NSError *error = nil;
-    Command *command = [Command parseFromData:msg.body error:&error];
+- (void)chatUserCookie:(Command *)command {
     SendCommandModel *sendComModel = [self.sendingCommands valueForKey:command.msgId];
     if (command.errNo == 5) { //friend did not report Chatcookie
         if (sendComModel.callBack) {
             sendComModel.callBack(nil, nil);
         }
     } else {
+        NSError *error = nil;
         if (error) {
             if (sendComModel.callBack) {
                 sendComModel.callBack(error, nil);
@@ -1383,14 +1264,9 @@ CREATE_SHARED_MANAGER(LMCommandManager)
             }
         }
     }
-    //remove command
-    [self.sendingCommands removeObjectForKey:command.msgId];
-
-    [[IMService instance] sendIMBackAck:command.msgId];
 }
 
-- (void)deviceTokenUnbind:(Message *)msg {
-    Command *command = [Command parseFromData:msg.body error:nil];
+- (void)deviceTokenUnbind:(Command *)command {
     CommandStauts *status = [CommandStauts parseFromData:command.detail error:nil];
     SendCommandModel *sendComModel = [self.sendingCommands valueForKey:command.msgId];
     if (status.status != 0) {
@@ -1404,27 +1280,15 @@ CREATE_SHARED_MANAGER(LMCommandManager)
             sendComModel.callBack([NSError errorWithDomain:@"Undingfail" code:-1 userInfo:nil], nil);
         }
     }
-    //remove command
-    [self.sendingCommands removeObjectForKey:command.msgId];
-    [[IMService instance] sendIMBackAck:command.msgId];
 }
 
-- (void)acceptRequestSuccessDetail:(NSData *)decodeData {
-    if (!decodeData) {
-        DDLogError(@"decode message failed");
-        return;
-    }
-    NSError *error = nil;
-    Command *command = [Command parseFromData:decodeData error:&error];
-    if (error) {
-        return;
-    }
+- (void)acceptRequestSuccessDetail:(Command *)command {
     SendCommandModel *sendComModel = [self.sendingCommands valueForKey:command.msgId];
     Message *oriMsg = sendComModel.sendMsg;
     switch (command.errNo) {
         case 1: //msg: "ACCEPT ERROR"
         {
-            error = [NSError errorWithDomain:command.msg code:-1 userInfo:nil];
+            NSError *error = [NSError errorWithDomain:command.msg code:-1 userInfo:nil];
             if (sendComModel.callBack) {
                 sendComModel.callBack(error, nil);
             }
@@ -1450,11 +1314,6 @@ CREATE_SHARED_MANAGER(LMCommandManager)
             SendNotify(kAcceptNewFriendRequestNotification, data);
         }];
     }];
-
-    //remove command
-    [self.sendingCommands removeObjectForKey:command.msgId];
-
-    [[IMService instance] sendIMBackAck:command.msgId];
 }
 
 @end
