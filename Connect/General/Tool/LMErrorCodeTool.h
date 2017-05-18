@@ -69,33 +69,6 @@ typedef NS_ENUM(NSInteger,ErrorCodeType)
 +(NSString*)showToastErrorType:(ToastErrorType)toastErrorType withErrorCode:(ErrorCodeType)errorCodeType withUrl:(NSString*)url;
 
 @end
-// Declare the private method
-@interface LMErrorCodeTool (Private)
-/**
- 
- Registered login type error message display (this method is not available for external use)
- 
- */
-//+(NSString*)showLoginOrRegErrorStringWithCode:(ErrorCodeType)errorCodeType withUrl:(NSString*)url;
-/**
- 
- Contact type error message display (this method is not available for external use)
- 
- */
-//+(NSString*)showContactErrorStringWithCode:(ErrorCodeType)errorCodeType withUrl:(NSString*)url;
-/**
- 
-Wallet type error message display (this method is not available for external use)
- */
-//+(NSString*)showWalletErrorStringWithCode:(ErrorCodeType)errorCodeType withUrl:(NSString*)url;
-/**
- 
- Set type error message display (this method is not available for external use)
- 
- */
-//+(NSString*)showSetErrorStringWithCode:(ErrorCodeType)errorCodeType withUrl:(NSString*)url;
-
-@end
 
 
 

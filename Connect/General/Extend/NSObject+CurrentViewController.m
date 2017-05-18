@@ -12,34 +12,7 @@
 
 + (UIViewController *)getCurrentVC
 {
-    /*
-    UIViewController *result = nil;
     
-    UIWindow * window = [[UIApplication sharedApplication] keyWindow];
-    if (window.windowLevel != UIWindowLevelNormal)
-    {
-        NSArray *windows = [[UIApplication sharedApplication] windows];
-        for(UIWindow * tmpWin in windows)
-        {
-            if (tmpWin.windowLevel == UIWindowLevelNormal)
-            {
-                window = tmpWin;
-                break;
-            }
-        }
-    }
-    
-    UIView *frontView = [[window subviews] objectAtIndexCheck:0];
-    id nextResponder = [frontView nextResponder];
-    
-    if ([nextResponder isKindOfClass:[UIViewController class]])
-        result = nextResponder;
-    else
-        result = window.rootViewController;
-    
-    return result;
-     */
-        
     UIWindow *window = [[UIApplication sharedApplication].windows firstObject];
     if (!window) {
         return nil;
@@ -65,7 +38,6 @@
         nextResponder = [tempView nextResponder];
     }
     return  (UIViewController *)nextResponder;
-    
     
 }
 
