@@ -289,8 +289,11 @@ typedef NS_ENUM(NSInteger, LMTransactionStatusType) {
     NSArray *toAddresses = @[@{@"address": self.bill.receiver, @"amount": [amount
             decimalNumberByDividingBy:
                     [[NSDecimalNumber alloc] initWithLongLong:pow(10, 8)]].stringValue}];
-    [LMPayCheck dirtyAlertWithAddress:toAddresses withController:self];
-    
+    BOOL isDusk = [LMPayCheck dirtyAlertWithAddress:toAddresses withController:self];
+    if (isDusk) {
+        btn.enabled = YES;
+        return;
+    }
     AccountInfo *ainfo = [[LKUserCenter shareCenter] currentLoginUser];
     [WallteNetWorkTool unspentV2WithAddress:ainfo.address fee:[[MMAppSetting sharedSetting] getTranferFee] toAddress:toAddresses createRawTranscationModelComplete:^(UnspentOrderResponse *unspent, NSError *error) {
         [LMPayCheck payCheck:nil withVc:weakSelf withTransferType:TransferTypeNotes unSpent:unspent withArray:toAddresses withMoney:amount withNote:nil withType:0 withRedPackage:nil withError:error];

@@ -74,7 +74,13 @@
                                @"amount":[PayTool getBtcStringWithAmount:perAmount]};
         [perAmountAddresses addObject:dict];
     }
-    [LMPayCheck dirtyAlertWithAddress:perAmountAddresses.copy withController:[self getCurrentVC]];
+    BOOL isDusk = [LMPayCheck dirtyAlertWithAddress:perAmountAddresses.copy withController:[self getCurrentVC]];
+    if (isDusk) {
+        if (complete) {
+            complete(nil,nil,nil);
+        }
+        return;
+    }
     [self unspentV2WithAddress:address fee:feeValue toAddress:perAmountAddresses createRawTranscationModelComplete:^(UnspentOrderResponse *unspent, NSError *error) {
         if (error) {
             if (complete) {
@@ -717,8 +723,13 @@ createRawTranscationComplete:(void (^)(NSArray *vtsArray, NSString *rawTransacti
                                                              decimalNumberByDividingBy:
                                                              [[NSDecimalNumber alloc] initWithLongLong:pow(10, 8)]].stringValue}];
     
-    [LMPayCheck dirtyAlertWithAddress:toAddresses withController:[self getCurrentVC]];
-    
+    BOOL isDusk = [LMPayCheck dirtyAlertWithAddress:toAddresses withController:[self getCurrentVC]];
+    if (isDusk) {
+        if (complete) {
+            complete(nil,nil,nil);
+        }
+        return;
+    }
     [self unspentV2WithAddress:[[LKUserCenter shareCenter] currentLoginUser].address
                            fee:[[MMAppSetting sharedSetting] getTranferFee]
                      toAddress:toAddresses
@@ -830,7 +841,13 @@ createRawTranscationModelComplete:^(UnspentOrderResponse *unspent, NSError *erro
                                                                                decimalNumberByDividingBy:
                                                  [[NSDecimalNumber alloc] initWithLongLong:pow(10, 8)]].stringValue}];
         
-        [LMPayCheck dirtyAlertWithAddress:toAddressArray withController:[self getCurrentVC]];
+        BOOL isDusk = [LMPayCheck dirtyAlertWithAddress:toAddressArray withController:[self getCurrentVC]];
+        if (isDusk) {
+            if (complete) {
+                complete(nil,nil,nil,nil);
+            }
+            return;
+        }
         [WallteNetWorkTool unspentV2WithAddress:[[LKUserCenter shareCenter] currentLoginUser].address
                            fee:fee
                            toAddress:toAddressArray

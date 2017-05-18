@@ -149,6 +149,15 @@
 //To determine whether the zero address is dirty
 + (LMRawTransactionModel *)checkChangeDustWithRawTrancation:(LMRawTransactionModel *)rawTrancation{
     NSInteger change = rawTrancation.unspent.unspentAmount - rawTrancation.unspent.amount - rawTrancation.unspent.fee;
+    
+    for (NSDictionary *temD in rawTrancation.toAddresses) {
+        NSString *address = [temD valueForKey:@"address"];
+        if ([address isEqualToString:[[LKUserCenter shareCenter] currentLoginUser].address]) {
+            change += [[NSDecimalNumber decimalNumberWithString:[temD valueForKey:@"amount"]] decimalNumberByMultiplyingBy:[[NSDecimalNumber alloc] initWithLongLong:pow(10, 8)]].longLongValue;
+            break;
+        }
+    }
+
     BOOL changeIsDust = [BtcTool haveDustWithAmount:change];
     // Change the amount of the address is too small
     if (change > 0 && changeIsDust) {

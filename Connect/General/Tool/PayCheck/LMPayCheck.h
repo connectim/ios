@@ -46,5 +46,5 @@ typedef NS_ENUM(NSUInteger,MoneyType) {
  *   Turned out the amount of dirty check and alert
  *
  */
-+ (void)dirtyAlertWithAddress:(NSArray* )toAddresses withController:(UIViewController*)controller;
++ (BOOL)dirtyAlertWithAddress:(NSArray* )toAddresses withController:(UIViewController*)controller;
 @end

@@ -86,8 +86,13 @@
                                               decimalNumberByDividingBy:
                                               [[NSDecimalNumber alloc] initWithLongLong:pow(10, 8)]].stringValue}];
         
-        [LMPayCheck dirtyAlertWithAddress:toAddresses withController:[self getCurrentVC]];
-        
+        BOOL isDusk = [LMPayCheck dirtyAlertWithAddress:toAddresses withController:[self getCurrentVC]];
+        if (isDusk) {
+            if (complete) {
+                complete(nil,nil,nil,nil);
+            }
+            return;
+        }
         [WallteNetWorkTool unspentV2WithAddress:address fee:fee toAddress:toAddresses
                  createRawTranscationModelComplete:^(UnspentOrderResponse *unspent, NSError *error) {
                      if (error) {

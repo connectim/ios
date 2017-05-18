@@ -151,7 +151,11 @@
     }];
 
     NSArray *toAddresses = @[@{@"address": self.info.address, @"amount": [amount stringValue]}];
-    [LMPayCheck dirtyAlertWithAddress:toAddresses withController:self];
+    BOOL isDusk = [LMPayCheck dirtyAlertWithAddress:toAddresses withController:self];
+    if (isDusk) {
+        self.comfrimButton.enabled = YES;
+        return;
+    }
     AccountInfo *ainfo = [[LKUserCenter shareCenter] currentLoginUser];
     [WallteNetWorkTool unspentV2WithAddress:ainfo.address fee:[[MMAppSetting sharedSetting] getTranferFee] toAddress:toAddresses createRawTranscationModelComplete:^(UnspentOrderResponse *unspent, NSError *error) {
         [LMPayCheck payCheck:nil withVc:weakSelf withTransferType:TransferTypeUnsSetResult unSpent:unspent withArray:toAddresses withMoney:amount withNote:note withType:0 withRedPackage:nil withError:error];
