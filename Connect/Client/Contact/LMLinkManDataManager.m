@@ -184,26 +184,16 @@ CREATE_SHARED_MANAGER(LMLinkManDataManager)
 
 - (void)addNotification {
     RegisterNotify(kAcceptNewFriendRequestNotification, @selector(addNewUser:));
-
     RegisterNotify(kFriendListChangeNotification, @selector(downAllContacts));
-
     RegisterNotify(kNewFriendRequestNotification, @selector(newFriendRequest:));
-
     RegisterNotify(ConnnectContactDidChangeNotification, @selector(ContactChange:));
-
     RegisterNotify(ConnnectContactDidChangeDeleteUserNotification, @selector(deleteUser:));
-
     RegisterNotify(ConnnectUserAddressChangeNotification, @selector(AddressBookChange:));
     RegisterNotify(ConnnectRemoveCommonGroupNotification, @selector(RemoveCommonGroup:));
     RegisterNotify(ConnnectAddCommonGroupNotification, @selector(AddCommonGroup:));
-
     RegisterNotify(ConnnectDownAllCommonGroupCompleteNotification, @selector(downAllCommomGroup:));
-
     RegisterNotify(BadgeNumberManagerBadgeChangeNotification, @selector(badgeValueChange));
-
     RegisterNotify(ConnnectQuitGroupNotification, @selector(quitGroup:));
-
-    RegisterNotify(ConnectDownAllNewGroupAvatarNotification, @selector(groupAvatarChange));
     RegisterNotify(ConnectUpdateMyNickNameNotification, @selector(groupNicknameChange));
     RegisterNotify(ConnnectGroupInfoDidChangeNotification, @selector(groupInfoChnage:));
     CFErrorRef *error = nil;
@@ -369,13 +359,6 @@ CREATE_SHARED_MANAGER(LMLinkManDataManager)
 
 }
 
-- (void)groupAvatarChange {
-    [GCDQueue executeInMainQueue:^{
-        if ([self.delegate respondsToSelector:@selector(listChange:withTabBarCount:)]) {
-            [self.delegate listChange:self.groupsFriend withTabBarCount:self.redCount];
-        }
-    }];
-}
 
 /**
  *  group nick exchange

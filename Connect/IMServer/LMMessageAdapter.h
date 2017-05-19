@@ -29,4 +29,9 @@
  */
 + (MessagePost *)sendAdapterIMReadAckPostWithMessage:(MMMessage *)message;
 
+
++ (NSString *)decodeMessageWithMassagePost:(MessagePost *)msgPost;
+
++ (MMMessage *)packSystemMessage:(MSMessage *)sysMsg;
+
 @end

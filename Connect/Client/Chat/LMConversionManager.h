@@ -40,11 +40,12 @@
  */
 - (void)getAllConversationFromDB;
 
-- (void)getAllConversation;
 /**
  * delete conversation
  */
 - (BOOL)deleteConversation:(RecentChatModel *)conversationModel;
+
+- (BOOL)deleteConversationWithIdentifier:(NSString *)identifier;
 
 /**
  * clear all unread
@@ -89,6 +90,9 @@
  * send message
  */
 - (void)sendMessage:(MMMessage *)message type:(GJGCChatFriendTalkType)type;
+
+
+- (void)chatTop:(BOOL)topChat identifier:(NSString *)identifier;
 
 @property (nonatomic, weak) id<LMConversionListChangeManagerDelegate> conversationListDelegate;
 

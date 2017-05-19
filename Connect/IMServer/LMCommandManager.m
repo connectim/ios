@@ -285,9 +285,6 @@ CREATE_SHARED_MANAGER(LMCommandManager)
     if (offlinemsg.completed) {
         [GCDQueue executeInMainQueue:^{
             [[IMService instance] publishConnectState:STATE_CONNECTED];
-            if (offlinemsg.offlineMsgsArray.count) {
-                SendNotify(ConnectGetOfflieCompleteNotification, nil);
-            }
         }];
         //upload Cookie
         [[IMService instance] uploadCookie];
@@ -1121,7 +1118,7 @@ CREATE_SHARED_MANAGER(LMCommandManager)
             ExternalRedPackageInfo *redPackgeinfo = [ExternalRedPackageInfo parseFromData:command.detail error:nil];
             if (redPackgeinfo.system) { //system package
                 UserInfo *system = [UserInfo new];
-                system.pubKey = @"connect";
+                system.pubKey = kSystemIdendifier;
                 system.address = @"Connect";
                 system.avatar = @"connect_logo";
                 system.username = @"Connect";

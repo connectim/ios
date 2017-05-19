@@ -11,7 +11,6 @@
 #import "MessageDBManager.h"
 #import "GroupDBManager.h"
 #import "UserDBManager.h"
-#import "NSMutableArray+MoveObject.h"
 #import "CIImageCacheManager.h"
 #import "IMService.h"
 #import "ConnectTool.h"
@@ -33,21 +32,14 @@ CREATE_SHARED_MANAGER(LMConversionManager)
         
         self.unNotiMessageCountDict = [NSMutableDictionary dictionary];
         self.noFriendShipPulickArray = [NSMutableArray array];
-        
-        RegisterNotify(ConnectGetOfflieCompleteNotification, @selector(getOfflineComplete));
-        RegisterNotify(ConnectDownAllNewGroupAvatarNotification, @selector(groupAvatarChange));
         RegisterNotify(ConnectUpdateMyNickNameNotification, @selector(groupNicknameChange));
         RegisterNotify(SendDraftChangeNotification, @selector(haveDraft:));
-        RegisterNotify(SessionManagerClearReadCountNoti, @selector(clearUnReadCount:));
-        RegisterNotify(TopChatStatusChangeNotication, @selector(topChatStatusChange:));
-        RegisterNotify(ConnnectRecentChatDeleteNotification, @selector(deleteRecentChat:));
         RegisterNotify(ConnnectSendMessageSuccessNotification, @selector(sendMessageSuccess:));
         RegisterNotify(ConnnectRecentChatChangeNotification, @selector(recentChatChange:));
         RegisterNotify(ConnnectNewChatChangeNotification, @selector(recentChatChange:));
         RegisterNotify(ConnnectContactDidChangeNotification, @selector(ContactInfoChange:));
         RegisterNotify(ConnnectGroupInfoDidChangeNotification, @selector(GroupInfoChange:));
         RegisterNotify(ConnnectQuitGroupNotification, @selector(quitGroup:));
-
         RegisterNotify(kAcceptNewFriendRequestNotification, @selector(acceptRequest:));
         RegisterNotify(ConnnectContactDidChangeDeleteUserNotification, @selector(deleteUser:));
         RegisterNotify(kFriendListChangeNotification,@selector(friendListChange:));
@@ -63,7 +55,6 @@ CREATE_SHARED_MANAGER(LMConversionManager)
 }
 
 - (void)getAllConversationFromDB{
-    
     [[RecentChatDBManager sharedManager] getAllRecentChatWithComplete:^(NSArray *allRecentChats) {
         [GCDQueue executeInMainQueue:^{
             [SessionManager sharedManager].allRecentChats = [NSMutableArray arrayWithArray:allRecentChats];
@@ -101,7 +92,6 @@ CREATE_SHARED_MANAGER(LMConversionManager)
                     contact.address = [lastMessage.message.senderInfoExt valueForKey:@"address"];
                     contact.avatar = [lastMessage.message.senderInfoExt valueForKey:@"avatar"];
                     contact.username = [lastMessage.message.senderInfoExt valueForKey:@"username"];
-                    contact.stranger = NO;
                     contact.pub_key = lastMessage.messageOwer;
                     //Sync contacts
                     if (![[UserDBManager sharedManager] isFriendByAddress:contact.address] && !self.syncContacting) {
@@ -117,24 +107,14 @@ CREATE_SHARED_MANAGER(LMConversionManager)
                 recentModel.talkType = GJGCChatFriendTalkTypePrivate;
                 recentModel.time = [NSString stringWithFormat:@"%lld",(long long)([[NSDate date] timeIntervalSince1970] * 1000)];
                 recentModel.identifier = lastMessage.messageOwer;
-                recentModel.content = lastMessage.message.content;
                 recentModel.unReadCount = messageCount;
                 recentModel.chatUser = contact;
-                
                 recentModel.content = [GJGCChatFriendConstans lastContentMessageWithType:lastMessage.messageType textMessage:lastMessage.message.content];
                 recentModel.snapChatDeleteTime = (int)snapChatTime;
                 
-                if (lastMessage.message.type == 11) {
+                if (lastMessage.message.type == GJGCChatFriendContentTypeSnapChat) {
                     recentModel.unReadCount = 0;
-                    NSString *content;
-                    NSString *snapChatDeleteTime = lastMessage.message.content;
-                    if (lastMessage.message.content.length > 1 || [lastMessage.message.content integerValue] > 0) { //带时间
-                        content = @"开启隐私模式";
-                    } else{
-                        content = @"关闭隐私模式";
-                    }
-                    recentModel.content = content;
-                    recentModel.snapChatDeleteTime = [snapChatDeleteTime intValue];
+                    recentModel.snapChatDeleteTime = [lastMessage.message.content intValue];
                 }
                 [[RecentChatDBManager sharedManager] save:recentModel];
             } else{
@@ -156,29 +136,21 @@ CREATE_SHARED_MANAGER(LMConversionManager)
                 recentModel.snapChatDeleteTime = (int)snapChatTime;
                 
                 recentModel.time = [NSString stringWithFormat:@"%lld",(long long)([[NSDate date] timeIntervalSince1970] * 1000)];
-                if (lastMessage.message.type == 11) {
-                    NSString *content;
-                    NSString *snapChatDeleteTime = lastMessage.message.content;
-                    if (lastMessage.message.content.length > 1 || [lastMessage.message.content integerValue] > 0) { //带时间
-                        content = @"开启隐私模式";
-                    } else{
-                        content = @"关闭隐私模式";
-                    }
-                    
-                    recentModel.content = content;
-                    recentModel.snapChatDeleteTime = [snapChatDeleteTime intValue];
+                if (lastMessage.message.type == GJGCChatFriendContentTypeSnapChat) {
+                    recentModel.snapChatDeleteTime = [lastMessage.message.content intValue];
                 }
                 NSMutableDictionary *fieldsValues = [NSMutableDictionary dictionary];
                 [fieldsValues safeSetObject:@(unRead) forKey:@"unread_count"];
                 [fieldsValues safeSetObject:recentModel.content forKey:@"content"];
                 [fieldsValues safeSetObject:recentModel.time forKey:@"last_time"];
+                if (snapChatTime < 0) {
+                    snapChatTime = 0;
+                }
+                [fieldsValues safeSetObject:@(snapChatTime) forKey:@"snap_time"];
                 if (recentModel.stranger) {
                     [fieldsValues safeSetObject:@(NO) forKey:@"stranger"];
                 }
-                
                 [[RecentChatDBManager sharedManager] customUpdateRecentChatTableWithFieldsValues:fieldsValues withIdentifier:recentModel.identifier];
-                
-                [[RecentChatDBManager sharedManager] openOrCloseSnapChatWithTime:recentModel.snapChatDeleteTime chatIdentifer:recentModel.identifier];
             }
         }
             break;
@@ -194,9 +166,7 @@ CREATE_SHARED_MANAGER(LMConversionManager)
                 recentModel.name = group.groupName;
                 recentModel.time = [NSString stringWithFormat:@"%lld",(long long)([[NSDate date] timeIntervalSince1970] * 1000)];
                 recentModel.identifier = lastMessage.messageOwer;
-                recentModel.content = lastMessage.message.content;
                 recentModel.unReadCount = messageCount;
-                
                 NSString *sendName = nil;
                 AccountInfo *senderUser = [group.addressMemberDict valueForKey:[lastMessage.message.senderInfoExt valueForKey:@"address"]];
                 if (senderUser) {
@@ -217,20 +187,17 @@ CREATE_SHARED_MANAGER(LMConversionManager)
                     sendName = [lastMessage.message.senderInfoExt valueForKey:@"username"];
                 }
                 recentModel.content = [GJGCChatFriendConstans lastContentMessageWithType:lastMessage.messageType textMessage:lastMessage.message.content senderUserName:sendName];
-                int unRead = recentModel.unReadCount;
-                unRead += messageCount;
                 if ([[SessionManager sharedManager].chatSession isEqualToString:recentModel.identifier] ||
                     recentModel.notifyStatus) {
-                    unRead = 0;
+                    recentModel.unReadCount = 0;
+                } else{
+                    recentModel.unReadCount += messageCount;
                 }
-                recentModel.unReadCount = unRead;
                 recentModel.time = [NSString stringWithFormat:@"%lld",(long long)([[NSDate date] timeIntervalSince1970] * 1000)];
-                
                 NSMutableDictionary *fieldsValues = [NSMutableDictionary dictionary];
-                [fieldsValues safeSetObject:@(unRead) forKey:@"unread_count"];
+                [fieldsValues safeSetObject:@(recentModel.unReadCount) forKey:@"unread_count"];
                 [fieldsValues safeSetObject:recentModel.content forKey:@"content"];
                 [fieldsValues safeSetObject:recentModel.time forKey:@"last_time"];
-                
                 [[RecentChatDBManager sharedManager] customUpdateRecentChatTableWithFieldsValues:fieldsValues withIdentifier:recentModel.identifier];
             }
         }
@@ -239,35 +206,28 @@ CREATE_SHARED_MANAGER(LMConversionManager)
         case GJGCChatFriendTalkTypePostSystem:
         {
             
-            recentModel = [[SessionManager sharedManager] getRecentChatWithIdentifier:@"connect"];
+            recentModel = [[SessionManager sharedManager] getRecentChatWithIdentifier:kSystemIdendifier];
             if (recentModel) {
-                int unRead = recentModel.unReadCount;
-                unRead += messageCount;
                 if ([[SessionManager sharedManager].chatSession isEqualToString:recentModel.identifier]) {
-                    unRead = 0;
+                    recentModel.unReadCount = 0;
+                } else{
+                    recentModel.unReadCount += messageCount;
                 }
-                int long long time = [[NSDate date] timeIntervalSince1970] * 1000;
-                NSString *last_time = [NSString stringWithFormat:@"%lld",time];
-                recentModel.unReadCount = unRead;
-                recentModel.time = last_time;
+                recentModel.time = [NSString stringWithFormat:@"%lld",(long long)([[NSDate date] timeIntervalSince1970] * 1000)];
                 recentModel.content = [GJGCChatFriendConstans lastContentMessageWithType:lastMessage.messageType textMessage:lastMessage.message.content];
-                
                 NSMutableDictionary *fieldsValues = [NSMutableDictionary dictionary];
-                [fieldsValues safeSetObject:@(unRead) forKey:@"unread_count"];
+                [fieldsValues safeSetObject:@(recentModel.unReadCount) forKey:@"unread_count"];
                 [fieldsValues safeSetObject:recentModel.content forKey:@"content"];
                 [fieldsValues safeSetObject:recentModel.time forKey:@"last_time"];
-                
                 [[RecentChatDBManager sharedManager] customUpdateRecentChatTableWithFieldsValues:fieldsValues withIdentifier:recentModel.identifier];
-                
             } else{
                 recentModel = [[RecentChatModel alloc] init];
                 recentModel.talkType = GJGCChatFriendTalkTypePostSystem;
-                int long long time = [[NSDate date] timeIntervalSince1970] * 1000;
-                recentModel.time = [NSString stringWithFormat:@"%lld",time];
+                recentModel.time = [NSString stringWithFormat:@"%lld",(long long)([[NSDate date] timeIntervalSince1970] * 1000)];
                 recentModel.unReadCount = messageCount;
                 recentModel.name = @"Connect";
                 recentModel.headUrl = @"connect_logo";
-                recentModel.identifier = @"connect";
+                recentModel.identifier = kSystemIdendifier;
                 recentModel.content = [GJGCChatFriendConstans lastContentMessageWithType:lastMessage.messageType textMessage:lastMessage.message.content];
                 [[RecentChatDBManager sharedManager] save:recentModel];
             }
@@ -291,7 +251,6 @@ CREATE_SHARED_MANAGER(LMConversionManager)
             }
         }
     }];
-    
 }
 
 - (void)getNewMessagesWithLastMessage:(ChatMessageInfo *)lastMessage newMessageCount:(int)messageCount  groupNoteMyself:(BOOL)groupNoteMyself{
@@ -333,29 +292,25 @@ CREATE_SHARED_MANAGER(LMConversionManager)
             sendName = [lastMessage.message.senderInfoExt valueForKey:@"username"];
         }
         recentModel.content = [GJGCChatFriendConstans lastContentMessageWithType:lastMessage.messageType textMessage:lastMessage.message.content senderUserName:sendName];
-        int unRead = recentModel.unReadCount;
-        unRead += messageCount;
         if ([[SessionManager sharedManager].chatSession isEqualToString:recentModel.identifier] ||
             recentModel.notifyStatus) {
-            unRead = 0;
+            recentModel.unReadCount = 0;
+        } else{
+            recentModel.unReadCount += messageCount;
         }
-        recentModel.unReadCount = unRead;
         recentModel.time = [NSString stringWithFormat:@"%lld",(long long)([[NSDate date] timeIntervalSince1970] * 1000)];
         NSMutableDictionary *fieldsValues = [NSMutableDictionary dictionary];
-        [fieldsValues safeSetObject:@(unRead) forKey:@"unread_count"];
+        [fieldsValues safeSetObject:@(recentModel.unReadCount) forKey:@"unread_count"];
         [fieldsValues safeSetObject:recentModel.content forKey:@"content"];
         [fieldsValues safeSetObject:recentModel.time forKey:@"last_time"];
         [fieldsValues safeSetObject:@(groupNoteMyself) forKey:@"notice"];
-        
         [[RecentChatDBManager sharedManager] customUpdateRecentChatTableWithFieldsValues:fieldsValues withIdentifier:recentModel.identifier];
     }
     [GCDQueue executeInMainQueue:^{
         if ([[SessionManager sharedManager].allRecentChats containsObject:recentModel]) {
             [[SessionManager sharedManager].allRecentChats moveObject:recentModel toIndex:recentModel.isTopChat?0:[SessionManager sharedManager].topChatCount];
-            DDLogInfo(@"get message :move model");
         } else{
             [[SessionManager sharedManager].allRecentChats objectInsert:recentModel atIndex:recentModel.isTopChat?0:[SessionManager sharedManager].topChatCount];
-            DDLogInfo(@"get message :insert model");
         }
         if ([self.conversationListDelegate respondsToSelector:@selector(conversationListDidChanged:)]) {
             [self.conversationListDelegate conversationListDidChanged:[SessionManager sharedManager].allRecentChats];
@@ -436,18 +391,21 @@ CREATE_SHARED_MANAGER(LMConversionManager)
     [self getNewMessagesWithLastMessage:messageInfo newMessageCount:1 type:GJGCChatFriendTalkTypePrivate withSnapChatTime:0];
 }
 
-- (void)getAllConversation{
-    
+- (BOOL)deleteConversationWithIdentifier:(NSString *)identifier{
+    RecentChatModel *recentModel = [[SessionManager sharedManager] getRecentChatWithIdentifier:identifier];
+    return [self deleteConversation:recentModel];
 }
 
 - (BOOL)deleteConversation:(RecentChatModel *)conversationModel{
     if (!conversationModel) {
         return NO;
     }
+    [[SessionManager sharedManager] removeRecentChatWithIdentifier:conversationModel.identifier];
     [[RecentChatDBManager sharedManager] deleteByIdentifier:conversationModel.identifier];
     if (conversationModel.talkType != GJGCChatFriendTalkTypeGroup) {
         [[CIImageCacheManager sharedInstance] removeGroupAvatarCacheWithGroupIdentifier:conversationModel.identifier];
-        [[IMService instance] addNewSessionWithAddress:conversationModel.chatUser.address complete:^(NSError *erro, id data) {
+        [[IMService instance] deleteFriendWithAddress:conversationModel.chatUser.address comlete:^(NSError *error, id data) {
+            
         }];
         [ChatMessageFileManager deleteRecentChatAllMessageFilesByAddress:conversationModel.chatUser.address];
     } else{
@@ -458,7 +416,7 @@ CREATE_SHARED_MANAGER(LMConversionManager)
     }
     if (conversationModel && conversationModel.identifier) {
         [[RecentChatDBManager sharedManager] deleteByIdentifier:conversationModel.identifier];
-        [[MessageDBManager sharedManager] deleteAllMessageByMessageOwer:conversationModel.identifier]; //删除所有消息
+        [[MessageDBManager sharedManager] deleteAllMessageByMessageOwer:conversationModel.identifier]; //delete all message
     }
     
     if (conversationModel.unReadCount > 0) {
@@ -475,80 +433,9 @@ CREATE_SHARED_MANAGER(LMConversionManager)
 - (void)setConversationMute:(RecentChatModel *)model complete:(void (^)(BOOL complete))complete{
     BOOL notify = model.notifyStatus;
     if (model.talkType != GJGCChatFriendTalkTypeGroup) {
-        [[IMService instance] openOrCloseSesionMuteWithAddress:model.chatUser.address mute:model.notifyStatus complete:^(NSError *erro, id data) {
-            if (!erro) {
-                if (!notify) {
-                    [[RecentChatDBManager sharedManager] setMuteWithIdentifer:model.identifier];
-                    if (model.unReadCount) {
-                        model.notifyStatus = YES;
-                        model.unReadCount = 0;
-                        [GCDQueue executeInMainQueue:^{
-                            if ([self.conversationListDelegate respondsToSelector:@selector(conversationListDidChanged:)]) {
-                                [self.conversationListDelegate conversationListDidChanged:[SessionManager sharedManager].allRecentChats];
-                            }
-                            if ([self.conversationListDelegate respondsToSelector:@selector(unreadMessageNumberDidChanged)]) {
-                                [self.conversationListDelegate unreadMessageNumberDidChanged];
-                            }
-                        }];
-                    } else{
-                        model.notifyStatus = YES;
-                        [GCDQueue executeInMainQueue:^{
-                            if ([self.conversationListDelegate respondsToSelector:@selector(conversationListDidChanged:)]) {
-                                [self.conversationListDelegate conversationListDidChanged:[SessionManager sharedManager].allRecentChats];
-                            }
-                        }];
-                    }
-                } else {
-                    [[RecentChatDBManager sharedManager] removeMuteWithIdentifer:model.identifier];
-                    model.notifyStatus = NO;
-                    [GCDQueue executeInMainQueue:^{
-                        if ([self.conversationListDelegate respondsToSelector:@selector(conversationListDidChanged:)]) {
-                            [self.conversationListDelegate conversationListDidChanged:[SessionManager sharedManager].allRecentChats];
-                        }
-                    }];
-                }
-                if (complete) {
-                    complete(YES);
-                }
-            } else{
-                if (complete) {
-                    complete(NO);
-                }
-            }
-        }];
-    } else {
-        [SetGlobalHandler GroupChatSetMuteWithIdentifer:model.identifier mute:!notify complete:^(NSError *erro) {
-            if (!erro) {
-                if (!notify) {
-                    [[RecentChatDBManager sharedManager] setMuteWithIdentifer:model.identifier];
-                    if (model.unReadCount) {
-                        model.notifyStatus = YES;
-                        model.unReadCount = 0;
-                        [GCDQueue executeInMainQueue:^{
-                            if ([self.conversationListDelegate respondsToSelector:@selector(conversationListDidChanged:)]) {
-                                [self.conversationListDelegate conversationListDidChanged:[SessionManager sharedManager].allRecentChats];
-                            }
-                            if ([self.conversationListDelegate respondsToSelector:@selector(unreadMessageNumberDidChanged)]) {
-                                [self.conversationListDelegate unreadMessageNumberDidChanged];
-                            }
-                        }];
-                    } else{
-                        model.notifyStatus = YES;
-                        [GCDQueue executeInMainQueue:^{
-                            if ([self.conversationListDelegate respondsToSelector:@selector(conversationListDidChanged:)]) {
-                                [self.conversationListDelegate conversationListDidChanged:[SessionManager sharedManager].allRecentChats];
-                            }
-                        }];
-                    }
-                } else {
-                    [[RecentChatDBManager sharedManager] removeMuteWithIdentifer:model.identifier];
-                    model.notifyStatus = NO;
-                    [GCDQueue executeInMainQueue:^{
-                        if ([self.conversationListDelegate respondsToSelector:@selector(conversationListDidChanged:)]) {
-                            [self.conversationListDelegate conversationListDidChanged:[SessionManager sharedManager].allRecentChats];
-                        }
-                    }];
-                }
+        [[IMService instance] openOrCloseSesionMuteWithAddress:model.chatUser.address mute:model.notifyStatus complete:^(NSError *error, id data) {
+            if (!error) {
+                [self setMuteWithNotify:notify recentChatModel:model];
                 if (complete) {
                     complete(YES);
                 }
@@ -556,6 +443,52 @@ CREATE_SHARED_MANAGER(LMConversionManager)
                 if (complete) {
                     complete(NO);
                 }
+            }
+        }];
+    } else {
+        [SetGlobalHandler GroupChatSetMuteWithIdentifer:model.identifier mute:!notify complete:^(NSError *error) {
+            if (!error) {
+                [self setMuteWithNotify:notify recentChatModel:model];
+                if (complete) {
+                    complete(YES);
+                }
+            } else {
+                if (complete) {
+                    complete(NO);
+                }
+            }
+        }];
+    }
+}
+
+- (void)setMuteWithNotify:(BOOL)notify recentChatModel:(RecentChatModel *)model {
+    if (!notify) {
+        [[RecentChatDBManager sharedManager] setMuteWithIdentifer:model.identifier];
+        if (model.unReadCount) {
+            model.notifyStatus = YES;
+            model.unReadCount = 0;
+            [GCDQueue executeInMainQueue:^{
+                if ([self.conversationListDelegate respondsToSelector:@selector(conversationListDidChanged:)]) {
+                    [self.conversationListDelegate conversationListDidChanged:[SessionManager sharedManager].allRecentChats];
+                }
+                if ([self.conversationListDelegate respondsToSelector:@selector(unreadMessageNumberDidChanged)]) {
+                    [self.conversationListDelegate unreadMessageNumberDidChanged];
+                }
+            }];
+        } else{
+            model.notifyStatus = YES;
+            [GCDQueue executeInMainQueue:^{
+                if ([self.conversationListDelegate respondsToSelector:@selector(conversationListDidChanged:)]) {
+                    [self.conversationListDelegate conversationListDidChanged:[SessionManager sharedManager].allRecentChats];
+                }
+            }];
+        }
+    } else {
+        [[RecentChatDBManager sharedManager] removeMuteWithIdentifer:model.identifier];
+        model.notifyStatus = NO;
+        [GCDQueue executeInMainQueue:^{
+            if ([self.conversationListDelegate respondsToSelector:@selector(conversationListDidChanged:)]) {
+                [self.conversationListDelegate conversationListDidChanged:[SessionManager sharedManager].allRecentChats];
             }
         }];
     }
@@ -631,40 +564,9 @@ CREATE_SHARED_MANAGER(LMConversionManager)
     }];
 }
 
-
-#pragma mark -groupAvatarChange
-- (void)groupAvatarChange{
-    [GCDQueue executeInMainQueue:^{
-        if ([self.conversationListDelegate respondsToSelector:@selector(conversationListDidChanged:)]) {
-            [self.conversationListDelegate conversationListDidChanged:[SessionManager sharedManager].allRecentChats];
-        }
-    }];
-}
-
 - (void)groupNicknameChange{
     [self getAllConversationFromDB];
 }
-
-- (void)getOfflineComplete{
-//    [self getAllConversationFromDB];
-}
-
-- (void)clearUnReadCount:(NSNotification *)note{
-    RecentChatModel *model = note.object;
-    NSInteger index = NSNotFound;
-    index = [[SessionManager sharedManager].allRecentChats indexOfObject:model];
-    model = [[SessionManager sharedManager].allRecentChats objectAtIndexCheck:index];
-    model.unReadCount = 0;
-    [GCDQueue executeInMainQueue:^{
-        if ([self.conversationListDelegate respondsToSelector:@selector(conversationListDidChanged:)]) {
-            [self.conversationListDelegate conversationListDidChanged:[SessionManager sharedManager].allRecentChats];
-        }
-        if ([self.conversationListDelegate respondsToSelector:@selector(unreadMessageNumberDidChanged)]) {
-            [self.conversationListDelegate unreadMessageNumberDidChanged];
-        }
-    }];
-}
-
 
 - (void)haveDraft:(NSNotification *)note{
     /*
@@ -705,10 +607,12 @@ CREATE_SHARED_MANAGER(LMConversionManager)
  @{@"identifier":publiKeyOrGroupid,
  @"status":@(NO)};
  */
-- (void)topChatStatusChange:(NSNotification *)note{
-    
-    NSString *identifier = [note.object valueForKey:@"identifier"];
-    BOOL topChat = [[note.object valueForKey:@"status"] boolValue];
+- (void)chatTop:(BOOL)topChat identifier:(NSString *)identifier {
+    if (topChat) {
+        [SessionManager sharedManager].topChatCount++;
+    } else{
+        [SessionManager sharedManager].topChatCount--;
+    }
     RecentChatModel *findModel = [[SessionManager sharedManager] getRecentChatWithIdentifier:identifier];
     findModel.isTopChat = topChat;
 
@@ -725,24 +629,6 @@ CREATE_SHARED_MANAGER(LMConversionManager)
         }
     }];
 }
-
-
-- (void)deleteRecentChat:(NSNotification *)note{
-    NSString *dentifier = note.object;
-    if (GJCFStringIsNull(dentifier)) {
-        return;
-    }
-    RecentChatModel *deleteModel = [[SessionManager sharedManager] getRecentChatWithIdentifier:dentifier];
-    if (deleteModel) {
-        [[SessionManager sharedManager].allRecentChats removeObject:deleteModel];
-        [GCDQueue executeInMainQueue:^{
-            if ([self.conversationListDelegate respondsToSelector:@selector(conversationListDidChanged:)]) {
-                [self.conversationListDelegate conversationListDidChanged:[SessionManager sharedManager].allRecentChats];
-            }
-        }];
-    }
-}
-
 
 #pragma mark - sendMessageSuccess
 - (void)sendMessageSuccess:(NSNotification *)note{
@@ -777,12 +663,9 @@ CREATE_SHARED_MANAGER(LMConversionManager)
     if (index != NSNotFound) {
         [[SessionManager sharedManager].allRecentChats moveObject:recentChat toIndex:recentChat.isTopChat?0:[SessionManager sharedManager].topChatCount];
     } else{
-        NSInteger index = recentChat.isTopChat?0:[SessionManager sharedManager].topChatCount;
+        index = recentChat.isTopChat?0:[SessionManager sharedManager].topChatCount;
         [[SessionManager sharedManager].allRecentChats objectInsert:recentChat atIndex:index];
     }
-    
-    
-    
     [GCDQueue executeInMainQueue:^{
         if ([self.conversationListDelegate respondsToSelector:@selector(conversationListDidChanged:)]) {
             [self.conversationListDelegate conversationListDidChanged:[SessionManager sharedManager].allRecentChats];

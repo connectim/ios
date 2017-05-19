@@ -15,16 +15,13 @@
 #import "MessageDBManager.h"
 #import "LMBaseSSDBManager.h"
 #import "SystemTool.h"
-#import "ConnectTool.h"
 #import "LMMessageValidationTool.h"
 #import "LMConversionManager.h"
 #import "LMMessageExtendManager.h"
 #import "LMHistoryCacheManager.h"
-#import "StringTool.h"
+#import "LMMessageAdapter.h"
 
 @interface PeerMessageHandler ()
-
-@property(nonatomic, assign) BOOL syncFriends;
 
 @end
 
@@ -79,41 +76,18 @@
     }
 }
 
-
-- (BOOL)handleMessageFailure:(MessagePost *)msg {
-    return YES;
-}
-
-- (NSString *)decodeMessageWithMassagePost:(MessagePost *)msgPost {
-    NSString *messageString = nil;
-    if (!GJCFStringIsNull(msgPost.msgData.chatPubKey) &&
-            msgPost.msgData.salt.length == 64 &&
-            msgPost.msgData.ver.length == 64) { //double random
-        messageString = [ConnectTool decodePeerImMessageGcmData:msgPost.msgData.cipherData publickey:msgPost.msgData.chatPubKey salt:msgPost.msgData.salt ver:msgPost.msgData.ver];
-    } else if (!GJCFStringIsNull(msgPost.msgData.chatPubKey) &&
-            msgPost.msgData.salt.length == 64 &&
-            msgPost.msgData.ver.length == 0) { //half random
-        messageString = [ConnectTool decodeHalfRandomPeerImMessageGcmData:msgPost.msgData.cipherData publickey:msgPost.msgData.chatPubKey salt:msgPost.msgData.salt];
-    } else { //low security model
-        messageString = [ConnectTool decodeMessageGcmData:msgPost.msgData.cipherData publickey:msgPost.pubKey needEmptySalt:YES];
-    }
-    return messageString;
-}
-
 - (BOOL)handleBatchMessages:(NSArray *)messages {
 
     NSMutableDictionary *owerMessagesDict = [NSMutableDictionary dictionary];
     NSMutableArray *messageExtendArray = [NSMutableArray array];
     for (MessagePost *msg in messages) {
         @try {
-            NSString *messageString = [self decodeMessageWithMassagePost:msg];
+            NSString *messageString = [LMMessageAdapter decodeMessageWithMassagePost:msg];
             MMMessage *messageInfo = [MMMessage mj_objectWithKeyValues:[messageString dictionaryValue]];
             messageInfo.publicKey = msg.pubKey;
-
             if (![LMMessageValidationTool checkMessageValidata:messageInfo messageType:MessageTypePersion]) {
                 continue;
             }
-
             if (messageInfo.type == GJGCChatInviteToGroup) {
                 NSString *identifier = [messageInfo.ext1 valueForKey:@"groupidentifier"];
                 LMBaseSSDBManager *ssdbManager = [LMBaseSSDBManager open:@"system_message"];
@@ -133,7 +107,7 @@
             messageInfo.sendstatus = GJGCChatFriendSendMessageStatusSuccess;
             ChatMessageInfo *chatMessage = [[ChatMessageInfo alloc] init];
             chatMessage.messageId = messageInfo.message_id;
-            chatMessage.createTime = messageInfo.sendtime;
+            chatMessage.createTime = (NSInteger) messageInfo.sendtime;
             chatMessage.readTime = 0;
             chatMessage.message = messageInfo;
             chatMessage.messageOwer = msg.pubKey;
@@ -152,7 +126,7 @@
                 NSDictionary *snapchatExt = messageInfo.ext;
                 if ([snapchatExt isKindOfClass:[NSDictionary class]]) {
                     if (snapchatExt && [snapchatExt.allKeys containsObject:@"luck_delete"]) {
-                        chatMessage.snapTime = [[snapchatExt valueForKey:@"luck_delete"] intValue];
+                        chatMessage.snapTime = [[snapchatExt valueForKey:@"luck_delete"] integerValue];
                     }
                 }
             }
@@ -215,7 +189,7 @@
         NSMutableArray *pushMessages = [NSMutableArray arrayWithArray:messages];
         while (pushMessages.count > 0) {
             if (pushMessages.count > 20) {
-                NSInteger location = 0;
+                NSUInteger location = 0;
                 NSMutableArray *pushArray = [NSMutableArray arrayWithArray:[pushMessages subarrayWithRange:NSMakeRange(location, 20)]];
                 [pushMessages removeObjectsInRange:NSMakeRange(location, 20)];
                 [self pushGetBitchNewMessages:pushArray];
@@ -267,10 +241,6 @@
         }
     };
     return [self handleBatchMessages:@[msg]];
-}
-
-- (BOOL)handleMessageACK:(MessagePost *)msg {
-    return YES;
 }
 
 @end
