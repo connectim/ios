@@ -147,6 +147,7 @@ typedef NS_ENUM(NSInteger, GetGroupInfoType) {
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.title = LMLocalizedString(@"Link Join Group", nil);
     [self.applyToJoinGroupBtn setTitle:LMLocalizedString(@"Link Join Group", nil) forState:UIControlStateNormal];
     self.applyToJoinGroupBtn.layer.cornerRadius = 5;
     self.applyToJoinGroupBtn.layer.masksToBounds = YES;
@@ -182,6 +183,7 @@ typedef NS_ENUM(NSInteger, GetGroupInfoType) {
 
 
 - (void)getGroupInfoWithToken {
+    __weak typeof(self)weakSelf = self;
     [MBProgressHUD showLoadingMessageToView:self.view];
     GroupToken *token = [GroupToken new];
     token.token = self.token;
@@ -191,7 +193,10 @@ typedef NS_ENUM(NSInteger, GetGroupInfoType) {
         }];
         HttpResponse *hResponse = (HttpResponse *) response;
         if (hResponse.code != successCode) {
-            [MBProgressHUD showToastwithText:LMLocalizedString(@"Link Group invitation is invalid", nil) withType:ToastTypeFail showInView:self.view complete:nil];
+            [MBProgressHUD showToastwithText:LMLocalizedString(@"Link Group invitation is invalid", nil) withType:ToastTypeFail showInView:self.view complete:^{
+                [weakSelf.navigationController popViewControllerAnimated:YES];
+            }];
+
             return;
         }
         NSData *data = [ConnectTool decodeHttpResponse:hResponse];
@@ -199,32 +204,33 @@ typedef NS_ENUM(NSInteger, GetGroupInfoType) {
             NSError *error = nil;
             GroupInfoBaseShare *groupBaseInfo = [GroupInfoBaseShare parseFromData:data error:&error];
             [GCDQueue executeInMainQueue:^{
-                [self dispalyAllView];
-                [self.groupAvatarImageView setImageWithAvatarUrl:groupBaseInfo.avatar];
-                self.groupNameLabel.text = groupBaseInfo.name;
-                self.countLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Chat Member Max", nil), groupBaseInfo.count,200];
-                self.sumaryLabel.text = groupBaseInfo.summary;
+                [weakSelf dispalyAllView];
+                [weakSelf.groupAvatarImageView setImageWithAvatarUrl:groupBaseInfo.avatar];
+                weakSelf.groupNameLabel.text = groupBaseInfo.name;
+                weakSelf.countLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Chat Member Max", nil), groupBaseInfo.count,200];
+                weakSelf.sumaryLabel.text = groupBaseInfo.summary;
 
-                self.groupApply.identifier = groupBaseInfo.identifier;
-                self.groupApply.hash_p = groupBaseInfo.hash_p;
+                weakSelf.groupApply.identifier = groupBaseInfo.identifier;
+                weakSelf.groupApply.hash_p = groupBaseInfo.hash_p;
 
                 if (!groupBaseInfo.public_p) {
-                    self.applyToJoinGroupBtn.hidden = YES;
-                    self.groupStatueTipLabel.hidden = NO;
-                    self.groupStatueTipLabel.text = LMLocalizedString(@"Link The group is not public", nil);
+                    weakSelf.applyToJoinGroupBtn.hidden = YES;
+                    weakSelf.groupStatueTipLabel.hidden = NO;
+                    weakSelf.groupStatueTipLabel.text = LMLocalizedString(@"Link The group is not public", nil);
                 } else {
-                    self.applyToJoinGroupBtn.hidden = NO;
-                    self.groupStatueTipLabel.hidden = YES;
+                    weakSelf.applyToJoinGroupBtn.hidden = NO;
+                    weakSelf.groupStatueTipLabel.hidden = YES;
                 }
             }];
         }
     }                                  fail:^(NSError *error) {
-        [MBProgressHUD showToastwithText:LMLocalizedString(@"Network Server error", nil) withType:ToastTypeFail showInView:self.view complete:nil];
+        [MBProgressHUD showToastwithText:LMLocalizedString(@"Network Server error", nil) withType:ToastTypeFail showInView:weakSelf.view complete:nil];
     }];
 }
 
 
 - (void)getGroupInfoWithIdentifier {
+    __weak typeof(self)weakSelf = self;
     [MBProgressHUD showLoadingMessageToView:self.view];
     GroupId *groupId = [GroupId new];
     groupId.identifier = self.identifier;
@@ -234,7 +240,10 @@ typedef NS_ENUM(NSInteger, GetGroupInfoType) {
         }];
         HttpResponse *hResponse = (HttpResponse *) response;
         if (hResponse.code != successCode) {
-            [MBProgressHUD showToastwithText:LMLocalizedString(@"Link Group invitation is invalid", nil) withType:ToastTypeFail showInView:self.view complete:nil];
+            [MBProgressHUD showToastwithText:LMLocalizedString(@"Link Group invitation is invalid", nil) withType:ToastTypeFail showInView:self.view complete:^{
+                 [weakSelf.navigationController popViewControllerAnimated:YES];
+            }];
+            
             return;
         }
         NSData *data = [ConnectTool decodeHttpResponse:hResponse];
@@ -242,24 +251,24 @@ typedef NS_ENUM(NSInteger, GetGroupInfoType) {
             NSError *error = nil;
             GroupInfoBase *groupBaseInfo = [GroupInfoBase parseFromData:data error:&error];
             [GCDQueue executeInMainQueue:^{
-                [self dispalyAllView];
-                [self.groupAvatarImageView setImageWithAvatarUrl:groupBaseInfo.avatar];
-                self.groupNameLabel.text = groupBaseInfo.name;
-                self.countLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Chat Member Max", nil), groupBaseInfo.count,200];
-                self.sumaryLabel.text = groupBaseInfo.summary;
-                self.groupApply.hash_p = groupBaseInfo.hash_p;
+                [weakSelf dispalyAllView];
+                [weakSelf.groupAvatarImageView setImageWithAvatarUrl:groupBaseInfo.avatar];
+                weakSelf.groupNameLabel.text = groupBaseInfo.name;
+                weakSelf.countLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Chat Member Max", nil), groupBaseInfo.count,200];
+                weakSelf.sumaryLabel.text = groupBaseInfo.summary;
+                weakSelf.groupApply.hash_p = groupBaseInfo.hash_p;
                 if (!groupBaseInfo.public_p) {
-                    self.applyToJoinGroupBtn.hidden = YES;
-                    self.groupStatueTipLabel.hidden = NO;
-                    self.groupStatueTipLabel.text = LMLocalizedString(@"Link The group is not public", nil);
+                    weakSelf.applyToJoinGroupBtn.hidden = YES;
+                    weakSelf.groupStatueTipLabel.hidden = NO;
+                    weakSelf.groupStatueTipLabel.text = LMLocalizedString(@"Link The group is not public", nil);
                 } else {
-                    self.applyToJoinGroupBtn.hidden = NO;
-                    self.groupStatueTipLabel.hidden = YES;
+                    weakSelf.applyToJoinGroupBtn.hidden = NO;
+                    weakSelf.groupStatueTipLabel.hidden = YES;
                 }
             }];
         }
     }                                  fail:^(NSError *error) {
-        [MBProgressHUD showToastwithText:LMLocalizedString(@"Network Server error", nil) withType:ToastTypeFail showInView:self.view complete:nil];
+        [MBProgressHUD showToastwithText:LMLocalizedString(@"Network Server error", nil) withType:ToastTypeFail showInView:weakSelf.view complete:nil];
     }];
 }
 

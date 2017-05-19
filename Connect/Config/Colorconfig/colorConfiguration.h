@@ -30,4 +30,8 @@
 #define LMBasicBackgroundColor      LMBasicLightGray
 #define LMBasicSmallMessageColor    LMBasicBackGroudDarkGray
 
+#define LMBasicPacketStatusRed    GJCFQuickHexColor(@"ff6c5a")
+#define LMBasicPacketStatusBlue   GJCFQuickHexColor(@"007aff")
+
+
 #endif /* colorConfiguration_h */
