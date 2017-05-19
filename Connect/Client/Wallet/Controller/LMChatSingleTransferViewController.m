@@ -78,6 +78,9 @@
         make.height.mas_equalTo(AUTO_HEIGHT(334));
         make.left.equalTo(self.view);
     }];
+    if (self.trasferAmount.doubleValue > 0) {
+        view.textDefaultAmount = self.trasferAmount.doubleValue;
+    }
     view.topTipString = LMLocalizedString(@"Wallet Amount", nil);
     view.resultBlock = ^(NSDecimalNumber *btcMoney, NSString *note) {
         [weakSelf createTranscationWithMoney:btcMoney note:note];

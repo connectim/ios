@@ -190,15 +190,14 @@ static inline unsigned int bswap_32(unsigned int v) {
  */
 - (void)handlAckWithExtension:(unsigned char)extension resultData:(NSData *)resultData {
     switch (extension) {
-        case BM_GETOFFLINECMD_ACK_EXT:
         case BM_ACK_EXT: {
             IMTransferData *imTransfer = [IMTransferData parseFromValidationData:resultData error:nil];
             if ([ConnectTool vertifyWithData:imTransfer.cipherData.data sign:imTransfer.sign]) {
-                self.body = imTransfer;
+                NSData *decodeData = [ConnectTool decodeGcmDataWithEcdhKey:[ServerCenter shareCenter].extensionPass GcmData:imTransfer.cipherData];
+                self.body = decodeData;
             }
         }
             break;
-
         default:
             DDLogError(@"unhandle message extension %d", extension);
             break;
@@ -210,9 +209,7 @@ static inline unsigned int bswap_32(unsigned int v) {
         case BM_CUTOFFINE_CONNECT_EXT: {
             IMTransferData *imTransfer = [IMTransferData parseFromValidationData:resultData error:nil];
             if ([ConnectTool vertifyWithData:imTransfer.cipherData.data sign:imTransfer.sign]) {
-
                 NSData *data = [ConnectTool decodeGcmDataWithEcdhKey:[ServerCenter shareCenter].extensionPass GcmData:imTransfer.cipherData];
-
                 NSError *erro = nil;
                 QuitMessage *quitMessage = [QuitMessage parseFromValidationData:data error:&erro];
                 if (!erro) {
@@ -258,7 +255,8 @@ static inline unsigned int bswap_32(unsigned int v) {
         case BM_FRIEND_CHAT_COOKIE_EXT: {
             IMTransferData *imTransfer = [IMTransferData parseFromValidationData:resultData error:nil];
             if ([ConnectTool vertifyWithData:imTransfer.cipherData.data sign:imTransfer.sign]) {
-                self.body = imTransfer;
+                NSData *decodeData = [ConnectTool decodeGcmDataWithEcdhKey:[ServerCenter shareCenter].extensionPass GcmData:imTransfer.cipherData];
+                self.body = decodeData;
             }
         }
             break;

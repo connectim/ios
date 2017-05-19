@@ -8,11 +8,6 @@
 */
 
 #import <Foundation/Foundation.h>
-
-#import "Protofile.pbobjc.h"
-#import "Protofile.pbobjc.h"
-#import "Protofile.pbobjc.h"
-#import "Protofile.pbobjc.h"
 #import "Protofile.pbobjc.h"
 
 //========= IM Message ========
@@ -25,7 +20,6 @@
 #define BM_IM_UNARRIVE_EXT 0x05
 #define BM_IM_NO_RALATIONSHIP_EXT 0x06
 #define BM_TRASACTION_NOTI_EXT 0x07 //deprecated
-#define BM_REDBAG_NOTI_EXT 0x08 //deprecated
 #define BM_SERVER_NOTE_EXT 0x09 //trasaction note
 
 //========= heart beat ========
@@ -42,7 +36,6 @@
 #define BM_ACK_EXT 0x00
 #define BM_ACK_BACK_EXT 0x01
 #define BM_ACK_OFFLIE_BACK_EXT 0x02 //offline ack
-#define BM_GETOFFLINECMD_ACK_EXT 0x02 //ack
 
 
 //========= Command ========
@@ -85,7 +78,6 @@
 @interface Message : NSObject
 
 @property(nonatomic, copy) NSString *msgIdentifer;
-
 @property(nonatomic) unsigned char typechar;
 @property(nonatomic) unsigned char extension;
 @property(nonatomic, assign) int len;
@@ -93,14 +85,17 @@
 @property(nonatomic) id originData; //origindata
 @property(nonatomic, strong) id sendOriginInfo; //send data
 
-@property(nonatomic, assign) int seq;
-
+/**
+ * pack socket data
+ * @return
+ */
 - (NSMutableData *)pack;
 
+/**
+ * unpack socket data to message
+ * @param data
+ * @return
+ */
 - (BOOL)unpack:(NSData *)data;
-
-@property(nonatomic, strong) Connection *fristConn;
-@property(nonatomic, strong) IMResponse *handshakeResponse;
-@property(nonatomic, strong) MessagePost *messagePost;
 
 @end

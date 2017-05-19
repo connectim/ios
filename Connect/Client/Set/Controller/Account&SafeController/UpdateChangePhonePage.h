@@ -10,4 +10,5 @@
 
 @interface UpdateChangePhonePage : BaseViewController
 
+- (instancetype)initWithAction:(void (^)(BOOL result))complete;
 @end

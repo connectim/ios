@@ -109,7 +109,7 @@ void _SystemSoundFinishedPlayingCallback(SystemSoundID sound_id, void* user_data
     NSString *key = @"NeedUpdateVersionString";
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSString *lastVersion = [defaults stringForKey:key];
-    NSString *currentVersion = [NSBundle mainBundle].infoDictionary[key];
+    NSString *currentVersion = [NSBundle mainBundle].infoDictionary[@"CFBundleShortVersionString"];
     if ([currentVersion isEqualToString:lastVersion]) {
         return NO;
     } else {
