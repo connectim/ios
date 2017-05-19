@@ -1411,14 +1411,17 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
 
 
 - (void)noRelationShipTapAddFriend:(GJGCChatBaseCell *)tapedCell {
-
-    AccountInfo *user = self.taklInfo.chatUser;
-    user.stranger = YES;
-
-    InviteUserPage *page = [[InviteUserPage alloc] initWithUser:user];
-    page.sourceType = UserSourceTypeTransaction;
-    [self.navigationController pushViewController:page animated:YES];
-
+    if (self.taklInfo.chatUser.stranger) {
+        self.taklInfo.chatUser.stranger = ![[UserDBManager sharedManager] isFriendByAddress:self.taklInfo.chatUser.address];
+    }
+    if (self.taklInfo.chatUser.stranger) {
+        InviteUserPage *page = [[InviteUserPage alloc] initWithUser:self.taklInfo.chatUser];
+        page.sourceType = UserSourceTypeTransaction;
+        [self.navigationController pushViewController:page animated:YES];
+    } else{
+        UserDetailPage *page = [[UserDetailPage alloc] initWithUser:self.taklInfo.chatUser];
+        [self.navigationController pushViewController:page animated:YES];
+    }
 }
 
 - (void)chatCellDidTapWalletLinkMessage:(GJGCChatBaseCell *)tapedCell {

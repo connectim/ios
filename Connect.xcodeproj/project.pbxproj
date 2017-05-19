@@ -653,7 +653,12 @@
 		D95488FB1E9DC21800F200DF /* 20170412100148331_createnewtable.sql in Resources */ = {isa = PBXBuildFile; fileRef = D95488FA1E9DC21800F200DF /* 20170412100148331_createnewtable.sql */; };
 		D95488FF1E9DC89100F200DF /* LMDBUpdataController.m in Sources */ = {isa = PBXBuildFile; fileRef = D95488FD1E9DC89100F200DF /* LMDBUpdataController.m */; };
 		D95489001E9DC89100F200DF /* LMDBUpdataController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D95488FE1E9DC89100F200DF /* LMDBUpdataController.xib */; };
-		D95C02EE1E8102FF006C5C8A /* CommandOutTimeTool.m in Sources */ = {isa = PBXBuildFile; fileRef = D95C02C31E8102FE006C5C8A /* CommandOutTimeTool.m */; };
+		D95845131ECAAB7D004C8984 /* LMCommandAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = D95845121ECAAB7D004C8984 /* LMCommandAdapter.m */; };
+		D958451B1ECAF666004C8984 /* LMMessageSendManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D958451A1ECAF666004C8984 /* LMMessageSendManager.m */; };
+		D95845211ECAF970004C8984 /* LMMessageAdapter.m in Sources */ = {isa = PBXBuildFile; fileRef = D95845201ECAF970004C8984 /* LMMessageAdapter.m */; };
+		D95845241ECBE44F004C8984 /* NSString+DNS.m in Sources */ = {isa = PBXBuildFile; fileRef = D95845231ECBE44F004C8984 /* NSString+DNS.m */; };
+		D95845271ECBF71C004C8984 /* LMCommandManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D95845261ECBF71C004C8984 /* LMCommandManager.m */; };
+		D958452B1ECC2C7D004C8984 /* LMMessageValidationTool.m in Sources */ = {isa = PBXBuildFile; fileRef = D958452A1ECC2C7D004C8984 /* LMMessageValidationTool.m */; };
 		D95C02EF1E8102FF006C5C8A /* GBPing.m in Sources */ = {isa = PBXBuildFile; fileRef = D95C02C61E8102FF006C5C8A /* GBPing.m */; };
 		D95C02F01E8102FF006C5C8A /* GBPingSummary.m in Sources */ = {isa = PBXBuildFile; fileRef = D95C02C81E8102FF006C5C8A /* GBPingSummary.m */; };
 		D95C02F11E8102FF006C5C8A /* GCDAsyncSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = D95C02CB1E8102FF006C5C8A /* GCDAsyncSocket.m */; };
@@ -663,7 +668,6 @@
 		D95C02F81E8102FF006C5C8A /* GroupMessageHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = D95C02DA1E8102FF006C5C8A /* GroupMessageHandler.m */; };
 		D95C02F91E8102FF006C5C8A /* PeerMessageHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = D95C02DC1E8102FF006C5C8A /* PeerMessageHandler.m */; };
 		D95C02FA1E8102FF006C5C8A /* SystemMessageHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = D95C02DE1E8102FF006C5C8A /* SystemMessageHandler.m */; };
-		D95C02FB1E8102FF006C5C8A /* LMMessageValidationTool.m in Sources */ = {isa = PBXBuildFile; fileRef = D95C02E11E8102FF006C5C8A /* LMMessageValidationTool.m */; };
 		D95C02FC1E8102FF006C5C8A /* ServerURLModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D95C02E31E8102FF006C5C8A /* ServerURLModel.m */; };
 		D95C02FD1E8102FF006C5C8A /* SocketManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D95C02E51E8102FF006C5C8A /* SocketManager.m */; };
 		D95C02FE1E8102FF006C5C8A /* SpeedDectectManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D95C02E71E8102FF006C5C8A /* SpeedDectectManager.m */; };
@@ -2202,8 +2206,19 @@
 		D95488FC1E9DC89100F200DF /* LMDBUpdataController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LMDBUpdataController.h; sourceTree = "<group>"; };
 		D95488FD1E9DC89100F200DF /* LMDBUpdataController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LMDBUpdataController.m; sourceTree = "<group>"; };
 		D95488FE1E9DC89100F200DF /* LMDBUpdataController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LMDBUpdataController.xib; sourceTree = "<group>"; };
-		D95C02C21E8102FE006C5C8A /* CommandOutTimeTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommandOutTimeTool.h; sourceTree = "<group>"; };
-		D95C02C31E8102FE006C5C8A /* CommandOutTimeTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommandOutTimeTool.m; sourceTree = "<group>"; };
+		D95845101EC9664F004C8984 /* LMSocketHandleDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LMSocketHandleDelegate.h; sourceTree = "<group>"; };
+		D95845111ECAAB7D004C8984 /* LMCommandAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LMCommandAdapter.h; sourceTree = "<group>"; };
+		D95845121ECAAB7D004C8984 /* LMCommandAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LMCommandAdapter.m; sourceTree = "<group>"; };
+		D95845191ECAF666004C8984 /* LMMessageSendManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LMMessageSendManager.h; sourceTree = "<group>"; };
+		D958451A1ECAF666004C8984 /* LMMessageSendManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LMMessageSendManager.m; sourceTree = "<group>"; };
+		D958451F1ECAF970004C8984 /* LMMessageAdapter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LMMessageAdapter.h; sourceTree = "<group>"; };
+		D95845201ECAF970004C8984 /* LMMessageAdapter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LMMessageAdapter.m; sourceTree = "<group>"; };
+		D95845221ECBE44F004C8984 /* NSString+DNS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+DNS.h"; sourceTree = "<group>"; };
+		D95845231ECBE44F004C8984 /* NSString+DNS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+DNS.m"; sourceTree = "<group>"; };
+		D95845251ECBF71C004C8984 /* LMCommandManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LMCommandManager.h; sourceTree = "<group>"; };
+		D95845261ECBF71C004C8984 /* LMCommandManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LMCommandManager.m; sourceTree = "<group>"; };
+		D95845291ECC2C7D004C8984 /* LMMessageValidationTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LMMessageValidationTool.h; sourceTree = "<group>"; };
+		D958452A1ECC2C7D004C8984 /* LMMessageValidationTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LMMessageValidationTool.m; sourceTree = "<group>"; };
 		D95C02C51E8102FF006C5C8A /* GBPing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GBPing.h; sourceTree = "<group>"; };
 		D95C02C61E8102FF006C5C8A /* GBPing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GBPing.m; sourceTree = "<group>"; };
 		D95C02C71E8102FF006C5C8A /* GBPingSummary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GBPingSummary.h; sourceTree = "<group>"; };
@@ -2223,8 +2238,6 @@
 		D95C02DC1E8102FF006C5C8A /* PeerMessageHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PeerMessageHandler.m; sourceTree = "<group>"; };
 		D95C02DD1E8102FF006C5C8A /* SystemMessageHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SystemMessageHandler.h; sourceTree = "<group>"; };
 		D95C02DE1E8102FF006C5C8A /* SystemMessageHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SystemMessageHandler.m; sourceTree = "<group>"; };
-		D95C02E01E8102FF006C5C8A /* LMMessageValidationTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LMMessageValidationTool.h; sourceTree = "<group>"; };
-		D95C02E11E8102FF006C5C8A /* LMMessageValidationTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LMMessageValidationTool.m; sourceTree = "<group>"; };
 		D95C02E21E8102FF006C5C8A /* ServerURLModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ServerURLModel.h; sourceTree = "<group>"; };
 		D95C02E31E8102FF006C5C8A /* ServerURLModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ServerURLModel.m; sourceTree = "<group>"; };
 		D95C02E41E8102FF006C5C8A /* SocketManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SocketManager.h; sourceTree = "<group>"; };
@@ -13761,6 +13774,8 @@
 				D97FDCC41E88FCC500B161C8 /* NSMutableArray+Check.m */,
 				D9C73AE91E8CD5E7002BF3B7 /* NSDictionary+NilSafe.h */,
 				D9C73AEA1E8CD5E7002BF3B7 /* NSDictionary+NilSafe.m */,
+				D95845221ECBE44F004C8984 /* NSString+DNS.h */,
+				D95845231ECBE44F004C8984 /* NSString+DNS.m */,
 			);
 			path = Extend;
 			sourceTree = "<group>";
@@ -14401,6 +14416,53 @@
 			path = DataMigartion;
 			sourceTree = "<group>";
 		};
+		D95845141ECAD8C1004C8984 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				D95C02D61E8102FF006C5C8A /* Message.h */,
+				D95C02D71E8102FF006C5C8A /* Message.m */,
+				D95845191ECAF666004C8984 /* LMMessageSendManager.h */,
+				D958451A1ECAF666004C8984 /* LMMessageSendManager.m */,
+				D95845251ECBF71C004C8984 /* LMCommandManager.h */,
+				D95845261ECBF71C004C8984 /* LMCommandManager.m */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
+		D95845181ECADED0004C8984 /* Socket */ = {
+			isa = PBXGroup;
+			children = (
+				D95C02CA1E8102FF006C5C8A /* GCDAsyncSocket.h */,
+				D95C02CB1E8102FF006C5C8A /* GCDAsyncSocket.m */,
+				D95C02D41E8102FF006C5C8A /* LMSocketConnection.h */,
+				D95C02D51E8102FF006C5C8A /* LMSocketConnection.m */,
+				D95C02EA1E8102FF006C5C8A /* TCPConnection.h */,
+				D95C02EB1E8102FF006C5C8A /* TCPConnection.m */,
+				D95C02E21E8102FF006C5C8A /* ServerURLModel.h */,
+				D95C02E31E8102FF006C5C8A /* ServerURLModel.m */,
+				D95C02E41E8102FF006C5C8A /* SocketManager.h */,
+				D95C02E51E8102FF006C5C8A /* SocketManager.m */,
+				D95C02E61E8102FF006C5C8A /* SpeedDectectManager.h */,
+				D95C02E71E8102FF006C5C8A /* SpeedDectectManager.m */,
+				D95C02E81E8102FF006C5C8A /* StreamParser.h */,
+				D95C02E91E8102FF006C5C8A /* StreamParser.m */,
+				D95C02EC1E8102FF006C5C8A /* util.c */,
+				D95C02ED1E8102FF006C5C8A /* util.h */,
+			);
+			name = Socket;
+			sourceTree = "<group>";
+		};
+		D95845281ECC2C32004C8984 /* Adapter */ = {
+			isa = PBXGroup;
+			children = (
+				D95845111ECAAB7D004C8984 /* LMCommandAdapter.h */,
+				D95845121ECAAB7D004C8984 /* LMCommandAdapter.m */,
+				D958451F1ECAF970004C8984 /* LMMessageAdapter.h */,
+				D95845201ECAF970004C8984 /* LMMessageAdapter.m */,
+			);
+			name = Adapter;
+			sourceTree = "<group>";
+		};
 		D95C02A21E8101A6006C5C8A /* Client */ = {
 			isa = PBXGroup;
 			children = (
@@ -14857,41 +14919,16 @@
 		D95C02C01E8101A7006C5C8A /* IMServer */ = {
 			isa = PBXGroup;
 			children = (
+				D95845281ECC2C32004C8984 /* Adapter */,
+				D95845181ECADED0004C8984 /* Socket */,
 				D95C02D81E8102FF006C5C8A /* MessageHandler */,
-				D95C02DF1E8102FF006C5C8A /* MessageValidationTool */,
-				D95C02C11E8102FE006C5C8A /* CommandOuttimeTool */,
 				D95C02C41E8102FE006C5C8A /* GBPing */,
-				D95C02D61E8102FF006C5C8A /* Message.h */,
-				D95C02D71E8102FF006C5C8A /* Message.m */,
-				D95C02CA1E8102FF006C5C8A /* GCDAsyncSocket.h */,
-				D95C02CB1E8102FF006C5C8A /* GCDAsyncSocket.m */,
-				D95C02D41E8102FF006C5C8A /* LMSocketConnection.h */,
-				D95C02D51E8102FF006C5C8A /* LMSocketConnection.m */,
+				D95845141ECAD8C1004C8984 /* Model */,
 				D95C02CC1E8102FF006C5C8A /* IMService.h */,
 				D95C02CD1E8102FF006C5C8A /* IMService.m */,
-				D95C02EA1E8102FF006C5C8A /* TCPConnection.h */,
-				D95C02EB1E8102FF006C5C8A /* TCPConnection.m */,
-				D95C02E21E8102FF006C5C8A /* ServerURLModel.h */,
-				D95C02E31E8102FF006C5C8A /* ServerURLModel.m */,
-				D95C02E41E8102FF006C5C8A /* SocketManager.h */,
-				D95C02E51E8102FF006C5C8A /* SocketManager.m */,
-				D95C02E61E8102FF006C5C8A /* SpeedDectectManager.h */,
-				D95C02E71E8102FF006C5C8A /* SpeedDectectManager.m */,
-				D95C02E81E8102FF006C5C8A /* StreamParser.h */,
-				D95C02E91E8102FF006C5C8A /* StreamParser.m */,
-				D95C02EC1E8102FF006C5C8A /* util.c */,
-				D95C02ED1E8102FF006C5C8A /* util.h */,
+				D95845101EC9664F004C8984 /* LMSocketHandleDelegate.h */,
 			);
 			path = IMServer;
-			sourceTree = "<group>";
-		};
-		D95C02C11E8102FE006C5C8A /* CommandOuttimeTool */ = {
-			isa = PBXGroup;
-			children = (
-				D95C02C21E8102FE006C5C8A /* CommandOutTimeTool.h */,
-				D95C02C31E8102FE006C5C8A /* CommandOutTimeTool.m */,
-			);
-			path = CommandOuttimeTool;
 			sourceTree = "<group>";
 		};
 		D95C02C41E8102FE006C5C8A /* GBPing */ = {
@@ -14909,6 +14946,8 @@
 		D95C02D81E8102FF006C5C8A /* MessageHandler */ = {
 			isa = PBXGroup;
 			children = (
+				D95845291ECC2C7D004C8984 /* LMMessageValidationTool.h */,
+				D958452A1ECC2C7D004C8984 /* LMMessageValidationTool.m */,
 				D95C02D91E8102FF006C5C8A /* GroupMessageHandler.h */,
 				D95C02DA1E8102FF006C5C8A /* GroupMessageHandler.m */,
 				D95C02DB1E8102FF006C5C8A /* PeerMessageHandler.h */,
@@ -14917,15 +14956,6 @@
 				D95C02DE1E8102FF006C5C8A /* SystemMessageHandler.m */,
 			);
 			path = MessageHandler;
-			sourceTree = "<group>";
-		};
-		D95C02DF1E8102FF006C5C8A /* MessageValidationTool */ = {
-			isa = PBXGroup;
-			children = (
-				D95C02E01E8102FF006C5C8A /* LMMessageValidationTool.h */,
-				D95C02E11E8102FF006C5C8A /* LMMessageValidationTool.m */,
-			);
-			path = MessageValidationTool;
 			sourceTree = "<group>";
 		};
 		D95C030D1E8108D8006C5C8A /* Base */ = {
@@ -32776,7 +32806,6 @@
 				D9222FD61E822A3100D67110 /* UIView+YYAdd.m in Sources */,
 				D9222F931E822A3000D67110 /* NSObject+MJProperty.m in Sources */,
 				192351781E8123C60022D844 /* AddressBookInfo.m in Sources */,
-				D95C02FB1E8102FF006C5C8A /* LMMessageValidationTool.m in Sources */,
 				1923512C1E8121CB0022D844 /* LMDrawView.m in Sources */,
 				D95C044E1E810902006C5C8A /* GJGCChatFriendGifCell.m in Sources */,
 				D95C03551E8108D8006C5C8A /* BaseSetViewController.m in Sources */,
@@ -32841,6 +32870,7 @@
 				D92232B71E822BF800D67110 /* LMRetweetMessageManager.m in Sources */,
 				192350B31E81213F0022D844 /* LMBitAddressViewController.m in Sources */,
 				D92232E81E822BF900D67110 /* GJCFCoreTextRun.m in Sources */,
+				D95845211ECAF970004C8984 /* LMMessageAdapter.m in Sources */,
 				192352A21E81275B0022D844 /* LMRootModel.m in Sources */,
 				D92232E31E822BF900D67110 /* GJCFAssetsPreviewController.m in Sources */,
 				D92232B31E822BF800D67110 /* Language.m in Sources */,
@@ -32877,6 +32907,7 @@
 				D9B084C21E810DDC0067EC4A /* SetTransferFeePage.m in Sources */,
 				D92232951E822BF800D67110 /* UINavigationController+LM.m in Sources */,
 				D9222FD21E822A3100D67110 /* UIScreen+YYAdd.m in Sources */,
+				D95845271ECBF71C004C8984 /* LMCommandManager.m in Sources */,
 				D92232A91E822BF800D67110 /* GJCFAudioManager.m in Sources */,
 				D95C03721E8108D8006C5C8A /* MapLocationViewController.m in Sources */,
 				1923513F1E8121CB0022D844 /* LMTransFriendsListCell.m in Sources */,
@@ -32931,6 +32962,7 @@
 				D9222F871E822A3000D67110 /* NSArray+MASAdditions.m in Sources */,
 				D92232F41E822BF900D67110 /* GJCFStringUitil.m in Sources */,
 				D95C03761E8108D8006C5C8A /* SelectContactCardController.m in Sources */,
+				D958451B1ECAF666004C8984 /* LMMessageSendManager.m in Sources */,
 				D922329C1E822BF800D67110 /* UIView+Toast.m in Sources */,
 				D95C048C1E810902006C5C8A /* GJGCImageResizeHelper.m in Sources */,
 				19234FE61E811BDA0022D844 /* ConnectLabel.m in Sources */,
@@ -32983,7 +33015,6 @@
 				D9222F9B1E822A3000D67110 /* MSSBrowseLoadingImageView.m in Sources */,
 				D97FDCAD1E86664800B161C8 /* YYTextLayout.m in Sources */,
 				D9222FB91E822A3100D67110 /* NSArray+YYAdd.m in Sources */,
-				D95C02EE1E8102FF006C5C8A /* CommandOutTimeTool.m in Sources */,
 				D9B084E61E810E5A0067EC4A /* PaddingTextField.m in Sources */,
 				F1CC2ED91E95F0BA0045FBB7 /* NSArray+LMSafeMethod.m in Sources */,
 				1923503D1E811F520022D844 /* BaseCell.m in Sources */,
@@ -33079,6 +33110,7 @@
 				D92232681E822BF800D67110 /* TBActionButton.m in Sources */,
 				D95C04481E810902006C5C8A /* GJGCChatFriendAcceptGroupCallCell.m in Sources */,
 				D92232DB1E822BF900D67110 /* GJCFAssetsPickerAlbumsCell.m in Sources */,
+				D95845131ECAAB7D004C8984 /* LMCommandAdapter.m in Sources */,
 				D962DDCE1EC19D02004B2066 /* base58.cpp in Sources */,
 				D9222F8D1E822A3000D67110 /* MJProperty.m in Sources */,
 				D95C03641E8108D8006C5C8A /* GJGCChatGroupViewController.m in Sources */,
@@ -33139,6 +33171,7 @@
 				D95C04611E810902006C5C8A /* GJGCChatSystemActiveGuideCell.m in Sources */,
 				D922325F1E822BF800D67110 /* LCNewFeatureVC.m in Sources */,
 				D962DDDE1EC19D02004B2066 /* secp256k1.c in Sources */,
+				D95845241ECBE44F004C8984 /* NSString+DNS.m in Sources */,
 				192351261E8121CB0022D844 /* InputPayPassView.m in Sources */,
 				192351591E81226C0022D844 /* Protofile.pbobjc.m in Sources */,
 				1923506A1E81200D0022D844 /* AddFriendCell.m in Sources */,
@@ -33260,6 +33293,7 @@
 				D92232EB1E822BF900D67110 /* GJCFCoreTextCommonDefine.m in Sources */,
 				192350491E811F520022D844 /* NCellValue1.m in Sources */,
 				D922326D1E822BF800D67110 /* UIWindow+TBAdditions.m in Sources */,
+				D958452B1ECC2C7D004C8984 /* LMMessageValidationTool.m in Sources */,
 				D97FDCB21E86664800B161C8 /* YYTextAttribute.m in Sources */,
 				D9222FC91E822A3100D67110 /* UIApplication+YYAdd.m in Sources */,
 				192350BA1E81213F0022D844 /* LMRecipFriendsViewController.m in Sources */,

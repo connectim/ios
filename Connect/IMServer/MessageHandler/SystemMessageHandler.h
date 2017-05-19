@@ -10,17 +10,7 @@
 #import "Protofile.pbobjc.h"
 #import "RecentChatDBManager.h"
 #import "MessageDBManager.h"
-
-@protocol SystemMessageHandlerGetNewMessage <NSObject>
-
-@optional
-
-- (void)getNewSystemMessage:(ChatMessageInfo *)message;
-
-- (void)getNewSystemMessages:(NSArray *)messages;
-
-@end
-
+#import "LMSocketHandleDelegate.h"
 
 @interface SystemMessageHandler : NSObject
 

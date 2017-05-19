@@ -193,19 +193,7 @@
             // delete contact man
             UIAlertController* actionController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
             UIAlertAction* deleteAction = [UIAlertAction actionWithTitle:LMLocalizedString(@"Link Delete This Friend", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-                [[IMService instance] deleteFriendWithAddress:weakSelf.user.address comlete:^(NSError *erro, id data) {
-                    // delete head cache
-                    [[CIImageCacheManager sharedInstance] removeContactAvatarCacheWithUrl:weakSelf.user.avatar];
-                    if (!erro && [data isEqualToString:weakSelf.user.address]) {
-                        [GCDQueue executeInMainQueue:^{
-                            [weakSelf.navigationController popToRootViewControllerAnimated:YES];
-                        }];
-                    } else if (erro) {
-                        [GCDQueue executeInMainQueue:^{
-                            [weakSelf.navigationController popToRootViewControllerAnimated:YES];
-                        }];
-                    }
-                }];
+                [weakSelf deleteUser];
             }];
             UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:LMLocalizedString(@"Common Cancel", nil) style:UIAlertActionStyleCancel handler:nil];
             
@@ -218,6 +206,23 @@
 
     }
 
+}
+
+
+- (void)deleteUser{
+    [MBProgressHUD showLoadingMessageToView:self.view];
+    [[IMService instance] deleteFriendWithAddress:self.user.address comlete:^(NSError *error, id data) {
+        // delete head cache
+        [[CIImageCacheManager sharedInstance] removeContactAvatarCacheWithUrl:self.user.avatar];
+        [GCDQueue executeInMainQueue:^{
+            [MBProgressHUD hideHUDForView:self.view];
+            if (!error) {
+                [self.navigationController popToRootViewControllerAnimated:YES];
+            } else {
+                [MBProgressHUD showToastwithText:LMLocalizedString(@"Network equest failed please try again later", nil) withType:ToastTypeFail showInView:self.view complete:nil];
+            }
+        }];
+    }];
 }
 
 #pragma mark - click cell action
