@@ -34,7 +34,7 @@
     // Verify the legitimacy of the input
     if (GJCFStringIsNull(address) || ![KeyHandle checkAddress:address]) {
         if (complete) {
-            complete(nil,nil,[NSError errorWithDomain:@"Payment address is not valid" code:-1 userInfo:nil]);
+            complete(nil,nil,[NSError errorWithDomain:@"Payment address is not valid" code:2617 userInfo:nil]);
         }
         return;
     }
@@ -134,7 +134,7 @@ createRawTranscationModelComplete:(void (^)(UnspentOrderResponse *unspent,NSErro
     // Verify the legitimacy of the input
     if (GJCFStringIsNull(address) || ![KeyHandle checkAddress:address]) {
         if (complete) {
-            complete(nil,[NSError errorWithDomain:@"Payment address is not valid" code:-1 userInfo:nil]);
+            complete(nil,[NSError errorWithDomain:@"Payment address is not valid" code:2617 userInfo:nil]);
         }
         return;
     }
@@ -151,7 +151,7 @@ createRawTranscationModelComplete:(void (^)(UnspentOrderResponse *unspent,NSErro
     for (NSDictionary *temD in toAddresses) {
         if (![KeyHandle checkAddress:[temD valueForKey:@"address"]]) {
             if (complete) {
-                complete(nil,[NSError errorWithDomain:@"Collection address is not valid" code:-1 userInfo:nil]);
+                complete(nil,[NSError errorWithDomain:@"Collection address is not valid" code:2617 userInfo:nil]);
             }
             return;
         }

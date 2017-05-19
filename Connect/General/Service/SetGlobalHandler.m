@@ -131,10 +131,8 @@
  */
 
 + (void)addToCommonContactListWithAddress:(NSString *)userAddress remark:(NSString *)remark{
-    
-    
-    [[IMService instance] setFriendInfoWithAddress:userAddress remark:remark commonContact:YES comlete:^(NSError *erro, id data) {
-        if (erro == nil) {
+    [[IMService instance] setFriendInfoWithAddress:userAddress remark:remark commonContact:YES comlete:^(NSError *error, id data) {
+        if (error == nil) {
             [[UserDBManager sharedManager] setUserCommonContact:YES AndSetNewRemark:remark withAddress:userAddress];
             [GCDQueue executeInMainQueue:^{
                 SendNotify(ConnnectContactDidChangeNotification, [[UserDBManager sharedManager] getUserByAddress:userAddress]);

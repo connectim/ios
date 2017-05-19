@@ -441,6 +441,22 @@ static MessageDBManager *manager = nil;
     return nil;
 }
 
+
+- (GJGCChatFriendSendMessageStatus)getMessageSendStatusByMessageid:(NSString *)messageid messageOwer:(NSString *)messageOwer {
+    
+    if (GJCFStringIsNull(messageid) || GJCFStringIsNull(messageOwer)) {
+        return GJGCChatFriendSendMessageStatusFaild;
+    }
+    NSDictionary *temD = [[self getDatasFromTableName:MessageTable conditions:@{@"message_id": messageid, @"message_ower": messageOwer} fields:@[@"send_status"]] lastObject];
+    
+    if (temD) {
+        return [[temD safeObjectForKey:@"send_status"] integerValue];
+    }
+    return GJGCChatFriendSendMessageStatusFaild;
+}
+
+
+
 - (NSArray *)getAllMessagesWithMessageOwer:(NSString *)messageOwer {
 
     if (GJCFStringIsNull(messageOwer)) {

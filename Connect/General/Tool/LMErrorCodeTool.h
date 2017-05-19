@@ -52,6 +52,7 @@ typedef NS_ENUM(NSInteger,ErrorCodeType)
     ErrorCodeType2461    =  2461,
     ErrorCodeType2462    =  2462,
     ErrorCodeType2616    =  2616,
+    ErrorCodeType2617    =  2617,
     ErrorCodeType2618    =  2618,
     ErrorCodeType2664    =  2664,
     ErrorCodeType2665    =  2665,

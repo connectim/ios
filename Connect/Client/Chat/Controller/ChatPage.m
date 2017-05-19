@@ -29,7 +29,8 @@
 MGSwipeTableCellDelegate,
 TCPConnectionObserver,
 LMConversionListChangeManagerDelegate,
-UITabBarControllerDelegate>
+UITabBarControllerDelegate,
+UIViewControllerPreviewingDelegate>
 
 @property(nonatomic, strong) RecentChatTitleView *titleView;
 @property(nonatomic, strong) NSMutableArray<RecentChatModel *> *recentChats;
@@ -43,11 +44,103 @@ UITabBarControllerDelegate>
 
 @implementation ChatPage
 
+- (UIViewController *)previewingContext:(id<UIViewControllerPreviewing>)previewingContext viewControllerForLocation:(CGPoint)location {
+    GJGCChatFriendViewController *showPage = nil;
+    
+    //location cell
+    NSInteger index = (location.y - [UIApplication sharedApplication].statusBarFrame.size.height - 44) / self.tableView.rowHeight;
+    if (0 <= index && index < self.recentChats.count) {
+        RecentChatModel *recentModel = [self.recentChats objectAtIndex:index];
+        if (recentModel.chatUser.stranger) {
+            recentModel.chatUser.stranger = ![[UserDBManager sharedManager] isFriendByAddress:recentModel.chatUser.address];
+        }
+        
+        switch (recentModel.talkType) {
+            case GJGCChatFriendTalkTypePostSystem:
+            case GJGCChatFriendTalkTypePrivate:
+            {
+                GJGCChatFriendTalkModel *talk = [[GJGCChatFriendTalkModel alloc] init];
+                talk.talkType = recentModel.talkType;
+                talk.chatIdendifier = recentModel.identifier;
+                talk.headUrl = recentModel.headUrl;
+                talk.name = recentModel.chatUser.normalShowName;
+                talk.snapChatOutDataTime = recentModel.snapChatDeleteTime;
+                
+                talk.chatUser = recentModel.chatUser;
+                if (recentModel.talkType == GJGCChatFriendTalkTypePostSystem) {
+                    showPage = [[GJGCChatSystemNotiViewController alloc] initWithTalkInfo:talk];
+                } else {
+                    if (recentModel.stranger) {
+                        BOOL isFriend = [[UserDBManager sharedManager] isFriendByAddress:[KeyHandle getAddressByPubkey:recentModel.identifier]];
+                        if (isFriend) {
+                            [[LMConversionManager sharedManager] setRecentStrangerStatusWithIdentifier:recentModel.identifier stranger:NO];
+                        }
+                    }
+                    //Delete the message after reading
+                    [[MessageDBManager sharedManager] deleteSnapOutTimeMessageByMessageOwer:recentModel.identifier];
+                    showPage = [[GJGCChatFriendViewController alloc] initWithTalkInfo:talk];
+                }
+            }
+                break;
+                
+            case GJGCChatFriendTalkTypeGroup:
+            {
+                GJGCChatFriendTalkModel *talk = [[GJGCChatFriendTalkModel alloc] init];
+                talk.talkType = GJGCChatFriendTalkTypeGroup;
+                talk.chatIdendifier = recentModel.identifier;
+                talk.chatGroupInfo = recentModel.chatGroupInfo;
+                talk.name = GJCFStringIsNull(recentModel.name) ? [NSString stringWithFormat:LMLocalizedString(@"Group (%lu)", nil), (unsigned long) recentModel.chatGroupInfo.groupMembers.count] : [NSString stringWithFormat:@"%@(%lu)", recentModel.name, (unsigned long) recentModel.chatGroupInfo.groupMembers.count];
+                showPage = [[GJGCChatGroupViewController alloc] initWithTalkInfo:talk];
+            }
+                break;
+            default:
+                break;
+        }
+    }
+    
+    
+    if ([self.presentedViewController isKindOfClass:[UIViewController class]]) {
+        return nil;
+    }
+    return showPage;
+}
+
+- (void)previewingContext:(id<UIViewControllerPreviewing>)previewingContext commitViewController:(UIViewController *)viewControllerToCommit {
+    GJGCChatDetailViewController *showPage = (GJGCChatDetailViewController *)viewControllerToCommit;
+    //clear unread / group @ note
+    [[LMConversionManager sharedManager] clearConversionUnreadAndGroupNoteWithIdentifier:showPage.taklInfo.chatIdendifier];
+    switch (showPage.taklInfo.talkType) {
+        case GJGCChatFriendTalkTypePostSystem:
+        case GJGCChatFriendTalkTypePrivate:
+        {
+            [SessionManager sharedManager].chatSession = showPage.taklInfo.chatIdendifier;
+            [SessionManager sharedManager].chatObject = showPage.taklInfo.chatUser;
+        }
+            break;
+            
+        case GJGCChatFriendTalkTypeGroup:
+        {
+            [SessionManager sharedManager].chatSession = showPage.taklInfo.chatIdendifier;
+            [SessionManager sharedManager].chatObject = showPage.taklInfo.chatGroupInfo;
+        }
+            break;
+        default:
+            break;
+    }
+    
+    //ui jump
+    showPage.hidesBottomBarWhenPushed = YES;
+    [self showViewController:showPage sender:self];
+}
+
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     if (self.tabBarController.tabBar.hidden) {
         self.tabBarController.tabBar.hidden = NO;
     }
+//    if (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable) {
+//        [self registerForPreviewingWithDelegate:(id)self sourceView:self.view];
+//    }
 }
 
 - (void)viewDidLoad {

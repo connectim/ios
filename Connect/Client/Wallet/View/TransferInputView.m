@@ -74,6 +74,7 @@
 }
 
 - (IBAction)addNote:(id)sender {
+    
     UIViewController *controller = [self viewController];
     if (!controller) {
         return;
@@ -315,7 +316,7 @@
     self.topTipLabel.textColor = LMBasicDarkGray;
     self.feeLabel.font = [UIFont systemFontOfSize:FONT_SIZE(28)];
     self.typeLabel.font = [UIFont boldSystemFontOfSize:FONT_SIZE(36)];
-    [self.noteButton setTitleColor:GJCFQuickHexColor(@"6277AE") forState:UIControlStateNormal];
+    [self.noteButton setTitleColor:LMBasicRateBtnTitleColor forState:UIControlStateNormal];
     self.noteButton.titleLabel.font = [UIFont systemFontOfSize:FONT_SIZE(28)];
     self.noteDefaultString = LMLocalizedString(@"Wallet Add note", nil); //Defaults
     [self.noteButton setTitle:self.noteDefaultString forState:UIControlStateNormal];
@@ -332,7 +333,7 @@
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(changeFee)];
     [self.feeLabel addGestureRecognizer:tap];
 
-    self.rateChangeButton.backgroundColor = GJCFQuickHexColor(@"B3B5BC");
+    self.rateChangeButton.backgroundColor = LMBasicRateBtnColor;
     self.rateChangeButton.layer.cornerRadius = 3;
     self.rateChangeButton.layer.masksToBounds = YES;
     self.rateChangeButton.titleLabel.font = [UIFont systemFontOfSize:FONT_SIZE(36)];
@@ -350,21 +351,21 @@
     nameString = [self limitPoint:nameString withSympol:self.sympol];
 
     [self.rateChangeButton setTitle:nameString forState:UIControlStateNormal];
-    [_inputTextField mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.inputTextField mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.typeLabel.mas_right).offset(10);
         make.top.equalTo(self.typeLabel);
         make.right.equalTo(self.inputContentView).offset(-10);
         make.height.mas_equalTo(AUTO_HEIGHT(100));
     }];
-    _inputTextField.text = [NSString stringWithFormat:@"%.8lf", MIN_TRANSFER_AMOUNT];
-    _inputTextField.delegate = self;
+    self.inputTextField.text = [NSString stringWithFormat:@"%.8lf", MIN_TRANSFER_AMOUNT];
+    self.inputTextField.delegate = self;
     self.amount = [[NSDecimalNumber alloc] initWithDouble:MIN_TRANSFER_AMOUNT];
     self.btcAmount = YES;
-    _inputTextField.keyboardType = UIKeyboardTypeDecimalPad;
-    _inputTextField.tintColor = [UIColor blackColor];
-    [_inputTextField becomeFirstResponder];
-    _inputTextField.font = [UIFont systemFontOfSize:FONT_SIZE(72)];
-    [_inputTextField addTarget:self action:@selector(TextFieldEditValueChanged:) forControlEvents:UIControlEventEditingChanged];
+    self.inputTextField.keyboardType = UIKeyboardTypeDecimalPad;
+    self.inputTextField.tintColor = [UIColor blackColor];
+    [self.inputTextField becomeFirstResponder];
+    self.inputTextField.font = [UIFont systemFontOfSize:FONT_SIZE(72)];
+    [self.inputTextField addTarget:self action:@selector(TextFieldEditValueChanged:) forControlEvents:UIControlEventEditingChanged];
     self.backgroundColor = [UIColor clearColor];
     [self layoutIfNeeded];
 }
@@ -438,10 +439,12 @@
 }
 
 
-- (void)setHidenFeeLabel:(BOOL)hidenFeeLabel {
-    _hidenFeeLabel = hidenFeeLabel;
-    self.feeLabel.hidden = hidenFeeLabel;
+- (void)setIsHidenFee:(BOOL)isHidenFee {
+    
+    _isHidenFee = isHidenFee;
+    self.feeLabel.hidden = isHidenFee;
     [self setNeedsLayout];
+    
 }
 
 - (void)executeBlock {

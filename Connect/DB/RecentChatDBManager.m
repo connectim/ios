@@ -12,6 +12,8 @@
 #import "MessageDBManager.h"
 #import "IMService.h"
 #import "ConnectTool.h"
+#import "LMBaseSSDBManager.h"
+
 
 static RecentChatDBManager *manager = nil;
 
@@ -202,6 +204,8 @@ static RecentChatDBManager *manager = nil;
     BOOL result = [self deleteTableName:RecentChatTable conditions:@{@"identifier": identifier}];
     [self deleteTableName:RecentChatTableSetting conditions:@{@"identifier": identifier}];
 
+    //remove draft
+    [self removeDraftWithIdentifier:identifier];
     if (result) {
         DDLogInfo(@"success");
     } else {
@@ -344,27 +348,39 @@ static RecentChatDBManager *manager = nil;
         return;
     }
     draft = draft ? draft : @"";
-    [GCDQueue executeInMainQueue:^{
-        SendNotify(SendDraftChangeNotification, (@{@"identifier": identifier,
-                @"draft": draft}));
-    }             afterDelaySecs:0.5];
-    [self updateTableName:RecentChatTable fieldsValues:@{@"draft": draft} conditions:@{@"identifier": identifier}];
+    //update
+    NSString *key = [NSString stringWithFormat:@"%@_draft",identifier];
+    LMBaseSSDBManager *manager = [LMBaseSSDBManager open:@"system_message"];
+    [manager set:key string:draft];
+    [manager close];
+    SendNotify(SendDraftChangeNotification, (@{@"identifier": identifier,
+                                               @"draft": draft}));
+//    [self updateTableName:RecentChatTable fieldsValues:@{@"draft": draft} conditions:@{@"identifier": identifier}];
 }
 
 - (void)removeDraftWithIdentifier:(NSString *)identifier {
     if (GJCFStringIsNull(identifier)) {
         return;
     }
-    [self updateTableName:RecentChatTable fieldsValues:@{@"draft": @""} conditions:@{@"identifier": identifier}];
+    NSString *key = [NSString stringWithFormat:@"%@_draft",identifier];
+    LMBaseSSDBManager *manager = [LMBaseSSDBManager open:@"system_message"];
+    [manager set:key string:@""];
+    [manager close];
+//    [self updateTableName:RecentChatTable fieldsValues:@{@"draft": @""} conditions:@{@"identifier": identifier}];
 }
 
 - (NSString *)getDraftWithIdentifier:(NSString *)identifier {
     if (GJCFStringIsNull(identifier)) {
         return @"";
     }
-
-    NSDictionary *temD = [[self getDatasFromTableName:RecentChatTable conditions:@{@"identifier": identifier} fields:@[@"draft"]] lastObject];
-    return [temD safeObjectForKey:@"draft"];
+    NSString *key = [NSString stringWithFormat:@"%@_draft",identifier];
+    LMBaseSSDBManager *manager = [LMBaseSSDBManager open:@"system_message"];
+    NSString *draft;
+    [manager get:key string:&draft];
+    [manager close];
+    return draft;
+//    NSDictionary *temD = [[self getDatasFromTableName:RecentChatTable conditions:@{@"identifier": identifier} fields:@[@"draft"]] lastObject];
+//    return [temD safeObjectForKey:@"draft"];
 }
 
 - (void)updataUnReadCount:(int)unreadCount idetifier:(NSString *)idetifier {

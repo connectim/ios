@@ -8,7 +8,6 @@
 
 #import "BaseSetViewController.h"
 #import "Protofile.pbobjc.h"
-#import "BtcTool.h"
 
 @interface WallteNetWorkTool : BaseSetViewController
 

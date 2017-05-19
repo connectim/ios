@@ -228,7 +228,7 @@ static const CGFloat kMargin = 30;
     }
 }
 
-#pragma mark-> my photo
+#pragma mark-> my photox
 
 - (void)myAlbum {
 

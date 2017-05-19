@@ -46,6 +46,7 @@
 #define DATA_TOO_LARGE_2461               LMLocalizedString(@"ErrorCode Data is too large", nil)
 #define DATA_ERROR_2462                   LMLocalizedString(@"ErrorCode data error", nil)
 #define TRANSSATION_ERROR_2616            LMLocalizedString(@"ErrorCode Transaction information is incorrect", nil)
+#define TRANSSATION_ADDRESS_ERR0R_2617    LMLocalizedString(@"ErrorCode transaction address is not available", nil)
 #define VERSION_REPEAT_2618               LMLocalizedString(@"ErrorCode Version information is repeated", nil)
 #define DUST_MESSAGE_2664                 LMLocalizedString(@"ErrorCode dust", nil)
 #define DUST_MESSAGE_2665                 LMLocalizedString(@"ErrorCode dust", nil)
@@ -717,6 +718,12 @@
         case ErrorCodeType2616:
         {
             return TRANSSATION_ERROR_2616;
+            
+        }
+            break;
+        case ErrorCodeType2617:
+        {
+            return TRANSSATION_ADDRESS_ERR0R_2617;
             
         }
             break;

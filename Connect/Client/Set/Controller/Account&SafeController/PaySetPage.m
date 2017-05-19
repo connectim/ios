@@ -126,7 +126,6 @@
             return;
         }
 
-
         if (![[MMAppSetting sharedSetting] isDeviceSupportFingerPay]) {
             // Need to open the fingerprint payment, and non-jailbreak of the machine
             UIAlertController *alertController = [UIAlertController alertControllerWithTitle:LMLocalizedString(@"Set tip title", nil) message:LMLocalizedString(@"Set fingerprint not allowed on jailbreaking phones", nil) preferredStyle:UIAlertControllerStyleAlert];
@@ -253,11 +252,11 @@
 
         [GCDQueue executeInGlobalQueue:^{
 
-            if (weakSelf.passTextField.text.length <= 0) {
+            if (self.passTextField.text.length <= 0) {
 
                 return;
             }
-            weakSelf.navigationController.view.userInteractionEnabled = NO;
+            self.navigationController.view.userInteractionEnabled = NO;
 
             NSDictionary *decodeDict = [KeyHandle decodePrikeyGetDict:loginUser.encryption_pri withPassword:weakSelf.passTextField.text];
             weakSelf.navigationController.view.userInteractionEnabled = YES;

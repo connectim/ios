@@ -240,14 +240,15 @@
     [MBProgressHUD showMessage:LMLocalizedString(@"Common Loading", nil) toView:self.view];
     __weak __typeof(&*self) weakSelf = self;
     [[LKUserCenter shareCenter] LoginUserWithAccountUser:_selectedAccount withPassword:_passwordField.text withComplete:^(NSString *privkey, NSError *error) {
-        //save to keychan
-        [[MMAppSetting sharedSetting] saveUserAnduploadLoginTimeToKeyChain:_selectedAccount];
-        [GCDQueue executeInMainQueue:^{
-            [MBProgressHUD hideHUDForView:weakSelf.view];
-        }];
         if (error) {
             [GCDQueue executeInMainQueue:^{
                 [MBProgressHUD showToastwithText:LMLocalizedString(@"Login Password incorrect", nil) withType:ToastTypeFail showInView:weakSelf.view complete:nil];
+            }];
+        } else{
+            //save to keychan
+            [[MMAppSetting sharedSetting] saveUserAnduploadLoginTimeToKeyChain:_selectedAccount];
+            [GCDQueue executeInMainQueue:^{
+                [MBProgressHUD hideHUDForView:weakSelf.view];
             }];
         }
     }];
