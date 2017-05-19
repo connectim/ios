@@ -620,4 +620,27 @@ static MessageDBManager *manager = nil;
     return chatMessages.copy;
 }
 
+
+- (void)createTipMessageWithMessageOwer:(NSString *)messageOwer isnoRelationShipType:(BOOL)isnoRelationShipType content:(NSString *)content{
+    GJGCChatFriendContentType type = GJGCChatFriendContentTypeStatusTip;
+    if (isnoRelationShipType) {
+        type = GJGCChatFriendContentTypeNoRelationShipTip;
+    }
+    
+    ChatMessageInfo *chatMessage = [[ChatMessageInfo alloc] init];
+    chatMessage.messageId = [ConnectTool generateMessageId];
+    chatMessage.messageOwer = messageOwer;
+    chatMessage.messageType = type;
+    chatMessage.sendstatus = GJGCChatFriendSendMessageStatusSuccess;
+    chatMessage.createTime = (long long) ([[NSDate date] timeIntervalSince1970] * 1000);
+    MMMessage *message = [[MMMessage alloc] init];
+    message.type = type;
+    message.content = content;
+    message.sendtime = chatMessage.createTime;
+    message.message_id = chatMessage.messageId;
+    message.sendstatus = GJGCChatFriendSendMessageStatusSuccess;
+    chatMessage.message = message;
+    [self saveMessage:chatMessage];
+}
+
 @end

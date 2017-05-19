@@ -187,25 +187,9 @@ CREATE_SHARED_MANAGER(LMMessageSendManager)
                 if (!GJCFStringIsNull(identifier)) {
                     //updata message sendstatus
                     [[MessageDBManager sharedManager] updateMessageSendStatus:GJGCChatFriendSendMessageStatusFailByNotInGroup withMessageId:rejectMsg.msgId messageOwer:identifier];
-                    
                     sendModel.sendMsg.sendstatus = GJGCChatFriendSendMessageStatusFailByNotInGroup;
-                    
                     //create tip message
-                    ChatMessageInfo *chatMessage = [[ChatMessageInfo alloc] init];
-                    chatMessage.messageId = [ConnectTool generateMessageId];
-                    chatMessage.messageOwer = identifier;
-                    chatMessage.messageType = GJGCChatFriendContentTypeStatusTip;
-                    chatMessage.sendstatus = GJGCChatFriendSendMessageStatusSuccess;
-                    chatMessage.createTime = (long long) ([[NSDate date] timeIntervalSince1970] * 1000);
-                    MMMessage *message = [[MMMessage alloc] init];
-                    message.type = GJGCChatFriendContentTypeStatusTip;
-                    message.content = LMLocalizedString(@"Message send fail not in group", nil);
-                    message.sendtime = chatMessage.createTime;
-                    message.message_id = chatMessage.messageId;
-                    message.sendstatus = GJGCChatFriendSendMessageStatusSuccess;
-                    chatMessage.message = message;
-                    [[MessageDBManager sharedManager] saveMessage:chatMessage];
-
+                    [[MessageDBManager sharedManager] createTipMessageWithMessageOwer:identifier isnoRelationShipType:NO content:LMLocalizedString(@"Message send fail not in group", nil)];
                     if (sendModel.callBack) {
                         sendModel.callBack(sendModel.sendMsg, nil);
                     }
@@ -219,21 +203,8 @@ CREATE_SHARED_MANAGER(LMMessageSendManager)
                     
                     sendModel.sendMsg.sendstatus = GJGCChatFriendSendMessageStatusFailByNoRelationShip;
                     
-                    ChatMessageInfo *chatMessage = [[ChatMessageInfo alloc] init];
-                    chatMessage.messageId = [ConnectTool generateMessageId];
-                    chatMessage.messageOwer = identifier;
-                    chatMessage.messageType = GJGCChatFriendContentTypeNoRelationShipTip;
-                    chatMessage.sendstatus = GJGCChatFriendSendMessageStatusSuccess;
-                    chatMessage.createTime = (long long) ([[NSDate date] timeIntervalSince1970] * 1000);
-                    MMMessage *message = [[MMMessage alloc] init];
-                    message.type = GJGCChatFriendContentTypeNoRelationShipTip;
-                    message.content = @"";
-                    message.sendtime = chatMessage.createTime;
-                    message.message_id = chatMessage.messageId;
-                    message.sendstatus = GJGCChatFriendSendMessageStatusSuccess;
-                    chatMessage.message = message;
-                    [[MessageDBManager sharedManager] saveMessage:chatMessage];
-                    
+                    //create tip message
+                    [[MessageDBManager sharedManager] createTipMessageWithMessageOwer:identifier isnoRelationShipType:YES content:nil];
                     if (sendModel.callBack) {
                         sendModel.callBack(sendModel.sendMsg, nil);
                     }
@@ -248,22 +219,8 @@ CREATE_SHARED_MANAGER(LMMessageSendManager)
                     [[MessageDBManager sharedManager] updateMessageSendStatus:GJGCChatFriendSendMessageStatusSuccessUnArrive withMessageId:rejectMsg.msgId messageOwer:identifier];
                     
                     sendModel.sendMsg.sendstatus = GJGCChatFriendSendMessageStatusSuccessUnArrive;
-                    
-                    ChatMessageInfo *chatMessage = [[ChatMessageInfo alloc] init];
-                    chatMessage.messageId = [ConnectTool generateMessageId];
-                    chatMessage.messageOwer = identifier;
-                    chatMessage.messageType = GJGCChatFriendContentTypeStatusTip;
-                    chatMessage.sendstatus = GJGCChatFriendSendMessageStatusSuccess;
-                    chatMessage.createTime = (long long) ([[NSDate date] timeIntervalSince1970] * 1000);
-                    MMMessage *message = [[MMMessage alloc] init];
-                    message.type = GJGCChatFriendContentTypeStatusTip;
-                    message.content = LMLocalizedString(@"Link Message has been sent the other rejected", nil);
-                    message.sendtime = chatMessage.createTime;
-                    message.message_id = chatMessage.messageId;
-                    message.sendstatus = GJGCChatFriendSendMessageStatusSuccess;
-                    chatMessage.message = message;
-                    [[MessageDBManager sharedManager] saveMessage:chatMessage];
-                    
+                    //create tip message
+                    [[MessageDBManager sharedManager] createTipMessageWithMessageOwer:identifier isnoRelationShipType:NO content:LMLocalizedString(@"Link Message has been sent the other rejected", nil)];
                     if (sendModel.callBack) {
                         sendModel.callBack(sendModel.sendMsg, nil);
                     }
