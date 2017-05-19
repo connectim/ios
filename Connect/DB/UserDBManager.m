@@ -151,7 +151,7 @@ static UserDBManager *manager = nil;
         return nil;
     }
     NSString *address = [KeyHandle getAddressByPubkey:publickey];
-    if ([publickey isEqualToString:@"connect"]) {
+    if ([publickey isEqualToString:kSystemIdendifier]) {
         address = @"Connect";
     }
     return [self getUserByAddress:address];
