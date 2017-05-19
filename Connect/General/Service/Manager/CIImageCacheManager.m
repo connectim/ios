@@ -58,37 +58,6 @@
     GJCFFileDeleteFile(avatarPath);
 }
 
-- (void)groupAvatarByGroupIdentifier:(NSString *)identifier groupMembers:(NSArray *)groupMembsers complete:(void(^)(UIImage *image))complete {
-    UIImage *cacheImage = [[YYImageCache sharedCache] getImageForKey:identifier];
-    if (cacheImage) {
-        if (complete) {
-            complete(cacheImage);
-        }
-    }
-    NSString *avatarName = [NSString stringWithFormat:@"%@.png",identifier];
-    NSString *filePath = [[GJCFCachePathManager shareManager] mainImageCacheDirectory];
-    filePath = [filePath stringByAppendingPathComponent:@"GroupAvatarCache"];
-    if (!GJCFFileDirectoryIsExist(filePath)) {
-        GJCFFileDirectoryCreate(filePath);
-    }
-    NSString *avatarPath = [filePath stringByAppendingPathComponent:avatarName];
-    //save group headimage
-    if (!GJCFFileIsExist(avatarPath)) {
-        [self downAndComposeAvatar:groupMembsers groupIdentifier:identifier complete:^(UIImage *image) {
-            [[YYImageCache sharedCache] setImage:image forKey:identifier];
-            if (complete) {
-                complete(image);
-            }
-        }];
-    } else{
-        UIImage *image = [UIImage imageWithData:GJCFFileRead(avatarPath)];
-        [[YYImageCache sharedCache] setImage:image forKey:identifier];
-        if (complete) {
-            complete(image);
-        }
-    }
-}
-
 - (void)contactAvatarWithUrl:(NSString *)avatarUrl complete:(void(^)(UIImage *image))complete {
     NSString *md5 = [avatarUrl md5String];
     UIImage *cacheImage = [[YYImageCache sharedCache] getImageForKey:md5];
@@ -185,42 +154,7 @@
     GJCFFileDeleteFile(avatarPath);
 }
 
-- (void)uploadGroupAvatar:(UIImage *)avatar groupIdentifier:(NSString *)identifier{
-    if (GJCFStringIsNull(identifier)) {
-        return;
-    }
-    // Determine whether the current user is a group
-    GroupAvatar *groupAvatar = [GroupAvatar new];
-    groupAvatar.identifier = identifier;
-    groupAvatar.file = UIImageJPEGRepresentation(avatar, 1);
-    if ([[GroupDBManager sharedManager] checkLoginUserIsGroupAdminWithIdentifier:identifier]) {
-        [NetWorkOperationTool POSTWithUrlString:GroupUploadGroupAvatarUrl postProtoData:groupAvatar.data complete:^(id response) {
-            HttpResponse *hResponse = (HttpResponse *)response;
-            if (hResponse.code == successCode) {
-                NSData* data =  [ConnectTool decodeHttpResponse:hResponse];
-                GroupAvatarResponse *avatarReponse = [GroupAvatarResponse parseFromData:data error:nil];
-                // Update group avatar url
-                [[GroupDBManager sharedManager] updateGroupAvatarUrl:avatarReponse.URL groupId:identifier];
-                if (avatarReponse.URL) {
-                    [GCDQueue executeInMainQueue:^{
-                        SendNotify(@"UploadGroupAvatarSuccessNotification", (@{@"identifier":identifier,
-                                                                               @"groupavatar":avatarReponse.URL}));
-                    }];
-                }
-            }
-        } fail:^(NSError *error) {
-            
-        }];
-    }
-}
-
 - (void)uploadGroupAvatarWithGroupIdentifier:(NSString *)identifier groupMembers:(NSArray *)groupMembers{
-     __weak __typeof(&*self)weakSelf = self;
-    return;
-    if (groupMembers.count > 9 || groupMembers.count < 1) return;
-    [self groupAvatarByGroupIdentifier:identifier groupMembers:groupMembers complete:^(UIImage *image) {
-          [weakSelf uploadGroupAvatar:image groupIdentifier:identifier];
-    }];
 }
 
 #pragma mark - NSCacheDelegate

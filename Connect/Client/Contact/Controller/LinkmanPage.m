@@ -232,7 +232,7 @@
 
         } else if ([data isKindOfClass:[AccountInfo class]]) {
             AccountInfo *user = (AccountInfo *) data;
-            if ([user.pub_key isEqualToString:@"connect"]) {//Connect团队
+            if ([user.pub_key isEqualToString:kSystemIdendifier]) {
                 GJGCChatFriendTalkModel *talk = [[GJGCChatFriendTalkModel alloc] init];
                 talk.talkType = GJGCChatFriendTalkTypePrivate;
                 talk.chatIdendifier = user.pub_key;
@@ -280,7 +280,7 @@
         return NO;
     } else if ([model isKindOfClass:[AccountInfo class]]){
         AccountInfo *user = (AccountInfo *)model;
-        if ([user.pub_key isEqualToString:@"connect"]) {
+        if ([user.pub_key isEqualToString:kSystemIdendifier]) {
             return NO;
         }
     }

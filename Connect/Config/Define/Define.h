@@ -5,14 +5,6 @@
 //  Created by MoHuilin on 16/2/14.
 //  Copyright © 2016年 MoHuilin. All rights reserved.
 //
-
-#define GESTURE_PASSWORD_KEY @"connect.im.gesturepasswordkey"
-
-#define LOCAL_ENCODE_KEY [KeyHandle getPassByPrikey:[[IMService instance].uprikey sha256String]]
-
-#define CURRENT_CONTACT_VERSION @"com.Connect. currentcontactversionkey"
-
-#pragma mark - message notification
 #define RegisterNotify(_name, _selector)                    \
 [[NSNotificationCenter defaultCenter] addObserver:self  \
 selector:_selector name:_name object:nil];
@@ -43,7 +35,7 @@ selector:_selector name:_name object:nil];
 
 #define InnerAadStringDefine @"ConnectEncrypted"
 
-#define kAppID @""
+#define kSystemIdendifier @"connect"
 
 #define hmacSHA512Key @"49f41477fa1bfc3b4792d5233b6a659f4b"
 
@@ -86,16 +78,6 @@ selector:_selector name:_name object:nil];
 
 #define MainConfigDBFile    @"MainConfig.db"
 
-#pragma mark - Appsetting
-
-
-#define BackgroundImageKey            @"ChatViewBackgroundImage"
-
-#pragma mark - Video recording
-
-#define MIN_VIDEO_DUR 2.0f
-#define MAX_VIDEO_DUR 8.0f
-
 #pragma mark - size
 
 #define VIEW_WIDTH self.view.frame.size.width
@@ -105,22 +87,13 @@ selector:_selector name:_name object:nil];
 
 #pragma mark - color
 
-#define randomColors(i) [NSArray arrayWithObjects:XCColor(167, 181, 193),XCColor(252, 215, 121),XCColor(231, 142, 121),XCColor(137, 181, 212),XCColor(130, 199, 183), XCColor(117, 206, 127),nil][(i)];
-
 #define XCColor(r, g, b)         [UIColor colorWithRed:(r) / 255.f green:(g) / 255.f blue:(b) / 255.f alpha:1.f]
 #define XCColorAlpha(r, g, b, a)         [UIColor colorWithRed:(r) / 255.f green:(g) / 255.f blue:(b) / 255.f alpha:(a)*1.f]
 
 #define XCWhiteColor XCColor(255,255,255)
 #define XCBlackColor XCColor(0,0,0)
 
-
-#pragma mark - Cache directory definition
-
 #define NetWorkCaches @"Library/Caches/NetWorkToolCaches"
-
-
-#define FriendsVersionPrimaryKey @"1"
-
 
 #define CREATE_SHARED_MANAGER(CLASS_NAME) \
 + (instancetype)sharedManager { \
@@ -143,6 +116,3 @@ _instance = [[CLASS_NAME alloc] init]; \
 \
 return _instance; \
 }
-
-
-

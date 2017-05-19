@@ -245,8 +245,7 @@
     talk.headUrl = user.avatar;
     talk.chatIdendifier = user.pub_key;
     talk.chatUser = user;
-    if ([user.pub_key isEqualToString:@"connect"]) {
-        
+    if ([user.pub_key isEqualToString:kSystemIdendifier]) {
         GJGCChatSystemNotiViewController *systemChat = [[GJGCChatSystemNotiViewController alloc] initWithTalkInfo:talk];
         talk.talkType = GJGCChatFriendTalkTypePostSystem;
         talk.name = user.username;

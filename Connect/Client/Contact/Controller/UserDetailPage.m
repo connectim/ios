@@ -62,47 +62,6 @@
                 [weakSelf setupCellData];
                 [weakSelf.tableView reloadData];
             }];
-
-            // update group
-            [GCDQueue executeInGlobalQueue:^{
-                NSArray *groups = [[GroupDBManager sharedManager] getAllgroups];
-                int __block groupAvatarChangeCount = 0;
-                for (LMGroupInfo *group in groups) {
-                    for (AccountInfo *member in group.groupMembers) {
-                        if ([member.address isEqualToString:user.address]) {
-                            if ([member.username isEqualToString:user.username] && [member.avatar isEqualToString:user.avatar]) {
-                                break;
-                            }
-                            member.username = user.username;
-                            if (![member.avatar isEqualToString:user.avatar]) {
-                                member.avatar = user.avatar;
-                                // update group header
-                                NSMutableArray *avatars = [NSMutableArray array];
-                                for (AccountInfo *avatarMember in group.groupMembers) {
-                                    [avatars objectAddObject:avatarMember.avatar];
-                                    if (avatars.count >= 9) {
-                                        break;
-                                    }
-                                }
-                                 // update group header
-                                [[CIImageCacheManager sharedInstance] removeGroupAvatarCacheWithGroupIdentifier:group.groupIdentifer];
-                                [[CIImageCacheManager sharedInstance] groupAvatarByGroupIdentifier:group.groupIdentifer groupMembers:avatars complete:^(UIImage *image) {
-                                    groupAvatarChangeCount++;
-                                }];
-                            }
-                             // update group member message
-                            [[GroupDBManager sharedManager] updateGroupMembserUsername:member.username address:member.address groupId:group.groupIdentifer];
-                            [[GroupDBManager sharedManager] updateGroupMembserAvatarUrl:member.avatar address:member.address groupId:group.groupIdentifer];
-                            break;
-                        }
-                    }
-                }
-                if (groupAvatarChangeCount > 0) {
-                    [GCDQueue executeInMainQueue:^{
-                        SendNotify(ConnectDownAllNewGroupAvatarNotification, nil);
-                    }];
-                }
-            }];
         }];
     }
 

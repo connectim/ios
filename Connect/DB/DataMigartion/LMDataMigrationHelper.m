@@ -207,7 +207,7 @@ static FMDatabaseQueue *queue;
     for (NSDictionary *dict in contactRecentChats) {
         NSString *identifier = [dict safeObjectForKey:@"public_key"];
         int type = 0;
-        if ([identifier isEqualToString:@"connect"]) {
+        if ([identifier isEqualToString:kSystemIdendifier]) {
             type = 2;
         }
         [bitchValues objectAddObject:@[[dict safeObjectForKey:@"public_key"],

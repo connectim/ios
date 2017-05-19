@@ -27,6 +27,14 @@ typedef NS_ENUM(NSUInteger, GJGCChatFriendTalkType) {
     GJGCChatFriendTalkTypePostSystem,
 };
 
+
+typedef NS_ENUM(NSUInteger, LMChatEcdhKeySecurityLevelType) {
+    LMChatEcdhKeySecurityLevelTypeNomarl = 0,
+    LMChatEcdhKeySecurityLevelTypeHalfRandom,
+    LMChatEcdhKeySecurityLevelTypeRandom,
+};
+
+
 typedef NS_ENUM(NSUInteger, GJGCChatFriendMessageReadState) {
 
     GJGCChatFriendMessageReadStateUnReaded = 0,

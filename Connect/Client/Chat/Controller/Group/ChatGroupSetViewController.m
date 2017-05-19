@@ -82,7 +82,6 @@ typedef NS_ENUM(NSUInteger, SourceType) {
     self.title = LMLocalizedString(@"Link Group", nil);
     RegisterNotify(GroupAdminChangeNotification, @selector(groupAdmingChange))
     RegisterNotify(ConnnectGroupInfoDidChangeNotification, @selector(grouInfoChange:))
-    RegisterNotify(@"UploadGroupAvatarSuccessNotification", @selector(uploadGroupAvatarComplete:))
 }
 
 - (void)groupAdmingChange {
@@ -129,14 +128,6 @@ typedef NS_ENUM(NSUInteger, SourceType) {
         }];
     }];
 
-}
-
-- (void)uploadGroupAvatarComplete:(NSNotification *)note {
-    NSString *identifier = [note.object valueForKey:@"identifier"];
-    NSString *groupavatar = [note.object valueForKey:@"groupavatar"];
-    if ([identifier isEqualToString:self.talkModel.chatGroupInfo.groupIdentifer]) {
-        self.talkModel.chatGroupInfo.avatarUrl = groupavatar;
-    }
 }
 
 - (void)grouInfoChange:(NSNotification *)note {

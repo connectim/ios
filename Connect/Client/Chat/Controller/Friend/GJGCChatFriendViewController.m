@@ -205,7 +205,6 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
     [GCDQueue executeInGlobalQueue:^{
         [[RecentChatDBManager sharedManager] clearUnReadCountWithIdetifier:self.taklInfo.chatIdendifier];
     }];
-    [[SessionManager sharedManager] clearUnreadWithIdentifier:self.taklInfo.chatIdendifier];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {

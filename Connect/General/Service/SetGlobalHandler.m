@@ -6,23 +6,15 @@
 //  Copyright © 2016年 Connect.  All rights reserved.
 //
 
-#import "SetGlobalHandler.h"
 #import "Protofile.pbobjc.h"
 #import "NetWorkOperationTool.h"
-#import "KeyHandle.h"
-#import "Protofile.pbobjc.h"
-#import "Protofile.pbobjc.h"
-#import "Protofile.pbobjc.h"
-#import "Protofile.pbobjc.h"
 #import "UserDBManager.h"
-#import "AccountInfo.h"
-#import "NSString+DictionaryValue.h"
 #import "RecentChatDBManager.h"
 #import "GroupDBManager.h"
 #import "IMService.h"
 #import "StringTool.h"
 #import "ConnectTool.h"
-#import "PayTool.h"
+
 @implementation SetGlobalHandler
 
 
