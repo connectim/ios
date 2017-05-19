@@ -33,6 +33,9 @@ selector:_selector name:_name object:nil];
 #define MAX_MINNER_FEE @"10000"
 
 
+// over time code
+#define OVER_TIME_CODE -110
+
 #define MAX_PASS_LEN (4)
 
 // Start screen time

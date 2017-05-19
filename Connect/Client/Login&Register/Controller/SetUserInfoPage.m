@@ -406,8 +406,6 @@
             if (!error) {
                 DDLogInfo(@"userhead success!");
                 weakSelf.avatar = userHead.URL;
-                // regist
-                [weakSelf registerAction];
                 weakSelf.avatarView.image = weakSelf.clipImage;
             }
 
