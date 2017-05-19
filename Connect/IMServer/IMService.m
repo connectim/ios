@@ -273,7 +273,7 @@ static dispatch_once_t onceToken;
     [self publishConnectState:STATE_GETOFFLINE];
     
     Message *msg = [LMCommandAdapter sendAdapterWithExtension:BM_GETOFFLINE_EXT sendData:nil];
-    [self sendCommandWithDelay:YES callBlock:^(IMService *imserverSelf) {
+    [self sendCommandWithDelay:NO callBlock:^(IMService *imserverSelf) {
         [imserverSelf sendCommandWith:msg comlete:nil];
     }];
 }
@@ -303,7 +303,7 @@ static dispatch_once_t onceToken;
 
         Message *m = [LMCommandAdapter sendAdapterWithExtension:BM_UPLOAD_CHAT_COOKIE_EXT sendData:cookie];
         m.sendOriginInfo = cookieData;
-        [self sendCommandWithDelay:YES callBlock:^(IMService *imserverSelf) {
+        [self sendCommandWithDelay:NO callBlock:^(IMService *imserverSelf) {
             [imserverSelf sendCommandWith:m comlete:nil];
         }];
     } else {
@@ -548,7 +548,7 @@ static dispatch_once_t onceToken;
     
     Message *m = [LMCommandAdapter sendAdapterWithExtension:BM_SYNCBADGENUMBER_EXT sendData:badge];
     m.sendOriginInfo = @(badgeNumber);
-    [self sendCommandWithDelay:YES callBlock:^(IMService *imserverSelf) {
+    [self sendCommandWithDelay:NO callBlock:^(IMService *imserverSelf) {
         [imserverSelf sendCommandWith:m comlete:nil];
     }];
 }
