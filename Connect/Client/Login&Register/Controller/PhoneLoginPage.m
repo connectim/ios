@@ -246,10 +246,15 @@
                     [MBProgressHUD hideHUDForView:self.view];
                 }];
                 HttpResponse *hResponse = (HttpResponse *) response;
-                if (hResponse.code != successCode) {
+                if (hResponse.code == 2404) {
                     SetUserInfoPage *page = [[SetUserInfoPage alloc] initWithPrikey:_scanCodeString];
                     [self.navigationController pushViewController:page animated:YES];
-                } else {
+                } else if(hResponse.code != successCode){
+                    [GCDQueue executeInMainQueue:^{
+                        [MBProgressHUD showToastwithText:LMLocalizedString(@"Set Query failed", nil) withType:ToastTypeFail showInView:self.view complete:nil];
+                    }];
+                    return;
+                }else {
                     NSData *data = [ConnectTool decodeHttpResponse:hResponse withPrivkey:_scanCodeString publickey:nil emptySalt:YES];
                     if (data && data.length > 0) {
                         NSError *error = nil;
@@ -280,7 +285,6 @@
         [self.navigationController pushViewController:page animated:YES];
     }
 }
-
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     [self.view endEditing:YES];
 }

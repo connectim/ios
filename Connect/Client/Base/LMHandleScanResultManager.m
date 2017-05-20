@@ -174,7 +174,9 @@ CREATE_SHARED_MANAGER(LMHandleScanResultManager)
             [self bitAddress:address];
             
         }else if (respon.code != successCode) {
-            
+            [GCDQueue executeInMainQueue:^{
+                [MBProgressHUD showToastwithText:LMLocalizedString(@"Set Query failed", nil) withType:ToastTypeFail showInView:self.controller.view complete:nil];
+            }];
             return;
             
         } else if (respon.code == successCode) {
@@ -257,7 +259,7 @@ CREATE_SHARED_MANAGER(LMHandleScanResultManager)
 - (void)search:(NSString *)resultStr {
     
    // Whether it is included bitcoin:
-    if ([resultStr containsString:BIT_COIN_STR]) {
+    if ([resultStr hasPrefix:BIT_COIN_STR]) {
         
         [self handWalletWithKeyWord:resultStr];
         
@@ -289,7 +291,12 @@ CREATE_SHARED_MANAGER(LMHandleScanResultManager)
         page.hidesBottomBarWhenPushed = YES;
         [self.controller.navigationController pushViewController:page animated:YES];
         
+    }else {
+        [GCDQueue executeInMainQueue:^{
+            [MBProgressHUD showToastwithText:LMLocalizedString(@"Login The qrCode can not be identified", nil) withType:ToastTypeFail showInView:self.controller.view complete:nil];
+        }];
     }
+
 }
 
 @end

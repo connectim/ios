@@ -42,7 +42,7 @@
         make.left.equalTo(self.view);
     }];
     view.topTipString = LMLocalizedString(@"Wallet Amount", nil);
-    view.hidenFeeLabel = YES;
+    view.isHidenFee = YES;
     view.resultBlock = ^(NSDecimalNumber *btcMoney, NSString *note) {
         [weakSelf createTranscationWithMoney:btcMoney note:note];
     };

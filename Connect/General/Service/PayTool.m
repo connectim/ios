@@ -161,6 +161,7 @@
     }else {
         // Fingerprint payment
         if ([[MMAppSetting sharedSetting] needFingerPay]) {
+            self.VerfifyComplete = complete;
             [[WJTouchID touchID] startWJTouchIDWithMessage:LMLocalizedString(@"Wallet Finger pay", nil) fallbackTitle:LMLocalizedString(@"Login Password", nil) delegate:self];
         }else {
             if (complete) {
@@ -187,6 +188,7 @@
                     complete(NO,@"Download payment data failed");
                 }
             } else{
+                
                 [weakSelf innerPayVerWithMoney:money controller:controller withComplete:complete];
             }
         }];

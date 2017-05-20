@@ -49,7 +49,7 @@
     }];
 }
 
-+ (void)sendRedBagWithSendAddress:(NSString *)address privkey:(NSString *)privkey fee:(double)fee identifer:(NSString *)identifier money:(long long int)money size:(int)size category:(int)category type:(int)type tips:(NSString *)tips complete:(void (^)(OrdinaryRedPackage *ordinaryRed,UnspentOrderResponse *unspent,NSArray *toAddresses, NSError *error))complete{
++ (void)sendRedBagWithSendAddress:(NSString *)address privkey:(NSString *)privkey fee:(long long)fee identifer:(NSString *)identifier money:(long long int)money size:(int)size category:(int)category type:(int)type tips:(NSString *)tips complete:(void (^)(OrdinaryRedPackage *ordinaryRed,UnspentOrderResponse *unspent,NSArray *toAddresses, NSError *error))complete{
     
     if (type == 0) {
         if (GJCFStringIsNull(identifier)) {
@@ -63,6 +63,11 @@
         if (complete) {
             complete(nil,nil,nil,[NSError errorWithDomain:@"Red envelopes less than or equal to 0" code:-1 userInfo:nil]);
         }
+        return;
+    }
+    // judge is dirty
+    long long addFee = [LMPayCheck getSuitAbleFee:fee];
+    if ([LMPayCheck dirtyAlertWithAmount:(money + addFee) withController:[self getCurrentVC]]) {
         return;
     }
     [self getSendRedBagBaseInfoComplete:^(PendingPackage *pendRedBag, NSError *error) {
@@ -80,19 +85,11 @@
         ordinaryRed.category = category;
         ordinaryRed.money = money;
         ordinaryRed.type = type;
-        double addFee = [LMPayCheck getSuitAbleFee:fee];
+        long long addFee = [LMPayCheck getSuitAbleFee:fee];
         NSArray *toAddresses = @[@{@"address":pendRedBag.address,
                                    @"amount":[[[NSDecimalNumber alloc] initWithLongLong:money + addFee]
                                               decimalNumberByDividingBy:
                                               [[NSDecimalNumber alloc] initWithLongLong:pow(10, 8)]].stringValue}];
-        
-        BOOL isDusk = [LMPayCheck dirtyAlertWithAddress:toAddresses withController:[self getCurrentVC]];
-        if (isDusk) {
-            if (complete) {
-                complete(nil,nil,nil,nil);
-            }
-            return;
-        }
         [WallteNetWorkTool unspentV2WithAddress:address fee:fee toAddress:toAddresses
                  createRawTranscationModelComplete:^(UnspentOrderResponse *unspent, NSError *error) {
                      if (error) {

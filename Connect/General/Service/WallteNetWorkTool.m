@@ -820,8 +820,13 @@ createRawTranscationModelComplete:^(UnspentOrderResponse *unspent, NSError *erro
 
 + (void)sendExternalBillWithSendAddress:(NSString *)address
                                 privkey:(NSString *)privkey
-                                fee:(double)fee money:(long long int)money
+                                fee:(long long)fee money:(long long int)money
                                 tips:(NSString *)tips complete:(void (^)(OrdinaryBilling *billing,UnspentOrderResponse *unspent,NSArray* toAddresses,NSError *error))complete{
+    
+    long long addFee = [LMPayCheck getSuitAbleFee:fee];
+    if ([LMPayCheck dirtyAlertWithAmount:(money + addFee) withController:[self getCurrentVC]]) {
+        return;
+    }
     [self getPendingInfoComplete:^(PendingPackage *pendRedBag, NSError *error) {
         if (error) {
             if (complete) {
@@ -834,20 +839,12 @@ createRawTranscationModelComplete:^(UnspentOrderResponse *unspent, NSError *erro
         ordinaryRed.tips = tips;
         ordinaryRed.money = money;
         //judge is auto
-        double addFee = [LMPayCheck getSuitAbleFee:fee];
+        long long addFee = [LMPayCheck getSuitAbleFee:fee];
 
         NSArray* toAddressArray = @[@{@"address":pendRedBag.address,
                                       @"amount":[[[NSDecimalNumber alloc] initWithLongLong:ordinaryRed.money + addFee]
                                                                                decimalNumberByDividingBy:
                                                  [[NSDecimalNumber alloc] initWithLongLong:pow(10, 8)]].stringValue}];
-        
-        BOOL isDusk = [LMPayCheck dirtyAlertWithAddress:toAddressArray withController:[self getCurrentVC]];
-        if (isDusk) {
-            if (complete) {
-                complete(nil,nil,nil,nil);
-            }
-            return;
-        }
         [WallteNetWorkTool unspentV2WithAddress:[[LKUserCenter shareCenter] currentLoginUser].address
                            fee:fee
                            toAddress:toAddressArray

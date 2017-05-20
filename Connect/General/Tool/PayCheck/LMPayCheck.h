@@ -51,5 +51,12 @@ typedef NS_ENUM(NSUInteger,MoneyType) {
  *   get Suitable fee
  *
  */
-+ (double)getSuitAbleFee:(double)fee;
++ (double)getSuitAbleFee:(long long)fee;
+/**
+ *   Turned out the amount of dirty check and alert
+ *
+ */
++ (BOOL)dirtyAlertWithAmount:(long long)amount withController:(UIViewController*)controller;
+
+
 @end

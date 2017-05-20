@@ -32,7 +32,7 @@
    * @param tips tips text
  *  @param complete
  */
-+ (void)sendRedBagWithSendAddress:(NSString *)address privkey:(NSString *)privkey fee:(double)fee identifer:(NSString *)identifier money:(long long int)money size:(int)size category:(int)category type:(int)type tips:(NSString *)tips complete:(void (^)(OrdinaryRedPackage *ordinaryRed,UnspentOrderResponse *unspent, NSArray *toAddresses,NSError *error))complete;
++ (void)sendRedBagWithSendAddress:(NSString *)address privkey:(NSString *)privkey fee:(long long)fee identifer:(NSString *)identifier money:(long long int)money size:(int)size category:(int)category type:(int)type tips:(NSString *)tips complete:(void (^)(OrdinaryRedPackage *ordinaryRed,UnspentOrderResponse *unspent, NSArray *toAddresses,NSError *error))complete;
 
 
 /**

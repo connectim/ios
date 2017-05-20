@@ -447,58 +447,7 @@
     // password
     [[PayTool sharedInstance] payVerfifyFingerWithComplete:^(BOOL result, NSString *errorMsg) {
         if (result) {
-            [MBProgressHUD showTransferLoadingViewtoView:weakSelf.view];
-            NSString *sign = [KeyHandle signRawTranscationWithTvsArray:vtsArray privkeys:@[[[LKUserCenter shareCenter] currentLoginUser].prikey] rawTranscation:rawTransaction];
-            ordinaryRed.rawTx = sign;
-            [NetWorkOperationTool POSTWithUrlString:RedBagSendUrl postProtoData:ordinaryRed.data complete:^(id response) {
-                HttpResponse *hResponse = (HttpResponse *) response;
-                if (hResponse.code == 2421) {
-                    [GCDQueue executeInMainQueue:^{
-                        NSString *alertString = [NSString stringWithFormat:LMLocalizedString(@"Wallet error lucky packet amount too small", nil), MIN_RED_PER];
-                        [MBProgressHUD showToastwithText:alertString withType:ToastTypeFail showInView:weakSelf.view complete:nil];
-                    }];
-                    return;
-                }
-                if (hResponse.code != successCode) {
-                    [MBProgressHUD showToastwithText:hResponse.message withType:ToastTypeFail showInView:weakSelf.view complete:nil];
-                    return;
-                }
-                NSData *data = [ConnectTool decodeHttpResponse:hResponse];
-                if (data) {
-                    NSError *error = nil;
-                    RedPackage *redPackge = [RedPackage parseFromData:data error:&error];
-                    // update balance
-                    [[PayTool sharedInstance] getBlanceWithComplete:^(NSString *blance, UnspentAmount *unspentAmount, NSError *error) {
-                        [GCDQueue executeInMainQueue:^{
-                            weakSelf.blance = unspentAmount.avaliableAmount;
-                            weakSelf.BalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance", nil), [PayTool getBtcStringWithAmount:unspentAmount.avaliableAmount]];
-                        }];
-                    }];
-
-                    switch (type) {
-                        case 0: {
-                            [GCDQueue executeInMainQueue:^{
-                                [weakSelf dismissViewControllerAnimated:YES completion:nil];
-                                if (weakSelf.didGetRedLuckyMoney) {
-                                    weakSelf.didGetRedLuckyMoney(money.stringValue, redPackge.hashId, note);
-                                }
-                            }];
-                        }
-                            break;
-                        case 1: {
-                            [GCDQueue executeInMainQueue:^{
-                                OuterRedbagDetailViewController *page = [[OuterRedbagDetailViewController alloc] init];
-                                page.redPackage = redPackge;
-                                [weakSelf.navigationController pushViewController:page animated:YES];
-                            }];
-                        }
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }                                  fail:^(NSError *error) {
-            }];
+             [self successAction:vtsArray rawTransaction:rawTransaction ordinaryRed:ordinaryRed type:type money:money note:note passView:nil];
         } else {
             if ([errorMsg isEqualToString:@"NO"]) {
                 [GCDQueue executeInMainQueue:^{
@@ -508,68 +457,10 @@
                 return;
             }
             [InputPayPassView showInputPayPassWithComplete:^(InputPayPassView *passView, NSError *error, BOOL result) {
-                NSString *sign = [KeyHandle signRawTranscationWithTvsArray:vtsArray privkeys:@[[[LKUserCenter shareCenter] currentLoginUser].prikey] rawTranscation:rawTransaction];
-                ordinaryRed.rawTx = sign;
-                [NetWorkOperationTool POSTWithUrlString:RedBagSendUrl postProtoData:ordinaryRed.data complete:^(id response) {
-                    HttpResponse *hResponse = (HttpResponse *) response;
-                    if (hResponse.code == 2421) {
-                        [GCDQueue executeInMainQueue:^{
-                            NSString *alertString = [NSString stringWithFormat:LMLocalizedString(@"Wallet error lucky packet amount too small", nil), MIN_RED_PER];
-                            [MBProgressHUD showToastwithText:alertString withType:ToastTypeFail showInView:weakSelf.view complete:nil];
-                        }];
-                        return;
-                    }
-                    if (hResponse.code != successCode) {
-                        NSError *error = [NSError errorWithDomain:hResponse.message code:hResponse.code userInfo:nil];
-                        if (passView.requestCallBack) {
-                            passView.requestCallBack(error);
-                        }
-                        return;
-                    }
-                    if (passView.requestCallBack) {
-                        passView.requestCallBack(nil);
-                    }
-
-                    NSData *data = [ConnectTool decodeHttpResponse:hResponse];
-                    if (data) {
-                        NSError *error = nil;
-                        RedPackage *redPackge = [RedPackage parseFromData:data error:&error];
-                        // update balance
-                        [[PayTool sharedInstance] getBlanceWithComplete:^(NSString *blance, UnspentAmount *unspentAmount, NSError *error) {
-                            [GCDQueue executeInMainQueue:^{
-                                weakSelf.blance = unspentAmount.avaliableAmount;
-                                weakSelf.BalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance", nil), [PayTool getBtcStringWithAmount:unspentAmount.avaliableAmount]];
-                            }];
-                        }];
-
-                        switch (type) {
-                            case 0: {
-                                [GCDQueue executeInMainQueue:^{
-                                    [weakSelf dismissViewControllerAnimated:YES completion:nil];
-                                    if (weakSelf.didGetRedLuckyMoney) {
-                                        weakSelf.didGetRedLuckyMoney(money.stringValue, redPackge.hashId, note);
-                                    }
-                                }];
-                            }
-                                break;
-                            case 1: {
-                                [GCDQueue executeInMainQueue:^{
-                                    OuterRedbagDetailViewController *page = [[OuterRedbagDetailViewController alloc] init];
-                                    page.redPackage = redPackge;
-                                    [weakSelf.navigationController pushViewController:page animated:YES];
-                                }];
-                            }
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                }                                  fail:^(NSError *error) {
-                    [GCDQueue executeInMainQueue:^{
-                        [MBProgressHUD hideHUDForView:weakSelf.view];
-                        weakSelf.comfrimButton.enabled = YES;
-                    }];
-                }];
+                if (result) {
+                    [weakSelf successAction:vtsArray rawTransaction:rawTransaction ordinaryRed:ordinaryRed type:type money:money note:note passView:passView];
+                }
+                
             }                              forgetPassBlock:^{
                 [GCDQueue executeInMainQueue:^{
                     [MBProgressHUD hideHUDForView:weakSelf.view];
@@ -585,5 +476,73 @@
             }];
         }
     }];
+}
+- (void)successAction:(NSArray *)vtsArray rawTransaction:(NSString *)rawTransaction ordinaryRed:(OrdinaryRedPackage *)ordinaryRed type:(int)type money:(NSDecimalNumber *)money note:(NSString *)note passView:(InputPayPassView *)passView {
+    __weak typeof(self)weakSelf = self;
+    NSString *sign = [KeyHandle signRawTranscationWithTvsArray:vtsArray privkeys:@[[[LKUserCenter shareCenter] currentLoginUser].prikey] rawTranscation:rawTransaction];
+    ordinaryRed.rawTx = sign;
+    [NetWorkOperationTool POSTWithUrlString:RedBagSendUrl postProtoData:ordinaryRed.data complete:^(id response) {
+        HttpResponse *hResponse = (HttpResponse *) response;
+        if (hResponse.code == 2421) {
+            [GCDQueue executeInMainQueue:^{
+                NSString *alertString = [NSString stringWithFormat:LMLocalizedString(@"Wallet error lucky packet amount too small", nil), MIN_RED_PER];
+                [MBProgressHUD showToastwithText:alertString withType:ToastTypeFail showInView:self.view complete:nil];
+            }];
+            return;
+        }
+        if (hResponse.code != successCode) {
+            NSError *error = [NSError errorWithDomain:hResponse.message code:hResponse.code userInfo:nil];
+            
+            if (passView.requestCallBack) {
+                passView.requestCallBack(error);
+            }
+            
+            return;
+        }
+        
+            if (passView.requestCallBack) {
+                passView.requestCallBack(nil);
+            }
+        NSData *data = [ConnectTool decodeHttpResponse:hResponse];
+        if (data) {
+            NSError *error = nil;
+            RedPackage *redPackge = [RedPackage parseFromData:data error:&error];
+            // update balance
+            [[PayTool sharedInstance] getBlanceWithComplete:^(NSString *blance, UnspentAmount *unspentAmount, NSError *error) {
+                [GCDQueue executeInMainQueue:^{
+                    weakSelf.blance = unspentAmount.avaliableAmount;
+                    weakSelf.BalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance", nil), [PayTool getBtcStringWithAmount:unspentAmount.avaliableAmount]];
+                }];
+            }];
+            
+            switch (type) {
+                case 0: {
+                    [GCDQueue executeInMainQueue:^{
+                        [weakSelf dismissViewControllerAnimated:YES completion:nil];
+                        if (weakSelf.didGetRedLuckyMoney) {
+                            weakSelf.didGetRedLuckyMoney(money.stringValue, redPackge.hashId, note);
+                        }
+                    }];
+                }
+                    break;
+                case 1: {
+                    [GCDQueue executeInMainQueue:^{
+                        OuterRedbagDetailViewController *page = [[OuterRedbagDetailViewController alloc] init];
+                        page.redPackage = redPackge;
+                        [weakSelf.navigationController pushViewController:page animated:YES];
+                    }];
+                }
+                    break;
+                default:
+                    break;
+            }
+        }
+    }                                  fail:^(NSError *error) {
+        [GCDQueue executeInMainQueue:^{
+            [MBProgressHUD hideHUDForView:weakSelf.view];
+            weakSelf.comfrimButton.enabled = YES;
+        }];
+    }];
+
 }
 @end

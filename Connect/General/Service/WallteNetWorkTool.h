@@ -119,7 +119,7 @@
 + (void)getPendingInfoComplete:(void (^)(PendingPackage *pendRedBag ,NSError *error))complete;
 
 
-+ (void)sendExternalBillWithSendAddress:(NSString *)address privkey:(NSString *)privkey fee:(double)fee money:(long long int)money tips:(NSString *)tips complete:(void (^)(OrdinaryBilling *billing,UnspentOrderResponse *unspent,NSArray* toAddresses,NSError *error))complete;
++ (void)sendExternalBillWithSendAddress:(NSString *)address privkey:(NSString *)privkey fee:(long long)fee money:(long long int)money tips:(NSString *)tips complete:(void (^)(OrdinaryBilling *billing,UnspentOrderResponse *unspent,NSArray* toAddresses,NSError *error))complete;
 
 + (void)cancelExternalWithHashid:(NSString *)hashid complete:(void (^)(NSError *error))complete;
 

@@ -238,26 +238,7 @@
     __weak __typeof(&*self) weakSelf = self;
     [[PayTool sharedInstance] payVerfifyFingerWithComplete:^(BOOL result, NSString *errorMsg) {
         if (result) {
-            [weakSelf transferToAddress:weakSelf.info.address decimalMoney:amount tips:note complete:^(NSString *hashId, NSError *error) {
-                [GCDQueue executeInMainQueue:^{
-                    [MBProgressHUD hideHUDForView:weakSelf.view];
-                }];
-                if (error) {
-                    weakSelf.comfrimButton.enabled = YES;
-                } else {
-                    // update money blance
-                    [[PayTool sharedInstance] getBlanceWithComplete:^(NSString *blance, UnspentAmount *unspentAmount, NSError *error) {
-                        [GCDQueue executeInMainQueue:^{
-                            weakSelf.blance = unspentAmount.avaliableAmount;
-                            weakSelf.BalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance", nil), [PayTool getBtcStringWithAmount:unspentAmount.avaliableAmount]];
-                        }];
-                    }];
-                    if (weakSelf.didGetTransferMoney) {
-                        weakSelf.didGetTransferMoney(amount.stringValue, hashId, note);
-                        [weakSelf dismissViewControllerAnimated:YES completion:nil];
-                    }
-                }
-            }];
+            [weakSelf successAction:rawModel decimalMoney:amount note:note passView:nil];
         } else {
             if ([errorMsg isEqualToString:@"NO"]) {
                 [GCDQueue executeInMainQueue:^{
@@ -268,29 +249,8 @@
             }
             [InputPayPassView showInputPayPassWithComplete:^(InputPayPassView *passView, NSError *error, BOOL result) {
                 if (result) {
-                    [weakSelf transferToAddress:weakSelf.info.address decimalMoney:amount tips:note complete:^(NSString *hashId, NSError *error) {
-                        if (error) {
-                            weakSelf.comfrimButton.enabled = YES;
-                            if (passView.requestCallBack) {
-                                passView.requestCallBack(error);
-                            }
-                        } else {
-                            if (passView.requestCallBack) {
-                                passView.requestCallBack(nil);
-                            }
-                            // update money blance
-                            [[PayTool sharedInstance] getBlanceWithComplete:^(NSString *blance, UnspentAmount *unspentAmount, NSError *error) {
-                                [GCDQueue executeInMainQueue:^{
-                                    weakSelf.blance = unspentAmount.avaliableAmount;
-                                    weakSelf.BalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance", nil), [PayTool getBtcStringWithAmount:unspentAmount.avaliableAmount]];
-                                }];
-                            }];
-                            if (weakSelf.didGetTransferMoney) {
-                                weakSelf.didGetTransferMoney(amount.stringValue, hashId, note);
-                                [weakSelf dismissViewControllerAnimated:YES completion:nil];
-                            }
-                        }
-                    }];
+                    [weakSelf successAction:rawModel decimalMoney:amount note:note passView:passView];
+                
                 } else {
                     weakSelf.comfrimButton.enabled = YES;
                     [MBProgressHUD hideHUDForView:weakSelf.view];
@@ -316,5 +276,34 @@
         }
     }];
 }
+- (void)successAction:(LMRawTransactionModel *)rawModel decimalMoney:(NSDecimalNumber *)amount note:(NSString *)note passView:(InputPayPassView *)passView {
+    __weak typeof(self)weakSelf = self;
+    [self transferToAddress:self.info.address decimalMoney:amount tips:note complete:^(NSString *hashId, NSError *error) {
+        if (error) {
+            weakSelf.comfrimButton.enabled = YES;
+            
+            if (passView.requestCallBack) {
+                passView.requestCallBack(error);
+            }
+            
+        } else {
+           
+            if (passView.requestCallBack) {
+                passView.requestCallBack(nil);
+            }
+            // update money blance
+            [[PayTool sharedInstance] getBlanceWithComplete:^(NSString *blance, UnspentAmount *unspentAmount, NSError *error) {
+                [GCDQueue executeInMainQueue:^{
+                    weakSelf.blance = unspentAmount.avaliableAmount;
+                    weakSelf.BalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance", nil), [PayTool getBtcStringWithAmount:unspentAmount.avaliableAmount]];
+                }];
+            }];
+            if (weakSelf.didGetTransferMoney) {
+                weakSelf.didGetTransferMoney(amount.stringValue, hashId, note);
+                [weakSelf dismissViewControllerAnimated:YES completion:nil];
+            }
+        }
+    }];
 
+}
 @end

@@ -313,11 +313,10 @@
  */
 + (BOOL)dirtyAlertWithAddress:(NSArray* )toAddresses withController:(UIViewController*)controller {
     
-    __weak typeof(controller)weakSelf = controller;
     BOOL amountDust = [LMUnspentCheckTool checkToAddressAmountDustWithToAddresses:toAddresses];
     if (amountDust) {
         [GCDQueue executeInMainQueue:^{
-            [MBProgressHUD showToastwithText:LMLocalizedString(@"Wallet Amount is too small", nil) withType:ToastTypeFail showInView:weakSelf.view complete:nil];
+            [MBProgressHUD showToastwithText:LMLocalizedString(@"Wallet Amount is too small", nil) withType:ToastTypeFail showInView:controller.view complete:nil];
            
         }];
     }
@@ -327,14 +326,30 @@
  *   get Suitable fee
  *
  */
-+ (double)getSuitAbleFee:(double)fee {
++ (double)getSuitAbleFee:(long long)fee {
     
-    double addFee = fee;
+    long long addFee = fee;
     if ([[MMAppSetting sharedSetting] canAutoCalculateTransactionFee]) {
         if (fee > [[MMAppSetting sharedSetting] getMaxTranferFee]) {
-            addFee = (double)[[MMAppSetting sharedSetting] getMaxTranferFee];
+            addFee = [[MMAppSetting sharedSetting] getMaxTranferFee];
         }
     }
     return addFee;
+}
+/**
+ *   Turned out the amount of dirty check and alert
+ *
+ */
++ (BOOL)dirtyAlertWithAmount:(long long)amount withController:(UIViewController*)controller {
+    
+    BOOL amountDust = [LMUnspentCheckTool haveDustWithAmount:amount];
+    if (amountDust) {
+        [GCDQueue executeInMainQueue:^{
+            [MBProgressHUD showToastwithText:LMLocalizedString(@"Wallet Amount is too small", nil) withType:ToastTypeFail showInView:controller.view complete:nil];
+            
+        }];
+    }
+    return amountDust;
+
 }
 @end
