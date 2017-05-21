@@ -146,11 +146,12 @@ CREATE_SHARED_MANAGER(LMConversionManager)
                 if (snapChatTime < 0) {
                     snapChatTime = 0;
                 }
-                [fieldsValues safeSetObject:@(snapChatTime) forKey:@"snap_time"];
                 if (recentModel.stranger) {
                     [fieldsValues safeSetObject:@(NO) forKey:@"stranger"];
                 }
                 [[RecentChatDBManager sharedManager] customUpdateRecentChatTableWithFieldsValues:fieldsValues withIdentifier:recentModel.identifier];
+                
+                [[RecentChatDBManager sharedManager] openOrCloseSnapChatWithTime:recentModel.snapChatDeleteTime chatIdentifer:recentModel.identifier];
             }
         }
             break;
