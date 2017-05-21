@@ -246,10 +246,10 @@
                     [MBProgressHUD hideHUDForView:self.view];
                 }];
                 HttpResponse *hResponse = (HttpResponse *) response;
-                if (hResponse.code != 2404) {
+                if (hResponse.code == 2404) {
                     SetUserInfoPage *page = [[SetUserInfoPage alloc] initWithPrikey:_scanCodeString];
                     [self.navigationController pushViewController:page animated:YES];
-                } else if(hResponse != successCode) {
+                } else if(hResponse.code != successCode) {
                     [GCDQueue executeInMainQueue:^{
                         [MBProgressHUD showToastwithText:LMLocalizedString(@"Set Query failed", nil) withType:ToastTypeFail showInView:self.view complete:nil];
                     }];
