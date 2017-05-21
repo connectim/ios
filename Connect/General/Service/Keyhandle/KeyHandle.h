@@ -125,14 +125,6 @@
 
 #pragma mark - wallet
 /**
-   * Packaged transactions
-   *
-   * @param tvsArray [{\ "vout \": 0, \ "txid \": \ "21" \ " "\" ScriptPubKey \ ": \" 76a9142dafb30480fa55f1cc7c817023c55ebc301ee50588ac \ "}]; txid \": \ "21f120603e30db800d9b8aeae3fbfc910052fc532a57d1b057eb08489275352e \", \ "scriptPubKey \": \ "76a9142dafb30480fa55f1cc7c817023c55ebc301ee50588ac \"}];
-   * @param output {\ "15AZtS7D1SRt35KDQdzv96tGU2wCfqMjQq \": 0.0005, \ "16SymaJKNozkcG7K9eQhGKhyjnaHGBEY3u \": 0.0008, \ "18ms9eXC61cEkFSkpAZk8RzreBGGETFUuC \": 0.0002}
-   * @param serverFee fee
- */
-+ (NSString *)packTransactionWithTvsArray:(NSArray *)tvsArray outputs:(NSDictionary *)outputs privkeys:(NSArray *)privkeys serverFee:(double)serverFee;
-/**
      Signature trading
    *
    * @param tvsArray

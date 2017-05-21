@@ -46,7 +46,7 @@ extern "C" {
 #import "Protofile.pbobjc.h"
 #include <CommonCrypto/CommonCrypto.h>
 
-
+#define ONTEST 1//1 online ，0 test
 
 @implementation KeyHandle
 
@@ -124,6 +124,11 @@ extern "C" {
  */
 +(NSString *)getAddressByPubkey:(NSString *)pubkey
 {
+#if !ONTEST
+    //开启测试模式
+    EnableTESTmode();
+#endif
+    
     char myaddress[128];
     char *myPubkey = (char *)[pubkey UTF8String];
     GetBTCAddrFromPubKey(myPubkey,myaddress);
@@ -135,6 +140,12 @@ extern "C" {
  *
  */
 + (NSString *)getAddressByPrivKey:(NSString *)prvkey{
+    
+#if !ONTEST
+    //开启测试模式
+    EnableTESTmode();
+#endif
+    
     char *cPrivkey = (char *)[prvkey UTF8String];
     char pubKey[128];
     GetPubKeyFromPrivKey(cPrivkey, pubKey);
@@ -273,6 +284,12 @@ void xtalkRNG(void *buf, int bits){
    Int CheckPrivKey (char * privKey)
  */
 +(BOOL) checkPrivkey:(NSString *)privkey{
+    
+#if !ONTEST
+    //开启测试模式
+    EnableTESTmode();
+#endif
+    
     char *cPrivkey = (char *)[privkey UTF8String];
     int result = CheckPrivKey(cPrivkey);
     return result==0?YES:NO;
@@ -284,6 +301,12 @@ void xtalkRNG(void *buf, int bits){
    Int CheckAddress (char * addr)
  */
 +(BOOL) checkAddress:(NSString *)address{
+    
+#if !ONTEST
+    //开启测试模式
+    EnableTESTmode();
+#endif
+    
     // Adapt the btc.com sweep results
     address = [address stringByReplacingOccurrencesOfString:@"bitcoin:" withString:@""];
     char *cAddress = (char *)[address UTF8String];
@@ -1099,6 +1122,12 @@ int xtalkDecodeAES_gcm(unsigned char *ciphertext, int ciphertext_len, unsigned c
 #pragma mark - wallet
 + (NSString *)createRawTranscationWithTvsArray:(NSArray *)tvsArray outputs:(NSDictionary *)outputs{
     
+    
+#if !ONTEST
+    //开启测试模式
+    EnableTESTmode();
+#endif
+    
     // checkout format
     for (NSDictionary *temD in tvsArray) {
         if (![temD isKindOfClass:[NSDictionary class]]) {
@@ -1137,6 +1166,11 @@ int xtalkDecodeAES_gcm(unsigned char *ciphertext, int ciphertext_len, unsigned c
 
 
 + (NSString *)signRawTranscationWithTvsArray:(NSArray *)tvsArray privkeys:(NSArray *)privkeys rawTranscation:(NSString *)rawTranscation{
+    
+#if !ONTEST
+    //开启测试模式
+    EnableTESTmode();
+#endif
     
     for (NSDictionary *temD in tvsArray) {
         if (![temD isKindOfClass:[NSDictionary class]]) {
