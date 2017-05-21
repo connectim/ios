@@ -1,0 +1,11 @@
+0.1.3
+We're trying to make Connect more secure and stable
+
+Contents of the new revision:
+- The program source has been opened, github link:https://github.com/connectim
+- add Russian language
+- refactoring the Ecdh_key created strategy of personal chat to ensure data security.  The Ecdh_key of personal chat is created by a paire of temporaray public and private key at present.
+- fixed known bugs
+
+If you have problems with the use of the process, you can set the - help and feedback - feedback to us, we will take seriously every feedback
+For more details about Connect, please visit the official website: https://www.connect.im/
