@@ -207,12 +207,28 @@
             break;
         case LMChatEcdhKeySecurityLevelTypeRandom: {
             messageString = [ConnectTool decodePeerImMessageGcmData:msgPost.msgData.cipherData publickey:msgPost.msgData.chatPubKey salt:msgPost.msgData.salt ver:msgPost.msgData.ver];
+            if (GJCFStringIsNull(messageString)) {
+                MMMessage *tipMessage = [self createDecodeFailedTipMessage];
+                messageString = [tipMessage mj_JSONString];
+            }
         }
             break;
         default:
             break;
     }
     return messageString;
+}
+
++ (MMMessage *)createDecodeFailedTipMessage{
+    MMMessage *message = [[MMMessage alloc] init];
+    message.type = GJGCChatFriendContentTypeStatusTip;
+    message.content = LMLocalizedString(@"Chat One message failed to decrypt", nil);
+    message.ext1 = @(100);// not use ,just for check
+    message.sendtime = [[NSDate date] timeIntervalSince1970] * 1000;
+    message.message_id = [ConnectTool generateMessageId];
+    message.sendstatus = GJGCChatFriendSendMessageStatusSuccess;
+
+    return message;
 }
 
 
