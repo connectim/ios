@@ -127,14 +127,10 @@ static FMDatabaseQueue *queue;
     if (GJCFStringIsNull(sql)) {
         return nil;
     }
-
-    DDLogInfo(@"queryWithSql %@", sql);
-
     NSMutableArray __block *arrayM = @[].mutableCopy;
     NSString *dbPath = [MMGlobal getDBFile:dbName];
     FMDatabaseQueue *queue = [FMDatabaseQueue databaseQueueWithPath:dbPath];
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-        [db setKey:[[LMHistoryCacheManager sharedManager] getDBPassword]];
         FMResultSet *result = [db executeQuery:sql];
         while ([result next]) {
             NSMutableDictionary *dict = [NSMutableDictionary dictionary];
@@ -167,7 +163,6 @@ static FMDatabaseQueue *queue;
     DDLogInfo(@"instertSql %@", sql);
     __block BOOL result = NO;
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-        [db setKey:[[LMHistoryCacheManager sharedManager] getDBPassword]];
         if (batchValues && batchValues.count > 0) {
             for (NSArray *values in batchValues) {
                 result = [db executeUpdate:sql withArgumentsInArray:values];
