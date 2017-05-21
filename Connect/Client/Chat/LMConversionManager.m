@@ -405,9 +405,7 @@ CREATE_SHARED_MANAGER(LMConversionManager)
     [[RecentChatDBManager sharedManager] deleteByIdentifier:conversationModel.identifier];
     if (conversationModel.talkType != GJGCChatFriendTalkTypeGroup) {
         [[CIImageCacheManager sharedInstance] removeGroupAvatarCacheWithGroupIdentifier:conversationModel.identifier];
-        [[IMService instance] deleteFriendWithAddress:conversationModel.chatUser.address comlete:^(NSError *error, id data) {
-            
-        }];
+        [[IMService instance] deleteSessionWithAddress:conversationModel.chatUser.address complete:nil];
         [ChatMessageFileManager deleteRecentChatAllMessageFilesByAddress:conversationModel.chatUser.address];
     } else{
         [ChatMessageFileManager deleteRecentChatAllMessageFilesByAddress:conversationModel.identifier];
