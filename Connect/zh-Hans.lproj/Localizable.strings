@@ -1,4 +1,5 @@
 "Chat"="聊天";
+"Chat One message failed to decrypt" = "有一条消息解密失败";
 "Chat Accept success"="领取成功";
 "Chat Add as a friend to chat"="添加为好友才能开始聊天";
 "Chat Address"="地址";
