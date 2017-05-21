@@ -35,6 +35,7 @@ typedef NS_ENUM(NSInteger ,MessageRejectErrorType) {
     MessageRejectErrorTypeGetChatinfoError,
     MessageRejectErrorTypeChatinfoNotMatch,
     MessageRejectErrorTypeChatinfoExpire,
+    MessageRejectErrorTypeMyChatCookieNotMatch,
 };
 
 @implementation SendMessageModel
@@ -150,8 +151,8 @@ CREATE_SHARED_MANAGER(LMMessageSendManager)
         SendMessageModel *sendModel = [self.sendingMessages valueForKey:messageId];
         sendModel.sendMsg.sendstatus = GJGCChatFriendSendMessageStatusFaild;
         if (sendModel.callBack) {
-            NSError *erro = [NSError errorWithDomain:@"imserver" code:-1 userInfo:nil];
-            sendModel.callBack(sendModel.sendMsg, erro);
+            NSError *error = [NSError errorWithDomain:@"imserver" code:-1 userInfo:nil];
+            sendModel.callBack(sendModel.sendMsg, error);
         }
 
         //remove
@@ -165,6 +166,10 @@ CREATE_SHARED_MANAGER(LMMessageSendManager)
 
         MessageRejectErrorType rejectErrorType = (NSInteger)rejectMsg.status;
         switch (rejectErrorType) {
+            case MessageRejectErrorTypeMyChatCookieNotMatch:{
+                [[IMService instance] uploadCookieDuetoLocalChatCookieNotMatchServerChatCookieWithMessageCallModel:sendModel];
+            }
+                break;
             case MessageRejectErrorTypeChatinfoExpire:{
                 NSString *identifier = [[UserDBManager sharedManager] getUserPubkeyByAddress:rejectMsg.receiverAddress];
                 [[SessionManager sharedManager] removeChatCookieWithChatSession:identifier];

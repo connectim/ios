@@ -10,6 +10,16 @@
 #import "Protofile.pbobjc.h"
 #import "LMSocketHandleDelegate.h"
 #import "LMCommandManager.h"
+#import "LMMessageSendManager.h"
+
+
+@interface UploadChatCookieModel : NSObject
+
+@property (nonatomic ,strong) ChatCookieData *chatCookieData;
+@property (nonatomic ,strong) ChatCacheCookie *chatCookie;
+@property (nonatomic ,strong) SendMessageModel *sendMessageModel;
+
+@end
 
 @interface IMService : TCPConnection
 
@@ -205,6 +215,8 @@
  * upload login suer chat cookie
  */
 - (void)uploadCookie;
+
+- (void)uploadCookieDuetoLocalChatCookieNotMatchServerChatCookieWithMessageCallModel:(SendMessageModel *)callModel;
 
 /**
  * send offlien message ack ,use when get offline message

@@ -18,6 +18,10 @@
 #import "LMMessageAdapter.h"
 #import "LMMessageSendManager.h"
 
+@implementation UploadChatCookieModel
+
+@end
+
 @interface IMService ()
 
 @property(nonatomic, strong) dispatch_queue_t commondQueue;
@@ -290,7 +294,6 @@ static dispatch_once_t onceToken;
         chatCookie.chatPrivkey = [KeyHandle creatNewPrivkey];
         chatCookie.chatPubKey = [KeyHandle createPubkeyByPrikey:chatCookie.chatPrivkey];
         chatCookie.salt = [KeyHandle createRandom512bits];
-        [SessionManager sharedManager].loginUserChatCookie = chatCookie;
         
         ChatCookieData *cookieData = [ChatCookieData new];
         cookieData.chatPubKey = chatCookie.chatPubKey;
@@ -302,7 +305,11 @@ static dispatch_once_t onceToken;
         cookie.sign = [ConnectTool signWithData:cookieData.data];
 
         Message *m = [LMCommandAdapter sendAdapterWithExtension:BM_UPLOAD_CHAT_COOKIE_EXT sendData:cookie];
-        m.sendOriginInfo = cookieData;
+        
+        UploadChatCookieModel *uploadChatModel = [UploadChatCookieModel new];
+        uploadChatModel.chatCookie = chatCookie;
+        uploadChatModel.chatCookieData = cookieData;
+        m.sendOriginInfo = uploadChatModel;
         [self sendCommandWithDelay:NO callBlock:^(IMService *imserverSelf) {
             [imserverSelf sendCommandWith:m comlete:nil];
         }];
@@ -312,6 +319,36 @@ static dispatch_once_t onceToken;
         }
     }
 }
+
+
+- (void)uploadCookieDuetoLocalChatCookieNotMatchServerChatCookieWithMessageCallModel:(SendMessageModel *)callModel {
+    ChatCacheCookie *chatCookie = [ChatCacheCookie new];
+    chatCookie.chatPrivkey = [KeyHandle creatNewPrivkey];
+    chatCookie.chatPubKey = [KeyHandle createPubkeyByPrikey:chatCookie.chatPrivkey];
+    chatCookie.salt = [KeyHandle createRandom512bits];
+    
+    ChatCookieData *cookieData = [ChatCookieData new];
+    cookieData.chatPubKey = chatCookie.chatPubKey;
+    cookieData.salt = chatCookie.salt;
+    cookieData.expired = [[NSDate date] timeIntervalSince1970] + 24 * 60 * 60;
+    
+    ChatCookie *cookie = [ChatCookie new];
+    cookie.data_p = cookieData;
+    cookie.sign = [ConnectTool signWithData:cookieData.data];
+    
+    Message *m = [LMCommandAdapter sendAdapterWithExtension:BM_UPLOAD_CHAT_COOKIE_EXT sendData:cookie];
+    
+    UploadChatCookieModel *uploadChatModel = [UploadChatCookieModel new];
+    uploadChatModel.chatCookie = chatCookie;
+    uploadChatModel.chatCookieData = cookieData;
+    uploadChatModel.sendMessageModel = callModel;
+    m.sendOriginInfo = uploadChatModel;
+    [self sendCommandWithDelay:NO callBlock:^(IMService *imserverSelf) {
+        [imserverSelf sendCommandWith:m comlete:nil];
+    }];
+}
+
+
 
 #pragma mark - Command-Get the latest Cookie for the session user
 
