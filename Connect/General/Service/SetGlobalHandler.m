@@ -84,29 +84,21 @@
         }
         NSData* data =  [ConnectTool decodeHttpResponse:hResponse];
         if (data) {
-            @try {
-                
-                
-                NSMutableArray *arrM = [NSMutableArray array];
-                
-                UsersInfo *usersInfo = [UsersInfo parseFromData:data error:nil];
-                for (UserInfo *user in usersInfo.usersArray) {
-                    AccountInfo *userInfo = [[AccountInfo alloc] init];
-                    userInfo.address = user.address;
-                    userInfo.avatar = user.avatar;
-                    userInfo.username = user.username;
-                    userInfo.pub_key = user.pubKey;
-                    [[UserDBManager sharedManager] addUserToBlackListWithAddress:user.address];
-                    [arrM objectAddObject:userInfo];
-                }
-                [[MMAppSetting sharedSetting] haveSyncBlickMan];
-                
-                if (complete) {
-                    complete(arrM);
-                }
-                
-            } @catch (NSException *exception) {
-                DDLogInfo(@"Error saving blacklist");
+            NSMutableArray *arrM = [NSMutableArray array];
+            UsersInfo *usersInfo = [UsersInfo parseFromData:data error:nil];
+            for (UserInfo *user in usersInfo.usersArray) {
+                AccountInfo *userInfo = [[AccountInfo alloc] init];
+                userInfo.address = user.address;
+                userInfo.avatar = user.avatar;
+                userInfo.username = user.username;
+                userInfo.pub_key = user.pubKey;
+                [[UserDBManager sharedManager] addUserToBlackListWithAddress:user.address];
+                [arrM objectAddObject:userInfo];
+            }
+            [[MMAppSetting sharedSetting] haveSyncBlickMan];
+            
+            if (complete) {
+                complete(arrM);
             }
         }
     } fail:^(NSError *error) {
