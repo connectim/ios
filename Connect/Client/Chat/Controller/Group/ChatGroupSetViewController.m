@@ -232,7 +232,7 @@ typedef NS_ENUM(NSUInteger, SourceType) {
     [self.groups objectAddObject:group1];
 
     CellItem *topMessage = [CellItem itemWithTitle:LMLocalizedString(@"Chat Sticky on Top chat", nil) type:CellItemTypeSwitch operation:nil];
-    topMessage.switchIsOn = [SetGlobalHandler chatIsTop:weakSelf.talkModel.chatIdendifier];
+    topMessage.switchIsOn = self.talkModel.top;
     topMessage.operationWithInfo = ^(id userInfo) {
         if ([userInfo boolValue]) {
             [SetGlobalHandler topChatWithChatIdentifer:weakSelf.talkModel.chatIdendifier];
@@ -242,7 +242,7 @@ typedef NS_ENUM(NSUInteger, SourceType) {
     };
 
     CellItem *messageNoneNotifi = [CellItem itemWithTitle:LMLocalizedString(@"Chat Mute Notification", nil) type:CellItemTypeSwitch operation:nil];
-    messageNoneNotifi.switchIsOn = [SetGlobalHandler GroupChatMuteStatusWithIdentifer:weakSelf.talkModel.chatIdendifier];
+    messageNoneNotifi.switchIsOn = self.talkModel.mute;
     messageNoneNotifi.operationWithInfo = ^(id userInfo) {
         BOOL notify = [userInfo boolValue];
         [SetGlobalHandler GroupChatSetMuteWithIdentifer:weakSelf.talkModel.chatIdendifier mute:notify complete:^(NSError *erro) {
@@ -260,7 +260,7 @@ typedef NS_ENUM(NSUInteger, SourceType) {
     };
 
     CellItem *savaToContact = [CellItem itemWithTitle:LMLocalizedString(@"Link Save to Contacts", nil) type:CellItemTypeSwitch operation:nil];
-    savaToContact.switchIsOn = [[GroupDBManager sharedManager] isInCommonGroup:weakSelf.talkModel.chatIdendifier];
+    savaToContact.switchIsOn = self.talkModel.chatGroupInfo.isCommonGroup;
     savaToContact.operationWithInfo = ^(id userInfo) {
         if ([userInfo boolValue]) {
             [SetGlobalHandler setCommonContactGroupWithIdentifer:weakSelf.talkModel.chatIdendifier complete:^(NSError *error) {

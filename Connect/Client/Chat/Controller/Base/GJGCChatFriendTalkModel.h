@@ -34,6 +34,9 @@
 //path of rich message file user:address group:groupid
 @property (nonatomic ,copy) NSString *fileDocumentName;
 
+@property (nonatomic ,assign) BOOL mute;
+@property (nonatomic ,assign) BOOL top;
+
 + (NSString *)talkTypeString:(GJGCChatFriendTalkType)talkType;
 
 @end

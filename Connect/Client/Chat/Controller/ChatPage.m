@@ -479,6 +479,8 @@ UIViewControllerPreviewingDelegate>
     talk.talkType = GJGCChatFriendTalkTypeGroup;
     talk.chatIdendifier = recentModel.identifier;
     talk.chatGroupInfo = recentModel.chatGroupInfo;
+    talk.mute = recentModel.notifyStatus;
+    talk.top = recentModel.isTopChat;
     talk.name = GJCFStringIsNull(recentModel.name) ? [NSString stringWithFormat:LMLocalizedString(@"Group (%lu)", nil), (unsigned long) recentModel.chatGroupInfo.groupMembers.count] : [NSString stringWithFormat:@"%@(%lu)", recentModel.name, (unsigned long) recentModel.chatGroupInfo.groupMembers.count];
     [SessionManager sharedManager].chatSession = talk.chatIdendifier;
     [SessionManager sharedManager].chatObject = recentModel.chatGroupInfo;
@@ -498,7 +500,8 @@ UIViewControllerPreviewingDelegate>
     talk.headUrl = recentModel.headUrl;
     talk.name = recentModel.chatUser.normalShowName;
     talk.snapChatOutDataTime = recentModel.snapChatDeleteTime;
-    
+    talk.mute = recentModel.notifyStatus;
+    talk.top = recentModel.isTopChat;
     [SessionManager sharedManager].chatSession = recentModel.chatUser.pub_key;
     [SessionManager sharedManager].chatObject = recentModel.chatUser;
     talk.chatUser = recentModel.chatUser;
