@@ -1629,7 +1629,8 @@
 - (void)reSendUnSendingMessages {
     for (MMMessage *bmMessage in self.sendingMessages) {
 
-        bmMessage.sendtime = [[NSDate date] timeIntervalSince1970] * 1000;
+        //TODO TEST
+//        bmMessage.sendtime = [[NSDate date] timeIntervalSince1970] * 1000;
 
         if ([self checkRichtextUploadStatuts:bmMessage]) {
             [self sendMessagePost:bmMessage];
