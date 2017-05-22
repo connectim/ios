@@ -309,7 +309,7 @@ static RecentChatDBManager *manager = nil;
     }
     BOOL result = [self updateTableName:RecentChatTable fieldsValues:@{@"top": @(0)} conditions:@{@"identifier": identifier}];
     if (result) {
-        [[LMConversionManager sharedManager] chatTop:YES identifier:identifier];
+        [[LMConversionManager sharedManager] chatTop:NO identifier:identifier];
     }
 }
 
