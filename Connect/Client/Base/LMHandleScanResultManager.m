@@ -80,22 +80,21 @@ CREATE_SHARED_MANAGER(LMHandleScanResultManager)
         NSURL* url = [NSURL URLWithString:resultStr];
         NSDictionary *parameters = [url parameters];
         NSString *token = [parameters valueForKey:@"token"];
-        NSString *strHost = url.host;
-        NSString* localHost = [[baseServer componentsSeparatedByString:@"//"] lastObject];
-        if (!GJCFStringIsNull(token) && [strHost isEqualToString:localHost]) {
-            if ([resultStr containsString:@"transfer"]) {
+    
+        if (!GJCFStringIsNull(token) && [self needHttp:resultStr]) {
+            if ([resultStr containsString:@"transfer?"]) {
                 
                 NSString *urlString = [NSString stringWithFormat:@"connectim://transfer?token=%@", token];
                 [HandleUrlManager handleOpenURL:[NSURL URLWithString:urlString]];
                 return;
                 
-            } else if ([resultStr containsString:@"packet"]) {
+            } else if ([resultStr containsString:@"packet?"]) {
                 
                 NSString *urlString = [NSString stringWithFormat:@"connectim://packet?token=%@", token];
                 [HandleUrlManager handleOpenURL:[NSURL URLWithString:urlString]];
                 return;
                 
-            } else if ([resultStr containsString:@"group"]) {
+            } else if ([resultStr containsString:@"group?"]) {
                 
                 NSString *urlString = [NSString stringWithFormat:@"connectim://group?token=%@", token];
                 [HandleUrlManager handleOpenURL:[NSURL URLWithString:urlString]];
@@ -105,6 +104,17 @@ CREATE_SHARED_MANAGER(LMHandleScanResultManager)
         }
     
        [self loadWeb:resultStr];
+}
+- (BOOL)needHttp:(NSString *)resultStr {
+    NSString *pattern = [NSString stringWithFormat:@"(http|https)://.*\\.connect\\.im/share/%@/(packet|transfer|group)\\?token=.+",APIVersion];
+    NSRegularExpression *regException = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionDotMatchesLineSeparators error:nil];
+    NSArray *resultArray = [regException matchesInString:resultStr options:NSMatchingReportCompletion range:NSMakeRange(0, resultStr.length)];
+    if (resultArray.count > 0) {
+        
+        return YES;
+        
+    }
+    return NO;
 }
 - (void)handWalletWithKeyWord:(NSString *)resultStr{
     
