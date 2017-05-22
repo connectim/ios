@@ -12,9 +12,9 @@
 
 #define APIVersion @"v1"
 
-#define SOCKET_HOST @"im.connect.im"
-#define baseServer  @"https://short.connect.im"
-#define ServerPublickey @"038bf4f74a5aaad532179c9714e2fa6ac8342b5b2c608572e4a12e8708401e0632"
+#define SOCKET_HOST @"sandbox.connect.im"
+#define baseServer  @"https://sandbox.connect.im"
+#define ServerPublickey @"02c2c7398274aef3b94366369f51c6a75470f3636981c2e75e6fd7b39caede1ca9"
 #define SOCKET_PORT 19090
 #define DefaultHeadUrl @"https://short.connect.im/avatar/" APIVersion "/b040e0a970bc6d80b675586c5a55f9e9109168ba.png"
 
