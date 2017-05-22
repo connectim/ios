@@ -184,7 +184,7 @@
         addBlackList.operationWithInfo = ^(id info) {
             [weakSelf addToBlackList:[info boolValue]];
         };
-        addBlackList.switchIsOn = self.user.isBlackMan;
+        addBlackList.switchIsOn = [[UserDBManager sharedManager]userIsInBlackList:self.user.address];
         addBlackList.titleColor = [UIColor blackColor];
         group2.items = @[setAlias, trasferHistory, addFavorite, addBlackList].copy;
         [self.groups objectAddObject:group2];
