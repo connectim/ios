@@ -15,6 +15,8 @@
 
 + (MMAppSetting *)sharedSetting;
 
+- (void)deleteLocalUserWithAddress:(NSString *)address;
+
 /**
  * Delete the login user information
  */
