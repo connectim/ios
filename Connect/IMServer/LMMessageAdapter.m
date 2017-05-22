@@ -184,7 +184,7 @@
         case LMChatEcdhKeySecurityLevelTypeRandom: {
             messageString = [ConnectTool decodePeerImMessageGcmData:msgPost.msgData.cipherData publickey:msgPost.msgData.chatPubKey salt:msgPost.msgData.salt ver:msgPost.msgData.ver];
             if (GJCFStringIsNull(messageString)) {
-                MMMessage *tipMessage = [self createDecodeFailedTipMessage];
+                MMMessage *tipMessage = [self createDecodeFailedTipMessageWithMassagePost:msgPost];
                 messageString = [tipMessage mj_JSONString];
             }
         }
@@ -195,13 +195,15 @@
     return messageString;
 }
 
-+ (MMMessage *)createDecodeFailedTipMessage{
++ (MMMessage *)createDecodeFailedTipMessageWithMassagePost:(MessagePost *)msgPost {
     MMMessage *message = [[MMMessage alloc] init];
     message.type = GJGCChatFriendContentTypeStatusTip;
     message.content = LMLocalizedString(@"Chat One message failed to decrypt", nil);
     message.ext1 = @(100);// not use ,just for check
     message.sendtime = [[NSDate date] timeIntervalSince1970] * 1000;
     message.message_id = [ConnectTool generateMessageId];
+    message.publicKey = msgPost.pubKey;
+    message.user_id = [KeyHandle getAddressByPubkey:message.publicKey];
     message.sendstatus = GJGCChatFriendSendMessageStatusSuccess;
 
     return message;
