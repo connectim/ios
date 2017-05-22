@@ -17,7 +17,6 @@
 #import "GroupMessageHandler.h"
 #import "SystemMessageHandler.h"
 #import "NSData+Gzip.h"
-#import "CIImageCacheManager.h"
 #import "YYImageCache.h"
 #import "LMHistoryCacheManager.h"
 #import "LMMessageSendManager.h"
@@ -637,15 +636,6 @@ CREATE_SHARED_MANAGER(LMCommandManager)
                         if ([[SessionManager sharedManager].chatSession isEqualToString:groupChange.identifier]) {
                             SendNotify(GroupNewMemberEnterNotification, chatMessage);
                         }
-
-                        LMGroupInfo *lmGroupTem = [[GroupDBManager sharedManager] addMember:newUsers ToGroupChat:groupChange.identifier];
-
-                        NSMutableArray *temA = [NSMutableArray arrayWithArray:lmGroupTem.groupMembers];
-                        NSMutableArray *avatars = [NSMutableArray array];
-                        for (AccountInfo *member in temA) {
-                            [avatars objectAddObject:member.avatar];
-                        }
-                        [[CIImageCacheManager sharedInstance] uploadGroupAvatarWithGroupIdentifier:groupChange.identifier groupMembers:avatars];
                     } else {
                         NSMutableArray *newUsers = [NSMutableArray array];
                         for (UserInfo *userInfo in usersInfo.usersArray) {
@@ -679,14 +669,6 @@ CREATE_SHARED_MANAGER(LMCommandManager)
                                 SendNotify(GroupNewMemberEnterNotification, chatMessage);
                             }
                         }
-                        LMGroupInfo *lmGroupTem = [[GroupDBManager sharedManager] addMember:newUsers ToGroupChat:groupChange.identifier];
-
-                        NSMutableArray *temA = [NSMutableArray arrayWithArray:lmGroupTem.groupMembers];
-                        NSMutableArray *avatars = [NSMutableArray array];
-                        for (AccountInfo *member in temA) {
-                            [avatars objectAddObject:member.avatar];
-                        }
-                        [[CIImageCacheManager sharedInstance] uploadGroupAvatarWithGroupIdentifier:groupChange.identifier groupMembers:avatars];
                     }
                 }
                     break;
@@ -721,9 +703,6 @@ CREATE_SHARED_MANAGER(LMCommandManager)
                         if (groupArray.count <= 1) {
                             [[GroupDBManager sharedManager] deletegroupWithGroupId:groupChange.identifier];
                         }
-
-                        [[CIImageCacheManager sharedInstance] uploadGroupAvatarWithGroupIdentifier:groupChange.identifier groupMembers:avatars];
-
                     }
                 }
                     break;

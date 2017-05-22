@@ -85,8 +85,7 @@
             self.nameLabel.textColor = GJCFQuickHexColor(@"161A21");
             self.avatarView.image = [UIImage imageNamed:@"default_user_avatar"];
             // TODO group avatar server change ,cannot use ip address
-            NSString *base_server = @"https://short.connect.im";
-            [self.avatarView setPlaceholderImageWithAvatarUrl:[NSString stringWithFormat:@"%@/avatar/%@/group/%@.jpg",base_server,APIVersion,model.identifier]];
+            [self.avatarView setPlaceholderImageWithAvatarUrl:[NSString stringWithFormat:@"%@/avatar/%@/group/%@.jpg",baseServer,APIVersion,model.identifier]];
             self.strangerLabel.hidden = YES;
         }
             break;

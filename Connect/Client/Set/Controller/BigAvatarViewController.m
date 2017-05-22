@@ -9,7 +9,6 @@
 #import "BigAvatarViewController.h"
 #import "NetWorkOperationTool.h"
 #import "ImageClipViewController.h"
-#import "CIImageCacheManager.h"
 #import "GroupDBManager.h"
 #import "YYImageCache.h"
 #import <ImageIO/ImageIO.h>

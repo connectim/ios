@@ -11,7 +11,6 @@
 #import "MessageDBManager.h"
 #import "GroupDBManager.h"
 #import "UserDBManager.h"
-#import "CIImageCacheManager.h"
 #import "IMService.h"
 #import "ConnectTool.h"
 
@@ -404,7 +403,6 @@ CREATE_SHARED_MANAGER(LMConversionManager)
     [[SessionManager sharedManager] removeRecentChatWithIdentifier:conversationModel.identifier];
     [[RecentChatDBManager sharedManager] deleteByIdentifier:conversationModel.identifier];
     if (conversationModel.talkType != GJGCChatFriendTalkTypeGroup) {
-        [[CIImageCacheManager sharedInstance] removeGroupAvatarCacheWithGroupIdentifier:conversationModel.identifier];
         [[IMService instance] deleteSessionWithAddress:conversationModel.chatUser.address complete:nil];
         [ChatMessageFileManager deleteRecentChatAllMessageFilesByAddress:conversationModel.chatUser.address];
     } else{
@@ -706,7 +704,6 @@ CREATE_SHARED_MANAGER(LMConversionManager)
         LMGroupInfo *group = [[GroupDBManager sharedManager] getgroupByGroupIdentifier:groupIdentifer];
         findModel.name = group.groupName;
         findModel.chatGroupInfo = group;
-        [[CIImageCacheManager sharedInstance] removeGroupAvatarCacheWithGroupIdentifier:findModel.identifier];
         [GCDQueue executeInMainQueue:^{
             if ([self.conversationListDelegate respondsToSelector:@selector(conversationListDidChanged:)]) {
                 [self.conversationListDelegate conversationListDidChanged:[SessionManager sharedManager].allRecentChats];

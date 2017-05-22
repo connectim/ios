@@ -23,7 +23,6 @@
 #import "YYImageCache.h"
 #import "StringTool.h"
 #import "MessageDBManager.h"
-#import "CIImageCacheManager.h"
 #import "NSMutableArray+MoveObject.h"
 
 typedef NS_ENUM(NSUInteger, SourceType) {
@@ -143,7 +142,6 @@ typedef NS_ENUM(NSUInteger, SourceType) {
         }
         [avatars objectAddObject:membser.avatar];
     }
-    [[CIImageCacheManager sharedInstance] groupAvatarByGroupIdentifier:group.groupIdentifer groupMembers:avatars complete:nil];
     self.currentGroupName = group.groupName;
     AccountInfo *currentUser = [[LKUserCenter shareCenter] currentLoginUser];
     for (AccountInfo *info in group.groupMembers) {

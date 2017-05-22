@@ -18,7 +18,6 @@
 #import "RecentChatDBManager.h"
 #import "MessageDBManager.h"
 #import "GroupDBManager.h"
-#import "CIImageCacheManager.h"
 #import "SearchPage.h"
 #import "FriendTransactionHisPage.h"
 #import "ReconmandChatListPage.h"
@@ -172,7 +171,6 @@
     [MBProgressHUD showLoadingMessageToView:self.view];
     [[IMService instance] deleteFriendWithAddress:self.user.address comlete:^(NSError *error, id data) {
         // delete head cache
-        [[CIImageCacheManager sharedInstance] removeContactAvatarCacheWithUrl:self.user.avatar];
         [GCDQueue executeInMainQueue:^{
             [MBProgressHUD hideHUDForView:self.view];
             if (!error) {

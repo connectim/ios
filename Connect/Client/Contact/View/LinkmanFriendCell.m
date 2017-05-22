@@ -7,7 +7,6 @@
 //
 
 #import "LinkmanFriendCell.h"
-#import "CIImageCacheManager.h"
 #import "LMGroupInfo.h"
 #import "YYImageCache.h"
 
