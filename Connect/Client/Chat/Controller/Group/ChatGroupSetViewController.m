@@ -23,7 +23,6 @@
 #import "YYImageCache.h"
 #import "StringTool.h"
 #import "MessageDBManager.h"
-#import "CIImageCacheManager.h"
 #import "NSMutableArray+MoveObject.h"
 
 typedef NS_ENUM(NSUInteger, SourceType) {
@@ -82,7 +81,6 @@ typedef NS_ENUM(NSUInteger, SourceType) {
     self.title = LMLocalizedString(@"Link Group", nil);
     RegisterNotify(GroupAdminChangeNotification, @selector(groupAdmingChange))
     RegisterNotify(ConnnectGroupInfoDidChangeNotification, @selector(grouInfoChange:))
-    RegisterNotify(@"UploadGroupAvatarSuccessNotification", @selector(uploadGroupAvatarComplete:))
 }
 
 - (void)groupAdmingChange {
@@ -131,14 +129,6 @@ typedef NS_ENUM(NSUInteger, SourceType) {
 
 }
 
-- (void)uploadGroupAvatarComplete:(NSNotification *)note {
-    NSString *identifier = [note.object valueForKey:@"identifier"];
-    NSString *groupavatar = [note.object valueForKey:@"groupavatar"];
-    if ([identifier isEqualToString:self.talkModel.chatGroupInfo.groupIdentifer]) {
-        self.talkModel.chatGroupInfo.avatarUrl = groupavatar;
-    }
-}
-
 - (void)grouInfoChange:(NSNotification *)note {
     NSString *groupIdentifer = (NSString *) note.object;
 
@@ -152,7 +142,6 @@ typedef NS_ENUM(NSUInteger, SourceType) {
         }
         [avatars objectAddObject:membser.avatar];
     }
-    [[CIImageCacheManager sharedInstance] groupAvatarByGroupIdentifier:group.groupIdentifer groupMembers:avatars complete:nil];
     self.currentGroupName = group.groupName;
     AccountInfo *currentUser = [[LKUserCenter shareCenter] currentLoginUser];
     for (AccountInfo *info in group.groupMembers) {
@@ -241,7 +230,7 @@ typedef NS_ENUM(NSUInteger, SourceType) {
     [self.groups objectAddObject:group1];
 
     CellItem *topMessage = [CellItem itemWithTitle:LMLocalizedString(@"Chat Sticky on Top chat", nil) type:CellItemTypeSwitch operation:nil];
-    topMessage.switchIsOn = [SetGlobalHandler chatIsTop:weakSelf.talkModel.chatIdendifier];
+    topMessage.switchIsOn = self.talkModel.top;
     topMessage.operationWithInfo = ^(id userInfo) {
         if ([userInfo boolValue]) {
             [SetGlobalHandler topChatWithChatIdentifer:weakSelf.talkModel.chatIdendifier];
@@ -251,7 +240,7 @@ typedef NS_ENUM(NSUInteger, SourceType) {
     };
 
     CellItem *messageNoneNotifi = [CellItem itemWithTitle:LMLocalizedString(@"Chat Mute Notification", nil) type:CellItemTypeSwitch operation:nil];
-    messageNoneNotifi.switchIsOn = [SetGlobalHandler GroupChatMuteStatusWithIdentifer:weakSelf.talkModel.chatIdendifier];
+    messageNoneNotifi.switchIsOn = self.talkModel.mute;
     messageNoneNotifi.operationWithInfo = ^(id userInfo) {
         BOOL notify = [userInfo boolValue];
         [SetGlobalHandler GroupChatSetMuteWithIdentifer:weakSelf.talkModel.chatIdendifier mute:notify complete:^(NSError *erro) {
@@ -269,7 +258,7 @@ typedef NS_ENUM(NSUInteger, SourceType) {
     };
 
     CellItem *savaToContact = [CellItem itemWithTitle:LMLocalizedString(@"Link Save to Contacts", nil) type:CellItemTypeSwitch operation:nil];
-    savaToContact.switchIsOn = [[GroupDBManager sharedManager] isInCommonGroup:weakSelf.talkModel.chatIdendifier];
+    savaToContact.switchIsOn = self.talkModel.chatGroupInfo.isCommonGroup;
     savaToContact.operationWithInfo = ^(id userInfo) {
         if ([userInfo boolValue]) {
             [SetGlobalHandler setCommonContactGroupWithIdentifer:weakSelf.talkModel.chatIdendifier complete:^(NSError *error) {

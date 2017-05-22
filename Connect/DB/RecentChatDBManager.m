@@ -13,6 +13,7 @@
 #import "IMService.h"
 #import "ConnectTool.h"
 #import "LMBaseSSDBManager.h"
+#import "LMConversionManager.h"
 
 
 static RecentChatDBManager *manager = nil;
@@ -211,12 +212,7 @@ static RecentChatDBManager *manager = nil;
     } else {
         DDLogError(@"fail");
     }
-
-    [[SessionManager sharedManager] removeRecentChatWithIdentifier:identifier];
-    [GCDQueue executeInMainQueue:^{
-        SendNotify(ConnnectRecentChatDeleteNotification, identifier);
-    }];
-
+    [[LMConversionManager sharedManager] deleteConversationWithIdentifier:identifier];
 }
 
 - (void)getAllUnReadCountWithComplete:(void (^)(int count))complete {
@@ -277,10 +273,8 @@ static RecentChatDBManager *manager = nil;
     if (GJCFStringIsNull(identifier)) {
         return;
     }
-
     int count = (int) [self getCountFromCurrentDBWithTableName:RecentChatTable condition:@{@"identifier": identifier} symbol:0];
     if (count == 0) {
-
         RecentChatModel *model = [RecentChatModel new];
         model.identifier = identifier;
         LMGroupInfo *group = [[GroupDBManager sharedManager] getgroupByGroupIdentifier:identifier];
@@ -298,21 +292,15 @@ static RecentChatDBManager *manager = nil;
                 model.headUrl = user.avatar;
             }
         }
-        model.time = [NSString stringWithFormat:@"%lld", (long long) ([[NSDate date] timeIntervalSince1970] * 1000)];
-
+        model.time = [NSString stringWithFormat:@"%lld",(long long)([[NSDate date] timeIntervalSince1970] * 1000)];
         [self save:model];
-
     } else {
         int long long time = [[NSDate date] timeIntervalSince1970] * 1000;
         [self                     updateTableName:RecentChatTable fieldsValues:@{@"top": @(1),
                 @"last_time": @(time)} conditions:@{@"identifier": identifier}];
     }
-    [GCDQueue executeInMainQueue:^{
-        NSDictionary *obj = @{@"identifier": identifier,
-                @"status": @(YES)};
-        [SessionManager sharedManager].topChatCount++;
-        SendNotify(TopChatStatusChangeNotication, obj);
-    }];
+    
+    [[LMConversionManager sharedManager] chatTop:YES identifier:identifier];
 }
 
 - (void)removeTopChat:(NSString *)identifier {
@@ -321,15 +309,7 @@ static RecentChatDBManager *manager = nil;
     }
     BOOL result = [self updateTableName:RecentChatTable fieldsValues:@{@"top": @(0)} conditions:@{@"identifier": identifier}];
     if (result) {
-        [GCDQueue executeInMainQueue:^{
-            NSDictionary *obj = @{@"identifier": identifier,
-                    @"status": @(NO)};
-            [SessionManager sharedManager].topChatCount--;
-            SendNotify(TopChatStatusChangeNotication, obj);
-        }];
-        DDLogInfo(@"success");
-    } else {
-        DDLogError(@"failed");
+        [[LMConversionManager sharedManager] chatTop:YES identifier:identifier];
     }
 }
 
@@ -565,7 +545,7 @@ static RecentChatDBManager *manager = nil;
                 }
             }
 
-            if (![contact.pub_key isEqualToString:@"connect"]) {
+            if (![contact.pub_key isEqualToString:kSystemIdendifier]) {
                 [[IMService instance] addNewSessionWithAddress:contact.address complete:^(NSError *erro, id data) {
                     DDLogInfo(@"create session %@", contact.address);
                 }];
@@ -672,7 +652,7 @@ static RecentChatDBManager *manager = nil;
                 }];
             }
 
-            if ([contact.pub_key isEqualToString:@"connect"]) {
+            if ([contact.pub_key isEqualToString:kSystemIdendifier]) {
                 recentChat = [[RecentChatModel alloc] init];
                 recentChat.talkType = GJGCChatFriendTalkTypePostSystem;
                 int long long time = [[NSDate date] timeIntervalSince1970] * 1000;
@@ -680,7 +660,7 @@ static RecentChatDBManager *manager = nil;
                 recentChat.unReadCount = 0;
                 recentChat.name = @"Connect";
                 recentChat.headUrl = @"connect_logo";
-                recentChat.identifier = @"connect";
+                recentChat.identifier = kSystemIdendifier;
                 recentChat.chatUser = contact;
                 recentChat.content = content;
             } else {
@@ -751,7 +731,7 @@ static RecentChatDBManager *manager = nil;
 - (void)createConnectTermWelcomebackChatAndMessage {
 
     MMMessage *message = [[MMMessage alloc] init];
-    message.user_name = @"connect";
+    message.user_name = @"Connect";
     message.type = GJGCChatFriendContentTypeText;
     message.sendtime = [[NSDate date] timeIntervalSince1970] * 1000;
     message.message_id = [ConnectTool generateMessageId];
@@ -767,18 +747,18 @@ static RecentChatDBManager *manager = nil;
     chatMessage.sendstatus = GJGCChatFriendSendMessageStatusSuccess;
     chatMessage.readTime = 0;
     chatMessage.message = message;
-    chatMessage.messageOwer = @"connect";
+    chatMessage.messageOwer = kSystemIdendifier;
 
     [[MessageDBManager sharedManager] saveBitchMessage:@[chatMessage]];
 
-    RecentChatModel *model = [[SessionManager sharedManager] getRecentChatWithIdentifier:@"connect"];
+    RecentChatModel *model = [[SessionManager sharedManager] getRecentChatWithIdentifier:kSystemIdendifier];
     if (!model) {
-        model = [self getRecentModelByIdentifier:@"connect"];
+        model = [self getRecentModelByIdentifier:kSystemIdendifier];
     }
 
     if (model) {
         int unRead = model.unReadCount;
-        if (![[SessionManager sharedManager].chatSession isEqualToString:@"connect"]) {
+        if (![[SessionManager sharedManager].chatSession isEqualToString:kSystemIdendifier]) {
             unRead++;
         }
         int long long time = [[NSDate date] timeIntervalSince1970] * 1000;
@@ -793,19 +773,19 @@ static RecentChatDBManager *manager = nil;
         [fieldsValues safeSetObject:model.content forKey:@"content"];
         [fieldsValues safeSetObject:model.time forKey:@"last_time"];
 
-        [self customUpdateRecentChatTableWithFieldsValues:fieldsValues withIdentifier:@"connect"];
+        [self customUpdateRecentChatTableWithFieldsValues:fieldsValues withIdentifier:kSystemIdendifier];
 
     } else {
         model = [[RecentChatModel alloc] init];
         model.talkType = GJGCChatFriendTalkTypePostSystem;
         int long long time = [[NSDate date] timeIntervalSince1970] * 1000;
         model.time = [NSString stringWithFormat:@"%lld", time];
-        if (![[SessionManager sharedManager].chatSession isEqualToString:@"connect"]) {
+        if (![[SessionManager sharedManager].chatSession isEqualToString:kSystemIdendifier]) {
             model.unReadCount = 1;
         }
         model.name = @"Connect";
         model.headUrl = @"connect_logo";
-        model.identifier = @"connect";
+        model.identifier = kSystemIdendifier;
         model.content = message.content;
         [self save:model];
     }

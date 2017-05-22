@@ -205,7 +205,6 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
     [GCDQueue executeInGlobalQueue:^{
         [[RecentChatDBManager sharedManager] clearUnReadCountWithIdetifier:self.taklInfo.chatIdendifier];
     }];
-    [[SessionManager sharedManager] clearUnreadWithIdentifier:self.taklInfo.chatIdendifier];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -240,8 +239,7 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
 }
 
 - (void)rightButtonPressed:(id)sender {
-    AccountInfo *info = [[UserDBManager sharedManager] getUserByPublickey:self.taklInfo.chatIdendifier];
-    ChatFriendSetViewController *setController = [[ChatFriendSetViewController alloc] initWithMembersArrary:@[info] talkid:self.taklInfo.chatIdendifier];
+    ChatFriendSetViewController *setController = [[ChatFriendSetViewController alloc] initWithTalkModel:self.taklInfo];
     [self.navigationController pushViewController:setController animated:YES];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t) (0.26 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [self reserveChatInputPanelState];

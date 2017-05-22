@@ -30,6 +30,7 @@
 #import "GJGCChatSystemNotiViewController.h"
 #import "LMConversionManager.h"
 #import "CommonSetPage.h"
+#import "RecentChatDBManager.h"
 
 @interface MainTabController (){
     dispatch_source_t _timer;
@@ -245,8 +246,9 @@
     talk.headUrl = user.avatar;
     talk.chatIdendifier = user.pub_key;
     talk.chatUser = user;
-    if ([user.pub_key isEqualToString:@"connect"]) {
-        
+    talk.mute = [[RecentChatDBManager sharedManager] getMuteStatusWithIdentifer:talk.chatIdendifier];;
+    talk.top = [[RecentChatDBManager sharedManager] isTopChat:talk.chatIdendifier];
+    if ([user.pub_key isEqualToString:kSystemIdendifier]) {
         GJGCChatSystemNotiViewController *systemChat = [[GJGCChatSystemNotiViewController alloc] initWithTalkInfo:talk];
         talk.talkType = GJGCChatFriendTalkTypePostSystem;
         talk.name = user.username;

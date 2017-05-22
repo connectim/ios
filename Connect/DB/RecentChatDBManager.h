@@ -95,6 +95,8 @@
  */
 - (void)removeTopChat:(NSString *)publiKeyOrGroupid;
 
+- (BOOL)isTopChat:(NSString *)identifier;
+
 
 /**
  * updata recent chat draft

@@ -20,28 +20,25 @@
 
 @interface ChatFriendSetViewController ()
 
-@property(copy, nonatomic) NSString *talkid;
-@property (nonatomic ,strong) NSArray *members;
-@property(nonatomic, strong) AccountInfo *user;
+@property (nonatomic ,strong) NSMutableArray *members;
+@property(nonatomic, strong) GJGCChatFriendTalkModel *talkModel;
 @property(nonatomic, copy) NSString *groupEcdhKey;
+
 @end
 
 @implementation ChatFriendSetViewController
 
-- (instancetype)initWithMembersArrary:(NSArray *)members talkid:(NSString *)talkid {
+- (instancetype)initWithTalkModel:(GJGCChatFriendTalkModel *)talkModel{
     if (self = [super init]) {
-        self.members = members;
-
-        self.user = [self.members lastObject];
-
-        self.talkid = talkid;
+        self.members = [NSMutableArray array];
+        [self.members addObject:talkModel.chatUser];
+        self.talkModel = talkModel;
     }
     return self;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
     self.title = LMLocalizedString(@"Wallet Detail", nil);
 }
 
@@ -57,27 +54,27 @@
     [self.groups objectAddObject:group];
 
     CellItem *topMessage = [CellItem itemWithTitle:LMLocalizedString(@"Chat Sticky on Top", nil) type:CellItemTypeSwitch operation:nil];
-    topMessage.switchIsOn = [SetGlobalHandler chatIsTop:self.talkid];
+    topMessage.switchIsOn = self.talkModel.top;
     topMessage.operationWithInfo = ^(id userInfo) {
         if ([userInfo boolValue]) {
-            [SetGlobalHandler topChatWithChatIdentifer:weakSelf.talkid];
+            [SetGlobalHandler topChatWithChatIdentifer:weakSelf.talkModel.chatUser.pub_key];
         } else {
-            [SetGlobalHandler CancelTopChatWithChatIdentifer:weakSelf.talkid];
+            [SetGlobalHandler CancelTopChatWithChatIdentifer:weakSelf.talkModel.chatUser.pub_key];
         }
     };
     CellItem *messageNoneNotifi = [CellItem itemWithTitle:LMLocalizedString(@"Chat Mute Notification", nil) type:CellItemTypeSwitch operation:nil];
-    messageNoneNotifi.switchIsOn = [SetGlobalHandler friendChatMuteStatusWithPublickey:self.user.pub_key];
+    messageNoneNotifi.switchIsOn = self.talkModel.mute;
     messageNoneNotifi.operationWithInfo = ^(id userInfo) {
         BOOL noti = [userInfo boolValue];
-        [[IMService instance] openOrCloseSesionMuteWithAddress:weakSelf.user.address mute:noti complete:^(NSError *erro, id data) {
+        [[IMService instance] openOrCloseSesionMuteWithAddress:weakSelf.talkModel.chatUser.address mute:noti complete:^(NSError *erro, id data) {
             if (!erro) {
                 if (noti) {
-                    [[RecentChatDBManager sharedManager] setMuteWithIdentifer:weakSelf.user.pub_key];
+                    [[RecentChatDBManager sharedManager] setMuteWithIdentifer:weakSelf.talkModel.chatUser.pub_key];
                 } else {
-                    [[RecentChatDBManager sharedManager] removeMuteWithIdentifer:weakSelf.user.pub_key];
+                    [[RecentChatDBManager sharedManager] removeMuteWithIdentifer:weakSelf.talkModel.chatUser.pub_key];
                 }
                 [GCDQueue executeInMainQueue:^{
-                    SendNotify(ConnnectMuteNotification, weakSelf.user.pub_key);
+                    SendNotify(ConnnectMuteNotification, weakSelf.talkModel.chatUser.pub_key);
                 }];
             }
         }];
@@ -108,13 +105,13 @@
 }
 
 - (void)clearAllChatHistory {
-    AccountInfo *chatUser = [[UserDBManager sharedManager] getUserByPublickey:self.talkid];
+    AccountInfo *chatUser = [[UserDBManager sharedManager] getUserByPublickey:self.talkModel.chatUser.pub_key];
     if (chatUser) {
         [ChatMessageFileManager deleteRecentChatAllMessageFilesByAddress:chatUser.address];
     } else {
-        [ChatMessageFileManager deleteRecentChatAllMessageFilesByAddress:self.talkid];
+        [ChatMessageFileManager deleteRecentChatAllMessageFilesByAddress:self.talkModel.chatUser.pub_key];
     }
-    [[MessageDBManager sharedManager] deleteAllMessageByMessageOwer:self.talkid];
+    [[MessageDBManager sharedManager] deleteAllMessageByMessageOwer:self.talkModel.chatUser.pub_key];
     [GCDQueue executeInMainQueue:^{
         SendNotify(@"im.connect.DeleteMessageHistoryNotification", nil);
     }];
@@ -194,16 +191,15 @@
 
 
 - (void)addNewGroupMembers:(NSArray *)contacts {
-    NSMutableArray *temM = [NSMutableArray array];
-    [temM addObjectsFromArray:self.members];
-
+    NSMutableArray *addMemberArray = [NSMutableArray array];
+    [addMemberArray addObjectsFromArray:self.members];
     for (AccountInfo *info in contacts) {
-        if ([temM containsObject:info]) {
+        if ([addMemberArray containsObject:info]) {
             continue;
         }
-        [temM objectAddObject:info];
+        [addMemberArray objectAddObject:info];
     }
-    self.members = [NSArray arrayWithArray:temM];
+    self.members = addMemberArray;
     //self.membsers (not contain self)
     [self createGroupRequestWithMembersArray:self.members];
 

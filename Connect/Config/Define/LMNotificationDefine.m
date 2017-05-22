@@ -37,10 +37,6 @@ NSString *const ConnnectContactDidChangeNotification = @"ConnnectContactDidChang
 
 NSString *const ConnnectContactDidChangeDeleteUserNotification = @"ConnnectContactDidChangeDeleteUserNotification";
 
-//delete last session
-
-NSString *const ConnnectRecentChatDeleteNotification = @"ConnnectRecentChatDeleteNotification";
-
 // Global notifications exit group
 
 NSString *const ConnnectQuitGroupNotification = @"im.connect.QuitGroup";
@@ -85,21 +81,9 @@ NSString *const kAcceptNewFriendRequestNotification = @"kAcceptNewFriendRequestN
 
 NSString *const SendDraftChangeNotification = @"SendDraftChangeNotification";
 
-// Stick top
-
-NSString *const TopChatStatusChangeNotication = @"TopChatStatusChangeNotication";
-
 // Transaction status change notification
 
 NSString *const TransactionStatusChangeNotification = @"TransactionStatusChangeNotification";
-
-// Receive notification of offline completion
-
-NSString *const ConnectGetOfflieCompleteNotification = @"ConnectGetOfflieCompleteNotification";
-
-// Receive notification of offline completion
-
-NSString *const ConnectDownAllNewGroupAvatarNotification = @"ConnectDownAllNewGroupAvatarNotification";
 
 // Update my nickname in the group
 NSString *const ConnectUpdateMyNickNameNotification = @"ConnectUpdateMyNickNameNotification";

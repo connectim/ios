@@ -11,7 +11,7 @@ target 'Connect' do
     source 'https://github.com/CocoaPods/Specs.git'
     pod 'libPhoneNumber-iOS', '~> 0.8'
     pod 'FMDBMigrationManager'
-    pod 'FMDB/SQLCipher'
+    pod 'FMDB'
 end
 target :'ConnectTests' do
     pod 'Kiwi'

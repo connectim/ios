@@ -14,7 +14,6 @@
 #import "RecentChatTitleView.h"
 #import "IMService.h"
 #import "SystemMessageHandler.h"
-#import "CIImageCacheManager.h"
 #import "BadgeNumberManager.h"
 #import "UITabBar+Reddot.h"
 #import "LMRegisterPrivkeyBackupTipView.h"
@@ -318,16 +317,7 @@ UIViewControllerPreviewingDelegate>
     if (GJCFStringIsNull(identifier)) {
         return;
     }
-
     LMGroupInfo *groupInfo = [[GroupDBManager sharedManager] getgroupByGroupIdentifier:identifier];
-    [GCDQueue executeInGlobalQueue:^{
-        NSMutableArray *avatars = [NSMutableArray array];
-        for (AccountInfo *member in groupInfo.groupMembers) {
-            [avatars objectAddObject:member.avatar];
-        }
-        [[CIImageCacheManager sharedInstance] uploadGroupAvatarWithGroupIdentifier:groupInfo.groupIdentifer groupMembers:avatars];
-    }];
-
     NSString *tipMessage = content;
     NSString *localMsgId = [ConnectTool generateMessageId];
     ChatMessageInfo *chatMessage = [[ChatMessageInfo alloc] init];
@@ -479,6 +469,8 @@ UIViewControllerPreviewingDelegate>
     talk.talkType = GJGCChatFriendTalkTypeGroup;
     talk.chatIdendifier = recentModel.identifier;
     talk.chatGroupInfo = recentModel.chatGroupInfo;
+    talk.mute = recentModel.notifyStatus;
+    talk.top = recentModel.isTopChat;
     talk.name = GJCFStringIsNull(recentModel.name) ? [NSString stringWithFormat:LMLocalizedString(@"Group (%lu)", nil), (unsigned long) recentModel.chatGroupInfo.groupMembers.count] : [NSString stringWithFormat:@"%@(%lu)", recentModel.name, (unsigned long) recentModel.chatGroupInfo.groupMembers.count];
     [SessionManager sharedManager].chatSession = talk.chatIdendifier;
     [SessionManager sharedManager].chatObject = recentModel.chatGroupInfo;
@@ -498,7 +490,8 @@ UIViewControllerPreviewingDelegate>
     talk.headUrl = recentModel.headUrl;
     talk.name = recentModel.chatUser.normalShowName;
     talk.snapChatOutDataTime = recentModel.snapChatDeleteTime;
-    
+    talk.mute = recentModel.notifyStatus;
+    talk.top = recentModel.isTopChat;
     [SessionManager sharedManager].chatSession = recentModel.chatUser.pub_key;
     [SessionManager sharedManager].chatObject = recentModel.chatUser;
     talk.chatUser = recentModel.chatUser;

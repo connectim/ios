@@ -23,10 +23,6 @@ static FMDatabaseQueue *queue;
     if (GJCFFileIsExist(olddbPath)) {
         //db path
         NSString *dbPath = [MMGlobal getDBFile:[[LKUserCenter shareCenter] currentLoginUser].pub_key];
-        //db encrypt
-        FMDatabase *db = [FMDatabase databaseWithPath:dbPath];
-        [db open];
-        [db setKey:[[LMHistoryCacheManager sharedManager] getDBPassword]];
         queue = [FMDatabaseQueue databaseQueueWithPath:dbPath];
         if (queue) {
             DDLogInfo(@"Create encryptdatabase success! %@", dbPath);
@@ -127,14 +123,10 @@ static FMDatabaseQueue *queue;
     if (GJCFStringIsNull(sql)) {
         return nil;
     }
-
-    DDLogInfo(@"queryWithSql %@", sql);
-
     NSMutableArray __block *arrayM = @[].mutableCopy;
     NSString *dbPath = [MMGlobal getDBFile:dbName];
     FMDatabaseQueue *queue = [FMDatabaseQueue databaseQueueWithPath:dbPath];
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-        [db setKey:[[LMHistoryCacheManager sharedManager] getDBPassword]];
         FMResultSet *result = [db executeQuery:sql];
         while ([result next]) {
             NSMutableDictionary *dict = [NSMutableDictionary dictionary];
@@ -167,7 +159,6 @@ static FMDatabaseQueue *queue;
     DDLogInfo(@"instertSql %@", sql);
     __block BOOL result = NO;
     [queue inTransaction:^(FMDatabase *db, BOOL *rollback) {
-        [db setKey:[[LMHistoryCacheManager sharedManager] getDBPassword]];
         if (batchValues && batchValues.count > 0) {
             for (NSArray *values in batchValues) {
                 result = [db executeUpdate:sql withArgumentsInArray:values];
@@ -207,7 +198,7 @@ static FMDatabaseQueue *queue;
     for (NSDictionary *dict in contactRecentChats) {
         NSString *identifier = [dict safeObjectForKey:@"public_key"];
         int type = 0;
-        if ([identifier isEqualToString:@"connect"]) {
+        if ([identifier isEqualToString:kSystemIdendifier]) {
             type = 2;
         }
         [bitchValues objectAddObject:@[[dict safeObjectForKey:@"public_key"],

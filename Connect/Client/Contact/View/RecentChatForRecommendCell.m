@@ -8,7 +8,6 @@
 
 #import "RecentChatForRecommendCell.h"
 #import "RecentChatModel.h"
-#import "CIImageCacheManager.h"
 
 @interface RecentChatForRecommendCell ()
 @property(weak, nonatomic) IBOutlet UIImageView *displayImageView;
@@ -23,6 +22,8 @@
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
         self.displayLable.font = [UIFont systemFontOfSize:FONT_SIZE(30)];
+        self.displayImageView.layer.cornerRadius = 6;
+        self.displayImageView.layer.masksToBounds = YES;
     }
 
     return self;
@@ -55,21 +56,8 @@
             NSAttributedString *attr1 = [[NSAttributedString alloc] initWithString:total attributes:totalColor];
             [attributedString appendAttributedString:attr1];
             // set font range
-            self.displayLable.attributedText = attributedString;
-            NSMutableArray *avatars = [NSMutableArray array];
-            for (AccountInfo *membser in model.chatGroupInfo.groupMembers) {
-                if (avatars.count == 9) {
-                    break;
-                }
-                [avatars objectAddObject:membser.avatar];
-            }
-            [[CIImageCacheManager sharedInstance] groupAvatarByGroupIdentifier:model.identifier groupMembers:avatars complete:^(UIImage *image) {
-                [GCDQueue executeInMainQueue:^{
-                    weakSelf.displayImageView.image = image;
-                    weakSelf.displayImageView.layer.cornerRadius = 6;
-                    weakSelf.displayImageView.layer.masksToBounds = YES;
-                }];
-            }];
+            self.displayLable.attributedText = attributedString;            
+            [self.displayImageView setPlaceholderImageWithAvatarUrl:[NSString stringWithFormat:@"%@/avatar/%@/group/%@.jpg",baseServer,APIVersion,model.identifier]];
         }
             break;
         default:

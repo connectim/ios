@@ -21,7 +21,7 @@
 }
 
 + (BOOL)haveDustWithAmount:(long long)amount{
-    return (amount * 1000 / (3 * 182)) < [[MMAppSetting sharedSetting] getEstimatefee] * pow(10, 8)/ 10;
+    return (amount * 1000 / (3 * 182)) < [[MMAppSetting sharedSetting] getEstimatefee] * pow(10, 8) / 10;
 }
 
 + (LMRawTransactionModel *)getRawTransactionWithUnspent:(UnspentOrderResponse *)unSpent

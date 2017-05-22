@@ -549,7 +549,6 @@
 		D92232B31E822BF800D67110 /* Language.m in Sources */ = {isa = PBXBuildFile; fileRef = D922315C1E822BF800D67110 /* Language.m */; };
 		D92232B41E822BF800D67110 /* CaptureSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D922315F1E822BF800D67110 /* CaptureSessionManager.m */; };
 		D92232B51E822BF800D67110 /* ChatMessageFileManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D92231611E822BF800D67110 /* ChatMessageFileManager.m */; };
-		D92232B61E822BF800D67110 /* CIImageCacheManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D92231631E822BF800D67110 /* CIImageCacheManager.m */; };
 		D92232B71E822BF800D67110 /* LMRetweetMessageManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D92231651E822BF800D67110 /* LMRetweetMessageManager.m */; };
 		D92232B81E822BF900D67110 /* SingleAFNetworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D92231671E822BF800D67110 /* SingleAFNetworkManager.m */; };
 		D92232B91E822BF900D67110 /* MyLogFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = D92231691E822BF800D67110 /* MyLogFormatter.m */; };
@@ -1990,8 +1989,6 @@
 		D922315F1E822BF800D67110 /* CaptureSessionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CaptureSessionManager.m; sourceTree = "<group>"; };
 		D92231601E822BF800D67110 /* ChatMessageFileManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatMessageFileManager.h; sourceTree = "<group>"; };
 		D92231611E822BF800D67110 /* ChatMessageFileManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatMessageFileManager.m; sourceTree = "<group>"; };
-		D92231621E822BF800D67110 /* CIImageCacheManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CIImageCacheManager.h; sourceTree = "<group>"; };
-		D92231631E822BF800D67110 /* CIImageCacheManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CIImageCacheManager.m; sourceTree = "<group>"; };
 		D92231641E822BF800D67110 /* LMRetweetMessageManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LMRetweetMessageManager.h; sourceTree = "<group>"; };
 		D92231651E822BF800D67110 /* LMRetweetMessageManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LMRetweetMessageManager.m; sourceTree = "<group>"; };
 		D92231661E822BF800D67110 /* SingleAFNetworkManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SingleAFNetworkManager.h; sourceTree = "<group>"; };
@@ -13976,8 +13973,6 @@
 				D922315F1E822BF800D67110 /* CaptureSessionManager.m */,
 				D92231601E822BF800D67110 /* ChatMessageFileManager.h */,
 				D92231611E822BF800D67110 /* ChatMessageFileManager.m */,
-				D92231621E822BF800D67110 /* CIImageCacheManager.h */,
-				D92231631E822BF800D67110 /* CIImageCacheManager.m */,
 				D92231641E822BF800D67110 /* LMRetweetMessageManager.h */,
 				D92231651E822BF800D67110 /* LMRetweetMessageManager.m */,
 				D92231661E822BF800D67110 /* SingleAFNetworkManager.h */,
@@ -33013,7 +33008,6 @@
 				19234F6B1E81160A0022D844 /* NewFriendsRequestPage.m in Sources */,
 				1923504D1E811F520022D844 /* TextFieldViewButtomCell.m in Sources */,
 				D92232E01E822BF900D67110 /* GJCFAlbumsViewController.m in Sources */,
-				D92232B61E822BF800D67110 /* CIImageCacheManager.m in Sources */,
 				1923513A1E8121CB0022D844 /* LMTableView.m in Sources */,
 				F1F533E01E9F751200138B39 /* LMAddressBookManager.m in Sources */,
 				D922330A1E822BF900D67110 /* RegexKit.m in Sources */,

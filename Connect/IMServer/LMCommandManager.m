@@ -17,9 +17,9 @@
 #import "GroupMessageHandler.h"
 #import "SystemMessageHandler.h"
 #import "NSData+Gzip.h"
-#import "CIImageCacheManager.h"
 #import "YYImageCache.h"
 #import "LMHistoryCacheManager.h"
+#import "LMMessageSendManager.h"
 
 @implementation SendCommandModel
 
@@ -176,6 +176,10 @@ CREATE_SHARED_MANAGER(LMCommandManager)
             case BM_FRIEND_CHAT_COOKIE_EXT:
                 [self chatUserCookie:command];
                 break;
+            case BM_FROCEUODATA_CHAT_COOKIE_EXT:{
+                [self loginOnNewPhoneUploadChatCookie:command];
+            }
+                break;
             default:
                 break;
         }
@@ -190,11 +194,22 @@ CREATE_SHARED_MANAGER(LMCommandManager)
 
 - (void)sendCommandFailedWithMsgId:(NSString *)messageId {
     [GCDQueue executeInQueue:self.commandSendStatusQueue block:^{
-        SendCommandModel *sendModel = [self.sendingCommands valueForKey:messageId];
-        if (sendModel.sendMsg.extension != BM_UNBINDDEVICETOKEN_EXT) {
-            if (sendModel.callBack) {
+        SendCommandModel *sendComModel = [self.sendingCommands valueForKey:messageId];
+        if (sendComModel.sendMsg.extension != BM_UNBINDDEVICETOKEN_EXT) {
+            if (sendComModel.callBack) {
                 NSError *error = [NSError errorWithDomain:@"imserver_error" code:-1 userInfo:nil];
-                sendModel.callBack(error, nil);
+                sendComModel.callBack(error, nil);
+            }
+            //send message when local chatcookie not match server chatcookie ,upload chatcookie failed 
+            if (sendComModel.sendMsg.extension == BM_UPLOAD_CHAT_COOKIE_EXT) {
+                UploadChatCookieModel *uploadChatCookie = sendComModel.sendMsg.sendOriginInfo;
+                SendMessageModel *sendModel = uploadChatCookie.sendMessageModel;
+                if (sendModel) {
+                    if (sendModel.callBack) {
+                        NSError *error = [NSError errorWithDomain:@"imserver" code:-1 userInfo:nil];
+                        sendModel.callBack(sendModel.sendMsg, error);
+                    }
+                }
             }
             //remove
             [self.sendingCommands removeObjectForKey:messageId];
@@ -285,9 +300,6 @@ CREATE_SHARED_MANAGER(LMCommandManager)
     if (offlinemsg.completed) {
         [GCDQueue executeInMainQueue:^{
             [[IMService instance] publishConnectState:STATE_CONNECTED];
-            if (offlinemsg.offlineMsgsArray.count) {
-                SendNotify(ConnectGetOfflieCompleteNotification, nil);
-            }
         }];
         //upload Cookie
         [[IMService instance] uploadCookie];
@@ -526,6 +538,9 @@ CREATE_SHARED_MANAGER(LMCommandManager)
     }
 }
 
+- (void)loginOnNewPhoneUploadChatCookie:(Command *)command {
+    [[IMService instance] uploadCookieDuetoLocalChatCookieNotMatchServerChatCookieWithMessageCallModel:nil];
+}
 
 - (void)handleGroupInfoChangeWithData:(Command *)command {
     GroupChange *groupChange = [GroupChange parseFromData:command.detail error:nil];
@@ -621,15 +636,6 @@ CREATE_SHARED_MANAGER(LMCommandManager)
                         if ([[SessionManager sharedManager].chatSession isEqualToString:groupChange.identifier]) {
                             SendNotify(GroupNewMemberEnterNotification, chatMessage);
                         }
-
-                        LMGroupInfo *lmGroupTem = [[GroupDBManager sharedManager] addMember:newUsers ToGroupChat:groupChange.identifier];
-
-                        NSMutableArray *temA = [NSMutableArray arrayWithArray:lmGroupTem.groupMembers];
-                        NSMutableArray *avatars = [NSMutableArray array];
-                        for (AccountInfo *member in temA) {
-                            [avatars objectAddObject:member.avatar];
-                        }
-                        [[CIImageCacheManager sharedInstance] uploadGroupAvatarWithGroupIdentifier:groupChange.identifier groupMembers:avatars];
                     } else {
                         NSMutableArray *newUsers = [NSMutableArray array];
                         for (UserInfo *userInfo in usersInfo.usersArray) {
@@ -663,14 +669,6 @@ CREATE_SHARED_MANAGER(LMCommandManager)
                                 SendNotify(GroupNewMemberEnterNotification, chatMessage);
                             }
                         }
-                        LMGroupInfo *lmGroupTem = [[GroupDBManager sharedManager] addMember:newUsers ToGroupChat:groupChange.identifier];
-
-                        NSMutableArray *temA = [NSMutableArray arrayWithArray:lmGroupTem.groupMembers];
-                        NSMutableArray *avatars = [NSMutableArray array];
-                        for (AccountInfo *member in temA) {
-                            [avatars objectAddObject:member.avatar];
-                        }
-                        [[CIImageCacheManager sharedInstance] uploadGroupAvatarWithGroupIdentifier:groupChange.identifier groupMembers:avatars];
                     }
                 }
                     break;
@@ -705,9 +703,6 @@ CREATE_SHARED_MANAGER(LMCommandManager)
                         if (groupArray.count <= 1) {
                             [[GroupDBManager sharedManager] deletegroupWithGroupId:groupChange.identifier];
                         }
-
-                        [[CIImageCacheManager sharedInstance] uploadGroupAvatarWithGroupIdentifier:groupChange.identifier groupMembers:avatars];
-
                     }
                 }
                     break;
@@ -1121,7 +1116,7 @@ CREATE_SHARED_MANAGER(LMCommandManager)
             ExternalRedPackageInfo *redPackgeinfo = [ExternalRedPackageInfo parseFromData:command.detail error:nil];
             if (redPackgeinfo.system) { //system package
                 UserInfo *system = [UserInfo new];
-                system.pubKey = @"connect";
+                system.pubKey = kSystemIdendifier;
                 system.address = @"Connect";
                 system.avatar = @"connect_logo";
                 system.username = @"Connect";
@@ -1223,10 +1218,17 @@ CREATE_SHARED_MANAGER(LMCommandManager)
 
 - (void)uploadCookieAck:(Command *)command {
     SendCommandModel *sendComModel = [self.sendingCommands valueForKey:command.msgId];
-    Message *oriMsg = sendComModel.sendMsg;
     if (command.errNo == 0) {
+        UploadChatCookieModel *uploadChatCookie = sendComModel.sendMsg.sendOriginInfo;
+        SendMessageModel *sendModel = uploadChatCookie.sendMessageModel;
+        ChatCookieData *cacheData = uploadChatCookie.chatCookieData;
+        ChatCacheCookie *chatCookie = uploadChatCookie.chatCookie;
+        [SessionManager sharedManager].loginUserChatCookie = chatCookie;
         [[LMHistoryCacheManager sharedManager] cacheChatCookie:[SessionManager sharedManager].loginUserChatCookie];
-        [[LMHistoryCacheManager sharedManager] cacheLeastChatCookie:oriMsg.sendOriginInfo];
+        [[LMHistoryCacheManager sharedManager] cacheLeastChatCookie:cacheData];
+        if (sendModel) {
+            [[IMService instance] asyncSendMessageMessage:sendModel.sendMsg onQueue:nil completion:sendModel.callBack onQueue:nil];
+        }
     } else if (command.errNo == 4) { //time error
         //note ui ,time error
         [SessionManager sharedManager].loginUserChatCookie = nil;

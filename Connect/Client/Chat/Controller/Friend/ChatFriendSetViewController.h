@@ -7,6 +7,7 @@
 //
 
 #import "BaseSetViewController.h"
+#import "GJGCChatFriendTalkModel.h"
 
 @interface ChatFriendSetViewController : BaseSetViewController
 
@@ -15,6 +16,6 @@
  *
  *  @return 
  */
-- (instancetype)initWithMembersArrary:(NSArray *)members talkid:(NSString *)talkid;
+- (instancetype)initWithTalkModel:(GJGCChatFriendTalkModel *)talkModel;
 
 @end

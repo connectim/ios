@@ -9,7 +9,6 @@
 #import "BigAvatarViewController.h"
 #import "NetWorkOperationTool.h"
 #import "ImageClipViewController.h"
-#import "CIImageCacheManager.h"
 #import "GroupDBManager.h"
 #import "YYImageCache.h"
 #import <ImageIO/ImageIO.h>
@@ -253,7 +252,6 @@
                 [[LKUserCenter shareCenter] currentLoginUser].avatar = userHead.URL;
                 [[LKUserCenter shareCenter] updateUserInfo:[[LKUserCenter shareCenter] currentLoginUser]];
                 // update group head
-                [weakSelf updateGroupAvatar:[[LKUserCenter shareCenter] currentLoginUser]];
                 weakSelf.bigAvatarImageView.image = weakSelf.editImage;
                 [GCDQueue executeInMainQueue:^{
                     [MBProgressHUD showToastwithText:LMLocalizedString(@"Login Update successful", nil) withType:ToastTypeSuccess showInView:weakSelf.view complete:nil];
@@ -266,42 +264,6 @@
             [MBProgressHUD showToastwithText:LMLocalizedString(@"Login Updated failed", nil) withType:ToastTypeFail showInView:weakSelf.view complete:nil];
         }];
     }];
-}
-
-
-- (void)updateGroupAvatar:(AccountInfo *)user {
-    // update group
-    [GCDQueue executeInGlobalQueue:^{
-        NSArray *groups = [[GroupDBManager sharedManager] getAllgroups];
-        int __block groupAvatarChangeCount = 0;
-        for (LMGroupInfo *group in groups) {
-            // update group members head
-            [[GroupDBManager sharedManager] updateGroupMembserAvatarUrl:user.avatar address:user.address groupId:group.groupIdentifer];
-            // update group  head
-            NSMutableArray *avatars = [NSMutableArray array];
-            for (AccountInfo *member in group.groupMembers) {
-                if ([member.address isEqualToString:user.address]) {
-                    // update head
-                    member.avatar = user.avatar;
-                }
-                [avatars objectAddObject:member.avatar];
-                if (avatars.count >= 9) {
-                    break;
-                }
-            }
-            // update group head
-            [[CIImageCacheManager sharedInstance] removeGroupAvatarCacheWithGroupIdentifier:group.groupIdentifer];
-            [[CIImageCacheManager sharedInstance] groupAvatarByGroupIdentifier:group.groupIdentifer groupMembers:avatars complete:^(UIImage *image) {
-                groupAvatarChangeCount++;
-            }];
-        }
-        if (groupAvatarChangeCount > 0) {
-            [GCDQueue executeInMainQueue:^{
-                SendNotify(ConnectDownAllNewGroupAvatarNotification, nil);
-            }];
-        }
-    }];
-
 }
 
 @end

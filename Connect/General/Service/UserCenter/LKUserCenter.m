@@ -23,7 +23,6 @@
 #import "RecentChatDBManager.h"
 #import "LMMessageExtendManager.h"
 #import "MessageDBManager.h"
-#import "CIImageCacheManager.h"
 #import "ExportEncodePrivkeyPage.h"
 #import "Protofile.pbobjc.h"
 #import "LMConversionManager.h"
@@ -103,7 +102,6 @@ static LKUserCenter *center = nil;
     self.loginUser = loginUser;
     NSDictionary *decodeDict = [KeyHandle decodePrikeyGetDict:loginUser.encryption_pri withPassword:password];
     // Cache head
-    [[CIImageCacheManager sharedInstance] contactAvatarWithUrl:loginUser.avatar complete:nil];
     NSError *error = nil;
     NSString *privkey = nil;
     

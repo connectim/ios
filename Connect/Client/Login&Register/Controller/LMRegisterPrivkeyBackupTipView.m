@@ -49,13 +49,13 @@
 
     self.privkeyQrImageView.image = [BarCodeTool barCodeImageWithString:[[LKUserCenter shareCenter] currentLoginUser].prikey withSize:200];
     self.subTitleLabel.font = [UIFont systemFontOfSize:FONT_SIZE(34)];
-    self.subTitleLabel.text = LMLocalizedString(@"Login Encrypted private key", nil);
+    self.subTitleLabel.text = LMLocalizedString(@"Login Decrypted private key", nil);
 
     self.detailLabel.font = [UIFont systemFontOfSize:FONT_SIZE(28)];
     self.detailLabel.text = LMLocalizedString(@"Login export prikey explain", nil);
     self.titleLabel.text = LMLocalizedString(@"Set Backup Private Key", nil);
     [self.startChatButton setTitle:LMLocalizedString(@"Set Start encrypted messaging", nil) forState:UIControlStateNormal];
-    [self.backPrivateButton setTitle:LMLocalizedString(@"Set Backup encrypted private key", nil) forState:UIControlStateNormal];
+    [self.backPrivateButton setTitle:LMLocalizedString(@"Set Backup decrypted private key", nil) forState:UIControlStateNormal];
     self.backPrivateButton.titleLabel.font = [UIFont systemFontOfSize:FONT_SIZE(32)];
 
     [self.startChatButton setBackgroundImage:[UIImage imageWithColor:LMBasicBlue] forState:UIControlStateNormal];
