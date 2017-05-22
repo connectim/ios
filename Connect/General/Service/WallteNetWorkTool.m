@@ -15,6 +15,7 @@
 #import "UIAlertController+Blocks.h"
 #import "NSObject+CurrentViewController.h"
 #import "LMMessageExtendManager.h"
+#import "LMPayCheck.h"
 
 @implementation WallteNetWorkTool
 
@@ -33,7 +34,7 @@
     // Verify the legitimacy of the input
     if (GJCFStringIsNull(address) || ![KeyHandle checkAddress:address]) {
         if (complete) {
-            complete(nil,nil,[NSError errorWithDomain:@"Payment address is not valid" code:-1 userInfo:nil]);
+            complete(nil,nil,[NSError errorWithDomain:@"Payment address is not valid" code:2617 userInfo:nil]);
         }
         return;
     }
@@ -73,7 +74,13 @@
                                @"amount":[PayTool getBtcStringWithAmount:perAmount]};
         [perAmountAddresses addObject:dict];
     }
-    
+    BOOL isDusk = [LMPayCheck dirtyAlertWithAddress:perAmountAddresses.copy withController:[self getCurrentVC]];
+    if (isDusk) {
+        if (complete) {
+            complete(nil,nil,nil);
+        }
+        return;
+    }
     [self unspentV2WithAddress:address fee:feeValue toAddress:perAmountAddresses createRawTranscationModelComplete:^(UnspentOrderResponse *unspent, NSError *error) {
         if (error) {
             if (complete) {
@@ -127,16 +134,13 @@ createRawTranscationModelComplete:(void (^)(UnspentOrderResponse *unspent,NSErro
     // Verify the legitimacy of the input
     if (GJCFStringIsNull(address) || ![KeyHandle checkAddress:address]) {
         if (complete) {
-            complete(nil,[NSError errorWithDomain:@"Payment address is not valid" code:-1 userInfo:nil]);
+            complete(nil,[NSError errorWithDomain:@"Payment address is not valid" code:2617 userInfo:nil]);
         }
         return;
     }
     
     if (feeValue < 0) {
         feeValue = [[MMAppSetting sharedSetting] getTranferFee];
-        if (feeValue < 0) {
-            feeValue = [MINNER_FEE longLongValue];
-        }
     }
     if (toAddresses.count <= 0) {
         if (complete) {
@@ -147,7 +151,7 @@ createRawTranscationModelComplete:(void (^)(UnspentOrderResponse *unspent,NSErro
     for (NSDictionary *temD in toAddresses) {
         if (![KeyHandle checkAddress:[temD valueForKey:@"address"]]) {
             if (complete) {
-                complete(nil,[NSError errorWithDomain:@"Collection address is not valid" code:-1 userInfo:nil]);
+                complete(nil,[NSError errorWithDomain:@"Collection address is not valid" code:2617 userInfo:nil]);
             }
             return;
         }
@@ -716,6 +720,13 @@ createRawTranscationComplete:(void (^)(NSArray *vtsArray, NSString *rawTransacti
                                                              decimalNumberByDividingBy:
                                                              [[NSDecimalNumber alloc] initWithLongLong:pow(10, 8)]].stringValue}];
     
+    BOOL isDusk = [LMPayCheck dirtyAlertWithAddress:toAddresses withController:[self getCurrentVC]];
+    if (isDusk) {
+        if (complete) {
+            complete(nil,nil,nil);
+        }
+        return;
+    }
     [self unspentV2WithAddress:[[LKUserCenter shareCenter] currentLoginUser].address
                            fee:[[MMAppSetting sharedSetting] getTranferFee]
                      toAddress:toAddresses
@@ -809,8 +820,13 @@ createRawTranscationModelComplete:^(UnspentOrderResponse *unspent, NSError *erro
 
 + (void)sendExternalBillWithSendAddress:(NSString *)address
                                 privkey:(NSString *)privkey
-                                fee:(double)fee money:(long long int)money
+                                fee:(long long)fee money:(long long int)money
                                 tips:(NSString *)tips complete:(void (^)(OrdinaryBilling *billing,UnspentOrderResponse *unspent,NSArray* toAddresses,NSError *error))complete{
+    
+    long long addFee = [LMPayCheck getSuitAbleFee:fee];
+    if ([LMPayCheck dirtyAlertWithAmount:(money + addFee) withController:[self getCurrentVC]]) {
+        return;
+    }
     [self getPendingInfoComplete:^(PendingPackage *pendRedBag, NSError *error) {
         if (error) {
             if (complete) {
@@ -822,11 +838,13 @@ createRawTranscationModelComplete:^(UnspentOrderResponse *unspent, NSError *erro
         ordinaryRed.hashId = pendRedBag.hashId;
         ordinaryRed.tips = tips;
         ordinaryRed.money = money;
+        //judge is auto
+        long long addFee = [LMPayCheck getSuitAbleFee:fee];
+
         NSArray* toAddressArray = @[@{@"address":pendRedBag.address,
-                                      @"amount":[[[NSDecimalNumber alloc] initWithLongLong:ordinaryRed.money + fee]
+                                      @"amount":[[[NSDecimalNumber alloc] initWithLongLong:ordinaryRed.money + addFee]
                                                                                decimalNumberByDividingBy:
                                                  [[NSDecimalNumber alloc] initWithLongLong:pow(10, 8)]].stringValue}];
-        
         [WallteNetWorkTool unspentV2WithAddress:[[LKUserCenter shareCenter] currentLoginUser].address
                            fee:fee
                            toAddress:toAddressArray

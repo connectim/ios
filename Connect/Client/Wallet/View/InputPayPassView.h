@@ -13,9 +13,9 @@ typedef NS_ENUM(NSInteger, InputPayPassViewStyle) {
     InputPayPassViewVerfyPass,
 };
 typedef NS_ENUM(NSInteger, PassWordTag) {
-    PassWordTagOne = 1,
-    PassWordTagTwo = 2,
-    PassWordTagThree = 3
+    PassWordSet               = 1,
+    PassWordSetVerification   = 2,
+    PassWordVerification      = 3
 
 };
 

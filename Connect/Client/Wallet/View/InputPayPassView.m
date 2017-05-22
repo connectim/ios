@@ -12,15 +12,11 @@
 #import "LocalAuthentication/LAContext.h"
 #import "WJTouchID.h"
 
-
-#define PerAnimationDuration 2.0
-
-
 @interface InputPayPassView () <PassInputFieldViewDelegate, WJTouchIDDelegate>
 @property(strong, nonatomic) UIView *contentView;
 @property(strong, nonatomic) UILabel *titleLabel;
 @property(strong, nonatomic) UIView *lineView;
-@property(nonatomic, copy) NSString *fristPass; //The first time you enter the password
+@property(nonatomic, copy) NSString *fristPass;
 @property(nonatomic, strong) CAShapeLayer *walletLayer;
 @property(nonatomic, strong) PassInputFieldView *secondPassView;
 @property(nonatomic, strong) PassInputFieldView *fristPassView;
@@ -50,9 +46,11 @@
 @end
 
 @implementation InputPayPassView
+
 - (IBAction)closeView:(id)sender {
     self.backgroundColor = [UIColor clearColor];
     [UIView animateWithDuration:0.3 animations:^{
+        
         self.top = DEVICE_SIZE.height;
     }                completion:^(BOOL finished) {
         if (self.closeBlock) {
@@ -63,6 +61,7 @@
 }
 
 - (IBAction)retry:(id)sender {
+    
     self.titleLabel.text = LMLocalizedString(@"Wallet Enter your PIN", nil);
     [self.bottomView mas_updateConstraints:^(MASConstraintMaker *make) {
         make.left.equalTo(self.contentView.mas_left);
@@ -75,6 +74,7 @@
 }
 
 - (IBAction)NewRetry:(id)sender {
+    
     [self.retryNewBtn removeFromSuperview];
     self.retryBtn = nil;
     [self.displayLbale removeFromSuperview];
@@ -86,21 +86,22 @@
 }
 
 - (IBAction)forgetPass:(id)sender {
+    
     [UIView animateWithDuration:0.3 animations:^{
         self.top = DEVICE_SIZE.height;
         [MBProgressHUD hideHUDForView:[UIApplication sharedApplication].keyWindow];
 
     }                completion:^(BOOL finished) {
         if (self.forgetPassBlock) {
+            
             self.forgetPassBlock();
         }
         [self removeFromSuperview];
-
-
     }];
 }
 
 + (InputPayPassView *)showInputPayPassViewWithStyle:(InputPayPassViewStyle)style complete:(void (^)(InputPayPassView *passView, NSError *error, BOOL result))complete {
+    
     InputPayPassView *passView = [[InputPayPassView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     passView.style = style;
     passView.completeBlock = complete;
@@ -111,6 +112,7 @@
 }
 
 + (InputPayPassView *)showInputPayPassWithComplete:(void (^)(InputPayPassView *passView, NSError *error, BOOL result))complete {
+    
     InputPayPassView *passView = [[InputPayPassView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     if ([[MMAppSetting sharedSetting] getPayPass]) {
         passView.style = InputPayPassViewVerfyPass;
@@ -129,8 +131,9 @@
 }
 
 + (InputPayPassView *)showInputPayPassWithComplete:(void (^)(InputPayPassView *passView, NSError *error, BOOL result))complete forgetPassBlock:(void (^)())forgetPassBlock closeBlock:(void (^)())closeBlock {
+    
     InputPayPassView *passView = [[InputPayPassView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-#pragma mark - The verification password is 4 digits long
+    // The verification password is 4 digits long
     if ([[MMAppSetting sharedSetting] getPayPass].length == MAX_PASS_LEN) {
         passView.style = InputPayPassViewVerfyPass;
         __weak __typeof(&*passView) weakSelf = passView;
@@ -226,8 +229,6 @@
         make.top.equalTo(self.passInputView.mas_bottom).offset(AUTO_HEIGHT(80));
         make.centerX.equalTo(self.bottomView);
     }];
-
-
 
     // status
     self.animationContentView = [[UIView alloc] init];
@@ -381,7 +382,7 @@
         PassInputFieldView *fristPassView = [[PassInputFieldView alloc] init];
         self.fristPassView = fristPassView;
         fristPassView.delegate = self;
-        fristPassView.tag = PassWordTagOne;
+        fristPassView.tag = PassWordSet;
 
         [self.passInputView addSubview:fristPassView];
         [fristPassView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -394,7 +395,7 @@
     if (self.secondPassView == nil) {
         PassInputFieldView *secondPassView = [[PassInputFieldView alloc] init];
         self.secondPassView = secondPassView;
-        secondPassView.tag = PassWordTagTwo;
+        secondPassView.tag = PassWordSetVerification;
         secondPassView.delegate = self;
         [self.passInputView addSubview:secondPassView];
         [secondPassView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -417,7 +418,7 @@
     PassInputFieldView *payPassView = [[PassInputFieldView alloc] init];
     self.payPassView = payPassView;
     payPassView.delegate = self;
-    payPassView.tag = PassWordTagThree;
+    payPassView.tag = PassWordVerification;
     CGFloat passWH = AUTO_HEIGHT(80);
     [self.passInputView addSubview:payPassView];
     [payPassView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -453,10 +454,10 @@
     self.titleLabel.text = LMLocalizedString(@"Set Payment Password", nil);
     self.payPassView.hidden = YES;
     if (self.isPassTag) {
-        passWord.tag = PassWordTagOne;
+        passWord.tag = PassWordSet;
     }
     switch (passWord.tag) {
-        case PassWordTagOne: {
+        case PassWordSet: {
 
             self.passInputView.hidden = NO;
             passWord.hidden = NO;
@@ -481,7 +482,7 @@
 
         }
             break;
-        case PassWordTagTwo: {
+        case PassWordSetVerification: {
             if ([self.fristPass isEqualToString:passWord.textStore]) {
                 self.isPassTag = NO;
                 __weak typeof(self) weakSelf = self;
@@ -577,7 +578,7 @@
             }
         }
             break;
-        case PassWordTagThree: {
+        case PassWordVerification: {
             self.isPassTag = NO;
             self.payPassView.hidden = NO;
             [self endEditing:YES];

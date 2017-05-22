@@ -202,6 +202,7 @@
 "ErrorCode Request Error"="Request Error";
 "ErrorCode Resource rule validation failed"="Resource rule validation failed";
 "ErrorCode Signature error"="Signature error";
+"ErrorCode The fee is too low"="The fee is too low";
 "ErrorCode The format is invalid"="The format is invalid";
 "ErrorCode The phone number already exists"="The phone number already exists";
 "ErrorCode The public key does not match"="The public key does not match";
@@ -209,6 +210,8 @@
 "ErrorCode The resource has expired"="The resource has expired";
 "ErrorCode The resource is not exist"="The resource is not exist";
 "ErrorCode Token does not match"="Token does not match";
+"ErrorCode Transaction information is incorrect"="Transaction information is incorrect";
+"ErrorCode Version information is repeated"="Version information is repeated";
 "ErrorCode backup key password hint incomplete"="The backup key and password prompt are incomplete";
 "ErrorCode data error"="data error";
 "ErrorCode dust"="dust";

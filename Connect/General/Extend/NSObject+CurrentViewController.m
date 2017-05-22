@@ -12,31 +12,33 @@
 
 + (UIViewController *)getCurrentVC
 {
-    UIViewController *result = nil;
     
-    UIWindow * window = [[UIApplication sharedApplication] keyWindow];
-    if (window.windowLevel != UIWindowLevelNormal)
-    {
-        NSArray *windows = [[UIApplication sharedApplication] windows];
-        for(UIWindow * tmpWin in windows)
-        {
-            if (tmpWin.windowLevel == UIWindowLevelNormal)
-            {
-                window = tmpWin;
-                break;
-            }
+    UIWindow *window = [[UIApplication sharedApplication].windows firstObject];
+    if (!window) {
+        return nil;
+    }
+    UIView *tempView;
+    for (UIView *subview in window.subviews) {
+        if ([[subview.classForCoder description] isEqualToString:@"UILayoutContainerView"]) {
+            tempView = subview;
+            break;
         }
     }
+    if (!tempView) {
+        tempView = [window.subviews lastObject];
+    }
     
-    UIView *frontView = [[window subviews] objectAtIndexCheck:0];
-    id nextResponder = [frontView nextResponder];
+    id nextResponder = [tempView nextResponder];
+    while (![nextResponder isKindOfClass:[UIViewController class]] || [nextResponder isKindOfClass:[UINavigationController class]] || [nextResponder isKindOfClass:[UITabBarController class]]) {
+        tempView =  [tempView.subviews firstObject];
+        
+        if (!tempView) {
+            return nil;
+        }
+        nextResponder = [tempView nextResponder];
+    }
+    return  (UIViewController *)nextResponder;
     
-    if ([nextResponder isKindOfClass:[UIViewController class]])
-        result = nextResponder;
-    else
-        result = window.rootViewController;
-    
-    return result;
 }
 
 

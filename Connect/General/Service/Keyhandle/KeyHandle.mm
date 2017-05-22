@@ -286,6 +286,9 @@ void xtalkRNG(void *buf, int bits){
 +(BOOL) checkAddress:(NSString *)address{
     // Adapt the btc.com sweep results
     address = [address stringByReplacingOccurrencesOfString:@"bitcoin:" withString:@""];
+    if(address.length == 0){
+      return NO;
+    }
     char *cAddress = (char *)[address UTF8String];
     int result = CheckAddress(cAddress);
     return result == 0?YES:NO;

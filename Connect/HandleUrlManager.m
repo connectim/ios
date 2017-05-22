@@ -44,8 +44,7 @@
 
         [nav popToRootViewControllerAnimated:NO];
         switch ([self getUrlType:urlString]) {
-                
-            case UrlTypeFriend:{
+            case UrlTypeFriend: {
                 
                 NSString *address = [parms valueForKey:@"address"];
                 if ([KeyHandle checkAddress:address]) {

@@ -104,7 +104,7 @@
         make.left.equalTo(self.view);
     }];
     view.topTipString = LMLocalizedString(@"Wallet Each", nil);
-    view.hidenFeeLabel = YES;
+    view.isHidenFee = YES;
     view.resultBlock = ^(NSDecimalNumber *btcMoney, NSString *note) {
         weakSelf.amount = btcMoney;
         [weakSelf createTranscationWithMoney:btcMoney note:note];

@@ -52,8 +52,6 @@
     }
     return self;
 }
-
-
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:YES];
     [self.navigationController.navigationBar setShadowImage:[UIImage new]];
@@ -76,14 +74,13 @@
 
 
 - (void)viewDidLoad {
+    
     [self setNavigationTitleImage:@"logo_black_small"];
     [super viewDidLoad];
     [self setBlackfBackArrowItem];
 }
 
-
 - (void)setup {
-
 
     self.accountUserNameView = [LocalUserInfoView viewWithAccountInfo:self.loginUser];
     self.accountUserNameView.hidenArrowView = YES;
@@ -93,11 +90,11 @@
 
 
     self.passwordField = [[BottomLineTextField alloc] init];
-    _passwordField.secureTextEntry = YES;
-    _passwordField.delegate = self;
-    _passwordField.placeholder = LMLocalizedString(@"Login Password Standard Tip", nil);
-    _passwordField.font = [UIFont systemFontOfSize:FONT_SIZE(48)];
-    [_passwordField addTarget:self action:@selector(textValueChange:) forControlEvents:UIControlEventEditingChanged];
+    self.passwordField.secureTextEntry = YES;
+    self.passwordField.delegate = self;
+    self.passwordField.placeholder = LMLocalizedString(@"Login Password Standard Tip", nil);
+    self.passwordField.font = [UIFont systemFontOfSize:FONT_SIZE(48)];
+    [self.passwordField addTarget:self action:@selector(textValueChange:) forControlEvents:UIControlEventEditingChanged];
     [self.view addSubview:_passwordField];
     self.passwordField.size = self.accountUserNameView.size;
     self.passwordField.left = self.accountUserNameView.left;
@@ -168,6 +165,7 @@
 }
 
 - (void)tapOnChangePassTip {
+    
     if (!self.completeBtn.enabled) {
         return;
     }
@@ -203,6 +201,7 @@
 }
 
 - (void)textFiledEditChanged:(NSNotification *)obj {
+    
     UITextField *textField = (UITextField *) obj.object;
     NSString *toBeString = textField.text;
     NSString *lang = [textField.textInputMode primaryLanguage];
@@ -230,8 +229,6 @@
         }
     }
 }
-
-
 - (void)reloadTipView {
     GJCFCoreTextAttributedStringStyle *stringStyle = [[GJCFCoreTextAttributedStringStyle alloc] init];
     stringStyle.foregroundColor = [GJGCCommonFontColorStyle detailBigTitleColor];
@@ -267,8 +264,7 @@
     [GCDQueue executeInMainQueue:^{
         [self.view layoutIfNeeded];
     }];
-
-
+    
 }
 
 #pragma mark - event

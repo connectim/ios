@@ -122,7 +122,7 @@
         HttpResponse *hResponse = (HttpResponse *) response;
         if (hResponse.code != successCode) {
            [GCDQueue executeInMainQueue:^{
-               [MBProgressHUD showToastwithText:[LMErrorCodeTool showSetErrorStringWithCode:hResponse.code withUrl:ContactUserSearchUrl] withType:ToastTypeCommon showInView:weakSelf.view complete:nil];
+               [MBProgressHUD showToastwithText:[LMErrorCodeTool showToastErrorType:ToastErrorTypeContact withErrorCode:hResponse.code withUrl:ContactUserSearchUrl] withType:ToastTypeCommon showInView:weakSelf.view complete:nil];
            }];
             return;
         }

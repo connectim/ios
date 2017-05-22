@@ -215,36 +215,7 @@
     __weak __typeof(&*self) weakSelf = self;
     [[PayTool sharedInstance] payVerfifyFingerWithComplete:^(BOOL result, NSString *errorMsg) {
         if (result) {
-            [MBProgressHUD showLoadingMessageToView:weakSelf.view];
-            NSString *rawTx = [KeyHandle signRawTranscationWithTvsArray:vtsArray privkeys:@[[[LKUserCenter shareCenter] currentLoginUser].prikey] rawTranscation:rawTransaction];
-            billing.rawTx = rawTx;
-            [NetWorkOperationTool POSTWithUrlString:ExternalSendUrl postProtoData:billing.data complete:^(id response) {
-                HttpResponse *hResponse = (HttpResponse *) response;
-                [MBProgressHUD hideHUDForView:weakSelf.view];
-                if (hResponse.code != successCode) {
-                    return;
-                }
-                NSData *data = [ConnectTool decodeHttpResponse:hResponse];
-                if (data) {
-                    NSError *error = nil;
-                    ExternalBillingInfo *billInfo = [ExternalBillingInfo parseFromData:data error:&error];
-
-                    [GCDQueue executeInMainQueue:^{
-                        [MBProgressHUD hideHUDForView:weakSelf.view];
-                    }];
-                    // update blance
-                    [[PayTool sharedInstance] getBlanceWithComplete:^(NSString *blance, UnspentAmount *unspentAmount, NSError *error) {
-
-                    }];
-                    [GCDQueue executeInMainQueue:^{
-                        OuterTransferDetailController *page = [[OuterTransferDetailController alloc] init];
-                        page.billInfo = billInfo;
-                        [weakSelf.navigationController pushViewController:page animated:YES];
-                    }];
-                }
-            }                                  fail:^(NSError *error) {
-
-            }];
+            [self successActionWithArray:vtsArray withRawTransaction:rawTransaction withBill:billing withPassView:nil];
         } else {
             if ([errorMsg isEqualToString:@"NO"]) {
                 [GCDQueue executeInMainQueue:^{
@@ -253,42 +224,8 @@
                 }];
             } else {
                 [InputPayPassView showInputPayPassWithComplete:^(InputPayPassView *passView, NSError *error, BOOL result) {
-                    NSString *rawTx = [KeyHandle signRawTranscationWithTvsArray:vtsArray privkeys:@[[[LKUserCenter shareCenter] currentLoginUser].prikey] rawTranscation:rawTransaction];
-                    billing.rawTx = rawTx;
-                    [NetWorkOperationTool POSTWithUrlString:ExternalSendUrl postProtoData:billing.data complete:^(id response) {
-                        HttpResponse *hResponse = (HttpResponse *) response;
-
-                        if (hResponse.code != successCode) {
-                            if (passView.requestCallBack) {
-                                passView.requestCallBack([NSError errorWithDomain:hResponse.message code:hResponse.code userInfo:nil]);
-                            }
-                            return;
-                        }
-                        if (passView.requestCallBack) {
-                            passView.requestCallBack(nil);
-                        }
-                        NSData *data = [ConnectTool decodeHttpResponse:hResponse];
-                        if (data) {
-                            NSError *error = nil;
-                            ExternalBillingInfo *billInfo = [ExternalBillingInfo parseFromData:data error:&error];
-
-                            [GCDQueue executeInMainQueue:^{
-                                [MBProgressHUD hideHUDForView:weakSelf.view];
-                            }];
-                            // update blance
-                            [[PayTool sharedInstance] getBlanceWithComplete:^(NSString *blance, UnspentAmount *unspentAmount, NSError *error) {
-                            }];
-                            [GCDQueue executeInMainQueue:^{
-                                OuterTransferDetailController *page = [[OuterTransferDetailController alloc] init];
-                                page.billInfo = billInfo;
-                                [weakSelf.navigationController pushViewController:page animated:YES];
-                            }];
-                        }
-                    }                                  fail:^(NSError *error) {
-                        if (passView.requestCallBack) {
-                            passView.requestCallBack(error);
-                        }
-                    }];
+                    [self successActionWithArray:vtsArray withRawTransaction:rawTransaction withBill:billing withPassView:passView];
+                    
                 }                              forgetPassBlock:^{
                     [GCDQueue executeInMainQueue:^{
                         [MBProgressHUD hideHUDForView:weakSelf.view];
@@ -306,5 +243,48 @@
         }
     }];
 }
-
+- (void)successActionWithArray:(NSArray *)vtsArray withRawTransaction:(NSString *)rawTransaction withBill:(OrdinaryBilling *)billing withPassView:(InputPayPassView *)passView {
+    
+    NSString *rawTx = [KeyHandle signRawTranscationWithTvsArray:vtsArray privkeys:@[[[LKUserCenter shareCenter] currentLoginUser].prikey] rawTranscation:rawTransaction];
+    billing.rawTx = rawTx;
+    [NetWorkOperationTool POSTWithUrlString:ExternalSendUrl postProtoData:billing.data complete:^(id response) {
+        HttpResponse *hResponse = (HttpResponse *) response;
+        
+        if (hResponse.code != successCode) {
+            
+            if (passView.requestCallBack) {
+                passView.requestCallBack([NSError errorWithDomain:hResponse.message code:hResponse.code userInfo:nil]);
+            }
+           
+            return;
+        }
+        
+        if (passView.requestCallBack) {
+            passView.requestCallBack(nil);
+        }
+ 
+        NSData *data = [ConnectTool decodeHttpResponse:hResponse];
+        if (data) {
+            NSError *error = nil;
+            ExternalBillingInfo *billInfo = [ExternalBillingInfo parseFromData:data error:&error];
+            
+            [GCDQueue executeInMainQueue:^{
+                [MBProgressHUD hideHUDForView:self.view];
+            }];
+            // update blance
+            [[PayTool sharedInstance] getBlanceWithComplete:^(NSString *blance, UnspentAmount *unspentAmount, NSError *error) {
+            }];
+            [GCDQueue executeInMainQueue:^{
+                OuterTransferDetailController *page = [[OuterTransferDetailController alloc] init];
+                page.billInfo = billInfo;
+                [self.navigationController pushViewController:page animated:YES];
+            }];
+        }
+    }                                  fail:^(NSError *error) {
+        
+        if (passView.requestCallBack) {
+            passView.requestCallBack(error);
+        }
+    }];
+}
 @end

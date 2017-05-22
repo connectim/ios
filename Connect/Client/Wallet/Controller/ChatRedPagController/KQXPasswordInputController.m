@@ -36,9 +36,9 @@
 
 #define RGB(r, g, b) [UIColor colorWithRed:r/255.f green:g/255.f blue:b/255.f alpha:1.f]
 
-#define kBodyViewWidth 270.f
-#define kNumberOfPassword 4
-#define kSpotRadius 12.5
+#define k_BODY_VIEW_WIDTH 270.f
+#define K_NUMBER_PASSWORD (int)4
+#define K_SPOT_RADIUS 12.5
 
 #pragma mark - lazy loading
 
@@ -109,6 +109,7 @@
 }
 
 - (void)paySuccess {
+    
     // circle path
     CGPoint center = CGPointMake(self.paySuccessView.frame.size.width / 2, self.paySuccessView.frame.size.height / 2);// circle
     float radius = self.paySuccessView.frame.size.width / 2;// raius
@@ -184,9 +185,9 @@
         self.margin = self.bodyView.left;
         self.resultViewToBodyRight.constant = self.margin * 2;
     }
-    CGFloat symbol_total = (kBodyViewWidth - 100);
-    CGFloat spot_halfWidth = kSpotRadius / 2;
-    CGFloat spot_x = symbol_total / kNumberOfPassword;
+    CGFloat symbol_total = (k_BODY_VIEW_WIDTH - 100);
+    CGFloat spot_halfWidth = K_SPOT_RADIUS / 2;
+    CGFloat spot_x = symbol_total / K_NUMBER_PASSWORD;
     CGFloat symbolView_h = CGRectGetHeight(_symbolView.frame);
 
     // circle layout
@@ -208,8 +209,6 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
-
-#pragma mark --
 
 #pragma mark - Methods
 
@@ -262,8 +261,8 @@
 }
 
 - (void)drawSpot {
-    for (int i = 0; i < kNumberOfPassword; i++) {
-        UIBezierPath *spotBezier = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(0.f, 0.f, kSpotRadius, kSpotRadius)];
+    for (int i = 0; i < K_NUMBER_PASSWORD; i++) {
+        UIBezierPath *spotBezier = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(0.f, 0.f, K_SPOT_RADIUS, K_SPOT_RADIUS)];
         CAShapeLayer *spot = [CAShapeLayer layer];
         [spot setPath:spotBezier.CGPath];
         [spot setFillColor:RGB(56, 66, 95).CGColor];
@@ -274,8 +273,8 @@
 }
 
 - (void)drawCircle {
-    for (int i = 0; i < kNumberOfPassword; i++) {
-        UIBezierPath *spotBezier = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(0.f, 0.f, kSpotRadius, kSpotRadius)];
+    for (int i = 0; i < K_NUMBER_PASSWORD; i++) {
+        UIBezierPath *spotBezier = [UIBezierPath bezierPathWithOvalInRect:CGRectMake(0.f, 0.f, K_SPOT_RADIUS, K_SPOT_RADIUS)];
         CAShapeLayer *spot = [CAShapeLayer layer];
         [spot setPath:spotBezier.CGPath];
         [spot setStrokeColor:RGB(56, 66, 95).CGColor];
@@ -286,16 +285,14 @@
     }
 }
 
-#pragma mark --
-
 #pragma mark - selectors
 
 - (void)inputContentsChanged:(NSNotification *)notification {
     UITextField *textField = notification.object;
     NSInteger length = [textField.text length];
-    if (length > kNumberOfPassword) {
+    if (length > K_NUMBER_PASSWORD) {
         // Enter more than 4 truncated text
-        textField.text = [textField.text substringToIndex:kNumberOfPassword];
+        textField.text = [textField.text substringToIndex:K_NUMBER_PASSWORD];
         return;
     };
     [self.spotArray enumerateObjectsUsingBlock:^(id _Nonnull obj, NSUInteger idx, BOOL *_Nonnull stop) {
@@ -303,7 +300,7 @@
         spot.hidden = idx < length ? NO : YES;
     }];
 
-    if (length == kNumberOfPassword) {
+    if (length == K_NUMBER_PASSWORD) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t) (0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [self clearContents];
         });

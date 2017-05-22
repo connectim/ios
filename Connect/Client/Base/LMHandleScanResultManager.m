@@ -158,24 +158,25 @@ CREATE_SHARED_MANAGER(LMHandleScanResultManager)
         return;
     }
     // weather is regiseter
-    __weak typeof(self)weakSelf = self;
     [GCDQueue executeInMainQueue:^{
-       [MBProgressHUD showLoadingMessageToView:weakSelf.controller.view];
+       [MBProgressHUD showLoadingMessageToView:self.controller.view];
     }];
     SearchUser *usrAddInfo = [[SearchUser alloc] init];
     usrAddInfo.criteria = address;
     [NetWorkOperationTool POSTWithUrlString:ContactUserSearchUrl postProtoData:usrAddInfo.data complete:^(id response) {
         [GCDQueue executeInMainQueue:^{
-            [MBProgressHUD hideHUDForView:weakSelf.controller.view];
+            [MBProgressHUD hideHUDForView:self.controller.view];
         }];
         NSError *error;
         HttpResponse *respon = (HttpResponse *) response;
         if (respon.code == 2404) {
             
-            [weakSelf bitAddress:address];
+            [self bitAddress:address];
             
         }else if (respon.code != successCode) {
-            
+            [GCDQueue executeInMainQueue:^{
+                [MBProgressHUD showToastwithText:LMLocalizedString(@"Set Query failed", nil) withType:ToastTypeFail showInView:self.controller.view complete:nil];
+            }];
             return;
             
         } else if (respon.code == successCode) {
@@ -184,12 +185,12 @@ CREATE_SHARED_MANAGER(LMHandleScanResultManager)
             if (data) {
                 
                 UserInfo *info = [[UserInfo alloc] initWithData:data error:&error];
-                [weakSelf strangerWithInfo:info isContainBtc:isContainBtc];
+                [self strangerWithInfo:info isContainBtc:isContainBtc];
                 
         }else {
             
             [GCDQueue executeInMainQueue:^{
-                [MBProgressHUD showToastwithText:[LMErrorCodeTool showWalletErrorStringWithCode:respon.code withUrl:ContactUserSearchUrl] withType:ToastTypeFail showInView:weakSelf.controller.view complete:^{
+                [MBProgressHUD showToastwithText:[LMErrorCodeTool showToastErrorType:ToastErrorTypeContact withErrorCode:respon.code withUrl:ContactUserSearchUrl] withType:ToastTypeFail showInView:self.controller.view complete:^{
                     
                 }];
             }];
@@ -199,8 +200,7 @@ CREATE_SHARED_MANAGER(LMHandleScanResultManager)
     }   fail:^(NSError *error) {
         
         [GCDQueue executeInMainQueue:^{
-            [MBProgressHUD hideHUDForView:weakSelf.controller.view];
-            [MBProgressHUD showToastwithText:LMLocalizedString(@"Server Error", nil) withType:ToastTypeFail showInView:weakSelf.controller.view complete:^{
+            [MBProgressHUD showToastwithText:LMLocalizedString(@"Server Error", nil) withType:ToastTypeFail showInView:self.controller.view complete:^{
                 
             }];
         }];
@@ -259,7 +259,7 @@ CREATE_SHARED_MANAGER(LMHandleScanResultManager)
 - (void)search:(NSString *)resultStr {
     
    // Whether it is included bitcoin:
-    if ([resultStr containsString:BIT_COIN_STR]) {
+    if ([resultStr hasPrefix:BIT_COIN_STR]) {
         
         [self handWalletWithKeyWord:resultStr];
         
@@ -291,7 +291,12 @@ CREATE_SHARED_MANAGER(LMHandleScanResultManager)
         page.hidesBottomBarWhenPushed = YES;
         [self.controller.navigationController pushViewController:page animated:YES];
         
+    }else {
+        [GCDQueue executeInMainQueue:^{
+            [MBProgressHUD showToastwithText:LMLocalizedString(@"Login The qrCode can not be identified", nil) withType:ToastTypeFail showInView:self.controller.view complete:nil];
+        }];
     }
+
 }
 
 @end

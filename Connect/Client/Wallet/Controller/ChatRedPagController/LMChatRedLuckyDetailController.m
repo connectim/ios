@@ -32,7 +32,7 @@ static NSString *cellIdentifier = @"cellIdentifier";
 @property(weak, nonatomic) IBOutlet UILabel *moneyValue;
 @property(weak, nonatomic) IBOutlet UILabel *redLuckyStatusLabel;
 @property(weak, nonatomic) IBOutlet UITableView *redLuckyListTableView;
-@property(strong, nonatomic) NSArray *statusStrings;
+@property(strong, nonatomic) NSArray *statusStrArray;
 @property(strong, nonatomic) NSMutableArray *dataArray;
 @property(strong, nonatomic) AccountInfo *accountInfo;
 @property(copy, nonatomic) NSString *moneyString;
@@ -152,10 +152,10 @@ static NSString *cellIdentifier = @"cellIdentifier";
 }
 #pragma mark - lazy loading
 
-- (NSArray *)statusStrings {
-    if (!_statusStrings) {
+- (NSArray *)statusStrArray {
+    if (!_statusStrArray) {
         
-        _statusStrings = @[
+        _statusStrArray = @[
                 LMLocalizedString(@"Chat Waitting for open", nil),
                 LMLocalizedString(@"Chat Bitcoin has been return to your wallet", nil),
                 LMLocalizedString(@"Chat Lucky packet Overtime", nil),
@@ -165,7 +165,7 @@ static NSString *cellIdentifier = @"cellIdentifier";
         ];
         
     }
-    return _statusStrings;
+    return _statusStrArray;
 }
 - (NSMutableArray *)dataArray {
     if (!_dataArray) {
@@ -287,39 +287,39 @@ static NSString *cellIdentifier = @"cellIdentifier";
     switch (self.packetStatus) {
         case PacketStatusWaitOpen:
         {
-            self.redLuckyStatusLabel.text = self.statusStrings[0];
+            self.redLuckyStatusLabel.text = self.statusStrArray[0];
             self.redLuckyStatusLabel.textColor = LMBasicPacketStatusRed;
           
         }
             break;
         case PacketStatusOverTimeAndBack:
         {
-            self.redLuckyStatusLabel.text = self.statusStrings[1];
+            self.redLuckyStatusLabel.text = self.statusStrArray[1];
             self.redLuckyStatusLabel.textColor = LMBasicPacketStatusRed;
             
         }
             break;
         case PacketStatusOverTime:
         {
-            self.redLuckyStatusLabel.text = self.statusStrings[2];
+            self.redLuckyStatusLabel.text = self.statusStrArray[2];
             self.redLuckyStatusLabel.textColor = LMBasicPacketStatusRed;
         }
             break;
         case PacketStatusWaitArrivalYourWallet:
         {
-            self.redLuckyStatusLabel.text = self.statusStrings[3];
+            self.redLuckyStatusLabel.text = self.statusStrArray[3];
             self.redLuckyStatusLabel.textColor = LMBasicPacketStatusBlue;
         }
             break;
         case PacketStatusIsDone:
         {
-            self.redLuckyStatusLabel.text = self.statusStrings[4];
+            self.redLuckyStatusLabel.text = self.statusStrArray[4];
             self.redLuckyStatusLabel.textColor = LMBasicPacketStatusBlue;
         }
             break;
         case PacketStatusIsArrivalYourWallet:
         {
-            self.redLuckyStatusLabel.text = self.statusStrings[5];
+            self.redLuckyStatusLabel.text = self.statusStrArray[5];
             self.redLuckyStatusLabel.textColor = LMBasicPacketStatusBlue;
         }
             break;

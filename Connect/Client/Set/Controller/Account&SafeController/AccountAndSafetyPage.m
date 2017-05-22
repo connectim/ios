@@ -90,8 +90,8 @@
         tip = LMLocalizedString(@"Set On", nil);
     }
     CellItem *lockGesture = [CellItem itemWithTitle:LMLocalizedString(@"Set Pattern Password", nil) subTitle:tip type:CellItemTypeValue1 operation:^{
+        
         GestureOpneOrClosePage *page = [[GestureOpneOrClosePage alloc] init];
-
         [weakSelf hidenTabbarWhenPushController:page];
     }];
     CellItem *paymentSetting = [CellItem itemWithTitle:LMLocalizedString(@"Set Payment", nil) type:CellItemTypeArrow operation:^{

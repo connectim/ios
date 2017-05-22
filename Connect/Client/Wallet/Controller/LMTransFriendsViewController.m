@@ -316,49 +316,8 @@ static NSString *const identifier = @"cellIdentifier";
     __weak __typeof(&*self) weakSelf = self;
     [[PayTool sharedInstance] payVerfifyFingerWithComplete:^(BOOL result, NSString *errorMsg) {
         if (result) {
-            MuiltSendBill *muiltBill = [[MuiltSendBill alloc] init];
-            NSMutableArray *addressesArray = [NSMutableArray array];
-            for (NSDictionary *addressAmount in toAddresses) {
-                [addressesArray objectAddObject:[addressAmount valueForKey:@"address"]];
-            }
-            muiltBill.addressesArray = addressesArray;
-            muiltBill.amount = [[[NSDecimalNumber alloc] initWithLongLong:pow(10, 8)]
-                    decimalNumberByMultiplyingBy:money].longLongValue;
-            muiltBill.tips = note;
-            NSString *signTransaction = [KeyHandle signRawTranscationWithTvsArray:rawModel.vtsArray privkeys:@[[[LKUserCenter shareCenter] currentLoginUser].prikey] rawTranscation:rawModel.rawTrancation];
-            muiltBill.txData = signTransaction;
-
-            [WallteNetWorkTool doMuiltTransfer:muiltBill complete:^(NSData *response, NSError *error) {
-                if (error) {
-                    [GCDQueue executeInMainQueue:^{
-                        [MBProgressHUD showToastwithText:LMLocalizedString(@"Transfer failed", nil) withType:ToastTypeFail showInView:weakSelf.view complete:nil];
-                    }];
-
-                } else {
-                    // update blance
-                    [[PayTool sharedInstance] getBlanceWithComplete:^(NSString *blance, UnspentAmount *unspentAmount, NSError *error) {
-                        [GCDQueue executeInMainQueue:^{
-                            weakSelf.blance = unspentAmount.avaliableAmount;
-                            weakSelf.BalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance", nil), [PayTool getBtcStringWithAmount:unspentAmount.avaliableAmount]];
-                        }];
-                    }];
-
-                    NSError *errors;
-                    MuiltSendBillResp *muiltBill = [[MuiltSendBillResp alloc] initWithData:response error:&errors];
-                    for (Bill *bill in muiltBill.billsArray) {
-                        // send message
-                        [weakSelf createChatWithHashId:bill.hash_p address:bill.receiver Amount:[NSString stringWithFormat:@"%@", [PayTool getBtcStringWithAmount:bill.amount]]];
-                    }
-                    [GCDQueue executeInMainQueue:^{
-                        [MBProgressHUD showToastwithText:LMLocalizedString(@"Wallet Transfer Successful", nil) withType:ToastTypeSuccess showInView:weakSelf.view complete:^{
-                            [weakSelf.navigationController popToRootViewControllerAnimated:YES];
-                        }];
-                    }];
-                    for (Bill *bills in muiltBill.billsArray) {
-                        NSLog(@"bill ======= %@", bills);
-                    }
-                }
-            }];
+    
+            [self successAction:toAddresses money:money note:note rawModel:rawModel passView:nil];
 
         } else {
             if ([errorMsg isEqualToString:@"NO"]) {
@@ -370,55 +329,7 @@ static NSString *const identifier = @"cellIdentifier";
             }
             [InputPayPassView showInputPayPassWithComplete:^(InputPayPassView *passView, NSError *error, BOOL result) {
                 if (result) {
-                    MuiltSendBill *muiltBill = [MuiltSendBill new];
-                    NSMutableArray *addressesArray = [NSMutableArray array];
-                    for (NSDictionary *addressAmount in toAddresses) {
-                        [addressesArray objectAddObject:[addressAmount valueForKey:@"address"]];
-                    }
-                    muiltBill.addressesArray = addressesArray;
-                    muiltBill.amount = [[[NSDecimalNumber alloc] initWithLongLong:pow(10, 8)]
-                            decimalNumberByMultiplyingBy:money].longLongValue;
-                    muiltBill.tips = note;
-                    NSString *signTransaction = [KeyHandle signRawTranscationWithTvsArray:rawModel.vtsArray privkeys:@[[[LKUserCenter shareCenter] currentLoginUser].prikey] rawTranscation:rawModel.rawTrancation];
-                    muiltBill.txData = signTransaction;
-
-                    [WallteNetWorkTool doMuiltTransfer:muiltBill complete:^(NSData *response, NSError *error) {
-                        if (error) {
-                            [GCDQueue executeInMainQueue:^{
-                                [MBProgressHUD showToastwithText:LMLocalizedString(@"Transfer failed", nil) withType:ToastTypeFail showInView:weakSelf.view complete:nil];
-                            }];
-                            if (passView.requestCallBack) {
-                                passView.requestCallBack(error);
-                            }
-                        } else {
-                            // update blance
-                            [[PayTool sharedInstance] getBlanceWithComplete:^(NSString *blance, UnspentAmount *unspentAmount, NSError *error) {
-                                [GCDQueue executeInMainQueue:^{
-                                    weakSelf.blance = unspentAmount.avaliableAmount;
-                                    weakSelf.BalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance", nil), [PayTool getBtcStringWithAmount:unspentAmount.avaliableAmount]];
-                                }];
-                            }];
-
-                            if (passView.requestCallBack) {
-                                passView.requestCallBack(nil);
-                            }
-
-                            NSError *errors;
-                            MuiltSendBillResp *muiltBill = [[MuiltSendBillResp alloc] initWithData:response error:&errors];
-                            for (Bill *bill in muiltBill.billsArray) {
-                                // send message
-                                [weakSelf createChatWithHashId:bill.hash_p address:bill.receiver Amount:[NSString stringWithFormat:@"%@", [PayTool getBtcStringWithAmount:bill.amount]]];
-                            }
-                            [GCDQueue executeInMainQueue:^{
-                                [MBProgressHUD showToastwithText:LMLocalizedString(@"Wallet Transfer Successful", nil) withType:ToastTypeSuccess showInView:weakSelf.view complete:^{
-                                    [weakSelf.navigationController popToRootViewControllerAnimated:YES];
-                                }];
-                            }];
-                            for (Bill *bills in muiltBill.billsArray) {
-                                NSLog(@"bill ======= %@", bills);
-                            }
-                        }
-                    }];
+                    [weakSelf successAction:toAddresses money:money note:note rawModel:rawModel passView:passView];
                 }
             }                              forgetPassBlock:^{
                 [GCDQueue executeInMainQueue:^{
@@ -431,6 +342,58 @@ static NSString *const identifier = @"cellIdentifier";
                 [GCDQueue executeInMainQueue:^{
                     [MBProgressHUD hideHUDForView:weakSelf.view];
                     weakSelf.comfrimButton.enabled = YES;
+                }];
+            }];
+        }
+    }];
+}
+- (void)successAction:(NSArray *)toAddresses money:(NSDecimalNumber *)money note:(NSString *)note rawModel:(LMRawTransactionModel *)rawModel passView:(InputPayPassView *)passView{
+    
+     __weak __typeof(&*self) weakSelf = self;
+    MuiltSendBill *muiltBill = [MuiltSendBill new];
+    NSMutableArray *addressesArray = [NSMutableArray array];
+    for (NSDictionary *addressAmount in toAddresses) {
+        [addressesArray objectAddObject:[addressAmount valueForKey:@"address"]];
+    }
+    muiltBill.addressesArray = addressesArray;
+    muiltBill.amount = [[[NSDecimalNumber alloc] initWithLongLong:pow(10, 8)]
+                        decimalNumberByMultiplyingBy:money].longLongValue;
+    muiltBill.tips = note;
+    NSString *signTransaction = [KeyHandle signRawTranscationWithTvsArray:rawModel.vtsArray privkeys:@[[[LKUserCenter shareCenter] currentLoginUser].prikey] rawTranscation:rawModel.rawTrancation];
+    muiltBill.txData = signTransaction;
+    
+    [WallteNetWorkTool doMuiltTransfer:muiltBill complete:^(NSData *response, NSError *error) {
+        if (error) {
+            [GCDQueue executeInMainQueue:^{
+                [MBProgressHUD showToastwithText:LMLocalizedString(@"Transfer failed", nil) withType:ToastTypeFail showInView:self.view complete:nil];
+            }];
+            
+            if (passView.requestCallBack) {
+                passView.requestCallBack(error);
+            }
+            
+        } else {
+            // update blance
+            [[PayTool sharedInstance] getBlanceWithComplete:^(NSString *blance, UnspentAmount *unspentAmount, NSError *error) {
+                [GCDQueue executeInMainQueue:^{
+                    weakSelf.blance = unspentAmount.avaliableAmount;
+                    weakSelf.BalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance", nil), [PayTool getBtcStringWithAmount:unspentAmount.avaliableAmount]];
+                }];
+            }];
+            
+            if (passView.requestCallBack) {
+                passView.requestCallBack(nil);
+            }
+            
+            NSError *errors;
+            MuiltSendBillResp *muiltBill = [[MuiltSendBillResp alloc] initWithData:response error:&errors];
+            for (Bill *bill in muiltBill.billsArray) {
+                // send message
+                [weakSelf createChatWithHashId:bill.hash_p address:bill.receiver Amount:[NSString stringWithFormat:@"%@", [PayTool getBtcStringWithAmount:bill.amount]]];
+            }
+            [GCDQueue executeInMainQueue:^{
+                [MBProgressHUD showToastwithText:LMLocalizedString(@"Wallet Transfer Successful", nil) withType:ToastTypeSuccess showInView:weakSelf.view complete:^{
+                    [weakSelf.navigationController popToRootViewControllerAnimated:YES];
                 }];
             }];
         }
