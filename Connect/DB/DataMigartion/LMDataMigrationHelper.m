@@ -23,10 +23,6 @@ static FMDatabaseQueue *queue;
     if (GJCFFileIsExist(olddbPath)) {
         //db path
         NSString *dbPath = [MMGlobal getDBFile:[[LKUserCenter shareCenter] currentLoginUser].pub_key];
-        //db encrypt
-        FMDatabase *db = [FMDatabase databaseWithPath:dbPath];
-        [db open];
-        [db setKey:[[LMHistoryCacheManager sharedManager] getDBPassword]];
         queue = [FMDatabaseQueue databaseQueueWithPath:dbPath];
         if (queue) {
             DDLogInfo(@"Create encryptdatabase success! %@", dbPath);

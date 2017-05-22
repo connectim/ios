@@ -719,9 +719,6 @@
         return NO;
     }
     NSString *dbPath = [MMGlobal getDBFile:publickey];
-    FMDatabase *db = [FMDatabase databaseWithPath:dbPath];
-    [db open];
-    [db setKey:[[LMHistoryCacheManager sharedManager] getDBPassword]];
 
     FMDBMigrationManager *manager = [FMDBMigrationManager managerWithDatabaseAtPath:dbPath migrationsBundle:[NSBundle mainBundle]];
     BOOL resultState = NO;
