@@ -123,7 +123,6 @@
     // creat recommond man
     [self getArrayFromNetWork];
 }
-
 #pragma mark - 数组添加的方法
 
 - (void)getArrayFromNetWork {
@@ -495,6 +494,9 @@
 
 - (void)moreButtonClick {
     LMAddMoreViewController *addMoreVc = [[LMAddMoreViewController alloc] init];
+    addMoreVc.deleBlcok = ^(){
+        [self creatAllArray];
+    };
     [self.navigationController pushViewController:addMoreVc animated:YES];
 }
 

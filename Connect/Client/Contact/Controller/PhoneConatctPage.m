@@ -280,7 +280,9 @@
             userInfo.status = RequestFriendStatusAdded;
         }
         userInfo.phoneContactName = [self.hashMobilesName valueForKey:phoneBookUser.phoneHash];
-        [temUsers objectAddObject:userInfo];
+        if (!GJCFStringIsNull(phoneBookUser.phoneHash)) {
+             [temUsers objectAddObject:userInfo];
+        }
     }
     NSStringCompareOptions comparisonOptions = NSCaseInsensitiveSearch | NSNumericSearch |
             NSWidthInsensitiveSearch | NSForcedOrderingSearch;
