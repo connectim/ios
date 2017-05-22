@@ -160,30 +160,6 @@
     return nil;
 }
 
-+ (MessagePost *)sendAdapterIMReadAckPostWithMessage:(MMMessage *)message {
-
-    if (!message) {
-        return nil;
-    }
-
-    NSString *messageString = [message mj_JSONString];
-    GcmData *userToUserData = [ConnectTool createGcmWithData:messageString publickey:message.publicKey needEmptySalt:YES];
-    MessageData *messageData = [[MessageData alloc] init];
-    messageData.cipherData = userToUserData;
-    messageData.receiverAddress = message.user_id;
-    messageData.msgId = message.message_id;
-    messageData.typ = message.type;
-
-    NSString *sign = [ConnectTool signWithData:messageData.data];
-    MessagePost *messagePost = [[MessagePost alloc] init];
-    messagePost.pubKey = [LKUserCenter shareCenter].currentLoginUser.pub_key;
-    messagePost.msgData = messageData;
-    messagePost.sign = sign;
-
-    return messagePost;
-}
-
-
 + (NSString *)decodeMessageWithMassagePost:(MessagePost *)msgPost {
     NSString *messageString = nil;
     LMChatEcdhKeySecurityLevelType securityLevel = LMChatEcdhKeySecurityLevelTypeNomarl;

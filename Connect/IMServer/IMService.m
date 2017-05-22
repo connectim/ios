@@ -322,15 +322,25 @@ static dispatch_once_t onceToken;
 
 
 - (void)uploadCookieDuetoLocalChatCookieNotMatchServerChatCookieWithMessageCallModel:(SendMessageModel *)callModel {
-    ChatCacheCookie *chatCookie = [ChatCacheCookie new];
-    chatCookie.chatPrivkey = [KeyHandle creatNewPrivkey];
-    chatCookie.chatPubKey = [KeyHandle createPubkeyByPrikey:chatCookie.chatPrivkey];
-    chatCookie.salt = [KeyHandle createRandom512bits];
     
+    ChatCacheCookie *chatCookie = [ChatCacheCookie new];
+    ChatCookieData *cacheData = [[LMHistoryCacheManager sharedManager] getLeastChatCookie];
     ChatCookieData *cookieData = [ChatCookieData new];
+    if (cacheData &&
+        [SessionManager sharedManager].loginUserChatCookie &&
+        cacheData.expired > [[NSDate date] timeIntervalSince1970] - 60 * 5) {
+        chatCookie.chatPrivkey = [SessionManager sharedManager].loginUserChatCookie.chatPrivkey;
+        chatCookie.chatPubKey = [SessionManager sharedManager].loginUserChatCookie.chatPubKey;
+        chatCookie.salt = [SessionManager sharedManager].loginUserChatCookie.salt;
+        cookieData.expired = cacheData.expired;
+    } else {
+        chatCookie.chatPrivkey = [KeyHandle creatNewPrivkey];
+        chatCookie.chatPubKey = [KeyHandle createPubkeyByPrikey:chatCookie.chatPrivkey];
+        chatCookie.salt = [KeyHandle createRandom512bits];
+        cookieData.expired = [[NSDate date] timeIntervalSince1970] + 24 * 60 * 60;
+    }
     cookieData.chatPubKey = chatCookie.chatPubKey;
     cookieData.salt = chatCookie.salt;
-    cookieData.expired = [[NSDate date] timeIntervalSince1970] + 24 * 60 * 60;
     
     ChatCookie *cookie = [ChatCookie new];
     cookie.data_p = cookieData;
@@ -771,40 +781,16 @@ static dispatch_once_t onceToken;
 
 #pragma mark - Method for transmitting data based on Socket layer
 
-- (BOOL)sendPeerMessage:(MessagePost *)im {
+- (BOOL)sendDataWithMessage:(MessagePost *)im extension:(unsigned char)extension{
     IMTransferData *imTransfer = [ConnectTool createTransferWithEcdhKey:[ServerCenter shareCenter].extensionPass data:im.data aad:nil];
     Message *m = [[Message alloc] init];
     m.typechar = BM_IM_TYPE;
-    m.extension = BM_IM_EXT;
+    m.extension = extension;
     m.len = (int) [imTransfer data].length;
     m.body = [imTransfer data];
     BOOL r = [self sendMessage:m];
     return r;
 }
-
-- (BOOL)sendReadAckMessage:(MessagePost *)im {
-    IMTransferData *imTransfer = [ConnectTool createTransferWithEcdhKey:[ServerCenter shareCenter].extensionPass data:im.data aad:nil];
-    Message *m = [[Message alloc] init];
-    m.typechar = BM_IM_TYPE;
-    m.extension = BM_IM_MESSAGE_ACK_EXT;
-    m.len = (int) [imTransfer data].length;
-    m.body = [imTransfer data];
-    BOOL r = [self sendMessage:m];
-    return r;
-}
-
-
-- (BOOL)sendGroupMessage:(MessagePost *)im {
-    IMTransferData *imTransfer = [ConnectTool createTransferWithEcdhKey:[ServerCenter shareCenter].extensionPass data:im.data aad:nil];
-    Message *m = [[Message alloc] init];
-    m.typechar = BM_IM_TYPE;
-    m.extension = BM_IM_GROUPMESSAGE_EXT;
-    m.len = (int) [imTransfer data].length;
-    m.body = [imTransfer data];
-    BOOL r = [self sendMessage:m];
-    return r;
-}
-
 
 - (BOOL)sendSystemMessage:(IMTransferData *)imTransfer {
     Message *m = [[Message alloc] init];
@@ -816,18 +802,21 @@ static dispatch_once_t onceToken;
     return r;
 }
 
+- (BOOL)sendPeerMessage:(MessagePost *)im {
+    return [self sendDataWithMessage:im extension:BM_IM_EXT];
+}
+
+- (BOOL)sendReadAckMessage:(MessagePost *)im {
+    return [self sendDataWithMessage:im extension:BM_IM_MESSAGE_ACK_EXT];
+}
+
+
+- (BOOL)sendGroupMessage:(MessagePost *)im {
+    return [self sendDataWithMessage:im extension:BM_IM_GROUPMESSAGE_EXT];
+}
+
 - (BOOL)asyncSendGroupInfo:(MessagePost *)im {
-    IMTransferData *imTransfer = [ConnectTool createTransferWithEcdhKey:[ServerCenter shareCenter].extensionPass data:im.data aad:nil];
-    Message *m = [[Message alloc] init];
-    m.typechar = BM_IM_TYPE;
-    m.extension = BM_IM_SEND_GROUPINFO_EXT;
-    m.len = (int) [imTransfer data].length;
-    m.body = [imTransfer data];
-    BOOL r = [self sendMessage:m];
-    if (r) {
-        DDLogInfo(@"send success");
-    }
-    return YES;
+    return [self sendDataWithMessage:im extension:BM_IM_SEND_GROUPINFO_EXT];
 }
 
 - (BOOL)sendMessage:(Message *)msg {
@@ -912,7 +901,7 @@ static dispatch_once_t onceToken;
                               completion:(void (^)(MMMessage *message,
                                       NSError *error))completion
                                  onQueue:(dispatch_queue_t)sendMessageStatusQueue {
-    MessagePost *messagePost = [LMMessageAdapter sendAdapterIMReadAckPostWithMessage:message];
+    MessagePost *messagePost = (MessagePost *)[LMMessageAdapter sendAdapterIMPostWithMessage:message talkType:GJGCChatFriendTalkTypePrivate ecdhKey:nil];
     [GCDQueue executeInQueue:self.messageSendQueue block:^{
         BOOL result = [self sendReadAckMessage:messagePost];
         //aad sending message to queue
