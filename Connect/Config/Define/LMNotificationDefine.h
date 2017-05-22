@@ -44,10 +44,6 @@ extern NSString *const ConnnectContactDidChangeNotification;
 
 extern NSString *const ConnnectContactDidChangeDeleteUserNotification;
 
-// delete last session
-
-extern NSString *const ConnnectRecentChatDeleteNotification;
-
 // quit group
 
 extern NSString *const ConnnectQuitGroupNotification;
@@ -94,21 +90,9 @@ extern NSString *const kAcceptNewFriendRequestNotification;
 
 extern NSString *const SendDraftChangeNotification;
 
-// top
-
-extern NSString *const TopChatStatusChangeNotication;
-
 // transfer status is exchange
 
 extern NSString *const TransactionStatusChangeNotification;
-
-// Receive notification of offline completion
-
-extern NSString *const ConnectGetOfflieCompleteNotification;
-
-// Update all group avatar completion notifications
-
-extern NSString *const ConnectDownAllNewGroupAvatarNotification;
 
 // Update my nickname in the group
 

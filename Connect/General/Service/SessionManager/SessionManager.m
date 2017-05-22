@@ -162,21 +162,6 @@ static SessionManager *manager = nil;
     }
 }
 
-
-- (void)clearUnreadWithIdentifier:(NSString *)identifier{
-    if (GJCFStringIsNull(identifier)) {
-        return;
-    }
-    
-    RecentChatModel *recentchatModel = [self getRecentChatWithIdentifier:identifier];
-    if (recentchatModel.unReadCount) {
-        recentchatModel.unReadCount = 0;
-        [GCDQueue executeInMainQueue:^{
-            SendNotify(SessionManagerClearReadCountNoti, recentchatModel);
-        }];
-    }
-}
-
 - (NSMutableArray *)allRecentChats{
     if (!_allRecentChats) {
         _allRecentChats = [NSMutableArray array];

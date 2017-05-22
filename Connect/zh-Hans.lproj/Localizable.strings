@@ -1,4 +1,5 @@
 "Chat"="聊天";
+"Chat One message failed to decrypt" = "有一条消息解密失败";
 "Chat Accept success"="领取成功";
 "Chat Add as a friend to chat"="添加为好友才能开始聊天";
 "Chat Address"="地址";
@@ -373,7 +374,7 @@
 "Login Camera guide tip"="点击拍照,按住摄像";
 "Login Code"="验证码";
 "Login Collecting Sounds as Random Seed"="正在收集声音作为随机数...";
-"Login Decrypted private key"="非加密私钥";
+"Login Decrypted private key"="私钥";
 "Login Edit"="编辑";
 "Login Encrypted private key"="加密私钥";
 "Login Generated Failure"="创建失败，周围环境嘈杂系数不够";
@@ -455,7 +456,7 @@
 "Set Auto"="自动付费";
 "Set BTC symbol"="฿";
 "Set Backup Private Key"="备份私钥";
-"Set Backup decrypted private key"="备份非加密私钥";
+"Set Backup decrypted private key"="备份私钥";
 "Set Backup encrypted private key"="备份加密私钥";
 "Set CONNECT ID can only be set once"="CONNECT ID 只能被设置一次";
 "Set CONNECT ID set success no set"="CONNECT ID 设置成功后不可修改

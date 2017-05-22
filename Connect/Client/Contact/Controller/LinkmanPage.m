@@ -22,6 +22,7 @@
 #import "GJGCChatSystemNotiViewController.h"
 #import "LMHandleScanResultManager.h"
 #import "LMLinkManDataManager.h"
+#import "RecentChatDBManager.h"
 
 @interface LinkmanPage () <MGSwipeTableCellDelegate, UINavigationControllerDelegate, LMLinkManDataManagerDelegate>
 
@@ -222,6 +223,8 @@
             talk.chatIdendifier = group.groupIdentifer;
             talk.group_ecdhKey = group.groupEcdhKey;
             talk.chatGroupInfo = group;
+            talk.mute = [[RecentChatDBManager sharedManager] getMuteStatusWithIdentifer:talk.chatIdendifier];;
+            talk.top = [[RecentChatDBManager sharedManager] isTopChat:talk.chatIdendifier];
             // save session object
             [SessionManager sharedManager].chatSession = talk.chatIdendifier;
             [SessionManager sharedManager].chatObject = group;
@@ -229,10 +232,9 @@
             GJGCChatGroupViewController *groupChat = [[GJGCChatGroupViewController alloc] initWithTalkInfo:talk];
             groupChat.hidesBottomBarWhenPushed = YES;
             [self.navigationController pushViewController:groupChat animated:YES];
-
         } else if ([data isKindOfClass:[AccountInfo class]]) {
             AccountInfo *user = (AccountInfo *) data;
-            if ([user.pub_key isEqualToString:@"connect"]) {//Connect团队
+            if ([user.pub_key isEqualToString:kSystemIdendifier]) {
                 GJGCChatFriendTalkModel *talk = [[GJGCChatFriendTalkModel alloc] init];
                 talk.talkType = GJGCChatFriendTalkTypePrivate;
                 talk.chatIdendifier = user.pub_key;
@@ -280,7 +282,7 @@
         return NO;
     } else if ([model isKindOfClass:[AccountInfo class]]){
         AccountInfo *user = (AccountInfo *)model;
-        if ([user.pub_key isEqualToString:@"connect"]) {
+        if ([user.pub_key isEqualToString:kSystemIdendifier]) {
             return NO;
         }
     }

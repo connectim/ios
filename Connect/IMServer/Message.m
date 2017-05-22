@@ -32,72 +32,65 @@ static inline unsigned int bswap_32(unsigned int v) {
 
 
 - (NSMutableData *)pack {
-
-    @try {
-        DDLogInfo(@"pack data type :%d extension: %d", _typechar, _extension);
-
-        NSMutableData *dataM = [[NSMutableData alloc] init];
-
-        //ver
-        unsigned char version = socketProtocolVersion;
-        NSData *versionData = [NSData dataWithBytes:&version length:sizeof(version)];
-        [dataM appendData:versionData];
-
-        //type
-        NSData *typeData = [NSData dataWithBytes:&_typechar length:sizeof(_typechar)];
-        [dataM appendData:typeData];
-
-
-        NSData *data = (NSData *) self.body;
-        if (![data isKindOfClass:[NSData class]]) {
-            return [NSMutableData data];
-        }
-        if (!data) {
-            data = [NSData data];
-        }
-        int len = (int) data.length;
-        //data len
-        int lenR = bswap_32(len);
-        NSData *lenData = [NSData dataWithBytes:&lenR length:sizeof(lenR)];
-        [dataM appendData:lenData];
-
-        //extension
-        NSData *extensionData = [NSData dataWithBytes:&_extension length:sizeof(_extension)];
-        [dataM appendData:extensionData];
-
-        //salt
-        NSData *saltData = [[KeyHandle createRandom512bits] subdataWithRange:NSMakeRange(0, 4)];
-        [dataM appendData:saltData];
-
-        // ，1 + 4 + 1 + 4
-        NSMutableData *checkData = [NSMutableData dataWithData:[dataM subdataWithRange:NSMakeRange(1, 10)]];
-        UInt8 j = 0xc0;
-        NSData *data1 = [[NSData alloc] initWithBytes:&j length:sizeof(j)];
-        [checkData appendData:data1];
-
-        UInt8 i = 0x2E;
-        NSData *data2 = [[NSData alloc] initWithBytes:&i length:sizeof(i)];
-        [checkData appendData:data2];
-
-        UInt8 n = 0xC7;
-
-        NSData *data3 = [[NSData alloc] initWithBytes:&n length:sizeof(n)];
-        [checkData appendData:data3];
-
-        NSData *checkDataMd5 = [checkData md5Data];
-        NSData *checkTwoBytes = [checkDataMd5 subdataWithRange:NSMakeRange(0, 2)];
-
-        //check bytes
-        [dataM appendData:checkTwoBytes];
-
-        //data
-        [dataM appendData:data];
-
-        return dataM;
-
-    } @catch (NSException *exception) {
-        return nil;
+    DDLogInfo(@"pack data type :%d extension: %d", _typechar, _extension);
+    
+    NSMutableData *dataM = [[NSMutableData alloc] init];
+    
+    //ver
+    unsigned char version = socketProtocolVersion;
+    NSData *versionData = [NSData dataWithBytes:&version length:sizeof(version)];
+    [dataM appendData:versionData];
+    
+    //type
+    NSData *typeData = [NSData dataWithBytes:&_typechar length:sizeof(_typechar)];
+    [dataM appendData:typeData];
+    
+    
+    NSData *data = (NSData *) self.body;
+    if (![data isKindOfClass:[NSData class]]) {
+        return [NSMutableData data];
     }
+    if (!data) {
+        data = [NSData data];
+    }
+    int len = (int) data.length;
+    //data len
+    int lenR = bswap_32(len);
+    NSData *lenData = [NSData dataWithBytes:&lenR length:sizeof(lenR)];
+    [dataM appendData:lenData];
+    
+    //extension
+    NSData *extensionData = [NSData dataWithBytes:&_extension length:sizeof(_extension)];
+    [dataM appendData:extensionData];
+    
+    //salt
+    NSData *saltData = [[KeyHandle createRandom512bits] subdataWithRange:NSMakeRange(0, 4)];
+    [dataM appendData:saltData];
+    
+    // ，1 + 4 + 1 + 4
+    NSMutableData *checkData = [NSMutableData dataWithData:[dataM subdataWithRange:NSMakeRange(1, 10)]];
+    UInt8 j = 0xc0;
+    NSData *data1 = [[NSData alloc] initWithBytes:&j length:sizeof(j)];
+    [checkData appendData:data1];
+    
+    UInt8 i = 0x2E;
+    NSData *data2 = [[NSData alloc] initWithBytes:&i length:sizeof(i)];
+    [checkData appendData:data2];
+    
+    UInt8 n = 0xC7;
+    
+    NSData *data3 = [[NSData alloc] initWithBytes:&n length:sizeof(n)];
+    [checkData appendData:data3];
+    
+    NSData *checkDataMd5 = [checkData md5Data];
+    NSData *checkTwoBytes = [checkDataMd5 subdataWithRange:NSMakeRange(0, 2)];
+    
+    //check bytes
+    [dataM appendData:checkTwoBytes];
+    
+    //data
+    [dataM appendData:data];
+    return dataM;
 }
 
 - (BOOL)unpack:(NSData *)data {
@@ -252,7 +245,8 @@ static inline unsigned int bswap_32(unsigned int v) {
         case BM_INVITE_TO_GROUP_EXT:
         case BM_RECOMMADN_NOTINTEREST_EXT:
         case BM_UPLOAD_CHAT_COOKIE_EXT:
-        case BM_FRIEND_CHAT_COOKIE_EXT: {
+        case BM_FRIEND_CHAT_COOKIE_EXT:
+        case BM_FROCEUODATA_CHAT_COOKIE_EXT:{
             IMTransferData *imTransfer = [IMTransferData parseFromValidationData:resultData error:nil];
             if ([ConnectTool vertifyWithData:imTransfer.cipherData.data sign:imTransfer.sign]) {
                 NSData *decodeData = [ConnectTool decodeGcmDataWithEcdhKey:[ServerCenter shareCenter].extensionPass GcmData:imTransfer.cipherData];

@@ -60,7 +60,6 @@
         NSString *identifer = msg.msgData.receiverAddress;
         LMGroupInfo *group = [[GroupDBManager sharedManager] getgroupByGroupIdentifier:identifer];
         if (GJCFStringIsNull(group.groupEcdhKey)) {
-
             NSMutableArray *messages = [self.unHandleMessagees valueForKey:identifer];
             if (messages) {
                 [messages addObject:msg];
@@ -69,11 +68,9 @@
                 [messages addObject:msg];
                 [self.unHandleMessagees setObject:messages forKey:identifer];
             }
-
             CreateGroupMessage *createMsg = [[CreateGroupMessage alloc] init];
             createMsg.identifier = identifer;
             if (![self.downloadGroupArray containsObject:identifer]) {
-
                 [self.downloadGroupArray objectAddObject:identifer];
                 [SetGlobalHandler downGroupEcdhKeyWithGroupIdentifier:identifer complete:^(NSString *groupKey, NSError *error) {
                     if (!error && !GJCFStringIsNull(groupKey)) {
@@ -219,39 +216,26 @@
 
     for (MessagePost *msg in messages) {
         GcmData *gcmD = msg.msgData.cipherData;
-        @try {
-            NSData *data = [ConnectTool decodeGcmDataGetDataWithEcdhKey:[[ServerCenter shareCenter] getCurrentServer_userEcdhkey] GcmData:gcmD];
-            CreateGroupMessage *groupMessage = [CreateGroupMessage parseFromData:data error:nil];
-            //upload Group encryption key
-            [SetGlobalHandler uploadGroupEcdhKey:groupMessage.secretKey groupIdentifier:groupMessage.identifier];
-            //download group info
-            [self getGroupInfoFromNetWorkWithGroupInfo:groupMessage];
-
-        } @catch (NSException *exception) {
-            return NO;
-        }
+        NSData *data = [ConnectTool decodeGcmDataGetDataWithEcdhKey:[[ServerCenter shareCenter] getCurrentServer_userEcdhkey] GcmData:gcmD];
+        CreateGroupMessage *groupMessage = [CreateGroupMessage parseFromData:data error:nil];
+        //upload Group encryption key
+        [SetGlobalHandler uploadGroupEcdhKey:groupMessage.secretKey groupIdentifier:groupMessage.identifier];
+        //download group info
+        [self getGroupInfoFromNetWorkWithGroupInfo:groupMessage];
     }
     return YES;
 }
 
 - (BOOL)handleGroupInviteMessage:(MessagePost *)msg {
     GcmData *gcmD = msg.msgData.cipherData;
-    @try {
-        NSData *data = [ConnectTool decodeGcmDataWithGcmData:gcmD publickey:msg.pubKey needEmptySalt:YES];
-        if (data.length <= 0) {
-            return NO;
-        }
-
-        CreateGroupMessage *groupMessage = [CreateGroupMessage parseFromData:data error:nil];
-        //upload Group encryption key
-        [SetGlobalHandler uploadGroupEcdhKey:groupMessage.secretKey groupIdentifier:groupMessage.identifier];
-
-        [self getGroupInfoFromNetWorkWithGroupInfo:groupMessage];
-
-    } @catch (NSException *exception) {
-        DDLogInfo(@"exception %@", exception);
+    NSData *data = [ConnectTool decodeGcmDataWithGcmData:gcmD publickey:msg.pubKey needEmptySalt:YES];
+    if (data.length <= 0) {
         return NO;
     }
+    CreateGroupMessage *groupMessage = [CreateGroupMessage parseFromData:data error:nil];
+    //upload Group encryption key
+    [SetGlobalHandler uploadGroupEcdhKey:groupMessage.secretKey groupIdentifier:groupMessage.identifier];
+    [self getGroupInfoFromNetWorkWithGroupInfo:groupMessage];
     return NO;
 }
 
@@ -337,17 +321,24 @@
     lmGroup.isGroupVerify = group.group.reviewed;
     lmGroup.avatarUrl = group.group.avatar;
 
-
     [[GroupDBManager sharedManager] savegroup:lmGroup];
-
+    
+    //remove downloading
     [self.downloadGroupArray removeObject:createGroupinfo.identifier];
 
-    NSArray *unHandleMessage = [self.unHandleMessagees objectForKey:createGroupinfo.identifier];
+    //handle message
+    [self handMessage:[self.unHandleMessagees objectForKey:createGroupinfo.identifier] groupInfo:lmGroup];
+    
+    [self.unHandleMessagees removeObjectForKey:createGroupinfo.identifier];
+}
+
+- (void)handMessage:(NSArray *)unHandleMessage groupInfo:(LMGroupInfo *)lmGroup{
+    
     NSMutableDictionary *owerMessagesDict = [NSMutableDictionary dictionary];
     NSMutableArray *messageExtendArray = [NSMutableArray array];
     for (MessagePost *msg in unHandleMessage) {
         GcmData *gcmD = msg.msgData.cipherData;
-        NSString *messageString = [ConnectTool decodeGroupGcmDataWithEcdhKey:createGroupinfo.secretKey GcmData:gcmD];
+        NSString *messageString = [ConnectTool decodeGroupGcmDataWithEcdhKey:lmGroup.groupEcdhKey GcmData:gcmD];
         MMMessage *messageInfo = [MMMessage mj_objectWithKeyValues:[messageString dictionaryValue]];
         if (![LMMessageValidationTool checkMessageValidata:messageInfo messageType:MessageTypeGroup]) {
             continue;
@@ -361,7 +352,7 @@
         chatMessage.readTime = 0;
         chatMessage.message = messageInfo;
         chatMessage.messageOwer = lmGroup.groupIdentifer;
-
+        
         NSMutableDictionary *msgDict = [owerMessagesDict valueForKey:chatMessage.messageOwer];
         NSMutableArray *messages = [msgDict valueForKey:@"messages"];
         int unReadCount = [[msgDict valueForKey:@"unReadCount"] intValue];
@@ -370,10 +361,10 @@
             [messages objectAddObject:chatMessage];
             if ([GJGCChatFriendConstans shouldNoticeWithType:chatMessage.messageType]) {
                 unReadCount++;
-
+                
                 [msgDict setValue:@(unReadCount) forKey:@"unReadCount"];
             }
-
+            
             if (!groupNoteMyself && chatMessage.messageType == GJGCChatFriendContentTypeText) {
                 NSArray *array = messageInfo.ext1;
                 if (![messageInfo.ext1 isKindOfClass:[NSArray class]]) {
@@ -389,7 +380,7 @@
             if ([GJGCChatFriendConstans shouldNoticeWithType:chatMessage.messageType]) {
                 unReadCount = 1;
             }
-
+            
             if (!groupNoteMyself && chatMessage.messageType == GJGCChatFriendContentTypeText) {
                 NSArray *array = messageInfo.ext1;
                 if (![messageInfo.ext1 isKindOfClass:[NSArray class]]) {
@@ -400,15 +391,15 @@
                 }
             }
             NSMutableDictionary *msgDict = @{@"messages": messages,
-                    @"unReadCount": @(unReadCount),
-                    @"groupNoteMyself": @(groupNoteMyself)}.mutableCopy;
+                                             @"unReadCount": @(unReadCount),
+                                             @"groupNoteMyself": @(groupNoteMyself)}.mutableCopy;
             [owerMessagesDict setObject:msgDict forKey:chatMessage.messageOwer];
         }
-
+        
         if (chatMessage.messageType == GJGCChatFriendContentTypeText) {
             messageInfo.ext1 = nil;
         }
-
+        
         NSMutableDictionary *dict = [NSMutableDictionary dictionary];
         [dict safeSetObject:chatMessage.messageId forKey:@"message_id"];
         [dict safeSetObject:chatMessage.message.content forKey:@"hashid"];
@@ -418,8 +409,6 @@
         [messageExtendArray addObject:dict];
     }
     [[LMMessageExtendManager sharedManager] saveBitchMessageExtend:messageExtendArray];
-
-    [self.unHandleMessagees removeObjectForKey:createGroupinfo.identifier];
     for (NSDictionary *msgDict in owerMessagesDict.allValues) {
         NSMutableArray *messages = [msgDict valueForKey:@"messages"];
         int unReadCount = [[msgDict valueForKey:@"unReadCount"] intValue];
@@ -437,7 +426,7 @@
                 return NSOrderedDescending;
             }
         }];
-
+        
         NSMutableArray *pushMessages = [NSMutableArray arrayWithArray:messages];
         while (pushMessages.count > 0) {
             if (pushMessages.count > 20) {
@@ -453,10 +442,11 @@
                 [pushMessages removeAllObjects];
             }
         }
-
+        
         ChatMessageInfo *lastMsg = [messages lastObject];
         [self updataRecentChatLastMessageStatus:lastMsg messageCount:unReadCount groupNoteMyself:groupNoteMyself];
     }
+
 }
 
 

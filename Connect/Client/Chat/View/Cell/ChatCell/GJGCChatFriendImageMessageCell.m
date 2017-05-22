@@ -182,19 +182,14 @@
     if (chatContentModel.isSnapChatMode) {
         cacheImage = [cacheImage imageByBlurRadius:30 tintColor:nil tintMode:0 saturation:1 maskImage:nil];
     } else {
-        if (GJCFFileIsExist(chatContentModel.imageOriginDataCachePath)) {
-            cacheImage = GJCFQuickImageByFilePath(chatContentModel.imageOriginDataCachePath);
+        if (!cacheImage) {
+            cacheImage = GJCFQuickImageByFilePath(chatContentModel.thumbImageCachePath);
+            cacheImage = [UIImage imageWithColor:GJCFQuickHexColor(@"EAEBEE") withSize:self.contentSize];
+            self.imageDefaultView.hidden = NO;
+            self.cirProgressView.hidden = NO;
+        } else{
             self.imageDefaultView.hidden = YES;
             self.cirProgressView.hidden = YES;
-        } else {
-            if (!cacheImage) {
-                cacheImage = GJCFQuickImageByFilePath(chatContentModel.thumbImageCachePath);
-            }
-            if (!cacheImage) {
-                cacheImage = [UIImage imageWithColor:GJCFQuickHexColor(@"EAEBEE") withSize:self.contentSize];
-                self.imageDefaultView.hidden = NO;
-                self.cirProgressView.hidden = NO;
-            }
         }
     }
 

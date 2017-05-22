@@ -11,9 +11,6 @@
 @class VersionResponse;
 @class ChatCacheCookie;
 @class ChatCookieData;
-
-#define SessionManagerClearReadCountNoti @"SessionManagerClearReadCountNoti"
-
 @class RecentChatModel;
 
 @interface SessionManager : NSObject
@@ -42,10 +39,6 @@
 @property (nonatomic ,strong) NSMutableArray *allRecentChats;// session ui
 
 - (void)clearAllModel;
-
-- (void)clearUnreadWithIdentifier:(NSString *)identifier;
-
-
 
 #pragma mark - force Update
 

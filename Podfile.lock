@@ -21,8 +21,8 @@ PODS:
   - CocoaLumberjack/Default (3.2.0)
   - CocoaLumberjack/Extensions (3.2.0):
     - CocoaLumberjack/Default
-  - FMDB/SQLCipher (2.6.2):
-    - SQLCipher
+  - FMDB (2.6.2):
+    - FMDB/standard (= 2.6.2)
   - FMDB/standard (2.6.2)
   - FMDBMigrationManager (1.4.1):
     - FMDBMigrationManager/System (= 1.4.1)
@@ -97,17 +97,12 @@ PODS:
   - MJRefresh (3.1.12)
   - PLeakSniffer (0.1.0)
   - Protobuf (3.1.0)
-  - SQLCipher (3.4.1):
-    - SQLCipher/standard (= 3.4.1)
-  - SQLCipher/common (3.4.1)
-  - SQLCipher/standard (3.4.1):
-    - SQLCipher/common
 
 DEPENDENCIES:
   - AFNetworking (~> 3.0)
   - Bugly
   - CocoaLumberjack
-  - FMDB/SQLCipher
+  - FMDB
   - FMDBMigrationManager
   - Kiwi
   - KSCrash (= 1.6.0)
@@ -139,8 +134,7 @@ SPEC CHECKSUMS:
   MJRefresh: b96cdb21c4aa75a7b07654311ab2f315c497e806
   PLeakSniffer: f7eb13cd3a36150e0a2fd5fe8a33ca83bd2646d4
   Protobuf: 265e9977d04a83eba9cefb0bed3ad07e41033b4a
-  SQLCipher: 43d12c0eb9c57fb438749618fc3ce0065509a559
 
-PODFILE CHECKSUM: 4cef4674c4465e3968d75d53ad7d0feb5be97afc
+PODFILE CHECKSUM: ae018990f9b60eb11f0ca05d61f9af3fa07ae954
 
 COCOAPODS: 1.2.1

@@ -21,12 +21,8 @@
  */
 + (GPBMessage *)sendAdapterIMPostWithMessage:(MMMessage *)message talkType:(GJGCChatFriendTalkType)talkType ecdhKey:(NSString *)ecdhKey;
 
++ (NSString *)decodeMessageWithMassagePost:(MessagePost *)msgPost;
 
-/**
- * Encapsulates the data body of the message read ack message
- * @param message
- * @return
- */
-+ (MessagePost *)sendAdapterIMReadAckPostWithMessage:(MMMessage *)message;
++ (MMMessage *)packSystemMessage:(MSMessage *)sysMsg;
 
 @end

@@ -7,7 +7,6 @@
 //
 
 #import "LinkmanFriendCell.h"
-#import "CIImageCacheManager.h"
 #import "LMGroupInfo.h"
 #import "YYImageCache.h"
 
@@ -47,7 +46,7 @@
         } else{
             _nameLabel.text = user.username;
         }
-        if (![user.pub_key isEqualToString:@"connect"]) {
+        if (![user.pub_key isEqualToString:kSystemIdendifier]) {
             [self.avatarImageView setPlaceholderImageWithAvatarUrl:user.avatar];
         } else{
             self.avatarImageView.image = [UIImage imageNamed:user.avatar];
