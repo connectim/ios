@@ -235,9 +235,12 @@
     NSString *phone = loginUser.bondingPhone;
     if ([phone containsString:@"-"]) {
         NSString *code = [[phone componentsSeparatedByString:@"-"] firstObject];
-        NSString *lastPhone = [phone substringWithRange:NSMakeRange(phone.length / 2, phone.length / 2 - 1)];
-        phone = [NSString stringWithFormat:@"%@**%@", code, lastPhone];
-        exportQrcode.phone = phone;
+        NSString *lastPhone = [[phone componentsSeparatedByString:@"-"] lastObject];
+        if (lastPhone.length > 1) {
+            lastPhone = [lastPhone substringFromIndex:lastPhone.length/2.0 - 1];
+            phone = [NSString stringWithFormat:@"%@**%@", code, lastPhone];
+            exportQrcode.phone = phone;
+        }
     } else {
         phone = loginUser.bondingPhone;
     }
