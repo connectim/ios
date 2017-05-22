@@ -12,7 +12,6 @@ typedef NS_ENUM(NSInteger, GestureActionType) {
     GestureActionTypeSet = 0,
     GestureActionTypeCancel,
     GestureActionTypeChange,
-    GestureActionTypeVertify,
 };
 
 @interface GestureSetPage : BaseViewController

@@ -8,7 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-#define FreeLableNotificationKey @"freeLableNotificationKey"
 
 typedef void (^TransferInputResultBlock)(NSDecimalNumber *btcMoney, NSString *note);
 
@@ -30,7 +29,7 @@ typedef void (^TransferInputValueLagelBlock)(BOOL lagel);
 // Enter the default amount of the box
 @property(nonatomic, assign) double textDefaultAmount;
 // Whether to hide fee default no
-@property(nonatomic, assign) BOOL hidenFeeLabel;
+@property(nonatomic, assign) BOOL isHidenFee;
 // The top of the label
 @property(weak, nonatomic) IBOutlet UILabel *typeLabel;
 

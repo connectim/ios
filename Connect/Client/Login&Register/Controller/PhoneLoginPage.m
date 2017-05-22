@@ -221,6 +221,10 @@
                     AccountInfo *getChainUser = [[MMAppSetting sharedSetting] getLoginChainUsersByEncodePri:user.encryption_pri];
                     if (getChainUser) {
                         user = getChainUser;
+                        if (exportQrcode.phone.length > 0) {
+                            user.bondingPhone = exportQrcode.phone;
+                        }
+                        
                     }
                     LocalAccountLoginPage *page = [[LocalAccountLoginPage alloc] initWithUser:user];
                     [self.navigationController pushViewController:page animated:YES];
@@ -284,7 +288,6 @@
         [self.navigationController pushViewController:page animated:YES];
     }
 }
-
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     [self.view endEditing:YES];
 }

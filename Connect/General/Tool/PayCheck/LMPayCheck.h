@@ -23,11 +23,11 @@ typedef NS_ENUM(NSUInteger,TransferType) {
     TransferTypeUnsSetResult  = 1 << 9
 };
 typedef NS_ENUM(NSUInteger,MoneyType) {
-    MoneyTypeCommon =        1 << 0,
-    MoneyTypeTransferSmall = 1 << 1,
-    MoneyTypeTransferBig =   1 << 2,
-    MoneyTypeRedSmall =      1 << 3,
-    MoneyTypeRedBig =        1 << 4,
+    MoneyTypeCommon           = 1 << 0,
+    MoneyTypeTransferSmall    = 1 << 1,
+    MoneyTypeTransferBig      = 1 << 2,
+    MoneyTypeRedSmall         = 1 << 3,
+    MoneyTypeRedBig           = 1 << 4
     
 };
 
@@ -41,7 +41,22 @@ typedef NS_ENUM(NSUInteger,MoneyType) {
  *   Click the relevant button to verify the legitimacy
  *
  */
-+(NSInteger)checkMoneyNumber:(NSDecimalNumber*)number withTransfer:(BOOL)flag;
++ (NSInteger)checkMoneyNumber:(NSDecimalNumber*)number withTransfer:(BOOL)flag;
+/**
+ *   Turned out the amount of dirty check and alert
+ *
+ */
++ (BOOL)dirtyAlertWithAddress:(NSArray* )toAddresses withController:(UIViewController*)controller;
+/**
+ *   get Suitable fee
+ *
+ */
++ (double)getSuitAbleFee:(long long)fee;
+/**
+ *   Turned out the amount of dirty check and alert
+ *
+ */
++ (BOOL)dirtyAlertWithAmount:(long long)amount withController:(UIViewController*)controller;
 
 
 @end

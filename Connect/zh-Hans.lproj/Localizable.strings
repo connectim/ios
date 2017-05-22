@@ -203,6 +203,7 @@
 "ErrorCode Request Error"="请求错误";
 "ErrorCode Resource rule validation failed"="资源规则校验失败";
 "ErrorCode Signature error"="签名错误";
+"ErrorCode The fee is too low"="手续费过低";
 "ErrorCode The format is invalid"="格式不合法";
 "ErrorCode The phone number already exists"="电话号码已经存在";
 "ErrorCode The public key does not match"="公钥不匹配";
@@ -210,6 +211,8 @@
 "ErrorCode The resource has expired"="资源已经过期";
 "ErrorCode The resource is not exist"="资源不存在";
 "ErrorCode Token does not match"="Token 不匹配";
+"ErrorCode Transaction information is incorrect"="交易信息有误";
+"ErrorCode Version information is repeated"="版本信息重复";
 "ErrorCode backup key password hint incomplete"="备份密钥和密码提示符不完整";
 "ErrorCode data error"="数据错误";
 "ErrorCode dust"="肮脏交易";

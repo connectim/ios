@@ -269,50 +269,7 @@ static NSString *identifier = @"cellIdentifier";
     __weak __typeof(&*self) weakSelf = self;
     [[PayTool sharedInstance] payVerfifyFingerWithComplete:^(BOOL result, NSString *errorMsg) {
         if (result) {
-            [MBProgressHUD showTransferLoadingViewtoView:weakSelf.view];
-            NSString *sign = [KeyHandle signRawTranscationWithTvsArray:vtsArray privkeys:@[[[LKUserCenter shareCenter] currentLoginUser].prikey] rawTranscation:rawTransaction];
-            PayCrowdfunding *crowdFunding = [[PayCrowdfunding alloc] init];
-            crowdFunding.amount = amount;
-            crowdFunding.rawTx = sign;
-            crowdFunding.hashId = weakSelf.crowdfundingInfo.hashId;
-
-            [NetWorkOperationTool POSTWithUrlString:WalltePayCrowdfuningUrl postProtoData:crowdFunding.data complete:^(id response) {
-                [MBProgressHUD hideHUDForView:weakSelf.view];
-                HttpResponse *hResponse = (HttpResponse *) response;
-                if (hResponse.code != successCode) {
-                    [GCDQueue executeInMainQueue:^{
-                        [MBProgressHUD showToastwithText:hResponse.message withType:ToastTypeFail showInView:weakSelf.view complete:nil];
-                    }];
-                    return;
-                }
-                NSData *data = [ConnectTool decodeHttpResponse:hResponse];
-                if (data) {
-                    NSError *error = nil;
-                    Crowdfunding *crowdInfo = [Crowdfunding parseFromData:data error:&error];
-                    //update local data
-                    [[LMMessageExtendManager sharedManager]updateMessageExtendPayCount:(int)(crowdInfo.size - crowdInfo.remainSize)status:(int)crowdInfo.status withHashId:crowdInfo.hashId];
-                    if (!error) {
-                        //update packet money
-                        [[PayTool sharedInstance] getBlanceWithComplete:^(NSString *blance, UnspentAmount *unspentAmount, NSError *error) {
-                            [GCDQueue executeInMainQueue:^{
-                                weakSelf.blance = unspentAmount.avaliableAmount;
-                                weakSelf.userBalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance", nil), [PayTool getBtcStringWithAmount:unspentAmount.avaliableAmount]];
-                            }];
-                        }];
-
-                        weakSelf.crowdfundingInfo = crowdInfo;
-                        //refresh list
-                        [weakSelf reloadView];
-                        if (weakSelf.PaySuccessCallBack) {
-                            weakSelf.PaySuccessCallBack(crowdInfo);
-                        }
-                    }
-                }
-            }                                  fail:^(NSError *error) {
-                [GCDQueue executeInMainQueue:^{
-                    [MBProgressHUD showToastwithText:[LMErrorCodeTool showToastErrorType:ToastErrorTypeContact withErrorCode:error.code withUrl:WalltePayCrowdfuningUrl] withType:ToastTypeFail showInView:weakSelf.view complete:nil];
-                }];
-            }];
+            [self successAction:amount vtsArray:vtsArray rawTransaction:rawTransaction passView:nil];
         } else {
             if ([errorMsg isEqualToString:@"NO"]) {
                 [GCDQueue executeInMainQueue:^{
@@ -320,53 +277,8 @@ static NSString *identifier = @"cellIdentifier";
                 }];
             } else {
                 [InputPayPassView showInputPayPassWithComplete:^(InputPayPassView *passView, NSError *error, BOOL result) {
-                    [MBProgressHUD showTransferLoadingViewtoView:weakSelf.view];
-                    NSString *sign = [KeyHandle signRawTranscationWithTvsArray:vtsArray privkeys:@[[[LKUserCenter shareCenter] currentLoginUser].prikey] rawTranscation:rawTransaction];
-                    PayCrowdfunding *crowdFunding = [[PayCrowdfunding alloc] init];
-                    crowdFunding.amount = amount;
-                    crowdFunding.rawTx = sign;
-                    crowdFunding.hashId = weakSelf.crowdfundingInfo.hashId;
-
-                    [NetWorkOperationTool POSTWithUrlString:WalltePayCrowdfuningUrl postProtoData:crowdFunding.data complete:^(id response) {
-                        [MBProgressHUD hideHUDForView:weakSelf.view];
-                        HttpResponse *hResponse = (HttpResponse *) response;
-                        if (hResponse.code != successCode) {
-                            if (passView.requestCallBack) {
-                                passView.requestCallBack([NSError errorWithDomain:hResponse.message code:hResponse.code userInfo:nil]);
-                            }
-                            return;
-                        }
-                        if (passView.requestCallBack) {
-                            passView.requestCallBack(nil);
-                        }
-
-                        NSData *data = [ConnectTool decodeHttpResponse:hResponse];
-                        if (data) {
-                            NSError *error = nil;
-                            Crowdfunding *crowdInfo = [Crowdfunding parseFromData:data error:&error];
-                            [[LMMessageExtendManager sharedManager]updateMessageExtendPayCount:(int)(crowdInfo.size - crowdInfo.remainSize)status:(int)crowdInfo.status withHashId:crowdInfo.hashId];
-                            if (!error) {
-                                //update packet balance
-                                [[PayTool sharedInstance] getBlanceWithComplete:^(NSString *blance, UnspentAmount *unspentAmount, NSError *error) {
-                                    [GCDQueue executeInMainQueue:^{
-                                        weakSelf.blance = unspentAmount.avaliableAmount;
-                                        weakSelf.userBalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance", nil), [PayTool getBtcStringWithAmount:unspentAmount.avaliableAmount]];
-                                    }];
-                                }];
-
-                                weakSelf.crowdfundingInfo = crowdInfo;
-                                //refresh list
-                                [weakSelf reloadView];
-                                if (weakSelf.PaySuccessCallBack) {
-                                    weakSelf.PaySuccessCallBack(crowdInfo);
-                                }
-                            }
-                        }
-                    }                                  fail:^(NSError *error) {
-                        if (passView.requestCallBack) {
-                            passView.requestCallBack(error);
-                        }
-                    }];
+                    [weakSelf successAction:amount vtsArray:vtsArray rawTransaction:rawTransaction passView:passView];
+                    
                 }                              forgetPassBlock:^{
                     [GCDQueue executeInMainQueue:^{
                         [MBProgressHUD hideHUDForView:weakSelf.view];
@@ -382,7 +294,63 @@ static NSString *identifier = @"cellIdentifier";
         }
     }];
 }
+- (void)successAction:(long long)amount vtsArray:(NSArray *)vtsArray rawTransaction:(NSString *)rawTransaction passView:(InputPayPassView *)passView{
+    
+    __weak __typeof(&*self) weakSelf = self;
+    [MBProgressHUD showTransferLoadingViewtoView:self.view];
+    NSString *sign = [KeyHandle signRawTranscationWithTvsArray:vtsArray privkeys:@[[[LKUserCenter shareCenter] currentLoginUser].prikey] rawTranscation:rawTransaction];
+    PayCrowdfunding *crowdFunding = [[PayCrowdfunding alloc] init];
+    crowdFunding.amount = amount;
+    crowdFunding.rawTx = sign;
+    crowdFunding.hashId = self.crowdfundingInfo.hashId;
+    
+    [NetWorkOperationTool POSTWithUrlString:WalltePayCrowdfuningUrl postProtoData:crowdFunding.data complete:^(id response) {
+        [MBProgressHUD hideHUDForView:self.view];
+        HttpResponse *hResponse = (HttpResponse *) response;
+        if (hResponse.code != successCode) {
+            
+        if (passView.requestCallBack) {
+            passView.requestCallBack([NSError errorWithDomain:hResponse.message code:hResponse.code userInfo:nil]);
+        }
+            
+            return;
+        }
+       
+        if (passView.requestCallBack) {
+            passView.requestCallBack(nil);
+        }
+        
+        NSData *data = [ConnectTool decodeHttpResponse:hResponse];
+        if (data) {
+            NSError *error = nil;
+            Crowdfunding *crowdInfo = [Crowdfunding parseFromData:data error:&error];
+            [[LMMessageExtendManager sharedManager]updateMessageExtendPayCount:(int)(crowdInfo.size - crowdInfo.remainSize)status:(int)crowdInfo.status withHashId:crowdInfo.hashId];
+            if (!error) {
+                //update packet balance
+                [[PayTool sharedInstance] getBlanceWithComplete:^(NSString *blance, UnspentAmount *unspentAmount, NSError *error) {
+                    [GCDQueue executeInMainQueue:^{
+                        weakSelf.blance = unspentAmount.avaliableAmount;
+                        weakSelf.userBalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance", nil), [PayTool getBtcStringWithAmount:unspentAmount.avaliableAmount]];
+                    }];
+                }];
+                
+                weakSelf.crowdfundingInfo = crowdInfo;
+                //refresh list
+                [weakSelf reloadView];
+                if (weakSelf.PaySuccessCallBack) {
+                    weakSelf.PaySuccessCallBack(crowdInfo);
+                }
+            }
+        }
+    }                                  fail:^(NSError *error) {
+       
+        if (passView.requestCallBack) {
+            passView.requestCallBack(error);
+        }
+       
+    }];
 
+}
 
 - (void)updateBalanceLabelWithBitInfo:(BitcoinInfo *)info {
     dispatch_async(dispatch_get_main_queue(), ^{

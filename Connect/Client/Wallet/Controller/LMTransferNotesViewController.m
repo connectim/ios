@@ -289,7 +289,11 @@ typedef NS_ENUM(NSInteger, LMTransactionStatusType) {
     NSArray *toAddresses = @[@{@"address": self.bill.receiver, @"amount": [amount
             decimalNumberByDividingBy:
                     [[NSDecimalNumber alloc] initWithLongLong:pow(10, 8)]].stringValue}];
-
+    BOOL isDusk = [LMPayCheck dirtyAlertWithAddress:toAddresses withController:self];
+    if (isDusk) {
+        btn.enabled = YES;
+        return;
+    }
     AccountInfo *ainfo = [[LKUserCenter shareCenter] currentLoginUser];
     [WallteNetWorkTool unspentV2WithAddress:ainfo.address fee:[[MMAppSetting sharedSetting] getTranferFee] toAddress:toAddresses createRawTranscationModelComplete:^(UnspentOrderResponse *unspent, NSError *error) {
         [LMPayCheck payCheck:nil withVc:weakSelf withTransferType:TransferTypeNotes unSpent:unspent withArray:toAddresses withMoney:amount withNote:nil withType:0 withRedPackage:nil withError:error];
@@ -342,24 +346,7 @@ typedef NS_ENUM(NSInteger, LMTransactionStatusType) {
     __weak __typeof(&*self) weakSelf = self;
     [[PayTool sharedInstance] payVerfifyFingerWithComplete:^(BOOL result, NSString *errorMsg) {
         if (result) {
-            [MBProgressHUD showTransferLoadingViewtoView:weakSelf.view];
-            [weakSelf paymentToAddress:weakSelf.bill.receiver decimalMoney:money hashID:weakSelf.bill.hash_p complete:^(NSString *hashId, NSError *error) {
-                if (!error) {
-                    // update money blance
-                    [[PayTool sharedInstance] getBlanceWithComplete:^(NSString *blance, UnspentAmount *unspentAmount, NSError *error) {
-                        [GCDQueue executeInMainQueue:^{
-                            weakSelf.blance = unspentAmount.avaliableAmount;
-                            weakSelf.BalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance", nil), [PayTool getBtcStringWithAmount:unspentAmount.avaliableAmount]];
-                        }];
-                    }];
-                    // update data status
-                    [[LMMessageExtendManager sharedManager] updateMessageExtendStatus:1 withHashId:self.bill.hash_p];
-                    // call back
-                    if (weakSelf.PayResultBlock) {
-                        weakSelf.PayResultBlock(YES);
-                    }
-                }
-            }];
+            [self successAction:rawModel decimalMoney:money passView:nil];
         } else {
             if ([errorMsg isEqualToString:@"NO"]) {
                 [GCDQueue executeInMainQueue:^{
@@ -369,30 +356,7 @@ typedef NS_ENUM(NSInteger, LMTransactionStatusType) {
             }
             [InputPayPassView showInputPayPassWithComplete:^(InputPayPassView *passView, NSError *error, BOOL result) {
                 if (result) {
-                    [weakSelf paymentToAddress:weakSelf.bill.receiver decimalMoney:money hashID:weakSelf.bill.hash_p complete:^(NSString *hashId, NSError *error) {
-                        if (!error) {
-                            if (passView.requestCallBack) {
-                                passView.requestCallBack(nil);
-                            }
-                            // update blance
-                            [[PayTool sharedInstance] getBlanceWithComplete:^(NSString *blance, UnspentAmount *unspentAmount, NSError *error) {
-                                [GCDQueue executeInMainQueue:^{
-                                    weakSelf.blance = unspentAmount.avaliableAmount;
-                                    weakSelf.BalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance", nil), [PayTool getBtcStringWithAmount:unspentAmount.avaliableAmount]];
-                                }];
-                            }];
-                            // update db status
-                            [[LMMessageExtendManager sharedManager] updateMessageExtendStatus:1 withHashId:self.bill.hash_p];
-                            // call back
-                            if (weakSelf.PayResultBlock) {
-                                weakSelf.PayResultBlock(YES);
-                            }
-                        } else {
-                            if (passView.requestCallBack) {
-                                passView.requestCallBack(error);
-                            }
-                        }
-                    }];
+                    [weakSelf successAction:rawModel decimalMoney:money passView:passView];
                 }
             }                              forgetPassBlock:^{
                 [GCDQueue executeInMainQueue:^{
@@ -409,6 +373,36 @@ typedef NS_ENUM(NSInteger, LMTransactionStatusType) {
     }];
 
 }
-
+- (void)successAction:(LMRawTransactionModel *)rawModel decimalMoney:(NSDecimalNumber *)money passView:(InputPayPassView *)passView {
+    __weak __typeof(&*self) weakSelf = self;
+    [self paymentToAddress:self.bill.receiver decimalMoney:money hashID:self.bill.hash_p complete:^(NSString *hashId, NSError *error) {
+        if (!error) {
+            
+            if (passView.requestCallBack) {
+                passView.requestCallBack(nil);
+            }
+            
+            // update blance
+            [[PayTool sharedInstance] getBlanceWithComplete:^(NSString *blance, UnspentAmount *unspentAmount, NSError *error) {
+                [GCDQueue executeInMainQueue:^{
+                    weakSelf.blance = unspentAmount.avaliableAmount;
+                    weakSelf.BalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance", nil), [PayTool getBtcStringWithAmount:unspentAmount.avaliableAmount]];
+                }];
+            }];
+            // update db status
+            [[LMMessageExtendManager sharedManager] updateMessageExtendStatus:1 withHashId:self.bill.hash_p];
+            // call back
+            if (weakSelf.PayResultBlock) {
+                weakSelf.PayResultBlock(YES);
+            }
+        } else {
+            
+            if (passView.requestCallBack) {
+                passView.requestCallBack(error);
+            }
+            
+        }
+    }];
+}
 
 @end

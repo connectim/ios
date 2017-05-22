@@ -41,15 +41,6 @@
         rawModel.unspent = unspent;
         rawModel.toAddresses = toAddresses;
         
-        // check packet
-        BOOL packge = [LMUnspentCheckTool checkPackgeWithRawTrancation:rawModel];
-        if (!packge) {
-            transferViewVc.comfrimButton.enabled = YES;
-            [GCDQueue executeInMainQueue:^{
-                [MBProgressHUD showToastwithText:LMLocalizedString(@"Wallet Too much transaction can not generated", nil) withType:ToastTypeFail showInView:transferViewVc.view complete:nil];
-            }];
-            return;
-        }
         
         // Balance check
         BOOL blanceCheck = [LMUnspentCheckTool checkBlanceEnoughWithRawTrancation:rawModel];
@@ -61,12 +52,12 @@
             return;
         }
         
-        // Turned out the amount of dirty check
-        BOOL amountDust = [LMUnspentCheckTool checkToAddressAmountDustWithToAddresses:toAddresses];
-        if (amountDust) {
+        // check packet
+        BOOL packge = [LMUnspentCheckTool checkPackgeWithRawTrancation:rawModel];
+        if (!packge) {
             transferViewVc.comfrimButton.enabled = YES;
             [GCDQueue executeInMainQueue:^{
-                [MBProgressHUD showToastwithText:LMLocalizedString(@"Wallet Amount is too small", nil) withType:ToastTypeFail showInView:transferViewVc.view complete:nil];
+                [MBProgressHUD showToastwithText:LMLocalizedString(@"Wallet Too much transaction can not generated", nil) withType:ToastTypeFail showInView:transferViewVc.view complete:nil];
             }];
             return;
         }
@@ -87,16 +78,7 @@
                             break;
                         case 2: //click button
                         {
-                            rawModel.unspent.fee = [[MMAppSetting sharedSetting] getMaxTranferFee]; // set max
-                            // blance check
-                            BOOL balance = [LMUnspentCheckTool checkBlanceEnoughithRawTrancation:rawModel];
-                            if (!balance) {
-                                transferViewVc.comfrimButton.enabled = YES;
-                                [GCDQueue executeInMainQueue:^{
-                                    [MBProgressHUD showToastwithText:LMLocalizedString(@"Wallet Insufficient balance", nil) withType:ToastTypeFail showInView:transferViewVc.view complete:nil];
-                                }];
-                            } else {
-                                
+                            rawModel.unspent.fee = [[MMAppSetting sharedSetting] getMaxTranferFee];
                                 switch (transferType) {
                                         // Check for change
                                     case TransferTypeOuterTransfer:  // External transfer
@@ -150,8 +132,7 @@
                                     default:
                                         break;
                                 }
-                                
-                            }
+
                         }
                             break;
                         default:
@@ -304,7 +285,7 @@
  *   Click the relevant button to verify the legitimacy
  *
  */
-+(NSInteger)checkMoneyNumber:(NSDecimalNumber*)number withTransfer:(BOOL)flag
++ (NSInteger)checkMoneyNumber:(NSDecimalNumber*)number withTransfer:(BOOL)flag
 {
     // All the ratio of the conversion rate by bit currency
     if (flag) {  // transfer
@@ -325,5 +306,50 @@
         }
     }
     return MoneyTypeCommon;;
+}
+/**
+ *   Turned out the amount of dirty check and alert
+ *
+ */
++ (BOOL)dirtyAlertWithAddress:(NSArray* )toAddresses withController:(UIViewController*)controller {
+    
+    BOOL amountDust = [LMUnspentCheckTool checkToAddressAmountDustWithToAddresses:toAddresses];
+    if (amountDust) {
+        [GCDQueue executeInMainQueue:^{
+            [MBProgressHUD showToastwithText:LMLocalizedString(@"Wallet Amount is too small", nil) withType:ToastTypeFail showInView:controller.view complete:nil];
+           
+        }];
+    }
+    return amountDust;
+}
+/**
+ *   get Suitable fee
+ *
+ */
++ (double)getSuitAbleFee:(long long)fee {
+    
+    long long addFee = fee;
+    if ([[MMAppSetting sharedSetting] canAutoCalculateTransactionFee]) {
+        if (fee > [[MMAppSetting sharedSetting] getMaxTranferFee]) {
+            addFee = [[MMAppSetting sharedSetting] getMaxTranferFee];
+        }
+    }
+    return addFee;
+}
+/**
+ *   Turned out the amount of dirty check and alert
+ *
+ */
++ (BOOL)dirtyAlertWithAmount:(long long)amount withController:(UIViewController*)controller {
+    
+    BOOL amountDust = [LMUnspentCheckTool haveDustWithAmount:amount];
+    if (amountDust) {
+        [GCDQueue executeInMainQueue:^{
+            [MBProgressHUD showToastwithText:LMLocalizedString(@"Wallet Amount is too small", nil) withType:ToastTypeFail showInView:controller.view complete:nil];
+            
+        }];
+    }
+    return amountDust;
+
 }
 @end

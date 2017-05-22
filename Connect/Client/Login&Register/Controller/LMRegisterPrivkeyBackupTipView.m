@@ -30,12 +30,9 @@
 
 - (IBAction)startChatAction:(id)sender {
     [LKUserCenter shareCenter].isFristLogin = NO;
-    [UIView animateWithDuration:0. animations:^{
-        self.alpha = 0;
-    }                completion:^(BOOL finished) {
-        self.controller = nil;
-        [self removeFromSuperview];
-    }];
+    self.alpha = 0;
+    self.controller = nil;
+    [self removeFromSuperview];
 }
 
 - (void)awakeFromNib {
