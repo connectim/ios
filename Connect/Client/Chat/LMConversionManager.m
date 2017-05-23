@@ -366,8 +366,6 @@ CREATE_SHARED_MANAGER(LMConversionManager)
     message.senderInfoExt = senderInfoExt;
     message.type = GJGCChatFriendContentTypeText;
     long int time = [[UserDBManager sharedManager] getRequestTimeByUserPublickey:chatUser.pub_key];
-    NSString *tips = [[UserDBManager sharedManager] getRequestTipsByUserPublickey:chatUser.pub_key];
-    chatUser.message = tips;
     if (time) {
         message.sendtime  = time;
     } else{

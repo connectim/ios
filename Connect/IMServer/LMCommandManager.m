@@ -1301,21 +1301,26 @@ CREATE_SHARED_MANAGER(LMCommandManager)
 
             break;
     }
-
+    
+    ReceiveAcceptFriendRequest *syncRalation = [ReceiveAcceptFriendRequest parseFromData:command.detail error:nil];
+    [[UserDBManager sharedManager] updateNewFriendStatusAddress:syncRalation.address withStatus:RequestFriendStatusAdded];
+    
     if (sendComModel.callBack) {
         sendComModel.callBack(nil, oriMsg.sendOriginInfo);
-    }
-    ReceiveAcceptFriendRequest *syncRalation = [ReceiveAcceptFriendRequest parseFromData:command.detail error:nil];
-
-    DDLogInfo(@"accpet success");
-
-    [[UserDBManager sharedManager] updateNewFriendStatusAddress:syncRalation.address withStatus:RequestFriendStatusAdded];
-    [[IMService instance] getFriendsWithVersion:[[MMAppSetting sharedSetting] getContactVersion] comlete:^(NSError *erro, id data) {
-
-        [GCDQueue executeInMainQueue:^{
-            SendNotify(kAcceptNewFriendRequestNotification, data);
+        [[IMService instance] getFriendsWithVersion:[[MMAppSetting sharedSetting] getContactVersion] comlete:^(NSError *erro, id data) {
+            AccountInfo *addUser = (AccountInfo *)data;
+            addUser.message = [[UserDBManager sharedManager] getRequestTipsByUserPublickey:addUser.pub_key];
+            [GCDQueue executeInMainQueue:^{
+                SendNotify(kAcceptNewFriendRequestNotification, addUser);
+            }];
         }];
-    }];
+    } else {
+        [[IMService instance] getFriendsWithVersion:[[MMAppSetting sharedSetting] getContactVersion] comlete:^(NSError *erro, id data) {
+            [GCDQueue executeInMainQueue:^{
+                SendNotify(kAcceptNewFriendRequestNotification, data);
+            }];
+        }];
+    }
 }
 
 @end
