@@ -96,6 +96,8 @@
         //delete user db 
         NSString *dbPath = [MMGlobal getDBFile:willDeleteUser.pub_key];
         GJCFFileDeleteFile(dbPath);
+        
+        [[MMAppSetting sharedSetting] deleteLocalUserWithAddress:willDeleteUser.address];
 
         BOOL isSelectedUser = willDeleteUser.isSelected;
         [self.users removeObject:willDeleteUser];
