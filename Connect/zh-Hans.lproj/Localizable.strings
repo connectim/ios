@@ -1,5 +1,4 @@
 "Chat"="聊天";
-"Chat One message failed to decrypt" = "有一条消息解密失败";
 "Chat Accept success"="领取成功";
 "Chat Add as a friend to chat"="添加为好友才能开始聊天";
 "Chat Address"="地址";
@@ -81,6 +80,7 @@
 "Chat Not Group Master"="你不是该群的群主";
 "Chat Not connected"="聊天(未连接)";
 "Chat Notice New Message"="[你收到一条新消息]";
+"Chat One message failed to decrypt"="有一条消息解密失败";
 "Chat Original"="原图";
 "Chat Panoramas"="全景照片";
 "Chat Per BTC"="%@ 每人\n%@ BTC";
@@ -221,6 +221,7 @@
 "ErrorCode publish hex decode error"="发布十六进制解码错误";
 "ErrorCode salt failure or gcm decryption failed"="用户盐失效或者gcm解密失败";
 "ErrorCode timestamp not in the specified range"="时间戳不在规定范围";
+"ErrorCode transaction address is not available"="交易地址不可用";
 "ErrorCode xn mempool conflict"="Tx内存冲突";
 "Link"="联系人模块";
 "Link Accept"="接受";
@@ -456,7 +457,6 @@
 "Set Auto"="自动付费";
 "Set BTC symbol"="฿";
 "Set Backup Private Key"="备份私钥";
-"Set Backup decrypted private key"="备份私钥";
 "Set Backup encrypted private key"="备份加密私钥";
 "Set CONNECT ID can only be set once"="CONNECT ID 只能被设置一次";
 "Set CONNECT ID set success no set"="CONNECT ID 设置成功后不可修改
@@ -524,6 +524,7 @@
 "Set Privacy"="隐私";
 "Set Private key backup"="私钥备份";
 "Set Profile Photo"="头像";
+"Set Query failed"="查询失败";
 "Set Rate Connect"="去评分";
 "Set Remove Success"="移除成功";
 "Set Reset"="重设";
