@@ -1298,7 +1298,6 @@ CREATE_SHARED_MANAGER(LMCommandManager)
         }
             break;
         default:
-
             break;
     }
     
@@ -1307,18 +1306,22 @@ CREATE_SHARED_MANAGER(LMCommandManager)
     
     if (sendComModel.callBack) {
         sendComModel.callBack(nil, oriMsg.sendOriginInfo);
-        [[IMService instance] getFriendsWithVersion:[[MMAppSetting sharedSetting] getContactVersion] comlete:^(NSError *erro, id data) {
-            AccountInfo *addUser = (AccountInfo *)data;
-            addUser.message = [[UserDBManager sharedManager] getRequestTipsByUserPublickey:addUser.pub_key];
-            [GCDQueue executeInMainQueue:^{
-                SendNotify(kAcceptNewFriendRequestNotification, addUser);
-            }];
+        [[IMService instance] getFriendsWithVersion:[[MMAppSetting sharedSetting] getContactVersion] comlete:^(NSError *error, id data) {
+            if (!error && [data isKindOfClass:[AccountInfo class]]) {
+                AccountInfo *addUser = (AccountInfo *)data;
+                addUser.message = [[UserDBManager sharedManager] getRequestTipsByUserPublickey:addUser.pub_key];
+                [GCDQueue executeInMainQueue:^{
+                    SendNotify(kAcceptNewFriendRequestNotification, addUser);
+                }];
+            }
         }];
     } else {
-        [[IMService instance] getFriendsWithVersion:[[MMAppSetting sharedSetting] getContactVersion] comlete:^(NSError *erro, id data) {
-            [GCDQueue executeInMainQueue:^{
-                SendNotify(kAcceptNewFriendRequestNotification, data);
-            }];
+        [[IMService instance] getFriendsWithVersion:[[MMAppSetting sharedSetting] getContactVersion] comlete:^(NSError *error, id data) {
+            if (!error && [data isKindOfClass:[AccountInfo class]]) {
+                [GCDQueue executeInMainQueue:^{
+                    SendNotify(kAcceptNewFriendRequestNotification, data);
+                }];
+            }
         }];
     }
 }
