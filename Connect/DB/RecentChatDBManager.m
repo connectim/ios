@@ -203,7 +203,8 @@ static RecentChatDBManager *manager = nil;
     }
 
     BOOL result = [self deleteTableName:RecentChatTable conditions:@{@"identifier": identifier}];
-    [self deleteTableName:RecentChatTableSetting conditions:@{@"identifier": identifier}];
+    
+//    [self deleteTableName:RecentChatTableSetting conditions:@{@"identifier": identifier}];
 
     //remove draft
     [self removeDraftWithIdentifier:identifier];
@@ -576,6 +577,7 @@ static RecentChatDBManager *manager = nil;
                 recentChat.chatUser = contact;
             }
         }
+        recentChat.notifyStatus = [self getMuteStatusWithIdentifer:recentChat.identifier];
         [self save:recentChat];
     }
     [GCDQueue executeInMainQueue:^{

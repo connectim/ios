@@ -103,7 +103,7 @@ CREATE_SHARED_MANAGER(LMConversionManager)
                 recentModel.chatUser = contact;
                 recentModel.content = [GJGCChatFriendConstans lastContentMessageWithType:lastMessage.messageType textMessage:lastMessage.message.content];
                 recentModel.snapChatDeleteTime = (int)snapChatTime;
-                
+                recentModel.notifyStatus = [[RecentChatDBManager sharedManager] getMuteStatusWithIdentifer:recentModel.identifier];
                 if (lastMessage.message.type == GJGCChatFriendContentTypeSnapChat) {
                     recentModel.unReadCount = 0;
                     recentModel.snapChatDeleteTime = [lastMessage.message.content intValue];
@@ -112,27 +112,20 @@ CREATE_SHARED_MANAGER(LMConversionManager)
             } else{
                 
                 recentModel.content = [GJGCChatFriendConstans lastContentMessageWithType:lastMessage.messageType textMessage:lastMessage.message.content];
-                int unRead = recentModel.unReadCount;
-                unRead += messageCount;
-                
-                if ([[SessionManager sharedManager].chatSession isEqualToString:recentModel.identifier] ||
-                    recentModel.notifyStatus) {
-                    unRead = 0;
-                }
-                
                 if (recentModel.stranger) {
                     recentModel.stranger = NO;
                     recentModel.chatUser.stranger = NO;
                 }
-                recentModel.unReadCount = unRead;
-                recentModel.snapChatDeleteTime = (int)snapChatTime;
-                
+                recentModel.unReadCount += messageCount;
+                if ([[SessionManager sharedManager].chatSession isEqualToString:recentModel.identifier]) {
+                    recentModel.unReadCount = 0;
+                }
                 recentModel.time = [NSString stringWithFormat:@"%lld",(long long)([[NSDate date] timeIntervalSince1970] * 1000)];
                 if (lastMessage.message.type == GJGCChatFriendContentTypeSnapChat) {
                     recentModel.snapChatDeleteTime = [lastMessage.message.content intValue];
                 }
                 NSMutableDictionary *fieldsValues = [NSMutableDictionary dictionary];
-                [fieldsValues safeSetObject:@(unRead) forKey:@"unread_count"];
+                [fieldsValues safeSetObject:@(recentModel.unReadCount) forKey:@"unread_count"];
                 [fieldsValues safeSetObject:recentModel.content forKey:@"content"];
                 [fieldsValues safeSetObject:recentModel.time forKey:@"last_time"];
                 if (snapChatTime < 0) {
@@ -142,8 +135,10 @@ CREATE_SHARED_MANAGER(LMConversionManager)
                     [fieldsValues safeSetObject:@(NO) forKey:@"stranger"];
                 }
                 [[RecentChatDBManager sharedManager] customUpdateRecentChatTableWithFieldsValues:fieldsValues withIdentifier:recentModel.identifier];
-                
-                [[RecentChatDBManager sharedManager] openOrCloseSnapChatWithTime:recentModel.snapChatDeleteTime chatIdentifer:recentModel.identifier];
+                if (snapChatTime != recentModel.snapChatDeleteTime) {
+                    recentModel.snapChatDeleteTime = (int)snapChatTime;
+                    [[RecentChatDBManager sharedManager] openOrCloseSnapChatWithTime:recentModel.snapChatDeleteTime chatIdentifer:recentModel.identifier];
+                }
             }
         }
             break;
@@ -170,6 +165,7 @@ CREATE_SHARED_MANAGER(LMConversionManager)
                 recentModel.content = [GJGCChatFriendConstans lastContentMessageWithType:lastMessage.messageType textMessage:lastMessage.message.content senderUserName:sendName];
                 recentModel.talkType = GJGCChatFriendTalkTypeGroup;
                 recentModel.chatGroupInfo = group;
+                recentModel.notifyStatus = [[RecentChatDBManager sharedManager] getMuteStatusWithIdentifer:recentModel.identifier];
                 [[RecentChatDBManager sharedManager] save:recentModel];
             } else{
                 NSString *sendName = nil;
@@ -180,8 +176,7 @@ CREATE_SHARED_MANAGER(LMConversionManager)
                     sendName = [lastMessage.message.senderInfoExt valueForKey:@"username"];
                 }
                 recentModel.content = [GJGCChatFriendConstans lastContentMessageWithType:lastMessage.messageType textMessage:lastMessage.message.content senderUserName:sendName];
-                if ([[SessionManager sharedManager].chatSession isEqualToString:recentModel.identifier] ||
-                    recentModel.notifyStatus) {
+                if ([[SessionManager sharedManager].chatSession isEqualToString:recentModel.identifier]) {
                     recentModel.unReadCount = 0;
                 } else{
                     recentModel.unReadCount += messageCount;
@@ -254,6 +249,7 @@ CREATE_SHARED_MANAGER(LMConversionManager)
         recentModel.content = [GJGCChatFriendConstans lastContentMessageWithType:lastMessage.messageType textMessage:lastMessage.message.content senderUserName:sendName];
         recentModel.talkType = GJGCChatFriendTalkTypeGroup;
         recentModel.chatGroupInfo = group;
+        recentModel.notifyStatus = [[RecentChatDBManager sharedManager] getMuteStatusWithIdentifer:recentModel.identifier];
         [[RecentChatDBManager sharedManager] save:recentModel];
     } else{
         if ([[SessionManager sharedManager].chatSession isEqualToString:lastMessage.messageOwer]) {
@@ -271,8 +267,7 @@ CREATE_SHARED_MANAGER(LMConversionManager)
             sendName = [lastMessage.message.senderInfoExt valueForKey:@"username"];
         }
         recentModel.content = [GJGCChatFriendConstans lastContentMessageWithType:lastMessage.messageType textMessage:lastMessage.message.content senderUserName:sendName];
-        if ([[SessionManager sharedManager].chatSession isEqualToString:recentModel.identifier] ||
-            recentModel.notifyStatus) {
+        if ([[SessionManager sharedManager].chatSession isEqualToString:recentModel.identifier]) {
             recentModel.unReadCount = 0;
         } else{
             recentModel.unReadCount += messageCount;
