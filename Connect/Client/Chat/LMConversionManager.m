@@ -121,9 +121,6 @@ CREATE_SHARED_MANAGER(LMConversionManager)
                     recentModel.unReadCount = 0;
                 }
                 recentModel.time = [NSString stringWithFormat:@"%lld",(long long)([[NSDate date] timeIntervalSince1970] * 1000)];
-                if (lastMessage.message.type == GJGCChatFriendContentTypeSnapChat) {
-                    recentModel.snapChatDeleteTime = [lastMessage.message.content intValue];
-                }
                 NSMutableDictionary *fieldsValues = [NSMutableDictionary dictionary];
                 [fieldsValues safeSetObject:@(recentModel.unReadCount) forKey:@"unread_count"];
                 [fieldsValues safeSetObject:recentModel.content forKey:@"content"];
@@ -135,7 +132,11 @@ CREATE_SHARED_MANAGER(LMConversionManager)
                     [fieldsValues safeSetObject:@(NO) forKey:@"stranger"];
                 }
                 [[RecentChatDBManager sharedManager] customUpdateRecentChatTableWithFieldsValues:fieldsValues withIdentifier:recentModel.identifier];
-                if (snapChatTime != recentModel.snapChatDeleteTime) {
+                if (lastMessage.message.type == GJGCChatFriendContentTypeSnapChat) {
+                    recentModel.snapChatDeleteTime = [lastMessage.message.content intValue];
+                }
+                if (snapChatTime > 0 &&
+                    snapChatTime != recentModel.snapChatDeleteTime) {
                     recentModel.snapChatDeleteTime = (int)snapChatTime;
                     [[RecentChatDBManager sharedManager] openOrCloseSnapChatWithTime:recentModel.snapChatDeleteTime chatIdentifer:recentModel.identifier];
                 }
@@ -446,7 +447,7 @@ CREATE_SHARED_MANAGER(LMConversionManager)
     } else {
         [[RecentChatDBManager sharedManager] removeMuteWithIdentifer:model.identifier];
         model.notifyStatus = NO;
-        [self reloadRecentChatWithRecentChatModel:nil needReloadBadge:NO];
+        [self reloadRecentChatWithRecentChatModel:nil needReloadBadge:model.unReadCount > 0];
     }
 }
 

@@ -159,6 +159,12 @@
 - (void)openOrCloseSnapChatWithTime:(int)snapTime chatIdentifer:(NSString *)identifier;
 
 /**
+ * get snap time
+ * @param identifier
+ */
+- (int)getSnapTimeWithChatIdentifer:(NSString *)identifier;
+
+/**
  * set recent chat snap chat time
  * @param snapTime
  * @param identifier
