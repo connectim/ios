@@ -57,6 +57,12 @@
 - (void)deleteByIdentifier:(NSString *)identifier;
 
 /**
+ * delete recent chat setting
+ * @param identifier
+ */
+- (void)deleteRecentChatSettingWithIdentifier:(NSString *)identifier;
+
+/**
  * update unread count
  * @param unreadCount
  * @param idetifier

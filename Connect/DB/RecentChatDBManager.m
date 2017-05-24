@@ -204,7 +204,7 @@ static RecentChatDBManager *manager = nil;
 
     BOOL result = [self deleteTableName:RecentChatTable conditions:@{@"identifier": identifier}];
     
-//    [self deleteTableName:RecentChatTableSetting conditions:@{@"identifier": identifier}];
+
 
     //remove draft
     [self removeDraftWithIdentifier:identifier];
@@ -214,6 +214,13 @@ static RecentChatDBManager *manager = nil;
         DDLogError(@"fail");
     }
     [[LMConversionManager sharedManager] deleteConversationWithIdentifier:identifier];
+}
+
+- (void)deleteRecentChatSettingWithIdentifier:(NSString *)identifier{
+    if (GJCFStringIsNull(identifier)) {
+        return;
+    }
+    [self deleteTableName:RecentChatTableSetting conditions:@{@"identifier": identifier}];
 }
 
 - (void)getAllUnReadCountWithComplete:(void (^)(int count))complete {

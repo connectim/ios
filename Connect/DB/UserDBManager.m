@@ -98,6 +98,8 @@ static UserDBManager *manager = nil;
     [[MessageDBManager sharedManager] deleteAllMessageByMessageOwer:pubKey];
     //delete chat
     [[RecentChatDBManager sharedManager] deleteByIdentifier:pubKey];
+    //delete chat setting
+    [[RecentChatDBManager sharedManager] deleteRecentChatSettingWithIdentifier:pubKey];
     //delete request
     [self deleteRequestUserByAddress:[KeyHandle getAddressByPubkey:pubKey]];
     //delete user
