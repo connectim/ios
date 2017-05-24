@@ -359,7 +359,7 @@
     [UIView animateWithDuration:0 animations:^{
         [self.navigationController popToRootViewControllerAnimated:NO];
     }                completion:^(BOOL finished) {
-        SendNotify(@"im.connect.appCreateGroupCompleteNotification", (@{@"groupIdentifier": groupInfo.group.identifier,
+        SendNotify(CreateGroupCompleteNotification, (@{@"groupIdentifier": groupInfo.group.identifier,
                 @"content": content}));
     }];
 }

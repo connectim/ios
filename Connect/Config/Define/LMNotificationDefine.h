@@ -102,10 +102,6 @@ extern NSString *const ConnectUpdateMyNickNameNotification;
 
 extern NSString *const ConnectGetOuterRedpackgeNotification;
 
-// Log in to new device 1: Get data> 1: Data processing is complete
-
-extern NSString *const LoinOnNewDeviceStatusNotification;
-
 extern NSString *const BadgeNumberManagerBadgeChangeNotification;
 
 // Group change
@@ -115,3 +111,9 @@ extern NSString *const GroupAdminChangeNotification;
 // Enter group notification
 
 extern NSString *const GroupNewMemberEnterNotification;
+
+// appCreateGroupCompleteNotification
+extern NSString *const CreateGroupCompleteNotification;
+
+
+extern NSString *const SocketDataVerifyIllegalityNotification;

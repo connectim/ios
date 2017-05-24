@@ -92,10 +92,6 @@ NSString *const ConnectUpdateMyNickNameNotification = @"ConnectUpdateMyNickNameN
 
 NSString *const ConnectGetOuterRedpackgeNotification = @"ConnectGetOuterRedpackgeNotification";
 
-// Log in to new device 1: Get data> 1: Data processing is complete
-
-NSString *const LoinOnNewDeviceStatusNotification = @"LoinOnNewDeviceStatusNotification";
-
 NSString *const BadgeNumberManagerBadgeChangeNotification = @"BadgeNumberManagerBadgeChangeNotification";
 
 // Group change
@@ -105,3 +101,8 @@ NSString *const GroupAdminChangeNotification = @"GroupAdminChangeNotification";
 // Enter group notification
 
 NSString *const GroupNewMemberEnterNotification = @"GroupNewMemberEnterNotification";
+
+// CreateGroupCompleteNotification
+NSString *const CreateGroupCompleteNotification = @"CreateGroupCompleteNotification";
+
+NSString *const SocketDataVerifyIllegalityNotification = @"SocketDataVerifyIllegalityNotification";

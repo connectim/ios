@@ -512,7 +512,7 @@ static dispatch_once_t onceToken;
 
     if ([version isEqualToString:@""]) { //login on new device
         [GCDQueue executeInMainQueue:^{
-            SendNotify(LoinOnNewDeviceStatusNotification, @(1));
+            [MBProgressHUD showMessage:LMLocalizedString(@"数据同步中...", nil) toView:[UIApplication sharedApplication].keyWindow.rootViewController.view];
         }];
         version = @"0";
     }
