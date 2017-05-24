@@ -15,8 +15,15 @@
 #import "NetWorkOperationTool.h"
 #import "LMRandomSeedController.h"
 
-#define kMaxLength 6
-#define kMaxCountTime (60)
+#define K_MAX_LENGTH 6
+#define K_MAX_COUNT_TIME (60)
+typedef NS_ENUM(NSUInteger,SendType) {
+    
+    SendTypeSMS    = 1,
+    SendTypeVoice  = 2
+    
+};
+
 
 @interface VertifyCodePage () <UITextFieldDelegate> {
     int __block count;
@@ -59,7 +66,7 @@
 }
 
 - (void)doLeft:(id)sender {
-    if (_isCountting) {
+    if (self.isCountting) {
         __weak typeof(&*self) weakSelf = self;
         [GCDQueue executeInMainQueue:^{
             [MBProgressHUD showToastwithText:[NSString stringWithFormat:LMLocalizedString(@"Login Please wait for", nil), count] withType:ToastTypeCommon showInView:weakSelf.view complete:nil];
@@ -71,6 +78,7 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:YES];
+    
     [self.navigationController.navigationBar setShadowImage:[UIImage new]];
     [self.navigationController.navigationBar lt_setBackgroundColor:[UIColor clearColor]];
 
@@ -82,9 +90,9 @@
 }
 
 - (void)loadView {
+    
     [super loadView];
-
-    count = kMaxCountTime;
+    count = K_MAX_COUNT_TIME;
 }
 
 - (void)dealloc {
@@ -96,37 +104,33 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
     [self setNavigationTitleImage:@"logo_black_small"];
-
     [self setBlackfBackArrowItem];
-
     // send text verification code
-    if (count == kMaxCountTime) {
-        [self sendCodeWithType:1];
+    if (count == K_MAX_COUNT_TIME) {
+        [self sendCodeWithType:SendTypeSMS];
     }
 
 }
-
-
 #pragma mark - set up
-
 - (void)setup {
 
     self.codeField = [UITextField new];
-    [_codeField becomeFirstResponder];
-    _codeField.delegate = self;
+    [self.codeField becomeFirstResponder];
+    self.codeField.delegate = self;
     UIColor *color = [UIColor blackColor];
-    _codeField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:LMLocalizedString(@"Login Code", nil) attributes:@{NSForegroundColorAttributeName: color}];
-    [_codeField addTarget:self action:@selector(textValueChange) forControlEvents:UIControlEventEditingChanged];
-    _codeField.font = [UIFont systemFontOfSize:FONT_SIZE(72)];
-    _codeField.keyboardType = UIKeyboardTypeNumberPad;
-    _codeField.textAlignment = NSTextAlignmentCenter;
-    _codeField.keyboardAppearance = UIKeyboardAppearanceLight;
-    _codeField.textColor = [UIColor blackColor];
-    _codeField.tintColor = LMBasicBlack;
+    self.codeField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:LMLocalizedString(@"Login Code", nil) attributes:@{NSForegroundColorAttributeName: color}];
+    [self.codeField addTarget:self action:@selector(textValueChange) forControlEvents:UIControlEventEditingChanged];
+    self.codeField.font = [UIFont systemFontOfSize:FONT_SIZE(72)];
+    self.codeField.keyboardType = UIKeyboardTypeNumberPad;
+    self.codeField.textAlignment = NSTextAlignmentCenter;
+    self.codeField.keyboardAppearance = UIKeyboardAppearanceLight;
+    self.codeField.textColor = [UIColor blackColor];
+    self.codeField.tintColor = LMBasicBlack;
     [self.view addSubview:_codeField];
-    _codeField.leftViewMode = UITextFieldViewModeAlways;
-    [_codeField mas_makeConstraints:^(MASConstraintMaker *make) {
+    self.codeField.leftViewMode = UITextFieldViewModeAlways;
+    [self.codeField mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.view).offset(AUTO_HEIGHT(200));
         make.centerX.equalTo(self.view);
         make.height.mas_equalTo(AUTO_HEIGHT(100));
@@ -134,21 +138,21 @@
     }];
 
     self.tipLabel = [[ConnectLabel alloc] initWithText:LMLocalizedString(@"Login Sending verification code", nil)];
-    _tipLabel.font = [UIFont systemFontOfSize:FONT_SIZE(24)];
-    [self.view addSubview:_tipLabel];
-    _tipLabel.textAlignment = NSTextAlignmentCenter;
-    [_tipLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+    self.tipLabel.font = [UIFont systemFontOfSize:FONT_SIZE(24)];
+    [self.view addSubview:self.tipLabel];
+    self.tipLabel.textAlignment = NSTextAlignmentCenter;
+    [self.tipLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.equalTo(self.view);
         make.left.right.equalTo(self.view);
         make.top.equalTo(_codeField.mas_bottom).offset(AUTO_HEIGHT(206));
     }];
 
     self.phoneLabel = [[ConnectLabel alloc] initWithText:[NSString stringWithFormat:@"+%d %@", self.countryCode, self.phoneStr]];
-    _phoneLabel.font = [UIFont systemFontOfSize:FONT_SIZE(32)];
-    _phoneLabel.textColor = GJCFQuickHexColor(@"00C400");
-    _phoneLabel.textAlignment = NSTextAlignmentCenter;
+    self.phoneLabel.font = [UIFont systemFontOfSize:FONT_SIZE(32)];
+    self.phoneLabel.textColor = GJCFQuickHexColor(@"00C400");
+    self.phoneLabel.textAlignment = NSTextAlignmentCenter;
     [self.view addSubview:_phoneLabel];
-    [_phoneLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.phoneLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.equalTo(self.view);
         make.top.equalTo(_tipLabel.mas_bottom).offset(5);
         make.left.right.equalTo(self.view);
@@ -156,29 +160,29 @@
 
     self.sendVoiceBtn = [UIButton new];
     [self.view addSubview:_sendVoiceBtn];
-    [_sendVoiceBtn addTarget:self action:@selector(sendVoiceCode) forControlEvents:UIControlEventTouchUpInside];
-    [_sendVoiceBtn setTitle:LMLocalizedString(@"Chat Send vioce", nil) forState:UIControlStateNormal];
-    _sendVoiceBtn.titleLabel.font = [UIFont systemFontOfSize:16];
-    [_sendVoiceBtn setTitleColor:LMBasicBlue forState:UIControlStateNormal];
-    [_sendVoiceBtn setTitleColor:LMBasicDarkGray forState:UIControlStateDisabled];
-    _sendVoiceBtn.enabled = NO;
-    [_sendVoiceBtn mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.sendVoiceBtn addTarget:self action:@selector(sendVoiceCode) forControlEvents:UIControlEventTouchUpInside];
+    [self.sendVoiceBtn setTitle:LMLocalizedString(@"Chat Send vioce", nil) forState:UIControlStateNormal];
+    self.sendVoiceBtn.titleLabel.font = [UIFont systemFontOfSize:16];
+    [self.sendVoiceBtn setTitleColor:LMBasicBlue forState:UIControlStateNormal];
+    [self.sendVoiceBtn setTitleColor:LMBasicDarkGray forState:UIControlStateDisabled];
+    self.sendVoiceBtn.enabled = NO;
+    [self.sendVoiceBtn mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(_phoneLabel.mas_bottom).offset(AUTO_HEIGHT(34));
         make.centerX.equalTo(self.view);
     }];
 
     self.sendAgainBtn = [[ConnectButton alloc] initWithNormalTitle:LMLocalizedString(@"Login Resend", nil) disableTitle:nil];
-    _sendAgainBtn.enabled = NO;
-    [_sendAgainBtn addTarget:self action:@selector(sendAgain) forControlEvents:UIControlEventTouchUpInside];
-    _sendAgainBtn.bottom = self.view.bottom - AUTO_HEIGHT(477);
-    _sendAgainBtn.centerX = self.view.centerX;
+    self.sendAgainBtn.enabled = NO;
+    [self.sendAgainBtn addTarget:self action:@selector(sendAgain) forControlEvents:UIControlEventTouchUpInside];
+    self.sendAgainBtn.bottom = self.view.bottom - AUTO_HEIGHT(477);
+    self.sendAgainBtn.centerX = self.view.centerX;
     [self.view addSubview:self.sendAgainBtn];
 
     self.nextButton = [[ConnectButton alloc] initWithNormalTitle:LMLocalizedString(@"Login Next", nil) disableTitle:LMLocalizedString(@"Common Loading", nil)];
-    [self.view addSubview:_nextButton];
-    _nextButton.hidden = YES;
-    [_nextButton addTarget:self action:@selector(next) forControlEvents:UIControlEventTouchUpInside];
-    _nextButton.frame = _sendAgainBtn.frame;
+    [self.view addSubview:self.nextButton];
+    self.nextButton.hidden = YES;
+    [self.nextButton addTarget:self action:@selector(nextAction) forControlEvents:UIControlEventTouchUpInside];
+    self.nextButton.frame = self.sendAgainBtn.frame;
 }
 
 #pragma mark - event
@@ -197,31 +201,30 @@
             // close
             weakSelf.isSendedVoice = NO;
             weakSelf.isCountting = NO;
-            count = kMaxCountTime;
+            count = K_MAX_COUNT_TIME;
             dispatch_source_cancel(_timer);
             _timer = nil;
             [GCDQueue executeInMainQueue:^{
                 // set button
-                _sendAgainBtn.enabled = YES;
-                _sendVoiceBtn.enabled = YES;
-                [_sendAgainBtn setTitle:LMLocalizedString(@"Login Resend", nil) forState:UIControlStateNormal];
-                [_sendAgainBtn setTitle:LMLocalizedString(@"Login Resend", nil) forState:UIControlStateDisabled];
-                if (_codeField.text.length == kMaxLength) {
-                    _nextButton.hidden = NO;
-                    _sendAgainBtn.hidden = YES;
+                self.sendAgainBtn.enabled = YES;
+                self.sendVoiceBtn.enabled = YES;
+                [self.sendAgainBtn setTitle:LMLocalizedString(@"Login Resend", nil) forState:UIControlStateNormal];
+                if (self.codeField.text.length == K_MAX_LENGTH) {
+                    self.nextButton.hidden = NO;
+                    self.sendAgainBtn.hidden = YES;
                 } else {
-                    _nextButton.hidden = YES;
-                    _sendAgainBtn.hidden = NO;
+                    self.nextButton.hidden = YES;
+                    self.sendAgainBtn.hidden = NO;
                 }
             }];
         } else {
             dispatch_async(dispatch_get_main_queue(), ^{
-                if (count == kMaxCountTime - 5 && !weakSelf.isSendedVoice) {
+                if (count == K_MAX_COUNT_TIME - 5 && !weakSelf.isSendedVoice) {
                     // vertification code？
-                    _sendVoiceBtn.enabled = YES;
-                    _tipLabel.text = LMLocalizedString(@"Set Did not receive the verification code", nil);
+                    self.sendVoiceBtn.enabled = YES;
+                    self.tipLabel.text = LMLocalizedString(@"Set Did not receive the verification code", nil);
                 }
-                [_sendAgainBtn setTitle:[NSString stringWithFormat:LMLocalizedString(@"Login Resend Time", nil), count] forState:UIControlStateDisabled];
+                [self.sendAgainBtn setTitle:[NSString stringWithFormat:LMLocalizedString(@"Login Resend Time", nil), count] forState:UIControlStateDisabled];
             });
             count--;
             DDLogInfo(@"time %d", count);
@@ -230,12 +233,18 @@
     self.isCountting = YES;
     dispatch_resume(_timer);
 }
-
-- (void)sendCodeWithType:(int)type {
+- (void)stopTimer {
+    if (_timer) {
+        dispatch_source_cancel(_timer);
+        _timer = nil;
+    }
+}
+- (void)sendCodeWithType:(int)sendType {
 
     SendMobileCode *mobileCode = [[SendMobileCode alloc] init];
     mobileCode.mobile = [NSString stringWithFormat:@"%d-%@", self.countryCode, self.phoneStr];
-    mobileCode.category = type;
+    mobileCode.category = sendType;
+    
     __weak __typeof(&*self) weakSelf = self;
     [NetWorkOperationTool POSTWithUrlString:PhoneGetPhoneCode noSignProtoData:mobileCode.data complete:^(id response) {
         HttpResponse *hResponse = (HttpResponse *) response;
@@ -248,54 +257,57 @@
             }];
             return;
         }
-        if (type == 2) {
+        if (sendType == SendTypeVoice) {
             // voice
             if (!weakSelf.isCountting && _timer) {
                 dispatch_resume(_timer);
                 self.isCountting = YES;
             }
-            weakSelf.isSendedVoice = YES;
-            _tipLabel.text = LMLocalizedString(@"Login SMS code has been send", nil);
-        } else if (type == 1)
-            // text
-        {
-            _tipLabel.text = LMLocalizedString(@"Set verification code has been send to phone", nil);
+            self.isSendedVoice = YES;
+            self.tipLabel.text = LMLocalizedString(@"Login SMS code has been send", nil);
+        } else if (sendType == SendTypeSMS) {
+            self.isSendedVoice = NO;
+            self.tipLabel.text = LMLocalizedString(@"Set verification code has been send to phone", nil);
         }
-        [MBProgressHUD showToastwithText:LMLocalizedString(@"Login SMS code has been send", nil) withType:ToastTypeSuccess showInView:self.view complete:nil];
-        if (!weakSelf.isCountting || !_timer) {
-            [weakSelf startTime];
-        }
-        _sendVoiceBtn.enabled = NO;
-        _sendAgainBtn.enabled = NO;
-    }                                  fail:^(NSError *error) {
         [GCDQueue executeInMainQueue:^{
-            _tipLabel.text = LMLocalizedString(@"Login SMS code sent failure", nil);
-            [MBProgressHUD showToastwithText:LMLocalizedString(@"Login SMS code sent failure", nil) withType:ToastTypeFail showInView:weakSelf.view complete:nil];
-            _sendAgainBtn.enabled = YES;
-            [weakSelf.view layoutIfNeeded];
+            [MBProgressHUD showToastwithText:LMLocalizedString(@"Login SMS code has been send", nil) withType:ToastTypeSuccess showInView:self.view complete:nil];
+        }];
+        
+        if (!self.isCountting || !_timer) {
+            [self startTime];
+        }
+        self.sendVoiceBtn.enabled = NO;
+        self.sendAgainBtn.enabled = NO;
+    }   fail:^(NSError *error) {
+        
+        [GCDQueue executeInMainQueue:^{
+            self.tipLabel.text = LMLocalizedString(@"Login SMS code sent failure", nil);
+            [MBProgressHUD showToastwithText:LMLocalizedString(@"Login SMS code sent failure", nil) withType:ToastTypeFail showInView:self.view complete:nil];
+            self.sendAgainBtn.enabled = YES;
+            [self.view layoutIfNeeded];
         }];
     }];
 }
 
 - (void)sendVoiceCode {
     // reset time
-    count = kMaxCountTime;
+    count = K_MAX_COUNT_TIME;
     if (self.isCountting && _timer) {
         dispatch_suspend(_timer);
         self.isCountting = NO;
     }
-    _sendVoiceBtn.enabled = NO;
-    [self sendCodeWithType:2];
+    self.sendVoiceBtn.enabled = NO;
+    [self sendCodeWithType:SendTypeVoice];
 }
 
-- (void)next {
+- (void)nextAction {
     [self signin];
 }
 
 - (void)sendAgain {
     self.tipLabel.text = LMLocalizedString(@"Login Sending verification code", nil);
     self.sendAgainBtn.enabled = NO;
-    [self sendCodeWithType:1];
+    [self sendCodeWithType:SendTypeSMS];
 }
 
 - (void)signin {
@@ -317,69 +329,14 @@
 
         HttpNotSignResponse *hResponse = (HttpNotSignResponse *) response;
         weakSelf.nextButton.enabled = YES;
-        NSError *error = nil;
+        
         switch (hResponse.code) {
-            case 2414: {
-                [MBProgressHUD showToastwithText:LMLocalizedString(@"Login Phone binded", nil) withType:ToastTypeFail showInView:self.view complete:nil];
-            }
-                break;
             case 2404: {
-                weakSelf.isCountting = NO;
-                count = kMaxCountTime;
-                // timer
-                if (_timer) {
-                    dispatch_source_cancel(_timer);
-                    _timer = nil;
-                }
-                SecurityToken *token = [SecurityToken parseFromData:hResponse.body error:&error];
-                if (error) {
-                    return;
-                }
-                error = nil;
-
-                if (GJCFStringIsNull(token.token)) {
-                    [GCDQueue executeInMainQueue:^{
-                        [MBProgressHUD showToastwithText:LMLocalizedString(@"Network Server error", nil) withType:ToastTypeFail showInView:weakSelf.view complete:nil];
-                    }];
-                } else {
-                    [GCDQueue executeInMainQueue:^{
-                        NSString *phone = [NSString stringWithFormat:@"%d-%@", weakSelf.countryCode, weakSelf.phoneStr];
-                        LMRandomSeedController *page = [[LMRandomSeedController alloc] initWithMobile:phone token:token.token];
-                        [weakSelf.navigationController pushViewController:page animated:YES];
-                    }];
-                }
+                [self skipRegieterAction:hResponse];
             }
                 break;
             case successCode: {
-                weakSelf.isCountting = NO;
-                count = kMaxCountTime;
-                // free timer
-                if (_timer) {
-                    dispatch_source_cancel(_timer);
-                    _timer = nil;
-                }
-                UserInfoDetail *userInfo = [UserInfoDetail parseFromData:hResponse.body error:&error];
-                if (error || !userInfo || hResponse.body.length <= 0) {
-                    [GCDQueue executeInMainQueue:^{
-                        [MBProgressHUD showToastwithText:LMLocalizedString(@"Network Server error", nil) withType:ToastTypeFail showInView:weakSelf.view complete:nil];
-                    }];
-                }
-                error = nil;
-                [GCDQueue executeInMainQueue:^{
-                    AccountInfo *user = [[AccountInfo alloc] init];
-                    user.avatar = userInfo.avatar;
-                    user.username = userInfo.username;
-                    user.pub_key = userInfo.pubKey;
-                    user.address = userInfo.address;
-                    user.contentId = userInfo.connectId;
-                    user.password_hint = userInfo.passwordHint;
-                    user.encryption_pri = userInfo.encryptionPri;
-                    user.bondingPhone = [NSString stringWithFormat:@"%d-%@", weakSelf.countryCode, weakSelf.phoneStr];
-                    [[MMAppSetting sharedSetting] saveUserToKeyChain:user];
-                    // skip login
-                    LocalAccountLoginPage *page = [[LocalAccountLoginPage alloc] initWithUser:user];
-                    [weakSelf.navigationController pushViewController:page animated:YES];
-                }];
+                [self successAction:hResponse];
             }
                 break;
             case 2416: {
@@ -389,49 +346,101 @@
 
             }
                 break;
-
-            default:
+            default:{
+                [GCDQueue executeInMainQueue:^{
+                    weakSelf.nextButton.enabled = YES;
+                    [MBProgressHUD showToastwithText:[LMErrorCodeTool showToastErrorType:ToastErrorTypeLoginOrReg withErrorCode:hResponse.code withUrl:LoginSignInUrl] withType:ToastTypeFail showInView:weakSelf.view complete:nil];
+                }];
+            }
                 break;
         }
-    }                                  fail:^(NSError *error) {
-        weakSelf.isCountting = NO;
-        count = kMaxCountTime;
-        //free timer
-        if (_timer) {
-            dispatch_source_cancel(_timer);
-            _timer = nil;
-        }
-        [GCDQueue executeInMainQueue:^{
-            [MBProgressHUD hideHUDForView:weakSelf.view];
-        }];
-        [GCDQueue executeInMainQueue:^{
-            weakSelf.nextButton.enabled = YES;
-            [MBProgressHUD showToastwithText:LMLocalizedString(@"Network Server error", nil) withType:ToastTypeFail showInView:weakSelf.view complete:nil];
-        }];
-
-
+    }  fail:^(NSError *error) {
+        [self failureAction];
     }];
 
 }
+- (void)failureAction {
+    self.isCountting = NO;
+    count = K_MAX_COUNT_TIME;
+    //free timer
+    [self stopTimer];
+    [GCDQueue executeInMainQueue:^{
+        self.nextButton.enabled = YES;
+        [MBProgressHUD showToastwithText:LMLocalizedString(@"Network Server error", nil) withType:ToastTypeFail showInView:self.view complete:nil];
+    }];
+
+}
+- (void)successAction:(HttpNotSignResponse *)hResponse {
+    
+    NSError *error = nil;
+    self.isCountting = NO;
+    count = K_MAX_COUNT_TIME;
+    // free timer
+    [self stopTimer];
+    UserInfoDetail *userInfo = [UserInfoDetail parseFromData:hResponse.body error:&error];
+    if (error || !userInfo || hResponse.body.length <= 0) {
+        [GCDQueue executeInMainQueue:^{
+            [MBProgressHUD showToastwithText:LMLocalizedString(@"Network Server error", nil) withType:ToastTypeFail showInView:self.view complete:nil];
+        }];
+    }
+    error = nil;
+    [GCDQueue executeInMainQueue:^{
+        AccountInfo *user = [[AccountInfo alloc] init];
+        user.avatar = userInfo.avatar;
+        user.username = userInfo.username;
+        user.pub_key = userInfo.pubKey;
+        user.address = userInfo.address;
+        user.contentId = userInfo.connectId;
+        user.password_hint = userInfo.passwordHint;
+        user.encryption_pri = userInfo.encryptionPri;
+        user.bondingPhone = [NSString stringWithFormat:@"%d-%@", self.countryCode, self.phoneStr];
+        [[MMAppSetting sharedSetting] saveUserToKeyChain:user];
+        // skip login
+        LocalAccountLoginPage *page = [[LocalAccountLoginPage alloc] initWithUser:user];
+        [self.navigationController pushViewController:page animated:YES];
+    }];
+
+}
+- (void)skipRegieterAction:(HttpNotSignResponse *)hResponse {
+    
+    NSError *error = nil;
+    self.isCountting = NO;
+    count = K_MAX_COUNT_TIME;
+    // timer
+    [self stopTimer];
+    SecurityToken *secToken = [SecurityToken parseFromData:hResponse.body error:&error];
+    if (!error) {
+        if (GJCFStringIsNull(secToken.token)) {
+            [GCDQueue executeInMainQueue:^{
+                [MBProgressHUD showToastwithText:LMLocalizedString(@"Network Server error", nil) withType:ToastTypeFail showInView:self.view complete:nil];
+            }];
+        } else {
+            [GCDQueue executeInMainQueue:^{
+                NSString *phone = [NSString stringWithFormat:@"%d-%@", self.countryCode, self.phoneStr];
+                LMRandomSeedController *page = [[LMRandomSeedController alloc] initWithMobile:phone token:secToken.token];
+                [self.navigationController pushViewController:page animated:YES];
+            }];
+        }
+    }
+}
 
 - (void)textValueChange {
-    if (_codeField.text.length == kMaxLength) {
+    if (_codeField.text.length == K_MAX_LENGTH) {
         [self signin];
         self.sendAgainBtn.hidden = YES;
         self.nextButton.hidden = NO;
     } else {
         self.sendAgainBtn.hidden = NO;
         self.nextButton.hidden = YES;
-        _sendAgainBtn.enabled = count == 60;
+        self.sendAgainBtn.enabled = count == 60;
     }
 }
-
 #pragma mark - UITextFieldDelegate
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
     NSString *toBeString = [textField.text stringByReplacingCharactersInRange:range withString:string];
-    if (toBeString.length > kMaxLength && range.length != 1) {
-        textField.text = [toBeString substringToIndex:kMaxLength];
+    if (toBeString.length > K_MAX_LENGTH && range.length != 1) {
+        textField.text = [toBeString substringToIndex:K_MAX_LENGTH];
         return NO;
     }
     return YES;
