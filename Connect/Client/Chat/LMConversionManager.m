@@ -63,14 +63,7 @@ CREATE_SHARED_MANAGER(LMConversionManager)
                     [SessionManager sharedManager].topChatCount ++;
                 }
             }
-            if ([self.conversationListDelegate respondsToSelector:@selector(conversationListDidChanged:)]) {
-                [self.conversationListDelegate conversationListDidChanged:[SessionManager sharedManager].allRecentChats];
-            }
-            
-            if ([self.conversationListDelegate respondsToSelector:@selector(unreadMessageNumberDidChanged)]) {
-                [self.conversationListDelegate unreadMessageNumberDidChanged];
-            }
-
+            [self reloadRecentChatWithRecentChatModel:nil needReloadBadge:YES];
         }];
     }];
 }
@@ -236,21 +229,7 @@ CREATE_SHARED_MANAGER(LMConversionManager)
         default:
             break;
     }
-    [GCDQueue executeInMainQueue:^{
-        if ([[SessionManager sharedManager].allRecentChats containsObject:recentModel]) {
-            [[SessionManager sharedManager].allRecentChats moveObject:recentModel toIndex:recentModel.isTopChat?0:[SessionManager sharedManager].topChatCount];
-        } else{
-            [[SessionManager sharedManager].allRecentChats objectInsert:recentModel atIndex:recentModel.isTopChat?0:[SessionManager sharedManager].topChatCount];
-        }
-        if ([self.conversationListDelegate respondsToSelector:@selector(conversationListDidChanged:)]) {
-            [self.conversationListDelegate conversationListDidChanged:[SessionManager sharedManager].allRecentChats];
-        }
-        if (messageCount > 0) {
-            if ([self.conversationListDelegate respondsToSelector:@selector(unreadMessageNumberDidChanged)]) {
-                [self.conversationListDelegate unreadMessageNumberDidChanged];
-            }
-        }
-    }];
+    [self reloadRecentChatWithRecentChatModel:recentModel needReloadBadge:messageCount > 0];
 }
 
 - (void)getNewMessagesWithLastMessage:(ChatMessageInfo *)lastMessage newMessageCount:(int)messageCount  groupNoteMyself:(BOOL)groupNoteMyself{
@@ -306,22 +285,35 @@ CREATE_SHARED_MANAGER(LMConversionManager)
         [fieldsValues safeSetObject:@(groupNoteMyself) forKey:@"notice"];
         [[RecentChatDBManager sharedManager] customUpdateRecentChatTableWithFieldsValues:fieldsValues withIdentifier:recentModel.identifier];
     }
+    
+    [self reloadRecentChatWithRecentChatModel:recentModel needReloadBadge:messageCount > 0];
+}
+
+- (void)reloadRecentChatWithRecentChatModel:(RecentChatModel *)recentModel needReloadBadge:(BOOL)needReloadBadge{
     [GCDQueue executeInMainQueue:^{
-        if ([[SessionManager sharedManager].allRecentChats containsObject:recentModel]) {
-            [[SessionManager sharedManager].allRecentChats moveObject:recentModel toIndex:recentModel.isTopChat?0:[SessionManager sharedManager].topChatCount];
-        } else{
-            [[SessionManager sharedManager].allRecentChats objectInsert:recentModel atIndex:recentModel.isTopChat?0:[SessionManager sharedManager].topChatCount];
+        if (recentModel) {
+            NSMutableArray *recentChatArray = [NSMutableArray arrayWithArray:[SessionManager sharedManager].allRecentChats];
+            if ([recentChatArray containsObject:recentModel]) {
+                [recentChatArray moveObject:recentModel toIndex:recentModel.isTopChat?0:[SessionManager sharedManager].topChatCount];
+            } else{
+                [recentChatArray objectInsert:recentModel atIndex:recentModel.isTopChat?0:[SessionManager sharedManager].topChatCount];
+            }
+            if ([self.conversationListDelegate respondsToSelector:@selector(conversationListDidChanged:)]) {
+                [self.conversationListDelegate conversationListDidChanged:recentChatArray];
+            }
+            //The elements inside a container are copied by pointers. Crashes caused by modifications to prevent traversal of arrays
+            [SessionManager sharedManager].allRecentChats = recentChatArray.mutableCopy;
+        } else {
+            if ([self.conversationListDelegate respondsToSelector:@selector(conversationListDidChanged:)]) {
+                [self.conversationListDelegate conversationListDidChanged:[SessionManager sharedManager].allRecentChats];
+            }
         }
-        if ([self.conversationListDelegate respondsToSelector:@selector(conversationListDidChanged:)]) {
-            [self.conversationListDelegate conversationListDidChanged:[SessionManager sharedManager].allRecentChats];
-        }
-        if (messageCount > 0) {
+        if (needReloadBadge) {
             if ([self.conversationListDelegate respondsToSelector:@selector(unreadMessageNumberDidChanged)]) {
                 [self.conversationListDelegate unreadMessageNumberDidChanged];
             }
         }
     }];
-    
 }
 
 
@@ -342,17 +334,7 @@ CREATE_SHARED_MANAGER(LMConversionManager)
         recentModel.stranger = ![[UserDBManager sharedManager] isFriendByAddress:[KeyHandle getAddressByPubkey:recentModel.identifier]];
         recentModel.chatUser.stranger = recentModel.stranger;
     }
-    [GCDQueue executeInMainQueue:^{
-        if ([[SessionManager sharedManager].allRecentChats containsObject:recentModel]) {
-            [[SessionManager sharedManager].allRecentChats moveObject:recentModel toIndex:recentModel.isTopChat?0:[SessionManager sharedManager].topChatCount];
-        } else{
-            [[SessionManager sharedManager].allRecentChats objectInsert:recentModel atIndex:recentModel.isTopChat?0:[SessionManager sharedManager].topChatCount];
-        }
-        
-        if ([self.conversationListDelegate respondsToSelector:@selector(conversationListDidChanged:)]) {
-            [self.conversationListDelegate conversationListDidChanged:[SessionManager sharedManager].allRecentChats];
-        }
-    }];
+    [self reloadRecentChatWithRecentChatModel:recentModel needReloadBadge:NO];
 }
 
 - (void)chatWithNewFriend:(AccountInfo *)chatUser{
@@ -421,7 +403,6 @@ CREATE_SHARED_MANAGER(LMConversionManager)
             }
         }];
     }
-
     return YES;
 }
 
@@ -462,30 +443,15 @@ CREATE_SHARED_MANAGER(LMConversionManager)
         if (model.unReadCount) {
             model.notifyStatus = YES;
             model.unReadCount = 0;
-            [GCDQueue executeInMainQueue:^{
-                if ([self.conversationListDelegate respondsToSelector:@selector(conversationListDidChanged:)]) {
-                    [self.conversationListDelegate conversationListDidChanged:[SessionManager sharedManager].allRecentChats];
-                }
-                if ([self.conversationListDelegate respondsToSelector:@selector(unreadMessageNumberDidChanged)]) {
-                    [self.conversationListDelegate unreadMessageNumberDidChanged];
-                }
-            }];
+            [self reloadRecentChatWithRecentChatModel:nil needReloadBadge:YES];
         } else{
             model.notifyStatus = YES;
-            [GCDQueue executeInMainQueue:^{
-                if ([self.conversationListDelegate respondsToSelector:@selector(conversationListDidChanged:)]) {
-                    [self.conversationListDelegate conversationListDidChanged:[SessionManager sharedManager].allRecentChats];
-                }
-            }];
+            [self reloadRecentChatWithRecentChatModel:nil needReloadBadge:NO];
         }
     } else {
         [[RecentChatDBManager sharedManager] removeMuteWithIdentifer:model.identifier];
         model.notifyStatus = NO;
-        [GCDQueue executeInMainQueue:^{
-            if ([self.conversationListDelegate respondsToSelector:@selector(conversationListDidChanged:)]) {
-                [self.conversationListDelegate conversationListDidChanged:[SessionManager sharedManager].allRecentChats];
-            }
-        }];
+        [self reloadRecentChatWithRecentChatModel:nil needReloadBadge:NO];
     }
 }
 
@@ -493,14 +459,7 @@ CREATE_SHARED_MANAGER(LMConversionManager)
     if (conversation) {
         conversation.unReadCount = 0;
         [[RecentChatDBManager sharedManager] clearUnReadCountWithIdetifier:conversation.identifier];
-        [GCDQueue executeInMainQueue:^{
-            if ([self.conversationListDelegate respondsToSelector:@selector(conversationListDidChanged:)]) {
-                [self.conversationListDelegate conversationListDidChanged:[SessionManager sharedManager].allRecentChats];
-            }
-            if ([self.conversationListDelegate respondsToSelector:@selector(unreadMessageNumberDidChanged)]) {
-                [self.conversationListDelegate unreadMessageNumberDidChanged];
-            }
-        }];
+        [self reloadRecentChatWithRecentChatModel:nil needReloadBadge:YES];
     }
 }
 
@@ -512,9 +471,7 @@ CREATE_SHARED_MANAGER(LMConversionManager)
     if (model && model.stranger != stranger) {
         model.stranger = stranger;
         [[RecentChatDBManager sharedManager] updataStrangerStatus:stranger idetifier:identifier];
-        if ([self.conversationListDelegate respondsToSelector:@selector(conversationListDidChanged:)]) {
-            [self.conversationListDelegate conversationListDidChanged:[SessionManager sharedManager].allRecentChats];
-        }
+        [self reloadRecentChatWithRecentChatModel:nil needReloadBadge:NO];
     }
 }
 
@@ -573,11 +530,7 @@ CREATE_SHARED_MANAGER(LMConversionManager)
     RecentChatModel *model = [[SessionManager sharedManager] getRecentChatWithIdentifier:identifier];
     model.draft = draft;
     if (model) {
-        [GCDQueue executeInMainQueue:^{
-            if ([self.conversationListDelegate respondsToSelector:@selector(conversationListDidChanged:)]) {
-                [self.conversationListDelegate conversationListDidChanged:[SessionManager sharedManager].allRecentChats];
-            }
-        }];
+        [self reloadRecentChatWithRecentChatModel:nil needReloadBadge:NO];
     }
 }
 
@@ -590,11 +543,7 @@ CREATE_SHARED_MANAGER(LMConversionManager)
     RecentChatModel *findModel = [[SessionManager sharedManager] getRecentChatWithIdentifier:chatIdentifier];
     if (findModel) {
         findModel.notifyStatus = !findModel.notifyStatus;
-        [GCDQueue executeInMainQueue:^{
-            if ([self.conversationListDelegate respondsToSelector:@selector(conversationListDidChanged:)]) {
-                [self.conversationListDelegate conversationListDidChanged:[SessionManager sharedManager].allRecentChats];
-            }
-        }];
+        [self reloadRecentChatWithRecentChatModel:nil needReloadBadge:NO];
     }
 }
 
@@ -618,11 +567,7 @@ CREATE_SHARED_MANAGER(LMConversionManager)
             [[SessionManager sharedManager].allRecentChats moveObject:findModel toIndex:[SessionManager sharedManager].topChatCount];
         }
     }
-    [GCDQueue executeInMainQueue:^{
-        if ([self.conversationListDelegate respondsToSelector:@selector(conversationListDidChanged:)]) {
-            [self.conversationListDelegate conversationListDidChanged:[SessionManager sharedManager].allRecentChats];
-        }
-    }];
+    [self reloadRecentChatWithRecentChatModel:nil needReloadBadge:NO];
 }
 
 #pragma mark - sendMessageSuccess
@@ -634,11 +579,7 @@ CREATE_SHARED_MANAGER(LMConversionManager)
     }
     RecentChatModel *findModel = [[SessionManager sharedManager] getRecentChatWithIdentifier:identifier];
     if (findModel) {
-        [GCDQueue executeInMainQueue:^{
-            if ([self.conversationListDelegate respondsToSelector:@selector(conversationListDidChanged:)]) {
-                [self.conversationListDelegate conversationListDidChanged:[SessionManager sharedManager].allRecentChats];
-            }
-        }];
+        [self reloadRecentChatWithRecentChatModel:nil needReloadBadge:NO];
     }
 }
 
@@ -661,15 +602,7 @@ CREATE_SHARED_MANAGER(LMConversionManager)
         index = recentChat.isTopChat?0:[SessionManager sharedManager].topChatCount;
         [[SessionManager sharedManager].allRecentChats objectInsert:recentChat atIndex:index];
     }
-    [GCDQueue executeInMainQueue:^{
-        if ([self.conversationListDelegate respondsToSelector:@selector(conversationListDidChanged:)]) {
-            [self.conversationListDelegate conversationListDidChanged:[SessionManager sharedManager].allRecentChats];
-        }
-        if ([self.conversationListDelegate respondsToSelector:@selector(unreadMessageNumberDidChanged)]) {
-            [self.conversationListDelegate unreadMessageNumberDidChanged];
-        }
-    }];
-    
+    [self reloadRecentChatWithRecentChatModel:nil needReloadBadge:YES];
 }
 
 - (void)ContactInfoChange:(NSNotification *)note{
@@ -682,12 +615,7 @@ CREATE_SHARED_MANAGER(LMConversionManager)
         findModel.name = changeUser.normalShowName;
         findModel.headUrl = changeUser.avatar;
         findModel.chatUser = changeUser;
-        
-        [GCDQueue executeInMainQueue:^{
-            if ([self.conversationListDelegate respondsToSelector:@selector(conversationListDidChanged:)]) {
-                [self.conversationListDelegate conversationListDidChanged:[SessionManager sharedManager].allRecentChats];
-            }
-        }];
+        [self reloadRecentChatWithRecentChatModel:nil needReloadBadge:NO];
     }
 }
 
@@ -702,11 +630,7 @@ CREATE_SHARED_MANAGER(LMConversionManager)
         LMGroupInfo *group = [[GroupDBManager sharedManager] getgroupByGroupIdentifier:groupIdentifer];
         findModel.name = group.groupName;
         findModel.chatGroupInfo = group;
-        [GCDQueue executeInMainQueue:^{
-            if ([self.conversationListDelegate respondsToSelector:@selector(conversationListDidChanged:)]) {
-                [self.conversationListDelegate conversationListDidChanged:[SessionManager sharedManager].allRecentChats];
-            }
-        }];
+        [self reloadRecentChatWithRecentChatModel:nil needReloadBadge:NO];
     }
 }
 
@@ -726,29 +650,13 @@ CREATE_SHARED_MANAGER(LMConversionManager)
         if (model.talkType == GJGCChatFriendTalkTypeGroup) {
             [[GroupDBManager sharedManager] deletegroupWithGroupId:model.identifier];
         }
-        
-        [GCDQueue executeInMainQueue:^{
-            if ([self.conversationListDelegate respondsToSelector:@selector(conversationListDidChanged:)]) {
-                [self.conversationListDelegate conversationListDidChanged:[SessionManager sharedManager].allRecentChats];
-            }
-            if ([self.conversationListDelegate respondsToSelector:@selector(unreadMessageNumberDidChanged)]) {
-                [self.conversationListDelegate unreadMessageNumberDidChanged];
-            }
-        }];
-
+        [self reloadRecentChatWithRecentChatModel:nil needReloadBadge:YES];
     }
 }
 
 
 - (void)enterForeground{
-    [GCDQueue executeInMainQueue:^{
-        if ([self.conversationListDelegate respondsToSelector:@selector(conversationListDidChanged:)]) {
-            [self.conversationListDelegate conversationListDidChanged:[SessionManager sharedManager].allRecentChats];
-        }
-        if ([self.conversationListDelegate respondsToSelector:@selector(unreadMessageNumberDidChanged)]) {
-            [self.conversationListDelegate unreadMessageNumberDidChanged];
-        }
-    }];
+    [self reloadRecentChatWithRecentChatModel:nil needReloadBadge:YES];
 }
 
 
@@ -762,14 +670,7 @@ CREATE_SHARED_MANAGER(LMConversionManager)
     AccountInfo *willDeleteUser = (AccountInfo *)note.object;
     if (willDeleteUser) {
         [[SessionManager sharedManager] removeRecentChatWithIdentifier:willDeleteUser.pub_key];
-        [GCDQueue executeInMainQueue:^{
-            if ([self.conversationListDelegate respondsToSelector:@selector(conversationListDidChanged:)]) {
-                [self.conversationListDelegate conversationListDidChanged:[SessionManager sharedManager].allRecentChats];
-            }
-            if ([self.conversationListDelegate respondsToSelector:@selector(unreadMessageNumberDidChanged)]) {
-                [self.conversationListDelegate unreadMessageNumberDidChanged];
-            }
-        }];
+        [self reloadRecentChatWithRecentChatModel:nil needReloadBadge:YES];
     }
 }
 
@@ -799,14 +700,7 @@ CREATE_SHARED_MANAGER(LMConversionManager)
     }
 
     if (changeFlag) {
-        [GCDQueue executeInMainQueue:^{
-            if ([self.conversationListDelegate respondsToSelector:@selector(conversationListDidChanged:)]) {
-                [self.conversationListDelegate conversationListDidChanged:[SessionManager sharedManager].allRecentChats];
-            }
-            if ([self.conversationListDelegate respondsToSelector:@selector(unreadMessageNumberDidChanged)]) {
-                [self.conversationListDelegate unreadMessageNumberDidChanged];
-            }
-        }];
+        [self reloadRecentChatWithRecentChatModel:nil needReloadBadge:YES];
     }
 }
 
@@ -818,14 +712,7 @@ CREATE_SHARED_MANAGER(LMConversionManager)
     model.unReadCount ++;
     [[RecentChatDBManager sharedManager] updataUnReadCount:model.unReadCount idetifier:identifier];
     if (model) {
-        [GCDQueue executeInMainQueue:^{
-            if ([self.conversationListDelegate respondsToSelector:@selector(conversationListDidChanged:)]) {
-                [self.conversationListDelegate conversationListDidChanged:[SessionManager sharedManager].allRecentChats];
-            }
-            if ([self.conversationListDelegate respondsToSelector:@selector(unreadMessageNumberDidChanged)]) {
-                [self.conversationListDelegate unreadMessageNumberDidChanged];
-            }
-        }];
+        [self reloadRecentChatWithRecentChatModel:nil needReloadBadge:YES];
     }
 }
 
