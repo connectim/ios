@@ -33,8 +33,6 @@ UIViewControllerPreviewingDelegate>
 
 @property(nonatomic, strong) RecentChatTitleView *titleView;
 @property(nonatomic, strong) NSMutableArray<RecentChatModel *> *recentChats;
-@property (nonatomic) LMConnectStatusView *connectionAlertView;
-
 @property(nonatomic, assign) BOOL updated;
 @property (nonatomic ,assign) NSTimeInterval tapTimeInterval;
 @property (nonatomic ,assign) NSInteger selectIndex;
@@ -53,7 +51,6 @@ UIViewControllerPreviewingDelegate>
         if (recentModel.chatUser.stranger) {
             recentModel.chatUser.stranger = ![[UserDBManager sharedManager] isFriendByAddress:recentModel.chatUser.address];
         }
-        
         switch (recentModel.talkType) {
             case GJGCChatFriendTalkTypePostSystem:
             case GJGCChatFriendTalkTypePrivate:
@@ -81,7 +78,6 @@ UIViewControllerPreviewingDelegate>
                 }
             }
                 break;
-                
             case GJGCChatFriendTalkTypeGroup:
             {
                 GJGCChatFriendTalkModel *talk = [[GJGCChatFriendTalkModel alloc] init];
@@ -96,8 +92,6 @@ UIViewControllerPreviewingDelegate>
                 break;
         }
     }
-    
-    
     if ([self.presentedViewController isKindOfClass:[UIViewController class]]) {
         return nil;
     }
@@ -126,7 +120,6 @@ UIViewControllerPreviewingDelegate>
         default:
             break;
     }
-    
     //ui jump
     showPage.hidesBottomBarWhenPushed = YES;
     [self showViewController:showPage sender:self];
@@ -137,6 +130,7 @@ UIViewControllerPreviewingDelegate>
     if (self.tabBarController.tabBar.hidden) {
         self.tabBarController.tabBar.hidden = NO;
     }
+    //3d touch
 //    if (self.traitCollection.forceTouchCapability == UIForceTouchCapabilityAvailable) {
 //        [self registerForPreviewingWithDelegate:(id)self sourceView:self.view];
 //    }
@@ -149,17 +143,6 @@ UIViewControllerPreviewingDelegate>
         [self updateAppNoteWithCurrentNewVersionInfo:currentNewVersionInfo];
     };
     [self updateAppNoteWithCurrentNewVersionInfo:[SessionManager sharedManager].currentNewVersionInfo];
-
-    if ([LKUserCenter shareCenter].isFristLogin) {
-        LMRegisterPrivkeyBackupTipView *registerPrivkeyTipView = [[[NSBundle mainBundle] loadNibNamed:@"LMRegisterPrivkeyBackupTipView" owner:nil options:nil] lastObject];
-        AppDelegate *app = (AppDelegate *) [UIApplication sharedApplication].delegate;
-        UIWindow *window = app.window;
-        registerPrivkeyTipView.frame = [UIScreen mainScreen].bounds;
-        registerPrivkeyTipView.controller = self;
-        [window addSubview:registerPrivkeyTipView];
-        [window bringSubviewToFront:registerPrivkeyTipView];
-    }
-
     
     self.tabBarController.delegate=self;
     self.navigationItem.leftBarButtonItems = nil;
@@ -174,52 +157,12 @@ UIViewControllerPreviewingDelegate>
     self.navigationItem.titleView = self.titleView;
     [self onConnectState:0];
     
+    [self showFristRegisterBackupTipView];
+    
     //conversion  monitor
     [LMConversionManager sharedManager].conversationListDelegate = self;
     [[LMConversionManager sharedManager] getAllConversationFromDB];
 }
-
-- (void)updateAppNoteWithCurrentNewVersionInfo:(VersionResponse *)currentNewVersionInfo {
-    if (self.updated) {
-        return;
-    }
-    self.updated = YES;
-    if (currentNewVersionInfo.force) {
-        [GCDQueue executeInMainQueue:^{
-            [UIAlertController showAlertInViewController:self withTitle:LMLocalizedString(@"Set Found new version", nil) message:[SessionManager sharedManager].currentNewVersionInfo.remark cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:@[LMLocalizedString(@"Set Now update app", nil)] tapBlock:^(UIAlertController *_Nonnull controller, UIAlertAction *_Nonnull action, NSInteger buttonIndex) {
-                // native distribution
-                if ([SystemTool isNationChannel]) {
-                    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:nationalAppDownloadUrl]];
-                } else {
-                    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:appstoreAppDownloadUrl]];
-                }
-            }];
-        }];
-    } else {
-        BOOL havedNoteUpdate = GJCFUDFGetValue(@"havedNoteUpdateKey");
-        if (!havedNoteUpdate) {
-            [GCDQueue executeInMainQueue:^{
-                NSDictionary *infoDict = [[NSBundle mainBundle] infoDictionary]; //CFBundleIdentifier
-                NSString *versionNum = [infoDict objectForKey:@"CFBundleShortVersionString"];
-                int ver = [[currentNewVersionInfo.version stringByReplacingOccurrencesOfString:@"." withString:@""] intValue];
-                int currentVer = [[versionNum stringByReplacingOccurrencesOfString:@"." withString:@""] intValue];
-                if (currentVer < ver) {
-                    [UIAlertController showAlertInViewController:self withTitle:LMLocalizedString(@"Set tip title", nil) message:[NSString stringWithFormat:LMLocalizedString(@"Set Found the new version update the content", nil), currentNewVersionInfo.remark] cancelButtonTitle:LMLocalizedString(@"Common Cancel", nil) destructiveButtonTitle:nil otherButtonTitles:@[LMLocalizedString(@"Set Now update app", nil)] tapBlock:^(UIAlertController *_Nonnull controller, UIAlertAction *_Nonnull action, NSInteger buttonIndex) {
-                        GJCFUDFCache(@"havedNoteUpdateKey", @(YES));
-                        
-                        if ([SystemTool isNationChannel]) {
-                            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:nationalAppDownloadUrl]];
-                        } else {
-                            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:appstoreAppDownloadUrl]];
-                        }
-                    }];
-                }
-            }];
-        }
-    }
-
-}
-
 
 #pragma mark - LMConversionListChangeManagerDelegate
 
@@ -236,67 +179,82 @@ UIViewControllerPreviewingDelegate>
     [self updateBarBadgeIsNeedSyncBadge:YES];
 }
 
-- (NSMutableArray<RecentChatModel *> *)currentConversationList {
-    return [self.recentChats mutableCopy];
+- (void)showFristRegisterBackupTipView{
+    if ([LKUserCenter shareCenter].isFristLogin) {
+        LMRegisterPrivkeyBackupTipView *registerPrivkeyTipView = [[[NSBundle mainBundle] loadNibNamed:@"LMRegisterPrivkeyBackupTipView" owner:nil options:nil] lastObject];
+        AppDelegate *app = (AppDelegate *) [UIApplication sharedApplication].delegate;
+        UIWindow *window = app.window;
+        registerPrivkeyTipView.frame = [UIScreen mainScreen].bounds;
+        registerPrivkeyTipView.controller = self;
+        [window addSubview:registerPrivkeyTipView];
+        [window bringSubviewToFront:registerPrivkeyTipView];
+    }
 }
 
 - (void)addNotification {
-    //注册连接状态的监听
     [[IMService instance] addConnectionObserver:self];
-
-    RegisterNotify(@"im.connect.appCreateGroupCompleteNotification", @selector(groupCreateComplete:));
-    RegisterNotify(LoinOnNewDeviceStatusNotification, @selector(backToConnect:));
-    RegisterNotify(SocketDataVerifyIllegalityNotification, @selector(SocketDataVerifyFail));
+    RegisterNotify(CreateGroupCompleteNotification, @selector(groupCreateComplete:));
+    RegisterNotify(SocketDataVerifyIllegalityNotification, @selector(socketDataVerifyFail));
+    RegisterNotify(UIApplicationWillEnterForegroundNotification, @selector(enterForeground));
 }
 
-- (void)SocketDataVerifyFail {
-    [UIAlertController showAlertInViewController:self withTitle:LMLocalizedString(@"Set Found new version", nil) message: LMLocalizedString(@"Chat Connection protocol upgrades", nil) cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:@[LMLocalizedString(@"Set Now update app", nil)] tapBlock:^(UIAlertController *_Nonnull controller, UIAlertAction *_Nonnull action, NSInteger buttonIndex) {
-        if ([SystemTool isNationChannel]) {
-            if(SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"10.0")){
-                [[UIApplication sharedApplication] openURL:[NSURL URLWithString:nationalAppDownloadUrl] options:nil completionHandler:^(BOOL success) {
-                    
-                }];
-            } else{
-                [[UIApplication sharedApplication] openURL:[NSURL URLWithString:nationalAppDownloadUrl]];
-            }
-        } else {
-            if(SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"10.0")){
-                [[UIApplication sharedApplication] openURL:[NSURL URLWithString:appstoreAppDownloadUrl] options:nil completionHandler:^(BOOL success) {
-                    
-                }];
-            } else{
-                [[UIApplication sharedApplication] openURL:[NSURL URLWithString:appstoreAppDownloadUrl]];
+- (void)enterForeground{
+    if ([SessionManager sharedManager].currentNewVersionInfo.force) {
+        [self showUpdataAlertWithMessage:[SessionManager sharedManager].currentNewVersionInfo.remark force:YES];
+    }
+}
+
+- (void)socketDataVerifyFail {
+    [self showUpdataAlertWithMessage:LMLocalizedString(@"Chat Connection protocol upgrades", nil) force:YES];
+}
+- (void)showUpdataAlertWithMessage:(NSString *)message force:(BOOL)force{
+    NSString *cancel = nil;
+    if (!force) {
+        cancel = LMLocalizedString(@"Common Cancel", nil);
+    }
+    [UIAlertController showAlertInViewController:self withTitle:LMLocalizedString(@"Set Found new version", nil) message:message cancelButtonTitle:cancel destructiveButtonTitle:nil otherButtonTitles:@[LMLocalizedString(@"Set Now update app", nil)] tapBlock:^(UIAlertController *_Nonnull controller, UIAlertAction *_Nonnull action, NSInteger buttonIndex) {
+        if (buttonIndex != 0) { //tap update
+            if ([SystemTool isNationChannel]) {
+                if(SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"10.0")){
+                    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:nationalAppDownloadUrl] options:nil completionHandler:^(BOOL success) {
+                        
+                    }];
+                } else{
+                    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:nationalAppDownloadUrl]];
+                }
+            } else {
+                if(SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"10.0")){
+                    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:appstoreAppDownloadUrl] options:nil completionHandler:^(BOOL success) {
+                        
+                    }];
+                } else{
+                    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:appstoreAppDownloadUrl]];
+                }
             }
         }
     }];
 }
 
-- (void)groupAvatarNicknameChange {
-    [[LMConversionManager sharedManager] getAllConversationFromDB];
-}
 
-- (void)getOfflineComplete {
-
-    [[LMConversionManager sharedManager] getAllConversationFromDB];
-
-}
-
-- (void)backToConnect:(NSNotification *)note {
-    int status = [note.object intValue];
-    DDLogError(@"status %d", status);
-    switch (status) {
-        case 1: {
-            MBProgressHUD *hud = [MBProgressHUD showMessage:LMLocalizedString(@"Common Loading", nil) toView:self.view];
-            [hud hide:YES afterDelay:20];
+- (void)updateAppNoteWithCurrentNewVersionInfo:(VersionResponse *)currentNewVersionInfo {
+    if (self.updated || !currentNewVersionInfo) {
+        return;
+    }
+    self.updated = YES;
+    if (currentNewVersionInfo.force) {
+        [self showUpdataAlertWithMessage:currentNewVersionInfo.remark force:YES];
+    } else {
+        BOOL havedNoteUpdate = GJCFUDFGetValue(@"havedNoteUpdateKey");
+        if (!havedNoteUpdate) {
+            NSDictionary *infoDict = [[NSBundle mainBundle] infoDictionary]; //CFBundleIdentifier
+            NSString *versionNum = [infoDict objectForKey:@"CFBundleShortVersionString"];
+            int ver = [[currentNewVersionInfo.version stringByReplacingOccurrencesOfString:@"." withString:@""] intValue];
+            int currentVer = [[versionNum stringByReplacingOccurrencesOfString:@"." withString:@""] intValue];
+            if (currentVer < ver) {
+                [self showUpdataAlertWithMessage:currentNewVersionInfo.remark force:NO];
+                GJCFUDFCache(@"havedNoteUpdateKey", @(YES));
+            }
         }
-            break;
-        case 2: {
-            [MBProgressHUD hideHUDForView:self.view];
-            [[RecentChatDBManager sharedManager] createConnectTermWelcomebackChatAndMessage];
-        }
-            break;
-        default:
-            break;
     }
 }
 
@@ -307,7 +265,6 @@ UIViewControllerPreviewingDelegate>
 
 #pragma mark - To create a group after the success of the interface jump
 - (void)groupCreateComplete:(NSNotification *)note {
-
     /*
      @"groupIdentifier":groupInfo.group.identifier,
      @"content":content})
@@ -389,28 +346,6 @@ UIViewControllerPreviewingDelegate>
         default:
             break;
     }
-//    [self adjustConcectStatus];
-}
-
-- (void)adjustConcectStatus{
-    switch (self.titleView.connectState) {
-        case 2: {
-            [self.connectionAlertView showViewWithStatue:LMConnectStatusViewUpdateecdhSuccess];
-            [GCDQueue executeInMainQueue:^{
-                [self.tableView setTableHeaderView:nil];
-            } afterDelaySecs:0.8f];
-        }
-            break;
-        case 1:
-        case 3: {
-            self.connectionAlertView.height = AUTO_HEIGHT(60);
-            [self.tableView setTableHeaderView:self.connectionAlertView];
-            [self.connectionAlertView showViewWithStatue:LMConnectStatusViewUpdatingEcdh];
-        }
-            break;
-        default:
-            break;
-    }
 }
 
 - (void)configTableView {
@@ -421,7 +356,6 @@ UIViewControllerPreviewingDelegate>
 
 
 #pragma mark - Table view data source
-
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return self.recentChats.count;
 }
@@ -661,13 +595,5 @@ UIViewControllerPreviewingDelegate>
     }
     return YES;
 }
-
-- (UIView *)connectionAlertView {
-    if (!_connectionAlertView) {
-        _connectionAlertView = [[LMConnectStatusView alloc] initWithFrame:CGRectMake(0, 0, DEVICE_SIZE.width, AUTO_HEIGHT(60))];
-    }
-    return _connectionAlertView;
-}
-
 
 @end
