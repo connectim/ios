@@ -112,8 +112,4 @@ extern NSString *const GroupAdminChangeNotification;
 
 extern NSString *const GroupNewMemberEnterNotification;
 
-// appCreateGroupCompleteNotification
-extern NSString *const CreateGroupCompleteNotification;
-
-
 extern NSString *const SocketDataVerifyIllegalityNotification;

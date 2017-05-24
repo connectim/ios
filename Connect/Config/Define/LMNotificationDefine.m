@@ -102,7 +102,4 @@ NSString *const GroupAdminChangeNotification = @"GroupAdminChangeNotification";
 
 NSString *const GroupNewMemberEnterNotification = @"GroupNewMemberEnterNotification";
 
-// CreateGroupCompleteNotification
-NSString *const CreateGroupCompleteNotification = @"CreateGroupCompleteNotification";
-
 NSString *const SocketDataVerifyIllegalityNotification = @"SocketDataVerifyIllegalityNotification";

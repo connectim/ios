@@ -14,6 +14,8 @@
 
 - (void)chatWithFriend:(AccountInfo *)user withObject:(NSDictionary *)obj;
 
+- (void)createGroupWithGroupInfo:(LMGroupInfo *)groupInfo content:(NSString *)content;
+
 - (void)changeLanguageResetController;
 
 @end
