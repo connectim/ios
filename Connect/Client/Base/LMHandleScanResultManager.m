@@ -145,7 +145,7 @@ CREATE_SHARED_MANAGER(LMHandleScanResultManager)
         }];
     }else {
         [GCDQueue executeInMainQueue:^{
-            [MBProgressHUD showToastwithText:LMLocalizedString(@"Login qr is not a private key", nil) withType:ToastTypeFail showInView:controller.view complete:nil];
+            [MBProgressHUD showToastwithText:LMLocalizedString(@"Login scan string error", nil) withType:ToastTypeFail showInView:controller.view complete:nil];
         }];
     }
 }
