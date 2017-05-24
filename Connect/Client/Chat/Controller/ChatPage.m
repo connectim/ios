@@ -193,7 +193,6 @@ UIViewControllerPreviewingDelegate>
 
 - (void)addNotification {
     [[IMService instance] addConnectionObserver:self];
-    RegisterNotify(CreateGroupCompleteNotification, @selector(groupCreateComplete:));
     RegisterNotify(SocketDataVerifyIllegalityNotification, @selector(socketDataVerifyFail));
     RegisterNotify(UIApplicationWillEnterForegroundNotification, @selector(enterForeground));
 }
@@ -261,52 +260,6 @@ UIViewControllerPreviewingDelegate>
 - (void)dealloc {
     [[IMService instance] removeConnectionObserver:self];
     RemoveNofify;
-}
-
-#pragma mark - To create a group after the success of the interface jump
-- (void)groupCreateComplete:(NSNotification *)note {
-    /*
-     @"groupIdentifier":groupInfo.group.identifier,
-     @"content":content})
-     */
-    NSString *identifier = [note.object valueForKey:@"groupIdentifier"];
-    NSString *content = [note.object valueForKey:@"content"];
-    if (GJCFStringIsNull(identifier)) {
-        return;
-    }
-    LMGroupInfo *groupInfo = [[GroupDBManager sharedManager] getgroupByGroupIdentifier:identifier];
-    NSString *tipMessage = content;
-    NSString *localMsgId = [ConnectTool generateMessageId];
-    ChatMessageInfo *chatMessage = [[ChatMessageInfo alloc] init];
-    chatMessage.messageId = localMsgId;
-    chatMessage.messageOwer = identifier;
-    chatMessage.messageType = GJGCChatFriendContentTypeStatusTip;
-    chatMessage.sendstatus = GJGCChatFriendSendMessageStatusSuccess;
-    chatMessage.createTime = (long long) ([[NSDate date] timeIntervalSince1970] * 1000);
-    MMMessage *message = [[MMMessage alloc] init];
-    message.type = GJGCChatFriendContentTypeStatusTip;
-    message.content = tipMessage;
-    message.sendtime = [[NSDate date] timeIntervalSince1970] * 1000;
-    message.message_id = localMsgId;
-    message.sendstatus = GJGCChatFriendSendMessageStatusSuccess;
-    chatMessage.message = message;
-    [[MessageDBManager sharedManager] saveMessage:chatMessage];
-
-    GJGCChatFriendTalkModel *talk = [[GJGCChatFriendTalkModel alloc] init];
-    talk.talkType = GJGCChatFriendTalkTypeGroup;
-    talk.chatIdendifier = identifier;
-    talk.group_ecdhKey = groupInfo.groupEcdhKey;
-    talk.chatGroupInfo = groupInfo;
-    
-    talk.name = [NSString stringWithFormat:@"%@(%lu)", groupInfo.groupName, (unsigned long) talk.chatGroupInfo.groupMembers.count];
-
-    [SessionManager sharedManager].chatSession = talk.chatIdendifier;
-    [SessionManager sharedManager].chatObject = groupInfo;
-
-    GJGCChatGroupViewController *groupChat = [[GJGCChatGroupViewController alloc] initWithTalkInfo:talk];
-    groupChat.hidesBottomBarWhenPushed = YES;
-    [self.navigationController pushViewController:groupChat animated:YES];
-
 }
 
 #pragma mark - TCPConnectionObserver
