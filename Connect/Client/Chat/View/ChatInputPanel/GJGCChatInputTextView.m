@@ -308,10 +308,7 @@
 }
 
 - (void)updateDisplayByInputContentTextChange {
-    [GCDQueue executeInGlobalQueue:^{
-        [[RecentChatDBManager sharedManager] updateDraft:self.textView.text withIdentifier:[SessionManager sharedManager].chatSession];
-    }];
-
+    [[RecentChatDBManager sharedManager] updateDraft:self.textView.text withIdentifier:[SessionManager sharedManager].chatSession];
     if (self.textView.text.length > 0) {
         self.placeHolderLabel.hidden = YES;
     } else {

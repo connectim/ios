@@ -689,16 +689,8 @@
 
     GJGCChatFriendContentModel *currentTimeSubModel = nil;
     for (NSInteger i = 0; i < self.totalCount; i++) {
-
         GJGCChatFriendContentModel *contentModel = [self.chatListArray objectAtIndex:i];
-        if (contentModel.contentType == GJGCChatFriendContentTypeTime) {
-            NSLog(@"contentModel is time :%@", contentModel.uniqueIdentifier);
-        }
-
-        DDLogInfo(@"contentModel.sendTime %lld", contentModel.sendTime);
-
         NSString *timeString = [GJGCChatSystemNotiCellStyle timeAgoStringByLastMsgTime:contentModel.sendTime lastMsgTime:firstMsgTimeInterval];
-
         if (timeString) {
 
             /* Create a time block and insert it into the data source */

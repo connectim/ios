@@ -1241,8 +1241,12 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
                     }];
                 } else {
                     int payCount = (int) (crowdInfo.size - crowdInfo.remainSize);
-                    chatContentModel.payOrReceiptStatusMessage = [GJGCChatSystemNotiCellStyle formateRecieptSubTipsWithTotal:(int) crowdInfo.size payCount:payCount isCrowding:YES transStatus:(int) crowdInfo.status];
-                    [self.chatListTable reloadData];
+                    NSAttributedString *statusTipsStr = [GJGCChatSystemNotiCellStyle formateRecieptSubTipsWithTotal:(int) crowdInfo.size payCount:payCount isCrowding:YES transStatus:(int) crowdInfo.status];
+                    if (![statusTipsStr.string isEqualToString:chatContentModel.payOrReceiptStatusMessage.string]) {
+                        chatContentModel.payOrReceiptStatusMessage = statusTipsStr;
+                        [self.chatListTable reloadData];
+                        [[LMMessageExtendManager sharedManager] updateMessageExtendPayCount:(int) (crowdInfo.size - crowdInfo.remainSize) status:(int) crowdInfo.status withHashId:crowdInfo.hashId];
+                    }
                     if (chatContentModel.isFromSelf) {
                         LMGroupZChouReciptViewController *reciptVc = [[LMGroupZChouReciptViewController alloc] initWithCrowdfundingInfo:crowdInfo];
                         [self.navigationController pushViewController:reciptVc animated:YES];
