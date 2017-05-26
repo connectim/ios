@@ -115,3 +115,5 @@ extern NSString *const GroupAdminChangeNotification;
 // Enter group notification
 
 extern NSString *const GroupNewMemberEnterNotification;
+
+extern NSString *const LinkRefreshLinkData;

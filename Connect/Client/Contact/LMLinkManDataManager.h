@@ -8,6 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
+typedef NS_ENUM(NSUInteger,ContactType) {
+    ContactTypeLink   = 1 << 0,
+    ContactTypeShare  = 1 << 1
+};
 @protocol LMLinkManDataManagerDelegate <NSObject>
 
 - (void)listChange:(NSMutableArray *)linkDataArray withTabBarCount:(NSUInteger)count;
@@ -38,7 +42,7 @@
 - (void)clearArrays;
 
 // get user message
-- (void)getAllLinkMan;
+- (void)getAllLinkMan:(ContactType)contactType withUser:(AccountInfo *)contact withComplete:(void(^)(BOOL isComplete))complete;
 
 - (void)clearUnreadCountWithType:(int)type;
 

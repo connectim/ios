@@ -198,7 +198,7 @@ CREATE_SHARED_MANAGER(LMHistoryCacheManager)
 }
 
 - (NSData *)getNotificatedContact {
-    LMBaseSSDBManager *manager = [LMBaseSSDBManager open:@"system_message"];
+    LMBaseSSDBManager *manager = [LMBaseSSDBManager open:@"system_message"]; 
     NSData *data;
     NSString *key = [NSString stringWithFormat:@"%@_getNotificatedContact", [[LKUserCenter shareCenter] currentLoginUser].address];
     [manager get:key data:&data];

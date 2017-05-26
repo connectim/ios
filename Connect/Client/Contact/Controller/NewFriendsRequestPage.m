@@ -27,24 +27,24 @@
 #import "LMLinkManDataManager.h"
 #import "LMHistoryCacheManager.h"
 
-#define  MayKnowMaxCount  4
+#define  RECOMMAND_COUNT  4
 
 @interface NewFriendsRequestPage () <UITableViewDelegate, UITableViewDataSource, MGSwipeTableCellDelegate>
 
-@property(nonatomic, strong) NSMutableArray *friendRequests;
-@property(nonatomic, strong) NSMutableArray *recommandFriendArray;
+@property(strong, nonatomic) NSMutableArray *friendRequests;
+@property(strong, nonatomic) NSMutableArray *recommandFriendArray;
 @property(strong, nonatomic) NSMutableArray *titleArr;
 @property(strong, nonatomic) NSMutableArray *allArray;
 @property(assign, nonatomic) BOOL isLoading;
-@property(nonatomic, strong) UIView *topView;
+@property(strong, nonatomic) UIView *topView;
 // Phone address book icon
 @property(nonatomic, strong) TopImageBottomItem *contactItem;
 
 @end
 
 @implementation NewFriendsRequestPage
-#pragma mark - lazy
 
+#pragma mark - lazy
 - (NSMutableArray *)recommandFriendArray {
     if (_recommandFriendArray == nil) {
         self.recommandFriendArray = [NSMutableArray array];
@@ -72,13 +72,43 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = LMLocalizedString(@"Link New friend", nil);
-
+    [self creatFriendRequestsAction];
+    [self configTableView];
+    [self bridgeNumberAction];
+    [self registAction];
+#if (!TARGET_IPHONE_SIMULATOR)
+    // in the case of wifi
+    if (![[MMAppSetting sharedSetting] isHavePhoneContactRegister]) {
+        [GCDQueue executeInGlobalQueue:^{
+            [self uploadContactAndGetNewPhoneFriends];
+        }];
+    }
+#endif
+    // creat recommond man
+    [self getArrayFromNetWork];
+}
+#pragma mark - method 
+- (void)registAction {
+    RegisterNotify(ConnnectSendAddRequestSuccennNotification, @selector(newFriendRequest:));
+    RegisterNotify(kNewFriendRequestNotification, @selector(newFriendRequest:));
+    RegisterNotify(kAcceptNewFriendRequestNotification, @selector(newFriendRequest:));
+}
+- (void)bridgeNumberAction {
+    [[BadgeNumberManager shareManager] getBadgeNumber:ALTYPE_CategoryTwo_PhoneContact Completion:^(BadgeNumber *badgeNumber) {
+        UIViewController *viewController = [self.navigationController.viewControllers lastObject];
+        [GCDQueue executeInMainQueue:^{
+            if (badgeNumber.count > 0 && [viewController isKindOfClass:[self class]]) {
+                [self.contactItem showBadgeWithStyle:WBadgeStyleNumber value:badgeNumber.count animationType:WBadgeAnimTypeNone];
+            }
+        }];
+    }];
+}
+- (void)creatFriendRequestsAction {
     if (!self.friendRequests) {
         self.friendRequests = [NSMutableArray array];
     }
     self.friendRequests = [[UserDBManager sharedManager] getAllNewFirendRequest].mutableCopy;
     
-
     __weak __typeof(&*self) weakSelf = self;
     for (AccountInfo *user in _friendRequests) {
         NSString *address = user.address;
@@ -89,41 +119,7 @@
             };
         }
     }
-
-    [self configTableView];
-
-    // set badge
-    [[BadgeNumberManager shareManager] getBadgeNumber:ALTYPE_CategoryTwo_PhoneContact Completion:^(BadgeNumber *badgeNumber) {
-        UIViewController *viewController = [weakSelf.navigationController.viewControllers lastObject];
-        [GCDQueue executeInMainQueue:^{
-            if (badgeNumber.count > 0 && [viewController isKindOfClass:[self class]]) {
-                [weakSelf.contactItem showBadgeWithStyle:WBadgeStyleNumber value:badgeNumber.count animationType:WBadgeAnimTypeNone];
-            }
-        }];
-    }];
-
-    RegisterNotify(ConnnectSendAddRequestSuccennNotification, @selector(newFriendRequest:));
-    RegisterNotify(kNewFriendRequestNotification, @selector(newFriendRequest:));
-    RegisterNotify(kAcceptNewFriendRequestNotification, @selector(newFriendRequest:));
-
-
-#if (TARGET_IPHONE_SIMULATOR)
-    // In the case of simulators
-#else
-    // In the case of real machine
-    if (YES) {
-        // in the case of wifi
-        if (![[MMAppSetting sharedSetting] isHavePhoneContactRegister]) {
-            [GCDQueue executeInGlobalQueue:^{
-                [self uploadContactAndGetNewPhoneFriends];
-            }];
-        }
-    }
-#endif
-    // creat recommond man
-    [self getArrayFromNetWork];
 }
-#pragma mark - 数组添加的方法
 
 - (void)getArrayFromNetWork {
     __weak typeof(self) weakSelf = self;
@@ -133,29 +129,9 @@
     [NetWorkOperationTool POSTWithUrlString:GetRecommandFriendUrl postProtoData:nil complete:^(id response) {
         HttpResponse *hResponse = (HttpResponse *) response;
         self.isLoading = NO;
-        if (hResponse.code == successCode) {
-            NSData *data = [ConnectTool decodeHttpResponse:hResponse];
-            if (data) {
-                NSError *error = nil;
-                UsersInfo *usersInfo = [UsersInfo parseFromData:data error:&error];
-                weakSelf.recommandFriendArray = [[LMRecommandFriendManager sharedManager] getRecommandFriendsWithPage:1].mutableCopy;
-                if (weakSelf.recommandFriendArray.count <= 0) {
-                    [[LMRecommandFriendManager sharedManager] saveRecommandFriend:usersInfo.usersArray];
-                } else {
-                    [weakSelf detailDBArrayWith:usersInfo.usersArray];
-                }
-                // creat data source
-                [weakSelf creatAllArray];
-            }
-        } else {
-            [GCDQueue executeInMainQueue:^{
-                [MBProgressHUD showToastwithText:[LMErrorCodeTool showToastErrorType:ToastErrorTypeContact withErrorCode:hResponse.code withUrl:RecommendFindMe] withType:ToastTypeFail showInView:weakSelf.view complete:nil];
-
-            }];
-             // creat data source
-            [weakSelf creatAllArray];
-        }
-    }                                  fail:^(NSError *error) {
+        [self recommandAction:hResponse];
+        
+    }    fail:^(NSError *error) {
         self.isLoading = NO;
         [GCDQueue executeInMainQueue:^{
             [MBProgressHUD showToastwithText:[LMErrorCodeTool showToastErrorType:ToastErrorTypeContact withErrorCode:error.code withUrl:RecommendFindMe] withType:ToastTypeFail showInView:weakSelf.view complete:nil];
@@ -163,6 +139,28 @@
             [weakSelf creatAllArray];
         }];
     }];
+}
+- (void)recommandAction:(HttpResponse *)hResponse {
+    if (hResponse.code == successCode) {
+        NSData *data = [ConnectTool decodeHttpResponse:hResponse];
+        if (data) {
+            NSError *error = nil;
+            UsersInfo *usersInfo = [UsersInfo parseFromData:data error:&error];
+            self.recommandFriendArray = [[LMRecommandFriendManager sharedManager] getRecommandFriendsWithPage:1].mutableCopy;
+            if (self.recommandFriendArray.count <= 0) {
+                [[LMRecommandFriendManager sharedManager] saveRecommandFriend:usersInfo.usersArray];
+            } else {
+                [self detailDBArrayWith:usersInfo.usersArray];
+            }
+        }
+    } else {
+        [GCDQueue executeInMainQueue:^{
+            [MBProgressHUD showToastwithText:[LMErrorCodeTool showToastErrorType:ToastErrorTypeContact withErrorCode:hResponse.code withUrl:RecommendFindMe] withType:ToastTypeFail showInView:self.view complete:nil];
+            
+        }];
+    }
+    // creat data source
+    [self creatAllArray];
 }
 
 /**
@@ -214,9 +212,9 @@
         }
     }
     self.recommandFriendArray = [[LMRecommandFriendManager sharedManager] getRecommandFriendsWithPage:1 withStatus:1].mutableCopy;
-    if (self.recommandFriendArray.count > MayKnowMaxCount) {
+    if (self.recommandFriendArray.count > RECOMMAND_COUNT) {
         NSMutableArray *tmpArray = [NSMutableArray array];
-        for (NSInteger index = 0; index < MayKnowMaxCount; index++) {
+        for (NSInteger index = 0; index < RECOMMAND_COUNT; index++) {
             AccountInfo *userInfo = self.recommandFriendArray[index];
             [tmpArray objectAddObject:userInfo];
         }
@@ -270,7 +268,6 @@
         PhoneInfo *phoneInfo = [[PhoneInfo alloc] init];
         phoneInfo.code = [[RegexKit phoneCode] intValue];
         phoneInfo.mobile = [KeyHandle getHash256:@"13281226591"];
-
         [hashMobiles objectAddObject:phoneInfo];
 #else
 
@@ -286,74 +283,74 @@
 
 - (void)getRegisterUserByNet {
 
-    __weak __typeof(&*self) weakSelf = self;
-
     [NetWorkOperationTool POSTWithUrlString:ContactPhoneBookUrl signNoEncryptPostData:nil
                                    complete:^(id response) {
                                        HttpResponse *hResponse = (HttpResponse *) response;
-                                       
-                                       [[MMAppSetting sharedSetting] haveSyncPhoneContactRegister];
                                        if (hResponse.code != successCode) {
                                            return;
                                        }
-                                       NSData *data = [ConnectTool decodeHttpResponse:hResponse];
-                                       if (data) {
-                                           // cache
-                                           [[LMHistoryCacheManager sharedManager] cacheRegisterContacts:data];
-                                           
-                                           PhoneBookUsersInfo *users = [PhoneBookUsersInfo parseFromData:data error:nil];
-                                           NSData *notedData = [[LMHistoryCacheManager sharedManager] getNotificatedContact];
-                                           ContactsNotificatedAddress *noteAddress;
-                                           if (notedData) {
-                                               noteAddress = [ContactsNotificatedAddress parseFromData:[[LMHistoryCacheManager sharedManager] getNotificatedContact] error:nil];
-                                           } else{
-                                               noteAddress = [ContactsNotificatedAddress new];
-                                           }
-                                           NSMutableArray *notedAddress = [NSMutableArray arrayWithArray:noteAddress.addressesArray];
-                                           NSInteger count = 0;
-                                           for (PhoneBookUserInfo *phoneBookUser in users.usersArray) {
-                                               UserInfo *user = phoneBookUser.user;
-                                               AccountInfo *userInfo = [[AccountInfo alloc] init];
-                                               userInfo.avatar = user.avatar;
-                                               userInfo.address = user.address;
-                                               userInfo.stranger = ![[UserDBManager sharedManager] isFriendByAddress:userInfo.address];
-                                               if (!userInfo.stranger) {
-                                                   continue;
-                                               } else {
-                                                   AccountInfo *requestUser = [[UserDBManager sharedManager] getFriendRequestBy:user.address];
-                                                   // request no
-                                                   if (!requestUser && ![noteAddress.addressesArray containsObject:user.address]) {
-                                                       count++;
-                                                       if (![notedAddress containsObject:user.address]) {
-                                                           [notedAddress objectAddObject:user.address];
-                                                       }
-                                                   }
-                                               }
-                                           }
-                                           // save Notice
-                                           noteAddress.addressesArray = notedAddress;
-                                           [[LMHistoryCacheManager sharedManager] cacheNotificatedContacts:noteAddress.data];
-
-                                           if (count > 0) {
-                                               BadgeNumber *createBadge = [[BadgeNumber alloc] init];
-                                               createBadge.type = ALTYPE_CategoryTwo_PhoneContact;
-                                               createBadge.count = count;
-                                               createBadge.displayMode = ALDisplayMode_Number;
-                                               [[BadgeNumberManager shareManager] setBadgeNumber:createBadge Completion:^(BOOL result) {
-                                                   if (result) {
-
-                                                   }
-                                               }];
-                                               [GCDQueue executeInMainQueue:^{
-                                                   [weakSelf.contactItem showBadgeWithStyle:WBadgeStyleNumber value:count animationType:WBadgeAnimTypeNone];
-                                               }];
-                                           }
-                                       }
+                                       [[MMAppSetting sharedSetting] haveSyncPhoneContactRegister];
+                                       [self syncPhoneBook:hResponse];
+                                       
                                    } fail:^(NSError *error) {
-
+                                       [GCDQueue executeInMainQueue:^{
+                                           [MBProgressHUD showToastwithText:LMLocalizedString(@"Network Server error", nil) withType:ToastTypeFail showInView:nil complete:nil];
+                                       }];
             }];
 }
-
+- (void)syncPhoneBook:(HttpResponse *)hResponse {
+    
+    NSData *data = [ConnectTool decodeHttpResponse:hResponse];
+    if (data) {
+        // cache
+        [[LMHistoryCacheManager sharedManager] cacheRegisterContacts:data];
+        PhoneBookUsersInfo *users = [PhoneBookUsersInfo parseFromData:data error:nil];
+        NSData *notedData = [[LMHistoryCacheManager sharedManager] getNotificatedContact];
+        ContactsNotificatedAddress *noteAddress;
+        if (notedData) {
+            noteAddress = [ContactsNotificatedAddress parseFromData:notedData error:nil];
+        } else{
+            noteAddress = [ContactsNotificatedAddress new];
+        }
+        NSMutableArray *notedAddress = [NSMutableArray arrayWithArray:noteAddress.addressesArray];
+        NSInteger count = 0;
+        for (PhoneBookUserInfo *phoneBookUser in users.usersArray) {
+            UserInfo *user = phoneBookUser.user;
+            AccountInfo *userInfo = [[AccountInfo alloc] init];
+            userInfo.avatar = user.avatar;
+            userInfo.address = user.address;
+            userInfo.stranger = ![[UserDBManager sharedManager] isFriendByAddress:userInfo.address];
+            if (!userInfo.stranger) {
+                continue;
+            } else {
+                AccountInfo *requestUser = [[UserDBManager sharedManager] getFriendRequestBy:user.address];
+                // request no
+                if (!requestUser && ![noteAddress.addressesArray containsObject:user.address]) {
+                    count++;
+                    if (![notedAddress containsObject:user.address]) {
+                        [notedAddress objectAddObject:user.address];
+                    }
+                }
+            }
+        }
+        // save Notice
+        noteAddress.addressesArray = notedAddress;
+        [[LMHistoryCacheManager sharedManager] cacheNotificatedContacts:noteAddress.data];
+        
+        if (count > 0) {
+            BadgeNumber *createBadge = [[BadgeNumber alloc] init];
+            createBadge.type = ALTYPE_CategoryTwo_PhoneContact;
+            createBadge.count = count;
+            createBadge.displayMode = ALDisplayMode_Number;
+            [[BadgeNumberManager shareManager] setBadgeNumber:createBadge Completion:^(BOOL result) {
+                
+            }];
+            [GCDQueue executeInMainQueue:^{
+                [self.contactItem showBadgeWithStyle:WBadgeStyleNumber value:count animationType:WBadgeAnimTypeNone];
+            }];
+        }
+    }
+}
 
 - (void)newFriendRequest:(NSNotification *)note {
 
@@ -388,7 +385,9 @@
     }];
 
     //accept new friend request
-    [MBProgressHUD showLoadingMessageToView:self.view];
+    [GCDQueue executeInMainQueue:^{
+      [MBProgressHUD showLoadingMessageToView:self.view];
+    }];
     [[IMService instance] acceptAddRequestWithAddress:address source:source comlete:^(NSError *error, id data) {
         [GCDQueue executeInMainQueue:^{
             if (error) {
@@ -424,7 +423,7 @@
     self.tableView.backgroundColor = LMBasicBackgroundColor;
     // head
     self.tableView.tableHeaderView = self.topView;
-    self.tableView.tableFooterView = [[UIView alloc] init];//http://ios.jobbole.com/84377/
+    self.tableView.tableFooterView = [[UIView alloc] init];
     self.tableView.rowHeight = AUTO_HEIGHT(111);
     self.tableView.allowsMultipleSelectionDuringEditing = NO;
 }
@@ -671,10 +670,6 @@
 
         NSMutableArray *icons = @[@"contract_add_scan", @"contract_add_contacts", @"contract_add_more"].mutableCopy;
         NSMutableArray *titles = @[LMLocalizedString(@"Link Scan", nil), LMLocalizedString(@"Link Contacts", nil), LMLocalizedString(@"Link More", nil)].mutableCopy;
-        if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"10")) {
-            icons = @[@"contract_add_scan", @"contract_add_contacts", @"contract_add_more"].mutableCopy;
-            titles = @[LMLocalizedString(@"Link Scan", nil), LMLocalizedString(@"Link Contacts", nil), LMLocalizedString(@"Link More", nil)].mutableCopy;
-        }
         CGFloat marginY = AUTO_HEIGHT(45);
         CGFloat itemW = AUTO_HEIGHT(100);
         CGFloat margin = (DEVICE_SIZE.width - 3 * itemW) / 6;
@@ -689,7 +684,6 @@
                 self.contactItem = item;
             }
             col = i % 3;
-
             item.frame = CGRectMake(col * (margin * 2 + itemW) + margin, baseY, itemW, itemH);
             [item addTarget:self action:@selector(itemClick:) forControlEvents:UIControlEventTouchUpInside];
             [contentView addSubview:item];
@@ -700,54 +694,63 @@
 }
 
 - (void)itemClick:(UIButton *)btn {
-    __weak __typeof(&*self) weakSelf = self;
     switch (btn.tag) {
         case 0: {
-            ScanAddPage *scanPage = [[ScanAddPage alloc] initWithScanComplete:^(NSString *scanString) {
-                __strong __typeof(&*weakSelf) strongSelf = weakSelf;
-                [[LMHandleScanResultManager sharedManager] handleScanResult:scanString controller:strongSelf];
-            }];
-            scanPage.showMyQrCode = YES;
-            [self presentViewController:scanPage animated:NO completion:nil];
+            [self scanAction];
         }
             break;
         case 1: {
             // clear
-            [[BadgeNumberManager shareManager] clearBadgeNumber:ALTYPE_CategoryTwo_PhoneContact Completion:^{
-
-            }];
-            [self.contactItem clearBadge];
-            PhoneConatctPage *contactPage = [[PhoneConatctPage alloc] init];
-            [self.navigationController pushViewController:contactPage animated:YES];
+            [self contactAction];
         }
             break;
         case 2: {
-            NSString *title = [NSString stringWithFormat:
-                    LMLocalizedString(@"Link invite you to start encrypted chat with Connect", nil), [[LKUserCenter shareCenter] currentLoginUser].username];
-            NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@?address=%@", H5ShareServerUrl, [[LKUserCenter shareCenter] currentLoginUser].address]];
-            UIImage * avatar = [[YYImageCache sharedCache] getImageForKey:[[LKUserCenter shareCenter] currentLoginUser].avatar];
-            if (!avatar) {
-                avatar = [UIImage imageNamed:@"default_user_avatar"];
-            }
-            UIActivityViewController *activeViewController = [[UIActivityViewController alloc] initWithActivityItems:@[title, url, avatar] applicationActivities:nil];
-            activeViewController.excludedActivityTypes = @[UIActivityTypeAirDrop, UIActivityTypeCopyToPasteboard, UIActivityTypeAddToReadingList];
-            [self presentViewController:activeViewController animated:YES completion:nil];
-            UIActivityViewControllerCompletionWithItemsHandler myblock = ^(NSString *__nullable activityType, BOOL completed, NSArray *__nullable returnedItems, NSError *__nullable activityError) {
-                NSLog(@"%d %@", completed, activityType);
-            };
-            activeViewController.completionWithItemsHandler = myblock;
+            [self shareAction];
         }
             break;
         default:
             break;
     }
 }
+#pragma mark - head action
+- (void)shareAction {
+    NSString *title = [NSString stringWithFormat:
+                       LMLocalizedString(@"Link invite you to start encrypted chat with Connect", nil), [[LKUserCenter shareCenter] currentLoginUser].username];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@?address=%@", H5ShareServerUrl, [[LKUserCenter shareCenter] currentLoginUser].address]];
+    UIImage * avatar = [[YYImageCache sharedCache] getImageForKey:[[LKUserCenter shareCenter] currentLoginUser].avatar];
+    if (!avatar) {
+        avatar = [UIImage imageNamed:@"default_user_avatar"];
+    }
+    UIActivityViewController *activeViewController = [[UIActivityViewController alloc] initWithActivityItems:@[title, url, avatar] applicationActivities:nil];
+    activeViewController.excludedActivityTypes = @[UIActivityTypeAirDrop, UIActivityTypeCopyToPasteboard, UIActivityTypeAddToReadingList];
+    [self presentViewController:activeViewController animated:YES completion:nil];
+    UIActivityViewControllerCompletionWithItemsHandler myblock = ^(NSString *__nullable activityType, BOOL completed, NSArray *__nullable returnedItems, NSError *__nullable activityError) {
+        NSLog(@"%d %@", completed, activityType);
+    };
+    activeViewController.completionWithItemsHandler = myblock;
+}
+- (void)scanAction {
+    ScanAddPage *scanPage = [[ScanAddPage alloc] initWithScanComplete:^(NSString *scanString) {
+        [[LMHandleScanResultManager sharedManager] handleScanResult:scanString controller:self];
+    }];
+    scanPage.showMyQrCode = YES;
+    [self presentViewController:scanPage animated:NO completion:nil];
+
+}
+- (void)contactAction {
+    [[BadgeNumberManager shareManager] clearBadgeNumber:ALTYPE_CategoryTwo_PhoneContact Completion:^{
+        
+    }];
+    [self.contactItem clearBadge];
+    PhoneConatctPage *contactPage = [[PhoneConatctPage alloc] init];
+    [self.navigationController pushViewController:contactPage animated:YES];
+}
 
 #pragma mark - display more is weather
 
 - (BOOL)isShowDisplayMoreWithSection:(NSInteger)section {
     NSArray *tmpArray = [[LMRecommandFriendManager sharedManager] getRecommandFriendsWithPage:1 withStatus:1].mutableCopy;
-    if ((section == 0) && (tmpArray.count > MayKnowMaxCount)) {
+    if ((section == 0) && (tmpArray.count > RECOMMAND_COUNT)) {
         return YES;
     } else {
         return NO;

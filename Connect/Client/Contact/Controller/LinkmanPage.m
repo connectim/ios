@@ -43,18 +43,30 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
-    [LMLinkManDataManager sharedManager].delegate = self;
-    [[LMLinkManDataManager sharedManager] getAllLinkMan];
-    [self configTableView];
-
     self.navigationItem.leftBarButtonItems = nil;
-
     self.navigationController.title = LMLocalizedString(@"Link Contacts", nil);
     [self setNavigationRight:@"add_white"];
+    [LMLinkManDataManager sharedManager].delegate = self;
+    [self configTableView];
+    [self refreshData];
+    RegisterNotify(LinkRefreshLinkData, @selector(refreshData));
     // set left button
     [self setLeftButton];
     
+}
+- (void)dealloc {
+    RemoveNofify;
+}
+- (void)refreshData {
+    
+    [[LMLinkManDataManager sharedManager] getAllLinkMan:ContactTypeLink withUser:nil withComplete:^(BOOL isComplete) {
+        if (isComplete) {
+            [GCDQueue executeInMainQueue:^{
+                [self.tableView reloadData];
+            }];
+        }
+    }];
+
 }
 -(void)setLeftButton
 {

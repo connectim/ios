@@ -48,18 +48,16 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    // invie
     self.title = LMLocalizedString(@"Link Contacts", nil);
+    [self setNavigationRightWithTitle:LMLocalizedString(@"Link Invite", nil)];
+    self.rightBarBtn.enabled = NO;
+    // add font color
+    [self.rightBarBtn setTitleTextAttributes:@{NSForegroundColorAttributeName: [UIColor greenColor]} forState:UIControlStateNormal];
+    [self.rightBarBtn setTitleTextAttributes:@{NSForegroundColorAttributeName: [UIColor grayColor]} forState:UIControlStateDisabled];
     [self.view addSubview:self.tableView];
+    
     [self configTableView];
-
-#if (TARGET_IPHONE_SIMULATOR)
-    //  in the case of simulator
-    [self.hashMobilesName setObject:@"mohuilin" forKey:[KeyHandle getHash256:@"13281226591"]];
-#else
-
-#endif
-
-    [MBProgressHUD showLoadingMessageToView:self.view];
     [GCDQueue executeInGlobalQueue:^{
         [self getRegister];
     }];
@@ -68,13 +66,7 @@
 
     RegisterNotify(ConnnectSendAddRequestSuccennNotification, @selector(sendAddRequestSuccess:));
     RegisterNotify(kAcceptNewFriendRequestNotification, @selector(acceptFriendSuccess:));
-
-    // invie
-    [self setNavigationRightWithTitle:LMLocalizedString(@"Link Invite", nil)];
-    self.rightBarBtn.enabled = NO;
-    // add font color
-    [self.rightBarBtn setTitleTextAttributes:@{NSForegroundColorAttributeName: [UIColor greenColor]} forState:UIControlStateNormal];
-    [self.rightBarBtn setTitleTextAttributes:@{NSForegroundColorAttributeName: [UIColor grayColor]} forState:UIControlStateDisabled];
+    
 }
 
 - (void)doRight:(id)sender {
@@ -98,6 +90,7 @@
 }
 
 - (void)getRegister {
+     [MBProgressHUD showLoadingMessageToView:self.view];
     __weak __typeof(&*self) weakSelf = self;
     self.hashMobilesName = [NSMutableDictionary dictionary];
     [[KTSContactsManager sharedManager] importContacts:^(NSArray *contacts, BOOL reject) {
@@ -228,7 +221,7 @@
     self.tableView.dataSource = self;
     self.tableView.sectionIndexColor = [UIColor lightGrayColor];
     self.tableView.sectionIndexBackgroundColor = [UIColor clearColor];
-    self.tableView.tableFooterView = [[UIView alloc] init];//http://ios.jobbole.com/84377/
+    self.tableView.tableFooterView = [[UIView alloc] init];
 }
 
 #pragma mark - 

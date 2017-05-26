@@ -105,3 +105,6 @@ NSString *const GroupAdminChangeNotification = @"GroupAdminChangeNotification";
 // Enter group notification
 
 NSString *const GroupNewMemberEnterNotification = @"GroupNewMemberEnterNotification";
+
+//refresh link data
+NSString *const LinkRefreshLinkData = @"RefreshLinkData";
