@@ -54,6 +54,13 @@
     return _commondQueue;
 }
 
+- (dispatch_queue_t)delaySendCommondQueue{
+    if (!_delaySendCommondQueue) {
+        _delaySendCommondQueue = dispatch_queue_create("delaysendqueue", DISPATCH_QUEUE_CONCURRENT);
+    }
+    return _delaySendCommondQueue;
+}
+
 static IMService *im;
 static dispatch_once_t onceToken;
 
@@ -604,13 +611,11 @@ static dispatch_once_t onceToken;
 #pragma mark - Command-send command base method
 
 - (void)sendCommandWith:(Message *)msg comlete:(SendCommandCallback)complete {
-    [GCDQueue executeInQueue:self.commondQueue block:^{
-        BOOL result = [self sendMessage:msg];
-        [[LMCommandManager sharedManager] addSendingMessage:msg callBack:complete];
-        if (!result) {
-            [[LMCommandManager sharedManager] sendCommandFailedWithMsgId:msg.msgIdentifer];
-        }
-    }];
+    BOOL result = [self sendMessage:msg];
+    [[LMCommandManager sharedManager] addSendingMessage:msg callBack:complete];
+    if (!result) {
+        [[LMCommandManager sharedManager] sendCommandFailedWithMsgId:msg.msgIdentifer];
+    }
 }
 
 #pragma mark - Command-send command
@@ -622,9 +627,6 @@ static dispatch_once_t onceToken;
                 callBlock(self);
             }
         } else {
-            if (!self.delaySendCommondQueue) {
-                self.delaySendCommondQueue = dispatch_queue_create("delaysendqueue", DISPATCH_QUEUE_CONCURRENT);
-            }
             if (!self.delaySendIsSuspend) {
                 dispatch_suspend(self.delaySendCommondQueue);
                 self.delaySendIsSuspend = YES;
@@ -636,9 +638,11 @@ static dispatch_once_t onceToken;
             });
         }
     } else{
-        if (callBlock) {
-            callBlock(self);
-        }
+        [GCDQueue executeInQueue:self.commondQueue block:^{
+            if (callBlock) {
+                callBlock(self);
+            }
+        }];
     }
 }
 
