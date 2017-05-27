@@ -158,7 +158,7 @@
         } else if (self.retweetModel.retweetMessage.type == GJGCChatFriendContentTypeImage) {
             title = [NSString stringWithFormat:LMLocalizedString(@"Chat Send image to", nil), displayName];
         } else {
-            title = [NSString stringWithFormat:LMLocalizedString(@"Chat Send vioce", nil), displayName];
+            title = [NSString stringWithFormat:LMLocalizedString(@"Link Send to", nil), displayName];
         }
     }
 

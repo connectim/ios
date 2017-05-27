@@ -90,7 +90,9 @@
 }
 
 - (void)getRegister {
-     [MBProgressHUD showLoadingMessageToView:self.view];
+    [GCDQueue executeInMainQueue:^{
+        [MBProgressHUD showLoadingMessageToView:self.view];
+    }];
     __weak __typeof(&*self) weakSelf = self;
     self.hashMobilesName = [NSMutableDictionary dictionary];
     [[KTSContactsManager sharedManager] importContacts:^(NSArray *contacts, BOOL reject) {

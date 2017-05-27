@@ -259,62 +259,61 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    if (indexPath.section == 0) {
-        SearchResultController *page = [[SearchResultController alloc] initWithSearchKey:self.searchTextFiled.text];
-        [self.navigationController pushViewController:page animated:YES];
-        return;
-    }
-
-    CellGroup *group = self.resultSearchDatas[indexPath.section];
-    id data = [group.items objectAtIndexCheck:indexPath.row];
-    if ([data isKindOfClass:[AccountInfo class]]) {
-        AccountInfo *user = (AccountInfo*)data;
-        if (user.isUnRegisterAddress) {
+    [self.searchTextFiled resignFirstResponder];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.25 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        if (indexPath.section == 0) {
+            SearchResultController *page = [[SearchResultController alloc] initWithSearchKey:self.searchTextFiled.text];
+            [self.navigationController pushViewController:page animated:YES];
             return;
         }
-        if (!user.stranger) {
-            if ([user.pub_key isEqualToString:kSystemIdendifier]) {
-                GJGCChatFriendTalkModel *talk = [[GJGCChatFriendTalkModel alloc] init];
-                talk.talkType = GJGCChatFriendTalkTypePrivate;
-                talk.chatIdendifier = user.pub_key;
-                talk.snapChatOutDataTime = 0;
-                talk.talkType = GJGCChatFriendTalkTypePostSystem;
-                talk.name = user.username;
-                talk.headUrl = user.avatar;
-                talk.chatUser = user;
-                // save session object
-                [SessionManager sharedManager].chatSession = talk.chatIdendifier;
-                [SessionManager sharedManager].chatObject = talk.chatUser;
-                
-                GJGCChatSystemNotiViewController *privateChat = [[GJGCChatSystemNotiViewController alloc] initWithTalkInfo:talk];
-                privateChat.hidesBottomBarWhenPushed = YES;
-                [self.navigationController pushViewController:privateChat animated:YES];
+        
+        CellGroup *group = self.resultSearchDatas[indexPath.section];
+        id data = [group.items objectAtIndexCheck:indexPath.row];
+        if ([data isKindOfClass:[AccountInfo class]]) {
+            AccountInfo *user = (AccountInfo*)data;
+            if (user.isUnRegisterAddress) {
                 return;
             }
-            UserDetailPage *detailPage = [[UserDetailPage alloc] initWithUser:user];
-            detailPage.hidesBottomBarWhenPushed = YES;
-            [self.navigationController pushViewController:detailPage animated:YES];
+            if (!user.stranger) {
+                if ([user.pub_key isEqualToString:kSystemIdendifier]) {
+                    GJGCChatFriendTalkModel *talk = [[GJGCChatFriendTalkModel alloc] init];
+                    talk.talkType = GJGCChatFriendTalkTypePrivate;
+                    talk.chatIdendifier = user.pub_key;
+                    talk.snapChatOutDataTime = 0;
+                    talk.talkType = GJGCChatFriendTalkTypePostSystem;
+                    talk.name = user.username;
+                    talk.headUrl = user.avatar;
+                    talk.chatUser = user;
+                    // save session object
+                    [SessionManager sharedManager].chatSession = talk.chatIdendifier;
+                    [SessionManager sharedManager].chatObject = talk.chatUser;
+                    
+                    GJGCChatSystemNotiViewController *privateChat = [[GJGCChatSystemNotiViewController alloc] initWithTalkInfo:talk];
+                    privateChat.hidesBottomBarWhenPushed = YES;
+                    [self.navigationController pushViewController:privateChat animated:YES];
+                    return;
+                }
+                UserDetailPage *detailPage = [[UserDetailPage alloc] initWithUser:user];
+                detailPage.hidesBottomBarWhenPushed = YES;
+                [self.navigationController pushViewController:detailPage animated:YES];
+            }
+        }else if([data isKindOfClass:[LMGroupInfo class]])
+        {
+            LMGroupInfo* group = (LMGroupInfo*)data;
+            GJGCChatFriendTalkModel *talk = [[GJGCChatFriendTalkModel alloc] init];
+            talk.talkType = GJGCChatFriendTalkTypeGroup;
+            talk.chatIdendifier = group.groupIdentifer;
+            talk.group_ecdhKey = group.groupEcdhKey;
+            talk.chatGroupInfo = group;
+            //save session
+            [SessionManager sharedManager].chatSession = talk.chatIdendifier;
+            [SessionManager sharedManager].chatObject = group;
+            talk.name = GJCFStringIsNull(group.groupName) ? [NSString stringWithFormat:LMLocalizedString(@"Link Group", nil), (unsigned long) talk.chatGroupInfo.groupMembers.count] : [NSString stringWithFormat:@"%@(%lu)", group.groupName, (unsigned long) talk.chatGroupInfo.groupMembers.count];
+            GJGCChatGroupViewController *groupChat = [[GJGCChatGroupViewController alloc] initWithTalkInfo:talk];
+            groupChat.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:groupChat animated:YES];
         }
-    }else if([data isKindOfClass:[LMGroupInfo class]])
-    {
-        LMGroupInfo* group = (LMGroupInfo*)data;
-        GJGCChatFriendTalkModel *talk = [[GJGCChatFriendTalkModel alloc] init];
-        talk.talkType = GJGCChatFriendTalkTypeGroup;
-        talk.chatIdendifier = group.groupIdentifer;
-        talk.group_ecdhKey = group.groupEcdhKey;
-        talk.chatGroupInfo = group;
-        //save session
-        [SessionManager sharedManager].chatSession = talk.chatIdendifier;
-        [SessionManager sharedManager].chatObject = group;
-        talk.name = GJCFStringIsNull(group.groupName) ? [NSString stringWithFormat:LMLocalizedString(@"Link Group", nil), (unsigned long) talk.chatGroupInfo.groupMembers.count] : [NSString stringWithFormat:@"%@(%lu)", group.groupName, (unsigned long) talk.chatGroupInfo.groupMembers.count];
-        GJGCChatGroupViewController *groupChat = [[GJGCChatGroupViewController alloc] initWithTalkInfo:talk];
-        groupChat.hidesBottomBarWhenPushed = YES;
-        [self.navigationController pushViewController:groupChat animated:YES];
-    }else
-    {
-        return;
-    }
-    
+    });
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {

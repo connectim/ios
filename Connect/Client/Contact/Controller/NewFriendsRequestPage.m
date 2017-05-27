@@ -515,7 +515,7 @@
     NSArray *array = (NSArray *) self.allArray[indexPath.section];
     NewFriendCell *fcell = [tableView dequeueReusableCellWithIdentifier:@"NewFriendCellID" forIndexPath:indexPath];
     fcell.addButtonBlock = ^(AccountInfo *userInfo) {
-        [weakSelf clickMayKnowManWithUserInfo:userInfo];
+        [weakSelf clickRecommandWithUserInfo:userInfo];
     };
     fcell.delegate = self;
     fcell.data = array[indexPath.row];
@@ -637,6 +637,7 @@
             case RequestFriendStatusVerfing:// me add other Verification
             {
                 InviteUserPage *page = [[InviteUserPage alloc] initWithUser:user];
+                user.stranger = YES;
                 [self.navigationController pushViewController:page animated:YES];
                 
             }
@@ -646,11 +647,11 @@
         }
     } else           // recommand man
     {
-        [self clickMayKnowManWithUserInfo:user];
+        [self clickRecommandWithUserInfo:user];
     }
 }
 
-- (void)clickMayKnowManWithUserInfo:(AccountInfo *)userInfo {
+- (void)clickRecommandWithUserInfo:(AccountInfo *)userInfo {
     userInfo.source = UserSourceTypeRecommend;
     userInfo.stranger = YES;
     InviteUserPage *page = [[InviteUserPage alloc] initWithUser:userInfo];
