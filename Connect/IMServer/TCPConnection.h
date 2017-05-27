@@ -9,8 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "Message.h"
 
-#define SocketDataVerifyIllegalityNotification @"SocketDataVerifyIllegalityNotification"
-
 #define STATE_UNCONNECTED 0
 #define STATE_CONNECTING 1
 #define STATE_CONNECTED 2

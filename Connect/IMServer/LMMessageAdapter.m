@@ -32,14 +32,12 @@
             messageData.msgId = message.message_id;
             messageData.typ = message.type;
             ChatCookieData *reciverChatCookie = [[SessionManager sharedManager] getChatCookieWithChatSession:message.publicKey];
-
             LMChatEcdhKeySecurityLevelType securityLevel = LMChatEcdhKeySecurityLevelTypeNomarl;
-            BOOL chatCookieExpire = [[SessionManager sharedManager] chatCookieExpire:message.publicKey];
-            if (reciverChatCookie && [SessionManager sharedManager].loginUserChatCookie) {
+            BOOL reciverChatCookieExpire = [[SessionManager sharedManager] chatCookieExpire:message.publicKey];
+            if (reciverChatCookie && [SessionManager sharedManager].loginUserChatCookie && !reciverChatCookieExpire) {
                 securityLevel = LMChatEcdhKeySecurityLevelTypeRandom;
-            } else if (!reciverChatCookie
-                    && [SessionManager sharedManager].loginUserChatCookie
-                    && chatCookieExpire) {
+            } else if ((!reciverChatCookie || reciverChatCookieExpire)
+                    && [SessionManager sharedManager].loginUserChatCookie) {
                 securityLevel = LMChatEcdhKeySecurityLevelTypeHalfRandom;
             }
 

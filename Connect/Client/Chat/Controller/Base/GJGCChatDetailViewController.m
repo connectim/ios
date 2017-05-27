@@ -223,48 +223,50 @@
                         payCount = (int)crowdInfo.size;
                     }
                     chatModel.payOrReceiptStatusMessage = [GJGCChatSystemNotiCellStyle formateRecieptSubTipsWithTotal:chatModel.memberCount payCount:payCount isCrowding:YES transStatus:status];
-                    NSString *senderAddress = [temA firstObject];
-                    NSString *payAddress = [temA lastObject];
+                    
                     NSString *payName = nil;
-                    NSString *senderName = nil;
-                    switch (self.taklInfo.talkType) {
-                        case GJGCChatFriendTalkTypeGroup:
-                        {
-                            if ([senderAddress isEqualToString:[[LKUserCenter shareCenter] currentLoginUser].address]) {
-                                senderName = [LKUserCenter shareCenter].currentLoginUser.normalShowName;
-                                for (AccountInfo *groupMember in self.taklInfo.chatGroupInfo.groupMembers) {
-                                    if ([groupMember.address isEqualToString:payAddress]) {
-                                        payName = groupMember.normalShowName;
-                                        break;
-                                    }
-                                }
-                            } else if ([payAddress isEqualToString:[[LKUserCenter shareCenter] currentLoginUser].address]) {
-                                payName = [LKUserCenter shareCenter].currentLoginUser.normalShowName;
-                                for (AccountInfo *groupMember in self.taklInfo.chatGroupInfo.groupMembers) {
-                                    if ([groupMember.address isEqualToString:senderAddress]) {
-                                        senderName = groupMember.normalShowName;
-                                        break;
-                                    }
-                                }
+                    NSString *reciverName = nil;
+                    NSString *payAddress = [temA lastObject];
+                    NSString *reciverAddress = [temA firstObject];
+                    switch ([SessionManager sharedManager].talkType) {
+                        case GJGCChatFriendTalkTypePrivate: {
+                            
+                            if ([payAddress isEqualToString:[[LKUserCenter shareCenter] currentLoginUser].address]) {
+                                payName = LMLocalizedString(@"Chat You", nil);
+                                reciverName = self.taklInfo.chatUser.normalShowName;
+                            }
+                            
+                            if ([reciverAddress isEqualToString:[[LKUserCenter shareCenter] currentLoginUser].address]) {
+                                reciverName = LMLocalizedString(@"Chat You", nil);
+                                payName = self.taklInfo.chatUser.normalShowName;
                             }
                         }
                             break;
-                        case GJGCChatFriendTalkTypePrivate:
-                        {
-                            if ([senderAddress isEqualToString:[[LKUserCenter shareCenter] currentLoginUser].address]) {
-                                senderName = [LKUserCenter shareCenter].currentLoginUser.normalShowName;
-                                payName = self.taklInfo.chatUser.normalShowName;
-                            } else if ([payAddress isEqualToString:[[LKUserCenter shareCenter] currentLoginUser].address]) {
-                                payName = [LKUserCenter shareCenter].currentLoginUser.normalShowName;
-                                senderName = self.taklInfo.chatUser.normalShowName;
+                        case GJGCChatFriendTalkTypeGroup: {
+                            for (AccountInfo *groupMember in self.taklInfo.chatGroupInfo.groupMembers) {
+                                
+                                if ([payAddress isEqualToString:[[LKUserCenter shareCenter] currentLoginUser].address]) {
+                                    payName = LMLocalizedString(@"Chat You", nil);
+                                } else {
+                                    if ([groupMember.address isEqualToString:payAddress]) {
+                                        payName = groupMember.normalShowName;
+                                    }
+                                }
+                                
+                                if ([reciverAddress isEqualToString:[[LKUserCenter shareCenter] currentLoginUser].address]) {
+                                    reciverName = LMLocalizedString(@"Chat You", nil);
+                                } else {
+                                    if ([groupMember.address isEqualToString:reciverAddress]) {
+                                        reciverName = groupMember.normalShowName;
+                                    }
+                                }
                             }
                         }
                             break;
                         default:
                             break;
+                            
                     }
-                    chatMessage.message.content = [GJGCChatSystemNotiCellStyle formateReceiptTipWithPayName:payName receiptName:chatModel.senderName isCrowding:YES].string;
-                    [[MessageDBManager sharedManager] updataMessage:chatMessage];
                     [GCDQueue executeInMainQueue:^{
                         [self.chatListTable reloadData];
                         [self.dataSourceManager showReceiptMessageMessageWithPayName:payName receiptName:chatModel.senderName isCrowd:YES];

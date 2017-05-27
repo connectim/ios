@@ -56,6 +56,7 @@
 - (BOOL)handleBatchGroupMessage:(NSArray *)messages {
 
     NSMutableDictionary *owerMessagesDict = [NSMutableDictionary dictionary];
+    NSMutableArray *messageExtendArray = [NSMutableArray array];
     for (MessagePost *msg in messages) {
         NSString *identifer = msg.msgData.receiverAddress;
         LMGroupInfo *group = [[GroupDBManager sharedManager] getgroupByGroupIdentifier:identifer];
@@ -143,7 +144,23 @@
         if (chatMessage.messageType == GJGCChatFriendContentTypeText) {
             messageInfo.ext1 = nil;
         }
+        if (chatMessage.messageType == GJGCChatFriendContentTypePayReceipt ||
+            chatMessage.messageType == GJGCChatFriendContentTypeTransfer) {
+            NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+            [dict safeSetObject:messageInfo.message_id forKey:@"message_id"];
+            [dict safeSetObject:messageInfo.content forKey:@"hashid"];
+            if (chatMessage.messageType == GJGCChatFriendContentTypePayReceipt) {
+                [dict safeSetObject:@(1) forKey:@"status"];
+            } else {
+                [dict safeSetObject:@(0) forKey:@"status"];
+            }
+            [dict safeSetObject:@(0) forKey:@"pay_count"];
+            [dict safeSetObject:@(0) forKey:@"crowd_count"];
+            [messageExtendArray addObject:dict];
+        }
     }
+    
+    [[LMMessageExtendManager sharedManager] saveBitchMessageExtend:messageExtendArray];
 
     for (NSDictionary *msgDict in owerMessagesDict.allValues) {
         NSMutableArray *messages = [msgDict valueForKey:@"messages"];

@@ -591,7 +591,7 @@ static MessageDBManager *manager = nil;
     NSMutableArray *chatMessages = [NSMutableArray array];
     for (NSDictionary *temD in messages) {
         ChatMessageInfo *chatMessage = [[ChatMessageInfo alloc] init];
-        chatMessage.ID = [[temD safeObjectForKey:@"auto_incrementid"] integerValue];
+        chatMessage.ID = [[temD safeObjectForKey:@"id"] integerValue];
         chatMessage.messageOwer = [temD safeObjectForKey:@"message_ower"];
         chatMessage.messageId = [temD safeObjectForKey:@"message_id"];
         chatMessage.createTime = [[temD safeObjectForKey:@"createtime"] integerValue];
@@ -626,7 +626,6 @@ static MessageDBManager *manager = nil;
     if (isnoRelationShipType) {
         type = GJGCChatFriendContentTypeNoRelationShipTip;
     }
-    
     ChatMessageInfo *chatMessage = [[ChatMessageInfo alloc] init];
     chatMessage.messageId = [ConnectTool generateMessageId];
     chatMessage.messageOwer = messageOwer;

@@ -57,6 +57,12 @@
 - (void)deleteByIdentifier:(NSString *)identifier;
 
 /**
+ * delete recent chat setting
+ * @param identifier
+ */
+- (void)deleteRecentChatSettingWithIdentifier:(NSString *)identifier;
+
+/**
  * update unread count
  * @param unreadCount
  * @param idetifier
@@ -151,6 +157,12 @@
  * @param identifier
  */
 - (void)openOrCloseSnapChatWithTime:(int)snapTime chatIdentifer:(NSString *)identifier;
+
+/**
+ * get snap time
+ * @param identifier
+ */
+- (int)getSnapTimeWithChatIdentifer:(NSString *)identifier;
 
 /**
  * set recent chat snap chat time

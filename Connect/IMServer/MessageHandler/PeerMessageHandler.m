@@ -149,18 +149,20 @@
                                              @"unReadCount": @(unReadCount)}.mutableCopy;
             [owerMessagesDict setObject:msgDict forKey:chatMessage.messageOwer];
         }
-        
-        NSMutableDictionary *dict = [NSMutableDictionary dictionary];
-        [dict safeSetObject:messageInfo.message_id forKey:@"message_id"];
-        [dict safeSetObject:messageInfo.content forKey:@"hashid"];
-        if (chatMessage.messageType == GJGCChatFriendContentTypePayReceipt) {
-            [dict safeSetObject:@(1) forKey:@"status"];
-        } else {
-            [dict safeSetObject:@(0) forKey:@"status"];
+        if (chatMessage.messageType == GJGCChatFriendContentTypePayReceipt ||
+            chatMessage.messageType == GJGCChatFriendContentTypeTransfer) {
+            NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+            [dict safeSetObject:messageInfo.message_id forKey:@"message_id"];
+            [dict safeSetObject:messageInfo.content forKey:@"hashid"];
+            if (chatMessage.messageType == GJGCChatFriendContentTypePayReceipt) {
+                [dict safeSetObject:@(1) forKey:@"status"];
+            } else {
+                [dict safeSetObject:@(0) forKey:@"status"];
+            }
+            [dict safeSetObject:@(0) forKey:@"pay_count"];
+            [dict safeSetObject:@(0) forKey:@"crowd_count"];
+            [messageExtendArray addObject:dict];
         }
-        [dict safeSetObject:@(0) forKey:@"pay_count"];
-        [dict safeSetObject:@(0) forKey:@"crowd_count"];
-        [messageExtendArray addObject:dict];
     }
     [[LMMessageExtendManager sharedManager] saveBitchMessageExtend:messageExtendArray];
 

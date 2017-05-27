@@ -17,6 +17,7 @@
 #import "InviteUserPage.h"
 #import "MessageDBManager.h"
 #import "StringTool.h"
+#import "AppDelegate.h"
 
 @interface ChatFriendSetViewController ()
 
@@ -323,7 +324,7 @@
 
     [[GroupDBManager sharedManager] savegroup:lmGroup];
 
-    [[RecentChatDBManager sharedManager] createNewChatWithIdentifier:groupInfo.group.identifier groupChat:YES lastContentShowType:1 lastContent:@"" ecdhKey:self.groupEcdhKey talkName:groupName];
+    [[RecentChatDBManager sharedManager] createNewChatWithIdentifier:groupInfo.group.identifier groupChat:YES lastContentShowType:1 lastContent:content ecdhKey:self.groupEcdhKey talkName:groupName];
 
     [SetGlobalHandler uploadGroupEcdhKey:self.groupEcdhKey groupIdentifier:groupInfo.group.identifier];
 
@@ -356,12 +357,10 @@
         [MBProgressHUD hideHUDForView:self.view];
     }];
     
-    [UIView animateWithDuration:0 animations:^{
-        [self.navigationController popToRootViewControllerAnimated:NO];
-    }                completion:^(BOOL finished) {
-        SendNotify(@"im.connect.appCreateGroupCompleteNotification", (@{@"groupIdentifier": groupInfo.group.identifier,
-                @"content": content}));
-    }];
+    // inteface jump
+    [self.navigationController popToRootViewControllerAnimated:NO];
+    AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+    [[appDelegate shareMainTabController] createGroupWithGroupInfo:lmGroup content:content];
 }
 
 
