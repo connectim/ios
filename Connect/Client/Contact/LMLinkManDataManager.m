@@ -646,13 +646,10 @@ CREATE_SHARED_MANAGER(LMLinkManDataManager)
                     [self.friendsArr objectAddObject:contact];
                 }
                 if ((contactType == ContactTypeShare)&&([shareContact.address isEqualToString:contact.address]|| [contact.pub_key isEqualToString:kSystemIdendifier])) {
-                    if ([self.normalFriends containsObject:contact]) {
-                        [self.normalFriends removeObject:contact];
-                    }else if ([self.friendsArr containsObject:contact]) {
-                        [self.friendsArr removeObject:contact];
-                    }else if ([self.offenFriends containsObject:contact]) {
-                        [self.offenFriends removeObject:contact];
-                    }
+                    
+                    [self.normalFriends removeObject:contact];
+                    [self.friendsArr removeObject:contact];
+                    [self.offenFriends removeObject:contact];
                 }
             }
             [self addDataToGroupArray:contactType];

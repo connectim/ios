@@ -31,6 +31,9 @@
 @property(nonatomic, strong) UITableView *tableView;
 @property(nonatomic, strong) AccountInfo *contact;
 @property(nonatomic, strong) LMRerweetModel *retweetModel;
+@property(nonatomic, strong) NSMutableArray *groupsFriendArray;
+@property(nonatomic, strong) NSMutableArray *indexsArray;
+
 
 
 @end
@@ -66,8 +69,17 @@
     }
     return _tableView;
 }
-- (NSMutableArray *)groupsFriend {
-    return [[LMLinkManDataManager sharedManager] getListGroupsFriend];
+- (NSMutableArray *)groupsFriendArray {
+    if (!_groupsFriendArray) {
+        self.groupsFriendArray = [NSMutableArray array];
+    }
+    return _groupsFriendArray;
+}
+- (NSMutableArray *)indexsArray {
+    if (!_indexsArray) {
+        self.indexsArray = [NSMutableArray array];
+    }
+    return _indexsArray;
 }
 #pragma mark - 方法的响应
 
@@ -78,29 +90,28 @@
     [[LMLinkManDataManager sharedManager] getAllLinkMan:ContactTypeShare withUser:self.contact withComplete:^(BOOL isComplete) {
         if (isComplete) {
             [GCDQueue executeInMainQueue:^{
+                self.groupsFriendArray = [[LMLinkManDataManager sharedManager] getListGroupsFriend];
+                self.indexsArray = [[LMLinkManDataManager sharedManager] getListIndexs];
                 [self.tableView reloadData];
                 SendNotify(LinkRefreshLinkData, nil);
             }];
-            
         }
     }];
-   
 }
-
 #pragma mark - Table view data source
 
 - (NSArray<NSString *> *)sectionIndexTitlesForTableView:(UITableView *)tableView {
-   return [[LMLinkManDataManager sharedManager] getListIndexs].copy;
+    return self.indexsArray.copy;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    NSArray *items = self.groupsFriend[section][@"items"];
+    NSArray *items = self.groupsFriendArray[section][@"items"];
     return items.count;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     
-    return self.groupsFriend.count;
+    return self.groupsFriendArray.count;
 
 }
 
@@ -110,15 +121,15 @@
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
     ConnectTableHeaderView *hearderView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:@"ConnectTableHeaderViewID"];
-    hearderView.customTitle.text = [self.groupsFriend[section] valueForKey:@"title"];
-    NSString *titleIcon = [self.groupsFriend[section] valueForKey:@"titleicon"];
+    hearderView.customTitle.text = [self.groupsFriendArray[section] valueForKey:@"title"];
+    NSString *titleIcon = [self.groupsFriendArray[section] valueForKey:@"titleicon"];
     hearderView.customIcon = titleIcon;
     return hearderView;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    id data = self.groupsFriend[indexPath.section][@"items"][indexPath.row];
+    id data = self.groupsFriendArray[indexPath.section][@"items"][indexPath.row];
     LinkmanFriendCell *cell = [tableView dequeueReusableCellWithIdentifier:@"LinkmanFriendCellID" forIndexPath:indexPath];
     cell.data = data;
     return cell;
@@ -127,7 +138,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    id data = self.groupsFriend[indexPath.section][@"items"][indexPath.row];
+    id data = self.groupsFriendArray[indexPath.section][@"items"][indexPath.row];
 
     __weak __typeof(&*self) weakSelf = self;
     NSString *displayName = nil;
@@ -296,8 +307,14 @@
 }
 
 - (void)dealloc {
+    
     [self.tableView removeFromSuperview];
     self.tableView = nil;
+    [self.indexsArray removeAllObjects];
+    self.indexsArray = nil;
+    [self.groupsFriendArray removeAllObjects];
+    self.groupsFriendArray = nil;
+    
 }
 @end
 
