@@ -6646,6 +6646,7 @@ typedef struct CommandDetail__storage_ {
 @dynamic locale;
 @dynamic cv;
 @dynamic uuid;
+@dynamic hasChatCookieData, chatCookieData;
 
 typedef struct DeviceInfo__storage_ {
   uint32_t _has_storage_[1];
@@ -6654,6 +6655,7 @@ typedef struct DeviceInfo__storage_ {
   NSString *deviceName;
   NSString *locale;
   NSString *uuid;
+  ChatCookieData *chatCookieData;
 } DeviceInfo__storage_;
 
 // This method is threadsafe because it is initially called
@@ -6707,6 +6709,15 @@ typedef struct DeviceInfo__storage_ {
         .flags = GPBFieldOptional,
         .dataType = GPBDataTypeString,
       },
+      {
+        .name = "chatCookieData",
+        .dataTypeSpecific.className = GPBStringifySymbol(ChatCookieData),
+        .number = DeviceInfo_FieldNumber_ChatCookieData,
+        .hasIndex = 5,
+        .offset = (uint32_t)offsetof(DeviceInfo__storage_, chatCookieData),
+        .flags = (GPBFieldFlags)(GPBFieldOptional | GPBFieldTextFormatNameCustom),
+        .dataType = GPBDataTypeMessage,
+      },
     };
     GPBDescriptor *localDescriptor =
         [GPBDescriptor allocDescriptorForClass:[DeviceInfo class]
@@ -6718,7 +6729,7 @@ typedef struct DeviceInfo__storage_ {
                                          flags:GPBDescriptorInitializationFlag_None];
 #if !GPBOBJC_SKIP_MESSAGE_TEXTFORMAT_EXTRAS
     static const char *extraTextFormatInfo =
-        "\002\001\010\000\002\n\000";
+        "\003\001\010\000\002\n\000\006\016\000";
     [localDescriptor setupExtraTextInfo:extraTextFormatInfo];
 #endif  // !GPBOBJC_SKIP_MESSAGE_TEXTFORMAT_EXTRAS
     NSAssert(descriptor == nil, @"Startup recursed!");
