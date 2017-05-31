@@ -183,7 +183,6 @@ static dispatch_once_t onceToken;
         return;
     }
     NewConnection *conn = [NewConnection parseFromData:handAckData error:nil];
-    DDLogInfo(@"%@", conn);
 
     NSData *saltData = [StringTool DataXOR1:self.sendSalt DataXOR2:conn.salt];
 
@@ -202,6 +201,8 @@ static dispatch_once_t onceToken;
     if ([SystemTool isNationChannel]) {
         deviceId.cv = 1;
     }
+    ChatCookieData *cacheData = [[LMHistoryCacheManager sharedManager] getLeastChatCookie];
+    deviceId.chatCookieData = cacheData;
     IMTransferData *request = [ConnectTool createTransferWithEcdhKey:extensionPass data:deviceId.data aad:[ServerCenter shareCenter].defineAad];
     Message *m = [[Message alloc] init];
     m.typechar = BM_HANDSHAKE_TYPE;
@@ -212,6 +213,11 @@ static dispatch_once_t onceToken;
 
     //upload version
     [self uploadAppInfoWhenVersionChange];
+
+    //init loginUserChatCookie
+    if (![SessionManager sharedManager].loginUserChatCookie && cacheData) {
+        [SessionManager sharedManager].loginUserChatCookie = [[LMHistoryCacheManager sharedManager] getChatCookieWithSaltVer:cacheData.salt];
+    }
 }
 
 - (void)authSussecc:(Message *)msg {
@@ -269,9 +275,6 @@ static dispatch_once_t onceToken;
 }
 
 - (BOOL)sendPing {
-    //Check whether ChatCookie is expired
-    [self uploadCookie];
-
     if (self.HeartBeatBlock)
         return self.HeartBeatBlock();
     return NO;
@@ -292,60 +295,15 @@ static dispatch_once_t onceToken;
 
 #pragma mark - Command-upload login user chat cookie
 
-- (void)uploadCookie {
-    ChatCookieData *cacheData = [[LMHistoryCacheManager sharedManager] getLeastChatCookie];
-    if (!cacheData ||
-            cacheData.expired < [[NSDate date] timeIntervalSince1970]) {
-        
-        ChatCacheCookie *chatCookie = [ChatCacheCookie new];
-        chatCookie.chatPrivkey = [KeyHandle creatNewPrivkey];
-        chatCookie.chatPubKey = [KeyHandle createPubkeyByPrikey:chatCookie.chatPrivkey];
-        chatCookie.salt = [KeyHandle createRandom512bits];
-        
-        ChatCookieData *cookieData = [ChatCookieData new];
-        cookieData.chatPubKey = chatCookie.chatPubKey;
-        cookieData.salt = chatCookie.salt;
-        cookieData.expired = [[NSDate date] timeIntervalSince1970] + 24 * 60 * 60;
-        
-        ChatCookie *cookie = [ChatCookie new];
-        cookie.data_p = cookieData;
-        cookie.sign = [ConnectTool signWithData:cookieData.data];
-
-        Message *m = [LMCommandAdapter sendAdapterWithExtension:BM_UPLOAD_CHAT_COOKIE_EXT sendData:cookie];
-        
-        UploadChatCookieModel *uploadChatModel = [UploadChatCookieModel new];
-        uploadChatModel.chatCookie = chatCookie;
-        uploadChatModel.chatCookieData = cookieData;
-        m.sendOriginInfo = uploadChatModel;
-        [self sendCommandWithDelay:NO callBlock:^(IMService *imserverSelf) {
-            [imserverSelf sendCommandWith:m comlete:nil];
-        }];
-    } else {
-        if (![SessionManager sharedManager].loginUserChatCookie) {
-            [SessionManager sharedManager].loginUserChatCookie = [[LMHistoryCacheManager sharedManager] getChatCookieWithSaltVer:cacheData.salt];
-        }
-    }
-}
-
-
 - (void)uploadCookieDuetoLocalChatCookieNotMatchServerChatCookieWithMessageCallModel:(SendMessageModel *)callModel {
     
     ChatCacheCookie *chatCookie = [ChatCacheCookie new];
-    ChatCookieData *cacheData = [[LMHistoryCacheManager sharedManager] getLeastChatCookie];
     ChatCookieData *cookieData = [ChatCookieData new];
-    if (cacheData &&
-        [SessionManager sharedManager].loginUserChatCookie &&
-        cacheData.expired > [[NSDate date] timeIntervalSince1970] - 60 * 5) {
-        chatCookie.chatPrivkey = [SessionManager sharedManager].loginUserChatCookie.chatPrivkey;
-        chatCookie.chatPubKey = [SessionManager sharedManager].loginUserChatCookie.chatPubKey;
-        chatCookie.salt = [SessionManager sharedManager].loginUserChatCookie.salt;
-        cookieData.expired = cacheData.expired;
-    } else {
-        chatCookie.chatPrivkey = [KeyHandle creatNewPrivkey];
-        chatCookie.chatPubKey = [KeyHandle createPubkeyByPrikey:chatCookie.chatPrivkey];
-        chatCookie.salt = [KeyHandle createRandom512bits];
-        cookieData.expired = [[NSDate date] timeIntervalSince1970] + 24 * 60 * 60;
-    }
+    chatCookie.chatPrivkey = [KeyHandle creatNewPrivkey];
+    chatCookie.chatPubKey = [KeyHandle createPubkeyByPrikey:chatCookie.chatPrivkey];
+    chatCookie.salt = [KeyHandle createRandom512bits];
+    cookieData.expired = [[NSDate date] timeIntervalSince1970] + 24 * 60 * 60;
+    
     cookieData.chatPubKey = chatCookie.chatPubKey;
     cookieData.salt = chatCookie.salt;
     

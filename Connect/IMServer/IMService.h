@@ -214,8 +214,6 @@
 /**
  * upload login suer chat cookie
  */
-- (void)uploadCookie;
-
 - (void)uploadCookieDuetoLocalChatCookieNotMatchServerChatCookieWithMessageCallModel:(SendMessageModel *)callModel;
 
 /**
