@@ -146,7 +146,9 @@ static LMRecommandFriendManager *manager = nil;
         accountInfo.avatar = [dic safeObjectForKey:@"avatar"];
         accountInfo.pub_key = [dic safeObjectForKey:@"pub_key"];
         accountInfo.recommandStatus = status;
-        [resultArray objectAddObject:accountInfo];
+        if (accountInfo.address.length > 0) {
+           [resultArray objectAddObject:accountInfo];
+        }
     }
     NSArray *result = resultArray.copy;
     result = [result sortedArrayUsingComparator:^NSComparisonResult(AccountInfo *obj1, AccountInfo *obj2) {

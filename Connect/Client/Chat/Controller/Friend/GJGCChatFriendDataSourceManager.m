@@ -153,12 +153,4 @@
     }
 }
 
-
-#pragma mark -
-- (void)updateMsgContentHeightWithContentModel:(GJGCChatContentBaseModel *)contentModel {
-}
-
-- (void)updateAudioFinishRead:(NSString *)localMsgId {
-}
-
 @end

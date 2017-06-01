@@ -216,7 +216,9 @@
         NSMutableArray *tmpArray = [NSMutableArray array];
         for (NSInteger index = 0; index < RECOMMAND_COUNT; index++) {
             AccountInfo *userInfo = self.recommandFriendArray[index];
-            [tmpArray objectAddObject:userInfo];
+            if (userInfo.address.length > 0) {
+                [tmpArray objectAddObject:userInfo];
+            }
         }
         [self.recommandFriendArray removeAllObjects];
         self.recommandFriendArray = tmpArray;
@@ -577,6 +579,9 @@
 #pragma mark - not intereste any more
 
 - (void)NotInterestedWithAddress:(NSString *)oldAddress {
+    if (oldAddress.length <= 0) {
+        return;
+    }
     [MBProgressHUD showLoadingMessageToView:self.view];
     [[IMService instance] setRecommandUserNoInterestAdress:oldAddress comlete:^(NSError *error, id data) {
         if (error == nil) {
