@@ -50,7 +50,6 @@ static NSDictionary *pbRuleDict;
                 NSString *text = [attrRule valueForKey:@"text"];
                 BOOL result = [self checkAttrWithTypeString:type checkValue:[keyValues valueForKey:name] reg:text];
                 if (!result) {
-                    errorPtr = [NSError errorWithDomain:@"validate failed" code:-1 userInfo:nil];
                     return nil;
                 }
             }
@@ -63,7 +62,6 @@ static NSDictionary *pbRuleDict;
                     NSString *text = [attrRuleDict valueForKey:@"text"];
                     BOOL result = [self checkAttrWithTypeString:type checkValue:[keyValues valueForKey:name] reg:text];
                     if (!result) {
-                        errorPtr = [NSError errorWithDomain:@"validate failed" code:-1 userInfo:nil];
                         return nil;
                     }
                 }
@@ -85,6 +83,11 @@ static NSDictionary *pbRuleDict;
         }
         CASE(@"gcmdata") {
             return [self validationGcmdata:value];
+            break;
+        }
+        CASE(@"byte") {
+            NSData *data = (NSData *)value;
+            return data.length == reg.integerValue;
             break;
         }
         DEFAULT {
