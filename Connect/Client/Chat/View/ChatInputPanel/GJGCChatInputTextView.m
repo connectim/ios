@@ -308,15 +308,15 @@
 }
 
 - (void)updateDisplayByInputContentTextChange {
-    [[RecentChatDBManager sharedManager] updateDraft:self.textView.text withIdentifier:[SessionManager sharedManager].chatSession];
+    [GCDQueue executeInGlobalQueue:^{
+        [[RecentChatDBManager sharedManager] updateDraft:self.textView.text withIdentifier:[SessionManager sharedManager].chatSession];
+    }];
     if (self.textView.text.length > 0) {
         self.placeHolderLabel.hidden = YES;
     } else {
         self.placeHolderLabel.hidden = NO;
     }
     CGSize contentSize = self.textView.contentSize;
-    DDLogInfo(@"contentSize:%@", NSStringFromCGSize(contentSize));
-
     if (contentSize.height - 8.f > self.textView.bounds.size.height && self.frame.size.height <= self.maxAutoExpandHeight) {
 
         CGFloat changeDelta = contentSize.height - 8.f - self.frame.size.height;

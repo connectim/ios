@@ -353,8 +353,10 @@ static RecentChatDBManager *manager = nil;
     LMBaseSSDBManager *manager = [LMBaseSSDBManager open:@"system_message"];
     [manager set:key string:draft];
     [manager close];
-    SendNotify(SendDraftChangeNotification, (@{@"identifier": identifier,
-                                               @"draft": draft}));
+    [GCDQueue executeInMainQueue:^{
+        SendNotify(SendDraftChangeNotification, (@{@"identifier": identifier,
+                                                   @"draft": draft}));
+    }];
 //    [self updateTableName:RecentChatTable fieldsValues:@{@"draft": draft} conditions:@{@"identifier": identifier}];
 }
 
