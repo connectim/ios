@@ -816,6 +816,9 @@
 		D98FD7E21D264E470048E29E /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D98FD7E11D264E470048E29E /* CoreGraphics.framework */; };
 		D98FD7E41D264E550048E29E /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D98FD7E31D264E550048E29E /* Security.framework */; };
 		D98FD7E61D264E710048E29E /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D98FD7E51D264E710048E29E /* libz.tbd */; };
+		D9ACCD061EDFC6BC009A5869 /* NSObject+Swing.m in Sources */ = {isa = PBXBuildFile; fileRef = D9ACCD051EDFC6BC009A5869 /* NSObject+Swing.m */; };
+		D9ACCD0A1EDFC98C009A5869 /* XMLReader.m in Sources */ = {isa = PBXBuildFile; fileRef = D9ACCD091EDFC98C009A5869 /* XMLReader.m */; };
+		D9ACCD0C1EDFCA83009A5869 /* pbrule.xml in Resources */ = {isa = PBXBuildFile; fileRef = D9ACCD0B1EDFCA83009A5869 /* pbrule.xml */; };
 		D9AFBD821EC1B60D00E1FAAE /* LMUUID.m in Sources */ = {isa = PBXBuildFile; fileRef = D9AFBD811EC1B60D00E1FAAE /* LMUUID.m */; };
 		D9B084B71E810DDC0067EC4A /* AboutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D9B084871E810DDC0067EC4A /* AboutViewController.m */; };
 		D9B084B81E810DDC0067EC4A /* AccountAndSafetyPage.m in Sources */ = {isa = PBXBuildFile; fileRef = D9B0848A1E810DDC0067EC4A /* AccountAndSafetyPage.m */; };
@@ -2527,6 +2530,11 @@
 		D98FD7E11D264E470048E29E /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		D98FD7E31D264E550048E29E /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		D98FD7E51D264E710048E29E /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		D9ACCD041EDFC6BC009A5869 /* NSObject+Swing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+Swing.h"; sourceTree = "<group>"; };
+		D9ACCD051EDFC6BC009A5869 /* NSObject+Swing.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+Swing.m"; sourceTree = "<group>"; };
+		D9ACCD081EDFC98C009A5869 /* XMLReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XMLReader.h; sourceTree = "<group>"; };
+		D9ACCD091EDFC98C009A5869 /* XMLReader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XMLReader.m; sourceTree = "<group>"; };
+		D9ACCD0B1EDFCA83009A5869 /* pbrule.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = pbrule.xml; sourceTree = "<group>"; };
 		D9AFBD801EC1B60D00E1FAAE /* LMUUID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LMUUID.h; sourceTree = "<group>"; };
 		D9AFBD811EC1B60D00E1FAAE /* LMUUID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LMUUID.m; sourceTree = "<group>"; };
 		D9B084861E810DDC0067EC4A /* AboutViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutViewController.h; sourceTree = "<group>"; };
@@ -12971,6 +12979,7 @@
 				D9222D991E822A2F00D67110 /* Connect.entitlements */,
 				D9222D9A1E822A2F00D67110 /* country.txt */,
 				D9B4365C1E8E5366006C816C /* LanguageConfig.plist */,
+				D9ACCD0B1EDFCA83009A5869 /* pbrule.xml */,
 			);
 			path = Config;
 			sourceTree = "<group>";
@@ -13011,6 +13020,7 @@
 		D9222DAE1E822A3000D67110 /* lib */ = {
 			isa = PBXGroup;
 			children = (
+				D9ACCD071EDFC98C009A5869 /* XMLReader */,
 				D9222DBD1E822A3000D67110 /* GCD */,
 				D9222DC71E822A3000D67110 /* Masonry */,
 				D9222DE11E822A3000D67110 /* MJExtension */,
@@ -13776,6 +13786,8 @@
 				D9C73AEA1E8CD5E7002BF3B7 /* NSDictionary+NilSafe.m */,
 				D95845221ECBE44F004C8984 /* NSString+DNS.h */,
 				D95845231ECBE44F004C8984 /* NSString+DNS.m */,
+				D9ACCD041EDFC6BC009A5869 /* NSObject+Swing.h */,
+				D9ACCD051EDFC6BC009A5869 /* NSObject+Swing.m */,
 			);
 			path = Extend;
 			sourceTree = "<group>";
@@ -15331,6 +15343,15 @@
 				D97FDCA21E86664800B161C8 /* YYTextWeakProxy.m */,
 			);
 			path = Utility;
+			sourceTree = "<group>";
+		};
+		D9ACCD071EDFC98C009A5869 /* XMLReader */ = {
+			isa = PBXGroup;
+			children = (
+				D9ACCD081EDFC98C009A5869 /* XMLReader.h */,
+				D9ACCD091EDFC98C009A5869 /* XMLReader.m */,
+			);
+			path = XMLReader;
 			sourceTree = "<group>";
 		};
 		D9B084851E810DDC0067EC4A /* Controller */ = {
@@ -32295,6 +32316,7 @@
 				F16FD82A1EC3205F002F9395 /* random.SUNWCCh in Resources */,
 				1923512B1E8121CB0022D844 /* LMBitAddressTableViewCell.xib in Resources */,
 				D92230431E822A3100D67110 /* sad.gif in Resources */,
+				D9ACCD0C1EDFCA83009A5869 /* pbrule.xml in Resources */,
 				F16FD80C1EC3205F002F9395 /* sstream in Resources */,
 				D922302F1E822A3100D67110 /* goofy_blink.gif in Resources */,
 				D9222F6B1E822A3000D67110 /* emojiInternationalization.plist in Resources */,
@@ -32809,6 +32831,7 @@
 				D95C044E1E810902006C5C8A /* GJGCChatFriendGifCell.m in Sources */,
 				D95C03551E8108D8006C5C8A /* BaseSetViewController.m in Sources */,
 				D92233201E82385800D67110 /* ScanAddPage.m in Sources */,
+				D9ACCD061EDFC6BC009A5869 /* NSObject+Swing.m in Sources */,
 				D92232A51E822BF800D67110 /* FXKeychain.m in Sources */,
 				D922325D1E822BF800D67110 /* GestureLockItem.m in Sources */,
 				D95C047C1E810902006C5C8A /* GJGCIconSeprateButton.m in Sources */,
@@ -33259,6 +33282,7 @@
 				192350B21E81213F0022D844 /* LMBitAddressBookViewController.m in Sources */,
 				D95C04571E810902006C5C8A /* LMGroupFromTableViewCell.m in Sources */,
 				D92232741E822BF800D67110 /* Constants.m in Sources */,
+				D9ACCD0A1EDFC98C009A5869 /* XMLReader.m in Sources */,
 				19234F4A1E8113D60022D844 /* PhoneLoginPage.m in Sources */,
 				D95C036C1E8108D8006C5C8A /* LMGroupIntroductionViewController.m in Sources */,
 				19234F4E1E8113D60022D844 /* SetUserInfoPage.m in Sources */,

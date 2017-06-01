@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PBRule>
+    <IMTransferData>
+        <attr name='sign' type='string'></attr>
+        <attr name='cipherData' type='gcmdata'></attr>
+    </IMTransferData>
+    <ChatCookieData>
+        <attr name='chatPubKey' type='string'></attr>
+        <attr name='salt' type='byte'>128</attr>
+        <attr name='expired' type='int'></attr>
+    </ChatCookieData>
+</PBRule>

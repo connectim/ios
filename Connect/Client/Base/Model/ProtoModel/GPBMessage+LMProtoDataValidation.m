@@ -8,124 +8,103 @@
 
 #import "GPBMessage+LMProtoDataValidation.h"
 #import "Protofile.pbobjc.h"
+#import "NSObject+Swing.h"
+#import "XMLReader.h"
+#import "NSObject+MJProperty.h"
 
 #define CASE(str)                       if ([__s__ isEqualToString:(str)])
 #define SWITCH(s)                       for (NSString *__s__ = (s); ; )
 #define DEFAULT
 
+static NSDictionary *pbRuleDict;
+
 @implementation GPBMessage (LMProtoDataValidation)
 
++ (void)load {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        [self gl_swizzleClassMethod:@selector(parseFromData:error:) withMethod:@selector(parseFromValidationData:error:)];
+    });
+}
+
 + (nullable instancetype)parseFromValidationData:(NSData *)data error:(NSError **)errorPtr{
-    GPBMessage *message = [self parseFromData:data error:errorPtr];
+    
+    GPBMessage *message = [self parseFromData:data extensionRegistry:nil error:errorPtr];
+    if (!pbRuleDict) {
+        NSString *path = [[NSBundle mainBundle] pathForResource:@"pbrule.xml" ofType:nil];
+        NSURL *url = [NSURL fileURLWithPath:path];
+        NSData *xmlData = [NSData dataWithContentsOfURL:url];
+        NSError *error;
+        NSDictionary *pbDict = [XMLReader dictionaryForXMLData:xmlData error:&error];
+        pbRuleDict = [pbDict valueForKey:@"PBRule"];
+    }
     NSString *modelClassName = NSStringFromClass([message class]);
-    SWITCH (modelClassName) {
-        CASE (@"IMTransferData") {
-            IMTransferData *model = (IMTransferData *)message;
-            if (!model.sign) {
-                return nil;
+    NSDictionary *rule = [pbRuleDict valueForKey:modelClassName];
+    if (rule) {
+        NSDictionary *keyValues = [message mj_keyValues];
+        id attrRule = [rule valueForKey:@"attr"];
+        if ([attrRule isKindOfClass:[NSDictionary class]]) { //one attr check
+            NSString *name = [attrRule valueForKey:@"name"];
+            if ([keyValues.allKeys containsObject:name]) {
+                NSString *type = [attrRule valueForKey:@"type"];
+                NSString *text = [attrRule valueForKey:@"text"];
+                BOOL result = [self checkAttrWithTypeString:type checkValue:[keyValues valueForKey:name] reg:text];
+                if (!result) {
+                    errorPtr = [NSError errorWithDomain:@"validate failed" code:-1 userInfo:nil];
+                    return nil;
+                }
             }
-            if (![self validationGcmdata:model.cipherData]) {
-                return nil;
+        } else if ([attrRule isKindOfClass:[NSArray class]]){ //more attr check
+            NSArray *array = [NSArray arrayWithArray:attrRule];
+            for (NSDictionary *attrRuleDict in array) {
+                NSString *name = [attrRuleDict valueForKey:@"name"];
+                if ([keyValues.allKeys containsObject:name]) {
+                    NSString *type = [attrRuleDict valueForKey:@"type"];
+                    NSString *text = [attrRuleDict valueForKey:@"text"];
+                    BOOL result = [self checkAttrWithTypeString:type checkValue:[keyValues valueForKey:name] reg:text];
+                    if (!result) {
+                        errorPtr = [NSError errorWithDomain:@"validate failed" code:-1 userInfo:nil];
+                        return nil;
+                    }
+                }
             }
-            break;
-        }
-        CASE (@"IMResponse") {
-            IMResponse *model = (IMResponse *)message;
-            if (!model.sign) {
-                return nil;
-            }
-            if (![self validationGcmdata:model.cipherData]) {
-                return nil;
-            }
-            break;
-        }
-        CASE (@"QuitMessage") {
-            QuitMessage *model = (QuitMessage *)message;
-            if (!model.deviceName) {
-                return nil;
-            }
-            break;
-        }
-        CASE (@"MessagePost") {
-            MessagePost *model = (MessagePost *)message;
-            if (!model.pubKey) {
-                return nil;
-            }
-            if (!model.sign) {
-                return nil;
-            }
-            if (!model.msgData.receiverAddress) {
-                return nil;
-            }
-            if (!model.msgData.msgId) {
-                return nil;
-            }
-            if (![self validationGcmdata:model.msgData.cipherData]) {
-                return nil;
-            }
-            break;
-        }
-        CASE(@"MSMessage"){
-            MSMessage *model = (MSMessage *)message;
-            if (!model.msgId) {
-                return nil;
-            }
-            break;
-        }
-        CASE(@"NoticeMessage"){
-            NoticeMessage *model = (NoticeMessage *)message;
-            if (!model.msgId) {
-                return nil;
-            }
-            break;
-        }
-        CASE(@"SendToUserMessage"){
-            SendToUserMessage *model = (SendToUserMessage *)message;
-            if (!model.hashId) {
-                return nil;
-            }
-            if (!model.operation) {
-                return nil;
-            }
-            break;
-        }
-
-        CASE(@"RejectMessage"){
-            RejectMessage *model = (RejectMessage *)message;
-            if (!model.msgId) {
-                return nil;
-            }
-            if (!model.receiverAddress) {
-                return nil;
-            }
-            break;
-        }
-        CASE(@"Command"){
-            Command *model = (Command *)message;
-            if (!model.msgId) {
-                return nil;
-            }
-            break;
-        }
-
-        DEFAULT {
-            break;
         }
     }
     return message;
+    
 }
 
-+ (BOOL)validationGcmdata:(GcmData *)gcdData{
-    if (!gcdData.aad) {
+
+#pragma mark - private method
++ (BOOL)checkAttrWithTypeString:(NSString *)type checkValue:(id)value reg:(NSString *)reg{
+    SWITCH (type) {
+        CASE (@"string") {
+            NSString *checkString = (NSString *)value;
+            return checkString && checkString.length;
+            break;
+        }
+        CASE(@"gcmdata") {
+            return [self validationGcmdata:value];
+            break;
+        }
+        DEFAULT {
+            return NO;
+            break;
+        }
+    }
+}
+
++ (BOOL)validationGcmdata:(NSDictionary *)gcdDataDict{
+    if (![gcdDataDict valueForKey:@"aad"]) {
         return NO;
     }
-    if (!gcdData.iv) {
+    if (![gcdDataDict valueForKey:@"iv"]) {
         return NO;
     }
-    if (!gcdData.ciphertext) {
+    if (![gcdDataDict valueForKey:@"tag"]) {
         return NO;
     }
-    if (!gcdData.tag) {
+    if (![gcdDataDict valueForKey:@"ciphertext"]) {
         return NO;
     }
     return YES;
