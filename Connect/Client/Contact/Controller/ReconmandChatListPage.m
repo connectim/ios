@@ -57,14 +57,13 @@
 
 - (UITableView *)tableView {
     if (!_tableView) {
-        _tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
-        [_tableView registerNib:[UINib nibWithNibName:@"RecentChatForRecommendCell" bundle:nil] forCellReuseIdentifier:@"RecentChatForRecommendCellID"];
-        _tableView.rowHeight = AUTO_HEIGHT(111);
-        _tableView.delegate = self;
-        _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-        _tableView.tableHeaderView = [self creatHeadView];
-        _tableView.dataSource = self;
-
+        self.tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
+        [self.tableView registerNib:[UINib nibWithNibName:@"RecentChatForRecommendCell" bundle:nil] forCellReuseIdentifier:@"RecentChatForRecommendCellID"];
+        self.tableView.rowHeight = AUTO_HEIGHT(111);
+        self.tableView.delegate = self;
+        self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+        self.tableView.tableHeaderView = [self creatHeadView];
+        self.tableView.dataSource = self;
     }
     return _tableView;
 }
@@ -307,8 +306,7 @@
     if (self.retweetModel) {
         lmShareVc = [[LMShareContactViewController alloc] initWithRetweetModel:self.retweetModel];
     } else {
-        lmShareVc = [[LMShareContactViewController alloc] init];
-        lmShareVc.contact = self.contact;
+        lmShareVc = [[LMShareContactViewController alloc] initWithAccount:self.contact];
     }
     [self.navigationController pushViewController:lmShareVc animated:YES];
 }

@@ -10,8 +10,7 @@
 
 @interface LMShareContactViewController : BaseViewController
 //recommand contact
-@property(nonatomic, strong) AccountInfo *contact;
 
 - (instancetype)initWithRetweetModel:(LMRerweetModel *)retweetModel;
-
+- (instancetype)initWithAccount:(AccountInfo *)contact;
 @end

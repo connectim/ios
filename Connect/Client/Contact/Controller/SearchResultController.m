@@ -19,7 +19,7 @@
 
 @interface SearchResultController () <UITableViewDelegate, UITableViewDataSource, UITextFieldDelegate, DZNEmptyDataSetDelegate, DZNEmptyDataSetSource>
 
-@property(nonatomic, strong) NSMutableArray *resultSearchDatas;
+@property(nonatomic, strong) NSMutableArray *resultSearchArray;
 // search result
 @property(nonatomic, strong) UITableView *tableView;
 
@@ -34,7 +34,7 @@
 - (instancetype)initWithSearchKey:(NSString *)searchKey {
     if (self = [super init]) {
         self.searchText = searchKey;
-        if ([self.searchText isEqualToString:[LKUserCenter shareCenter].currentLoginUser.address]) {
+        if ([searchKey isEqualToString:[LKUserCenter shareCenter].currentLoginUser.address]||[searchKey isEqualToString:[LKUserCenter shareCenter].currentLoginUser.contentId] ||[searchKey isEqualToString:[LKUserCenter shareCenter].currentLoginUser.bondingPhone]) {
             self.searchText = @"";
         }
     }
@@ -46,11 +46,9 @@
     [super viewDidLoad];
     [self.view addSubview:self.tableView];
     self.tableView.frame = self.view.bounds;
-
-    self.searchTextFiled.text = self.searchText;
-
     self.title = LMLocalizedString(@"Link Search Result", nil);
-
+    
+    self.searchTextFiled.text = self.searchText;
     [self searchByNet];
 
 }
@@ -58,7 +56,7 @@
 #pragma mark - UITableViewDelegate,UITableViewDataSource
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return self.resultSearchDatas.count;
+    return self.resultSearchArray.count;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -68,7 +66,7 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     BaseCell *cell = nil;
     cell = [tableView dequeueReusableCellWithIdentifier:@"AddFriendCellID" forIndexPath:indexPath];
-    cell.data = self.resultSearchDatas[indexPath.row];
+    cell.data = self.resultSearchArray[indexPath.row];
     return cell;
 }
 
@@ -77,7 +75,7 @@
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
 
-    AccountInfo *user = [self.resultSearchDatas objectAtIndexCheck:indexPath.row];
+    AccountInfo *user = [self.resultSearchArray objectAtIndexCheck:indexPath.row];
     if (user.isUnRegisterAddress) {
         return;
     }
@@ -110,10 +108,10 @@
 
 - (void)searchByNet {
     // clear
-    [self.resultSearchDatas removeAllObjects];
+    [self.resultSearchArray removeAllObjects];
     [self.view endEditing:YES];
     __weak __typeof(&*self) weakSelf = self;
-    NSString *keyWord = _searchTextFiled.text;
+    NSString *keyWord = self.searchTextFiled.text;
     keyWord = [keyWord stringByReplacingOccurrencesOfString:@"-" withString:@""];
     keyWord = [keyWord stringByReplacingOccurrencesOfString:@" " withString:@""];
     SearchUser *search = [[SearchUser alloc] init];
@@ -126,25 +124,27 @@
            }];
             return;
         }
-
-        NSData *data = [ConnectTool decodeHttpResponse:hResponse];
-        if (data) {
-            UserInfo *user = [UserInfo parseFromData:data error:nil];
-            AccountInfo *userInfo = [[AccountInfo alloc] init];
-            userInfo.username = user.username;
-            userInfo.avatar = user.avatar;
-            userInfo.pub_key = user.pubKey;
-            userInfo.address = user.address;
-            [weakSelf reloadTableViewWith:userInfo];
-        }
-    }                                  fail:^(NSError *error) {
+        [self successAction:hResponse];
+    }  fail:^(NSError *error) {
         [GCDQueue executeInMainQueue:^{
             [MBProgressHUD showToastwithText:@"Network Server error" withType:ToastTypeFail showInView:weakSelf.view complete:nil];
         }];
     }];
 
 }
-
+- (void)successAction:(HttpResponse *)hResponse {
+    
+    NSData *data = [ConnectTool decodeHttpResponse:hResponse];
+    if (data) {
+        UserInfo *user = [UserInfo parseFromData:data error:nil];
+        AccountInfo *userInfo = [[AccountInfo alloc] init];
+        userInfo.username = user.username;
+        userInfo.avatar = user.avatar;
+        userInfo.pub_key = user.pubKey;
+        userInfo.address = user.address;
+        [self reloadTableViewWith:userInfo];
+    }
+}
 - (void)reloadTableViewWith:(AccountInfo *)userInfo {
 
     userInfo.stranger = ![[UserDBManager sharedManager] isFriendByAddress:userInfo.address];
@@ -156,8 +156,8 @@
         page.sourceType = UserSourceTypeSearch;
         [weakSelf.navigationController pushViewController:page animated:YES];
     };
-    [self.resultSearchDatas removeAllObjects];
-    [self.resultSearchDatas objectAddObject:userInfo];
+    [self.resultSearchArray removeAllObjects];
+    [self.resultSearchArray objectAddObject:userInfo];
     [self.tableView reloadData];
 }
 
@@ -204,11 +204,11 @@
 }
 
 
-- (NSMutableArray *)resultSearchDatas {
-    if (!_resultSearchDatas) {
-        _resultSearchDatas = [NSMutableArray array];
+- (NSMutableArray *)resultSearchArray {
+    if (!_resultSearchArray) {
+        _resultSearchArray = [NSMutableArray array];
     }
-    return _resultSearchDatas;
+    return _resultSearchArray;
 }
 
 @end

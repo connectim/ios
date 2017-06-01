@@ -55,7 +55,7 @@
     self.detailLabel.text = LMLocalizedString(@"Login export prikey explain", nil);
     self.titleLabel.text = LMLocalizedString(@"Set Backup Private Key", nil);
     [self.startChatButton setTitle:LMLocalizedString(@"Set Start encrypted messaging", nil) forState:UIControlStateNormal];
-    [self.backPrivateButton setTitle:LMLocalizedString(@"Set Backup decrypted private key", nil) forState:UIControlStateNormal];
+    [self.backPrivateButton setTitle:LMLocalizedString(@"Set Backup Private Key", nil) forState:UIControlStateNormal];
     self.backPrivateButton.titleLabel.font = [UIFont systemFontOfSize:FONT_SIZE(32)];
 
     [self.startChatButton setBackgroundImage:[UIImage imageWithColor:LMBasicBlue] forState:UIControlStateNormal];

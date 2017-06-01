@@ -102,4 +102,6 @@ NSString *const GroupAdminChangeNotification = @"GroupAdminChangeNotification";
 
 NSString *const GroupNewMemberEnterNotification = @"GroupNewMemberEnterNotification";
 
+//refresh link data
+NSString *const LinkRefreshLinkData = @"RefreshLinkData";
 NSString *const SocketDataVerifyIllegalityNotification = @"SocketDataVerifyIllegalityNotification";

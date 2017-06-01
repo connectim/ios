@@ -30,31 +30,59 @@
 @property(nonatomic, strong) UIView *headerView;
 // total members Label
 @property(nonatomic, strong) UILabel *totalContactLabel;
+// weathre is click share
+@property(nonatomic, assign) BOOL isClickShare;
 
 
 @end
 
 @implementation LinkmanPage
 
-
 - (NSMutableArray *)groupsFriend {
     return [[LMLinkManDataManager sharedManager] getListGroupsFriend];
 }
 
 - (void)viewDidLoad {
+    
     [super viewDidLoad];
-
-    [LMLinkManDataManager sharedManager].delegate = self;
-    [[LMLinkManDataManager sharedManager] getAllLinkMan];
-    [self configTableView];
-
     self.navigationItem.leftBarButtonItems = nil;
-
     self.navigationController.title = LMLocalizedString(@"Link Contacts", nil);
     [self setNavigationRight:@"add_white"];
+    [LMLinkManDataManager sharedManager].delegate = self;
+    [self configTableView];
+    [self refreshData];
+    RegisterNotify(LinkRefreshLinkData, @selector(clickShare));
     // set left button
     [self setLeftButton];
     
+}
+- (void)clickShare {
+    self.isClickShare = YES;
+}
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    if (self.isClickShare) {
+        [self refreshData];
+    }
+
+}
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    self.isClickShare = NO;
+}
+- (void)dealloc {
+    RemoveNofify;
+}
+- (void)refreshData {
+    
+    [[LMLinkManDataManager sharedManager] getAllLinkMan:ContactTypeLink withUser:nil withComplete:^(BOOL isComplete) {
+        if (isComplete) {
+            [GCDQueue executeInMainQueue:^{
+                [self.tableView reloadData];
+            }];
+        }
+    }];
+
 }
 -(void)setLeftButton
 {

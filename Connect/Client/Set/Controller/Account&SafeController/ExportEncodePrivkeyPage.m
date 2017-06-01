@@ -156,7 +156,7 @@
     [changeExportWayButton setTitleColor:[UIColor colorWithRed:0.000 green:0.502 blue:1.000 alpha:1.000] forState:UIControlStateNormal];
     [changeExportWayButton setBackgroundImage:[UIImage imageWithColor:[UIColor whiteColor]] forState:UIControlStateNormal];
     [changeExportWayButton setBackgroundImage:[UIImage imageWithColor:[UIColor whiteColor]] forState:UIControlStateHighlighted];
-    [changeExportWayButton setTitle:LMLocalizedString(@"Set Backup decrypted private key", nil) forState:UIControlStateSelected];
+    [changeExportWayButton setTitle:LMLocalizedString(@"Set Backup Private Key", nil) forState:UIControlStateSelected];
     [changeExportWayButton addTarget:self action:@selector(changeExportImage:) forControlEvents:UIControlEventTouchUpInside];
     changeExportWayButton.titleLabel.font = [UIFont systemFontOfSize:FONT_SIZE(28)];
     [self.view addSubview:changeExportWayButton];

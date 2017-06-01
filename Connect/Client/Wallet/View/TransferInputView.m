@@ -275,6 +275,7 @@
 }
 
 - (void)textFiledEditChanged:(NSNotification *)obj {
+     
     UITextField *textField = (UITextField *) obj.object;
     NSString *toBeString = textField.text;
     NSString *lang = [textField.textInputMode primaryLanguage];

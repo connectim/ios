@@ -18,7 +18,7 @@
 @property(strong, nonatomic) UITableView *tableView;
 @property(strong, nonatomic) NSMutableArray *indexs;
 @property(strong, nonatomic) NSMutableArray *groups;
-@property(nonatomic, strong) NSMutableArray *ISOCountryCodes; //
+@property(nonatomic, strong) NSMutableArray *ISOCountryCodes;
 
 @end
 

@@ -19,6 +19,10 @@
 #import "LMChatSingleTransferViewController.h"
 #import "CommonClausePage.h"
 #import "StringTool.h"
+#import "NSData+Base64.h"
+#import "LocalAccountLoginPage.h"
+#import "SetUserInfoPage.h"
+#import "RegisteredPrivkeyLoginPage.h"
 
 #define BIT_COIN_STR @"bitcoin:"
 #define AMOUNT_TIP  @"?amount"
@@ -34,7 +38,10 @@
 @implementation LMHandleScanResultManager
 
 CREATE_SHARED_MANAGER(LMHandleScanResultManager)
-
+/**
+ *  common scan
+ *
+ */
 - (void)handleScanResult:(NSString *)resultStr controller:(UIViewController *)controller {
     self.controller = controller;
     if ([self isHttpNetWork:resultStr]) {
@@ -52,6 +59,131 @@ CREATE_SHARED_MANAGER(LMHandleScanResultManager)
         }
     }
 }
+#pragma mark - login scan
+/**
+ *  login scan
+ *
+ */
+- (void)handleLoginScanResult:(NSString *)resultStr controller:(UIViewController *)controller {
+    if ([resultStr hasPrefix:@"connect://"]) { // encription pri
+        [self encrptionAction:resultStr withVc:controller];
+    } else {
+        [self NoEncryptionAction:resultStr withVc:controller];
+    }
+}
+/**
+ *  encrptionAction
+ *
+ */
+- (void)encrptionAction:(NSString *)resultStr withVc:(UIViewController *)controller {
+    NSString *content = [resultStr stringByReplacingOccurrencesOfString:@"connect://" withString:@""];
+    NSData *data = [NSData dataWithBase64EncodedString:content];
+    if (data) {
+        ExoprtPrivkeyQrcode *exportQrcode = [ExoprtPrivkeyQrcode parseFromData:data error:nil];
+        [self EncryptionSuccess:resultStr withVc:controller withType:exportQrcode];
+    } else {
+        [GCDQueue executeInMainQueue:^{
+            [MBProgressHUD showToastwithText:LMLocalizedString(@"ErrorCode data error", nil) withType:ToastTypeFail showInView:controller.view complete:nil];
+        }];
+    }
+}
+/**
+ *  encrption success action
+ *
+ */
+- (void)EncryptionSuccess:(NSString *)resultStr withVc:(UIViewController *)controller withType:( ExoprtPrivkeyQrcode *)exportQrcode{
+    
+    switch (exportQrcode.version) {
+        case 1:
+        case 2: {
+            AccountInfo *user = [[AccountInfo alloc] init];
+            user.username = exportQrcode.username;
+            user.encryption_pri = exportQrcode.encriptionPri;
+            user.password_hint = exportQrcode.passwordHint;
+            user.bondingPhone = exportQrcode.phone;
+            user.contentId = exportQrcode.connectId;
+            user.avatar = [NSString stringWithFormat:@"%@/avatar/v1/%@.jpg", baseServer,exportQrcode.avatar];
+            AccountInfo *getChainUser = [[MMAppSetting sharedSetting] getLoginChainUsersByEncodePri:user.encryption_pri];
+            if (getChainUser) {
+                user = getChainUser;
+                if (exportQrcode.phone.length > 0) {
+                    user.bondingPhone = exportQrcode.phone;
+                }
+            }
+            LocalAccountLoginPage *page = [[LocalAccountLoginPage alloc] initWithUser:user];
+            [controller.navigationController pushViewController:page animated:YES];
+        }
+            break;
+        default:
+            [GCDQueue executeInMainQueue:^{
+                [MBProgressHUD showToastwithText:LMLocalizedString(@"Login Invalid version number", nil) withType:ToastTypeFail showInView:controller.view complete:nil];
+            }];
+            break;
+    }
+}
+/**
+ *  NoEncryption
+ *
+ */
+- (void)NoEncryptionAction:(NSString *)resultStr withVc:(UIViewController *)controller {
+    
+    if ([KeyHandle checkPrivkey:resultStr]) {
+        [MBProgressHUD showLoadingMessageToView:controller.view];
+        [NetWorkOperationTool POSTWithUrlString:PrivkeyLoginExistedUrl postProtoData:nil pirkey:resultStr publickey:[KeyHandle createPubkeyByPrikey:resultStr] complete:^(id response) {
+            [GCDQueue executeInMainQueue:^{
+                [MBProgressHUD hideHUDForView:controller.view];
+            }];
+            HttpResponse *hResponse = (HttpResponse *) response;
+            [self NoEncryptionSuccess:hResponse withVc:controller withStr:resultStr];
+            
+        }  fail:^(NSError *error) {
+            
+            [GCDQueue executeInMainQueue:^{
+                [MBProgressHUD hideHUDForView:controller.view];
+                [MBProgressHUD showToastwithText:[LMErrorCodeTool showToastErrorType:ToastErrorTypeLoginOrReg withErrorCode:error.code withUrl:PrivkeyLoginExistedUrl] withType:ToastTypeFail showInView:controller.view complete:nil];
+            }];
+        }];
+    }else {
+        [GCDQueue executeInMainQueue:^{
+            [MBProgressHUD showToastwithText:LMLocalizedString(@"Login scan string error", nil) withType:ToastTypeFail showInView:controller.view complete:nil];
+        }];
+    }
+}
+/**
+ *  NoEncryption success Action
+ *
+ */
+- (void)NoEncryptionSuccess:(HttpResponse *)hResponse withVc:(UIViewController *)controller withStr:(NSString *)resultStr {
+    
+    if (hResponse.code == 2404) {
+        
+        SetUserInfoPage *page = [[SetUserInfoPage alloc] initWithPrikey:resultStr];
+        [controller.navigationController pushViewController:page animated:YES];
+        
+    } else if(hResponse.code == successCode) {
+        
+        NSData *data = [ConnectTool decodeHttpResponse:hResponse withPrivkey:resultStr publickey:nil emptySalt:YES];
+        if (data && data.length > 0) {
+            NSError *error = nil;
+            UserExistedToken *userExisted = [UserExistedToken parseFromData:data error:&error];
+            if (!error) {
+                RegisteredPrivkeyLoginPage *page = [[RegisteredPrivkeyLoginPage alloc] initWithUserToken:userExisted privkey:resultStr];
+                [controller.navigationController pushViewController:page animated:YES];
+            }else {
+                [GCDQueue executeInMainQueue:^{
+                    [MBProgressHUD showToastwithText:LMLocalizedString(@"Set Query failed", nil) withType:ToastTypeFail showInView:controller.view complete:nil];
+                }];
+            }
+        }
+        
+    } else {
+        
+        [GCDQueue executeInMainQueue:^{
+            [MBProgressHUD showToastwithText:LMLocalizedString(@"Set Query failed", nil) withType:ToastTypeFail showInView:controller.view complete:nil];
+        }];
+    }
+}
+#pragma mark - common  scan
 - (void)loadWeb:(NSString *)resultStr {
     
     CommonClausePage *page = [[CommonClausePage alloc] initWithUrl:resultStr];
@@ -80,22 +212,21 @@ CREATE_SHARED_MANAGER(LMHandleScanResultManager)
         NSURL* url = [NSURL URLWithString:resultStr];
         NSDictionary *parameters = [url parameters];
         NSString *token = [parameters valueForKey:@"token"];
-        NSString *strHost = url.host;
-        NSString* localHost = [[baseServer componentsSeparatedByString:@"//"] lastObject];
-        if (!GJCFStringIsNull(token) && [strHost isEqualToString:localHost]) {
-            if ([resultStr containsString:@"transfer"]) {
+    
+        if (!GJCFStringIsNull(token) && [self needHttp:resultStr]) {
+            if ([resultStr containsString:@"transfer?"]) {
                 
                 NSString *urlString = [NSString stringWithFormat:@"connectim://transfer?token=%@", token];
                 [HandleUrlManager handleOpenURL:[NSURL URLWithString:urlString]];
                 return;
                 
-            } else if ([resultStr containsString:@"packet"]) {
+            } else if ([resultStr containsString:@"packet?"]) {
                 
                 NSString *urlString = [NSString stringWithFormat:@"connectim://packet?token=%@", token];
                 [HandleUrlManager handleOpenURL:[NSURL URLWithString:urlString]];
                 return;
                 
-            } else if ([resultStr containsString:@"group"]) {
+            } else if ([resultStr containsString:@"group?"]) {
                 
                 NSString *urlString = [NSString stringWithFormat:@"connectim://group?token=%@", token];
                 [HandleUrlManager handleOpenURL:[NSURL URLWithString:urlString]];
@@ -105,6 +236,18 @@ CREATE_SHARED_MANAGER(LMHandleScanResultManager)
         }
     
        [self loadWeb:resultStr];
+}
+- (BOOL)needHttp:(NSString *)resultStr {
+    
+    NSString *pattern = [NSString stringWithFormat:@"(http|https)://.*\\.connect\\.im/share/%@/(packet|transfer|group)\\?token=.+",APIVersion];
+    NSRegularExpression *regException = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionDotMatchesLineSeparators error:nil];
+    NSArray *resultArray = [regException matchesInString:resultStr options:NSMatchingReportCompletion range:NSMakeRange(0, resultStr.length)];
+    if (resultArray.count > 0) {
+        
+        return YES;
+        
+    }
+    return NO;
 }
 - (void)handWalletWithKeyWord:(NSString *)resultStr{
     

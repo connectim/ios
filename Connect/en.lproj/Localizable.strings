@@ -1,5 +1,4 @@
 "Chat"="Chat";
-"Chat One message failed to decrypt" = "One message failed to decrypt";
 "Chat Accept success"="Accept success";
 "Chat Add as a friend to chat"="Add as a friend to chat";
 "Chat Address"="Address";
@@ -81,6 +80,7 @@
 "Chat Not Group Master"="You are not the group adminer";
 "Chat Not connected"="Not connected";
 "Chat Notice New Message"="[You got a new message]";
+"Chat One message failed to decrypt"="There was a message that failed to decrypt";
 "Chat Original"="Original";
 "Chat Panoramas"="Panoramas";
 "Chat Per BTC"="%@ per\n%@ BTC";
@@ -221,6 +221,7 @@
 "ErrorCode publish hex decode error"="publish hex decode error";
 "ErrorCode salt failure or gcm decryption failed"="User salt failure or gcm decryption failed";
 "ErrorCode timestamp not in the specified range"="The timestamp is not in the specified range";
+"ErrorCode transaction address is not available"="transaction address is not available";
 "ErrorCode xn mempool conflict"="Txn mempool conflict";
 "Link"="Link";
 "Link Accept"="Accept";
@@ -374,7 +375,7 @@
 "Login Camera guide tip"="Tap to take photo and hold to record vedio";
 "Login Code"="CODE";
 "Login Collecting Sounds as Random Seed"="Collecting Sounds as Random Seed...";
-"Login Decrypted private key"="Decrypted private key";
+"Login Decrypted private key"="Private key";
 "Login Edit"="Edit";
 "Login Encrypted private key"="Encrypted private key";
 "Login Generated Failure"="Create failed, please make sure you've made sound/voice around the mic";
@@ -456,7 +457,6 @@
 "Set Auto"="Auto";
 "Set BTC symbol"="฿";
 "Set Backup Private Key"="Backup Private Key";
-"Set Backup decrypted private key"="Backup decrypted private key";
 "Set Backup encrypted private key"="Backup encrypted private key";
 "Set CONNECT ID can only be set once"="CONNECT ID can only be set once";
 "Set CONNECT ID set success no set"="CONNECT ID can't be modified after setting successfully";
@@ -523,6 +523,7 @@
 "Set Privacy"="Privacy";
 "Set Private key backup"="Private key backup";
 "Set Profile Photo"="Profile Photo";
+"Set Query failed"="Query failed";
 "Set Rate Connect"="Rate Connect";
 "Set Remove Success"="Remove Successfully";
 "Set Reset"="Reset";

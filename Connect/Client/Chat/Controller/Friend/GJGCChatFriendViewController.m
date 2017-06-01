@@ -2164,8 +2164,6 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
     NSDate *sendTime = [NSDate date];
     chatContentModel.sendTime = [sendTime timeIntervalSince1970];
 
-    [self setSendChatContentModelWithTalkInfo:chatContentModel];
-
     [self.dataSourceManager sendMesssage:chatContentModel];
 }
 
@@ -2235,16 +2233,12 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
 
     chatContentModel.timeString = [GJGCChatSystemNotiCellStyle formateTime:GJCFDateToString([NSDate date])];
     chatContentModel.sendStatus = GJGCChatFriendSendMessageStatusSending;
-    chatContentModel.isFromSelf = YES;
+
     chatContentModel.talkType = self.taklInfo.talkType;
     NSDate *sendTime = [NSDate date];
     chatContentModel.sendTime = [sendTime timeIntervalSince1970];
-
     chatContentModel.localMsgId = [ConnectTool generateMessageId];
-
     chatContentModel.isFromSelf = YES;
-
-    [self setSendChatContentModelWithTalkInfo:chatContentModel];
 
     [self.dataSourceManager sendMesssage:chatContentModel];
 }
@@ -2276,7 +2270,6 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
 
     chatContentModel.headUrl = [[LKUserCenter shareCenter] currentLoginUser].avatar;
 
-    [self setSendChatContentModelWithTalkInfo:chatContentModel];
 
     [self.dataSourceManager sendMesssage:chatContentModel];
 
@@ -2563,7 +2556,7 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
     chatContentModel.videoOriginCoverImageCachePath = videoFileCoverImageLocalPath;
     chatContentModel.videoDuration = [self durationWithVideo:originUrl];
     chatContentModel.videoSize = videoSize;
-    [self setSendChatContentModelWithTalkInfo:chatContentModel];
+
     [self.dataSourceManager sendMesssage:chatContentModel];
 
 }
@@ -2615,7 +2608,6 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
         chatContentModel.timeString = [GJGCChatSystemNotiCellStyle formateTime:GJCFDateToString([NSDate date])];
         chatContentModel.sendStatus = GJGCChatFriendSendMessageStatusSending;
 
-        [self setSendChatContentModelWithTalkInfo:chatContentModel];
         [self.dataSourceManager sendMesssage:chatContentModel];
     }
 }
@@ -2670,7 +2662,6 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
 
     chatContentModel.timeString = [GJGCChatSystemNotiCellStyle formateTime:GJCFDateToString([NSDate date])];
     chatContentModel.sendStatus = GJGCChatFriendSendMessageStatusSending;
-    chatContentModel.isFromSelf = YES;
     chatContentModel.talkType = self.taklInfo.talkType;
     NSDate *sendTime = [NSDate date];
     chatContentModel.sendTime = [sendTime timeIntervalSince1970];
@@ -2678,7 +2669,6 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
     
     chatContentModel.isFromSelf = YES;
 
-    [self setSendChatContentModelWithTalkInfo:chatContentModel];
     [self.dataSourceManager sendMesssage:chatContentModel];
 
 }
@@ -2748,7 +2738,6 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
     chatContentModel.timeString = [GJGCChatSystemNotiCellStyle formateTime:GJCFDateToString([NSDate date])];
     chatContentModel.sendStatus = GJGCChatFriendSendMessageStatusSending;
     
-    [self setSendChatContentModelWithTalkInfo:chatContentModel];
     [self.dataSourceManager sendMesssage:chatContentModel];
 }
 
@@ -2794,9 +2783,6 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
 
     chatContentModel.timeString = [GJGCChatSystemNotiCellStyle formateTime:GJCFDateToString([NSDate date])];
     chatContentModel.sendStatus = GJGCChatFriendSendMessageStatusSending;
-
-    [self setSendChatContentModelWithTalkInfo:chatContentModel];
-
 
     [self.dataSourceManager sendMesssage:chatContentModel];
 
@@ -2869,7 +2855,7 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
     [dic safeSetObject:0 forKey:@"pay_count"];
     [dic safeSetObject:0 forKey:@"crowd_count"];
     [[LMMessageExtendManager sharedManager] saveBitchMessageExtendDict:dic];
-    [self setSendChatContentModelWithTalkInfo:chatContentModel];
+
 
     [self.dataSourceManager sendMesssage:chatContentModel];
 
@@ -2932,7 +2918,6 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
 
     chatContentModel.timeString = [GJGCChatSystemNotiCellStyle formateTime:GJCFDateToString([NSDate date])];
     chatContentModel.sendStatus = GJGCChatFriendSendMessageStatusSending;
-    chatContentModel.isFromSelf = YES;
     chatContentModel.talkType = self.taklInfo.talkType;
     NSDate *sendTime = [NSDate date];
     chatContentModel.sendTime = [sendTime timeIntervalSince1970];
@@ -2952,13 +2937,7 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
     }
     [[LMMessageExtendManager sharedManager] saveBitchMessageExtendDict:dict];
     
-    [self setSendChatContentModelWithTalkInfo:chatContentModel];
-
     [self.dataSourceManager sendMesssage:chatContentModel];
-
-}
-
-- (void)setSendChatContentModelWithTalkInfo:(GJGCChatFriendContentModel *)contentModel {
 
 }
 - (void)showCropingImageOnView:(UIView *)destView {

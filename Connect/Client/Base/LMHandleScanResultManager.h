@@ -11,7 +11,14 @@
 @interface LMHandleScanResultManager : NSObject
 
 + (instancetype)sharedManager;
-
+/**
+ *  common scan
+ *
+ */
 - (void)handleScanResult:(NSString *)resultStr controller:(UIViewController *)controller;
-
+/**
+ *  login scan
+ *
+ */
+- (void)handleLoginScanResult:(NSString *)resultStr controller:(UIViewController *)controller;
 @end
