@@ -75,19 +75,52 @@ static NSDictionary *pbRuleDict;
 
 #pragma mark - private method
 + (BOOL)checkAttrWithTypeString:(NSString *)type checkValue:(id)value reg:(NSString *)reg{
+    DDLogInfo(@"type :%@ checkValue :%@ reg :%@",type,value,reg);
     SWITCH (type) {
         CASE (@"string") {
             NSString *checkString = (NSString *)value;
             return checkString && checkString.length;
             break;
         }
-        CASE(@"gcmdata") {
-            return [self validationGcmdata:value];
+        CASE(@"bytes") {
+            NSData *data = (NSData *)value;
+            NSInteger len = reg.integerValue;
+            if (len == 0) {
+                return data.length > 0;
+            } else {
+                return data.length == len;
+            }
             break;
         }
-        CASE(@"byte") {
-            NSData *data = (NSData *)value;
-            return data.length == reg.integerValue;
+        CASE(@"reg") {
+            NSString *checkString = (NSString *)value;
+            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"SELF MATCHES %@",reg];
+            if ([predicate evaluateWithObject:checkString]) {
+                return YES;
+            } else{
+                return NO;
+            }
+            break;
+        }
+        CASE(@"int") {
+            return YES;
+            break;
+        }
+        CASE(@"list") {
+            return YES;
+            break;
+        }
+        CASE(@"proto") {
+            return YES;
+            break;
+        }
+        CASE(@"bool") {
+            return YES;
+            break;
+        }
+        CASE(@"address") {
+            NSString *checkString = (NSString *)value;
+            return [KeyHandle checkAddress:checkString];
             break;
         }
         DEFAULT {
@@ -95,22 +128,6 @@ static NSDictionary *pbRuleDict;
             break;
         }
     }
-}
-
-+ (BOOL)validationGcmdata:(NSDictionary *)gcdDataDict{
-    if (![gcdDataDict valueForKey:@"aad"]) {
-        return NO;
-    }
-    if (![gcdDataDict valueForKey:@"iv"]) {
-        return NO;
-    }
-    if (![gcdDataDict valueForKey:@"tag"]) {
-        return NO;
-    }
-    if (![gcdDataDict valueForKey:@"ciphertext"]) {
-        return NO;
-    }
-    return YES;
 }
 
 @end

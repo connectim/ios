@@ -9,11 +9,12 @@
 #import "BaseViewController.h"
 #import "GJGCChatFriendTalkModel.h"
 
-typedef NS_ENUM(NSUInteger,FromSourceType) {
+typedef NS_ENUM(NSUInteger, FromSourceType) {
     FromSourceTypeCommon = 1 << 0,
     FromSourceTypeGroupManager = 1 << 1
-    
+
 };
+
 @interface GroupMembersListViewController : BaseViewController
 
 @property(weak, nonatomic) GJGCChatFriendTalkModel *talkInfo;

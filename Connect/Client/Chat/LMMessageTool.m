@@ -17,6 +17,8 @@
 #import "SessionManager.h"
 #import "MessageDBManager.h"
 #import "GroupDBManager.h"
+#import "CameraTool.h"
+#import <Photos/Photos.h>
 
 @implementation LMMessageTool
 
@@ -815,5 +817,240 @@
     }
     return type;
 }
+
++ (GJGCChatFriendContentModel *)packContentModelWithTalkModel:(GJGCChatFriendTalkModel *)talkModel contentType:(GJGCChatFriendContentType)contentType extData:(id)extData{
+    GJGCChatFriendContentModel *chatContentModel = [[GJGCChatFriendContentModel alloc] init];
+    chatContentModel.baseMessageType = GJGCChatBaseMessageTypeChatMessage;
+    chatContentModel.contentType = contentType;
+    chatContentModel.localMsgId = [ConnectTool generateMessageId];
+    
+    switch (contentType) {
+        case GJGCChatFriendContentTypeVideo:{
+            /*
+             NSDictionary *dataDict = @{@"originUrl":originUrl,
+             @"filePath":filePath,
+             @"videoSize":videoSize};
+             */
+            NSDictionary *videoDict = (NSDictionary *)extData;
+            NSURL *url = [videoDict valueForKey:@"originUrl"];
+            NSString *filePath = [videoDict valueForKey:@"filePath"];
+            NSString *videoSize = [videoDict valueForKey:@"videoSize"];
+            UIImage *coverImage = [self frameImageFromVideoURL:url];
+            NSString *cacheDirectory = [[GJCFCachePathManager shareManager] mainVideoCacheDirectory];
+            cacheDirectory = [[cacheDirectory stringByAppendingPathComponent:[[LKUserCenter shareCenter] currentLoginUser].address]
+                              stringByAppendingPathComponent:talkModel.fileDocumentName];
+            if (!GJCFFileDirectoryIsExist(cacheDirectory)) {
+                GJCFFileProtectCompleteDirectoryCreate(cacheDirectory);
+            }
+            NSString *videoFileName = [NSString stringWithFormat:@"%@.mp4", chatContentModel.localMsgId];
+            NSString *videoFileCoverImageName = [NSString stringWithFormat:@"%@-coverimage.jpg", chatContentModel.localMsgId];
+            NSString *videoFileLocalPath = [cacheDirectory stringByAppendingPathComponent:videoFileName];
+            NSString *videoFileCoverImageLocalPath = [cacheDirectory stringByAppendingPathComponent:videoFileCoverImageName];
+            GJCFFileCopyFileIsRemove(filePath, videoFileLocalPath, YES);
+            NSData *coverData = UIImageJPEGRepresentation(coverImage, 1);
+            coverData = [CameraTool imageSizeLessthan2K:coverData withOriginImage:coverImage];
+            GJCFFileWrite(coverData, videoFileCoverImageLocalPath);
+            
+            
+            chatContentModel.messageContentImage = coverImage;
+            chatContentModel.originImageWidth = coverImage.size.width;
+            chatContentModel.originImageHeight = coverImage.size.height;
+            chatContentModel.videoIsDownload = YES;
+            chatContentModel.videoOriginDataPath = videoFileLocalPath;
+            chatContentModel.videoOriginCoverImageCachePath = videoFileCoverImageLocalPath;
+            chatContentModel.videoDuration = [self durationWithVideo:url];
+            chatContentModel.videoSize = videoSize;
+            
+        }
+            break;
+        case GJGCChatFriendContentTypeTransfer:{
+            LMTransactionModel *transactionModel = (LMTransactionModel *)extData;
+            chatContentModel.transferSubTipMessage = [GJGCChatSystemNotiCellStyle formateCellLeftSubTipsWithType:contentType withNote:transactionModel.note isCrowding:YES];
+            chatContentModel.transferStatusMessage = [GJGCChatSystemNotiCellStyle formateRecieptSubTipsWithTotal:1 payCount:1 isCrowding:NO transStatus:1];
+            chatContentModel.hashID = transactionModel.hashId;
+            chatContentModel.tipNote = transactionModel.note;
+            chatContentModel.amount = transactionModel.amount.longLongValue;
+            chatContentModel.transferMessage = [GJGCChatSystemNotiCellStyle formateTransferWithAmount:chatContentModel.amount isSendToMe:NO isOuterTransfer:talkModel.talkType == GJGCChatFriendTalkTypePostSystem];
+        }
+            break;
+        case GJGCChatFriendContentTypeRedEnvelope:{
+            LMTransactionModel *transactionModel = (LMTransactionModel *)extData;
+            chatContentModel.redBagTipMessage = [GJGCChatSystemNotiCellStyle formateRedBagWithMessage:transactionModel.note isOuterTransfer:talkModel.talkType == GJGCChatFriendTalkTypePostSystem];
+            chatContentModel.redBagSubTipMessage = [GJGCChatSystemNotiCellStyle formateCellLeftSubTipsWithType:GJGCChatFriendContentTypeRedEnvelope withNote:transactionModel.note isCrowding:NO];
+            chatContentModel.hashID = transactionModel.hashId;
+            chatContentModel.tipNote = transactionModel.note;
+        }
+            break;
+        case GJGCChatFriendContentTypeMapLocation:{
+            NSDictionary *locationInfo = (NSDictionary *)extData;
+            UIImage *image = [locationInfo valueForKey:@"image"];
+            CGFloat locationLatitude = [[locationInfo valueForKey:@"locationLatitude"] doubleValue];
+            CGFloat locationLongitude = [[locationInfo valueForKey:@"locationLongitude"] doubleValue];
+            NSString *filePath = [[GJCFCachePathManager shareManager] mainImageCacheDirectory];
+            filePath = [[filePath stringByAppendingPathComponent:[[LKUserCenter shareCenter] currentLoginUser].address]
+                        stringByAppendingPathComponent:talkModel.fileDocumentName];
+            if (!GJCFFileDirectoryIsExist(filePath)) {
+                GJCFFileProtectCompleteDirectoryCreate(filePath);
+            }
+            
+            NSData *imageData = UIImageJPEGRepresentation(image, 1);
+            NSString *imageName = [NSString stringWithFormat:@"%@.jpg", chatContentModel.localMsgId];
+            NSString *imagePath = [filePath stringByAppendingPathComponent:imageName];
+            GJCFFileWrite(imageData, imagePath);
+            chatContentModel.locationImageOriginDataCachePath = imagePath;
+            chatContentModel.locationLatitude = locationLatitude;
+            chatContentModel.locationLongitude = locationLongitude;
+            NSString *locationMessage = [locationInfo valueForKey:@"street"];
+            chatContentModel.originTextMessage = locationMessage;
+            NSMutableAttributedString *descText = [[NSMutableAttributedString alloc] initWithString:locationMessage];
+            [descText addAttribute:NSFontAttributeName
+                             value:[UIFont systemFontOfSize:FONT_SIZE(24)]
+                             range:NSMakeRange(0, locationMessage.length)];
+            [descText addAttribute:NSForegroundColorAttributeName
+                             value:[UIColor whiteColor]
+                             range:NSMakeRange(0, locationMessage.length)];
+            chatContentModel.locationMessage = descText;
+        }
+            break;
+        case GJGCChatFriendContentTypeImage:{
+            NSDictionary *imageInfo = (NSDictionary *)extData;
+            NSString *originPath = [imageInfo objectForKey:@"origin"];
+            NSString *thumbPath = [imageInfo objectForKey:@"thumb"];
+            NSInteger originWidth = [[imageInfo objectForKey:@"originWidth"] intValue];
+            NSInteger originHeight = [[imageInfo objectForKey:@"originHeight"] intValue];
+            NSString *messageid = [imageInfo objectForKey:@"imageID"];
+            chatContentModel.originImageWidth = originWidth;
+            chatContentModel.originImageHeight = originHeight;
+            chatContentModel.imageOriginDataCachePath = originPath;
+            chatContentModel.thumbImageCachePath = thumbPath;
+            chatContentModel.messageContentImage = [UIImage imageWithData:[NSData dataWithContentsOfFile:chatContentModel.imageOriginDataCachePath]];
+            NSString *filePath = [[GJCFCachePathManager shareManager] mainImageCacheDirectory];
+            filePath = [[filePath stringByAppendingPathComponent:[[LKUserCenter shareCenter] currentLoginUser].address]
+                        stringByAppendingPathComponent:talkModel.fileDocumentName];
+            if (!GJCFFileDirectoryIsExist(filePath)) {
+                GJCFFileProtectCompleteDirectoryCreate(filePath);
+            }
+            NSString *fileName = [NSString stringWithFormat:@"%@.jpg", messageid];
+            chatContentModel.imageOriginDataCachePath = [filePath stringByAppendingPathComponent:fileName];
+            GJCFFileCopyFileIsRemove(originPath, chatContentModel.imageOriginDataCachePath, YES);
+            
+            
+            //reset localMessage id
+            chatContentModel.localMsgId = messageid;
+        }
+            break;
+        case GJGCChatFriendContentTypeAudio:{
+            chatContentModel.audioModel = (GJCFAudioModel *)extData;
+            chatContentModel.audioDuration = [GJGCChatFriendCellStyle formateAudioDuration:GJCFStringFromInt(chatContentModel.audioModel.duration)];
+            chatContentModel.audioIsDownload = YES;
+        }
+            break;
+        case GJGCChatFriendContentTypeGif:{
+            chatContentModel.gifLocalId = extData;
+        }
+            break;
+        case GJGCChatFriendContentTypeText:{
+            chatContentModel.originTextMessage = extData;
+        }
+            break;
+        case GJGCChatFriendContentTypeNameCard:{
+            AccountInfo *recommandUser = (AccountInfo *)extData;
+            chatContentModel.contactAvatar = recommandUser.avatar;
+            chatContentModel.contactAddress = recommandUser.address;
+            chatContentModel.contactPublickey = recommandUser.pub_key;
+            NSMutableAttributedString *nameText = [[NSMutableAttributedString alloc] initWithString:recommandUser.username];
+            [nameText addAttribute:NSFontAttributeName
+                             value:[UIFont systemFontOfSize:FONT_SIZE(32)]
+                             range:NSMakeRange(0, recommandUser.username.length)];
+            [nameText addAttribute:NSForegroundColorAttributeName
+                             value:[UIColor whiteColor]
+                             range:NSMakeRange(0, recommandUser.username.length)];
+            chatContentModel.contactName = nameText;
+            chatContentModel.contactSubTipMessage = [GJGCChatSystemNotiCellStyle formateNameCardSubTipsIsFromSelf:YES];
+        }
+            break;
+        case GJGCChatFriendContentTypePayReceipt:{
+            LMTransactionModel *transactionModel = (LMTransactionModel *)extData;
+            chatContentModel.tipNote = transactionModel.note;
+            chatContentModel.payOrReceiptMessage = [GJGCChatSystemNotiCellStyle formateRecieptWithAmount:[transactionModel.amount longLongValue] isSendToMe:NO isCrowdfundRceipt:transactionModel.isCrowding withNote:transactionModel.note];
+            chatContentModel.payOrReceiptSubTipMessage = [GJGCChatSystemNotiCellStyle formateCellLeftSubTipsWithType:contentType withNote:transactionModel.note isCrowding:transactionModel.isCrowding];
+            chatContentModel.payOrReceiptStatusMessage = [GJGCChatSystemNotiCellStyle formateRecieptSubTipsWithTotal:transactionModel.size payCount:0 isCrowding:transactionModel.isCrowding transStatus:0];
+            chatContentModel.hashID = transactionModel.hashId;
+            chatContentModel.amount = [transactionModel.amount longLongValue];
+            chatContentModel.memberCount = transactionModel.size;
+            chatContentModel.isCrowdfundRceipt = transactionModel.isCrowding;
+        }
+            break;
+        default:
+            break;
+    }
+    chatContentModel.senderAddress = [[LKUserCenter shareCenter] currentLoginUser].address;
+    chatContentModel.senderHeadUrl = [[LKUserCenter shareCenter] currentLoginUser].avatar;
+    chatContentModel.senderPublicKey = [[LKUserCenter shareCenter] currentLoginUser].pub_key;
+    chatContentModel.senderName = [NSMutableString stringWithFormat:@"%@", [[LKUserCenter shareCenter] currentLoginUser].username];
+    
+    chatContentModel.reciverAddress = talkModel.talkType == GJGCChatFriendTalkTypeGroup ?talkModel.chatGroupInfo.groupIdentifer:talkModel.chatUser.address;
+    chatContentModel.reciverHeadUrl = talkModel.headUrl;
+    chatContentModel.reciverPublicKey = talkModel.chatIdendifier;
+    chatContentModel.reciverName = talkModel.name;
+    
+    chatContentModel.headUrl = [[LKUserCenter shareCenter] currentLoginUser].avatar;
+    chatContentModel.timeString = [GJGCChatSystemNotiCellStyle formateTime:GJCFDateToString([NSDate date])];
+    chatContentModel.sendStatus = GJGCChatFriendSendMessageStatusSending;
+    chatContentModel.isFromSelf = YES;
+    chatContentModel.talkType = talkModel.talkType;
+    
+    NSDate *sendTime = [NSDate date];
+    chatContentModel.sendTime = [sendTime timeIntervalSince1970];
+
+    return chatContentModel;
+}
+
+
+
+// Get the video's center frame as video poster image
++ (UIImage *)frameImageFromVideoURL:(NSURL *)videoURL {
+    // result
+    UIImage *image = nil;
+    // AVAssetImageGenerator
+    AVAsset *asset = [AVAsset assetWithURL:videoURL];
+    AVAssetImageGenerator *imageGenerator = [[AVAssetImageGenerator alloc] initWithAsset:asset];
+    imageGenerator.appliesPreferredTrackTransform = YES;
+    
+    // calculate the midpoint time of video
+    Float64 duration = CMTimeGetSeconds([asset duration]);
+    // 24 frames per second (fps) for film, 30 fps for NTSC (used for TV in North America and
+    // Japan), and 25 fps for PAL (used for TV in Europe).
+    // Using a timescale of 600, you can exactly represent any number of frames in these systems
+    CMTime midpoint = CMTimeMakeWithSeconds(duration / 2.0, 600);
+    
+    // get the image from
+    NSError *error = nil;
+    CMTime actualTime;
+    // Returns a CFRetained CGImageRef for an asset at or near the specified time.
+    // So we should mannully release it
+    CGImageRef centerFrameImage = [imageGenerator copyCGImageAtTime:midpoint
+                                                         actualTime:&actualTime
+                                                              error:&error];
+    if (centerFrameImage != NULL) {
+        image = [[UIImage alloc] initWithCGImage:centerFrameImage];
+        // Release the CFRetained image
+        CGImageRelease(centerFrameImage);
+    }
+    return image;
+}
+
++ (NSUInteger)durationWithVideo:(NSURL *)videoUrl {
+    NSUInteger second = 0;
+    AVURLAsset *asset = [AVURLAsset assetWithURL:videoUrl];
+    Float64 duration = CMTimeGetSeconds(asset.duration);
+    if (duration <= 1.0) {
+        second = 1;
+    } else {
+        second = (NSUInteger) (duration + 0.5);
+    }
+    return second;
+}
+
 
 @end

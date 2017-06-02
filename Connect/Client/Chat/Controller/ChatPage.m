@@ -19,31 +19,29 @@
 #import "LMRegisterPrivkeyBackupTipView.h"
 #import "AppDelegate.h"
 #import "LMConversionManager.h"
-#import "UIAlertController+Blocks.h"
 #import "SystemTool.h"
-#import "LMConnectStatusView.h"
 
 
 @interface ChatPage () <
-MGSwipeTableCellDelegate,
-TCPConnectionObserver,
-LMConversionListChangeManagerDelegate,
-UITabBarControllerDelegate,
-UIViewControllerPreviewingDelegate>
+        MGSwipeTableCellDelegate,
+        TCPConnectionObserver,
+        LMConversionListChangeManagerDelegate,
+        UITabBarControllerDelegate,
+        UIViewControllerPreviewingDelegate>
 
 @property(nonatomic, strong) RecentChatTitleView *titleView;
 @property(nonatomic, strong) NSMutableArray<RecentChatModel *> *recentChats;
 @property(nonatomic, assign) BOOL updated;
-@property (nonatomic ,assign) NSTimeInterval tapTimeInterval;
-@property (nonatomic ,assign) NSInteger selectIndex;
+@property(nonatomic, assign) NSTimeInterval tapTimeInterval;
+@property(nonatomic, assign) NSInteger selectIndex;
 
 @end
 
 @implementation ChatPage
 
-- (UIViewController *)previewingContext:(id<UIViewControllerPreviewing>)previewingContext viewControllerForLocation:(CGPoint)location {
+- (UIViewController *)previewingContext:(id <UIViewControllerPreviewing>)previewingContext viewControllerForLocation:(CGPoint)location {
     GJGCChatFriendViewController *showPage = nil;
-    
+
     //location cell
     NSInteger index = (location.y - [UIApplication sharedApplication].statusBarFrame.size.height - 44) / self.tableView.rowHeight;
     if (0 <= index && index < self.recentChats.count) {
@@ -53,15 +51,14 @@ UIViewControllerPreviewingDelegate>
         }
         switch (recentModel.talkType) {
             case GJGCChatFriendTalkTypePostSystem:
-            case GJGCChatFriendTalkTypePrivate:
-            {
+            case GJGCChatFriendTalkTypePrivate: {
                 GJGCChatFriendTalkModel *talk = [[GJGCChatFriendTalkModel alloc] init];
                 talk.talkType = recentModel.talkType;
                 talk.chatIdendifier = recentModel.identifier;
                 talk.headUrl = recentModel.headUrl;
                 talk.name = recentModel.chatUser.normalShowName;
                 talk.snapChatOutDataTime = recentModel.snapChatDeleteTime;
-                
+
                 talk.chatUser = recentModel.chatUser;
                 if (recentModel.talkType == GJGCChatFriendTalkTypePostSystem) {
                     showPage = [[GJGCChatSystemNotiViewController alloc] initWithTalkInfo:talk];
@@ -78,8 +75,7 @@ UIViewControllerPreviewingDelegate>
                 }
             }
                 break;
-            case GJGCChatFriendTalkTypeGroup:
-            {
+            case GJGCChatFriendTalkTypeGroup: {
                 GJGCChatFriendTalkModel *talk = [[GJGCChatFriendTalkModel alloc] init];
                 talk.talkType = GJGCChatFriendTalkTypeGroup;
                 talk.chatIdendifier = recentModel.identifier;
@@ -98,21 +94,19 @@ UIViewControllerPreviewingDelegate>
     return showPage;
 }
 
-- (void)previewingContext:(id<UIViewControllerPreviewing>)previewingContext commitViewController:(UIViewController *)viewControllerToCommit {
-    GJGCChatDetailViewController *showPage = (GJGCChatDetailViewController *)viewControllerToCommit;
+- (void)previewingContext:(id <UIViewControllerPreviewing>)previewingContext commitViewController:(UIViewController *)viewControllerToCommit {
+    GJGCChatDetailViewController *showPage = (GJGCChatDetailViewController *) viewControllerToCommit;
     //clear unread / group @ note
     [[LMConversionManager sharedManager] clearConversionUnreadAndGroupNoteWithIdentifier:showPage.taklInfo.chatIdendifier];
     switch (showPage.taklInfo.talkType) {
         case GJGCChatFriendTalkTypePostSystem:
-        case GJGCChatFriendTalkTypePrivate:
-        {
+        case GJGCChatFriendTalkTypePrivate: {
             [SessionManager sharedManager].chatSession = showPage.taklInfo.chatIdendifier;
             [SessionManager sharedManager].chatObject = showPage.taklInfo.chatUser;
         }
             break;
-            
-        case GJGCChatFriendTalkTypeGroup:
-        {
+
+        case GJGCChatFriendTalkTypeGroup: {
             [SessionManager sharedManager].chatSession = showPage.taklInfo.chatIdendifier;
             [SessionManager sharedManager].chatObject = showPage.taklInfo.chatGroupInfo;
         }
@@ -138,13 +132,13 @@ UIViewControllerPreviewingDelegate>
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+
     [SessionManager sharedManager].GetNewVersionInfoCallback = ^(VersionResponse *currentNewVersionInfo) {
         [self updateAppNoteWithCurrentNewVersionInfo:currentNewVersionInfo];
     };
     [self updateAppNoteWithCurrentNewVersionInfo:[SessionManager sharedManager].currentNewVersionInfo];
-    
-    self.tabBarController.delegate=self;
+
+    self.tabBarController.delegate = self;
     self.navigationItem.leftBarButtonItems = nil;
     self.titleView = [[RecentChatTitleView alloc] init];
     self.navigationItem.titleView = self.titleView;
@@ -156,9 +150,9 @@ UIViewControllerPreviewingDelegate>
     self.titleView = [[RecentChatTitleView alloc] init];
     self.navigationItem.titleView = self.titleView;
     [self onConnectState:0];
-    
+
     [self showFristRegisterBackupTipView];
-    
+
     //conversion  monitor
     [LMConversionManager sharedManager].conversationListDelegate = self;
     [[LMConversionManager sharedManager] getAllConversationFromDB];
@@ -175,11 +169,11 @@ UIViewControllerPreviewingDelegate>
     [self updateBarBadgeIsNeedSyncBadge:NO];
 }
 
-- (void)unreadMessageNumberDidChangedNeedSyncbadge{
+- (void)unreadMessageNumberDidChangedNeedSyncbadge {
     [self updateBarBadgeIsNeedSyncBadge:YES];
 }
 
-- (void)showFristRegisterBackupTipView{
+- (void)showFristRegisterBackupTipView {
     if ([LKUserCenter shareCenter].isFristLogin) {
         LMRegisterPrivkeyBackupTipView *registerPrivkeyTipView = [[[NSBundle mainBundle] loadNibNamed:@"LMRegisterPrivkeyBackupTipView" owner:nil options:nil] lastObject];
         AppDelegate *app = (AppDelegate *) [UIApplication sharedApplication].delegate;
@@ -197,7 +191,7 @@ UIViewControllerPreviewingDelegate>
     RegisterNotify(UIApplicationWillEnterForegroundNotification, @selector(enterForeground));
 }
 
-- (void)enterForeground{
+- (void)enterForeground {
     if ([SessionManager sharedManager].currentNewVersionInfo.force) {
         [self showUpdataAlertWithMessage:[SessionManager sharedManager].currentNewVersionInfo.remark force:YES];
     }
@@ -206,7 +200,8 @@ UIViewControllerPreviewingDelegate>
 - (void)socketDataVerifyFail {
     [self showUpdataAlertWithMessage:LMLocalizedString(@"Chat Connection protocol upgrades", nil) force:YES];
 }
-- (void)showUpdataAlertWithMessage:(NSString *)message force:(BOOL)force{
+
+- (void)showUpdataAlertWithMessage:(NSString *)message force:(BOOL)force {
     NSString *cancel = nil;
     if (!force) {
         cancel = LMLocalizedString(@"Common Cancel", nil);
@@ -214,19 +209,19 @@ UIViewControllerPreviewingDelegate>
     [UIAlertController showAlertInViewController:self withTitle:LMLocalizedString(@"Set Found new version", nil) message:message cancelButtonTitle:cancel destructiveButtonTitle:nil otherButtonTitles:@[LMLocalizedString(@"Set Now update app", nil)] tapBlock:^(UIAlertController *_Nonnull controller, UIAlertAction *_Nonnull action, NSInteger buttonIndex) {
         if (buttonIndex != 0) { //tap update
             if ([SystemTool isNationChannel]) {
-                if(SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"10.0")){
+                if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"10.0")) {
                     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:nationalAppDownloadUrl] options:nil completionHandler:^(BOOL success) {
-                        
+
                     }];
-                } else{
+                } else {
                     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:nationalAppDownloadUrl]];
                 }
             } else {
-                if(SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"10.0")){
+                if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"10.0")) {
                     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:appstoreAppDownloadUrl] options:nil completionHandler:^(BOOL success) {
-                        
+
                     }];
-                } else{
+                } else {
                     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:appstoreAppDownloadUrl]];
                 }
             }
@@ -309,6 +304,7 @@ UIViewControllerPreviewingDelegate>
 
 
 #pragma mark - Table view data source
+
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return self.recentChats.count;
 }
@@ -329,17 +325,15 @@ UIViewControllerPreviewingDelegate>
     }
     //clear unread / group @ note
     [[LMConversionManager sharedManager] clearConversionUnreadAndGroupNoteWithIdentifier:recentModel.identifier];
-    
+
     switch (recentModel.talkType) {
         case GJGCChatFriendTalkTypePostSystem:
-        case GJGCChatFriendTalkTypePrivate:
-        {
+        case GJGCChatFriendTalkTypePrivate: {
             [self pushFriendChatViewControllerWith:recentModel];
         }
             break;
 
-        case GJGCChatFriendTalkTypeGroup:
-        {
+        case GJGCChatFriendTalkTypeGroup: {
             [self pushGroupChatViewControllerWith:recentModel];
         }
             break;
@@ -350,6 +344,7 @@ UIViewControllerPreviewingDelegate>
 
 
 #pragma mark - group
+
 - (void)pushGroupChatViewControllerWith:(RecentChatModel *)recentModel {
 
     GJGCChatFriendTalkModel *talk = [[GJGCChatFriendTalkModel alloc] init];
@@ -369,6 +364,7 @@ UIViewControllerPreviewingDelegate>
 }
 
 #pragma mark - friend or system
+
 - (void)pushFriendChatViewControllerWith:(RecentChatModel *)recentModel {
 
     GJGCChatFriendTalkModel *talk = [[GJGCChatFriendTalkModel alloc] init];
@@ -414,14 +410,14 @@ UIViewControllerPreviewingDelegate>
 - (void)setMuteWithCell:(UITableViewCell *)cell {
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
     RecentChatModel *model = self.recentChats[indexPath.row];
-    __weak __typeof(&*self)weakSelf = self;
+    __weak __typeof(&*self) weakSelf = self;
     [MBProgressHUD showLoadingMessageToView:self.view];
     [[LMConversionManager sharedManager] setConversationMute:model complete:^(BOOL complete) {
         if (complete) {
             [GCDQueue executeInMainQueue:^{
                 [MBProgressHUD showToastwithText:LMLocalizedString(@"Login Successful", nil) withType:ToastTypeSuccess showInView:weakSelf.view complete:nil];
             }];
-        } else{
+        } else {
             [GCDQueue executeInMainQueue:^{
                 [MBProgressHUD showToastwithText:LMLocalizedString(@"Link Operation frequent", nil) withType:ToastTypeFail showInView:weakSelf.view complete:nil];
             }];
@@ -500,7 +496,7 @@ UIViewControllerPreviewingDelegate>
 
 #pragma -mark reflash badge
 
-- (void)updateBarBadgeIsNeedSyncBadge:(BOOL)IsNeedSyncBadge{
+- (void)updateBarBadgeIsNeedSyncBadge:(BOOL)IsNeedSyncBadge {
     [[RecentChatDBManager sharedManager] getAllUnReadCountWithComplete:^(int count) {
         [[BadgeNumberManager shareManager] getBadgeNumberCountWithMin:ALTYPE_CategoryTwo_NewFriend max:ALTYPE_CategoryTwo_PhoneContact Completion:^(NSUInteger contactConnt) {
             if ([UIApplication sharedApplication].applicationIconBadgeNumber != count + contactConnt) {
@@ -525,10 +521,10 @@ UIViewControllerPreviewingDelegate>
     }];
 }
 
-- (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController{
+- (BOOL)tabBarController:(UITabBarController *)tabBarController shouldSelectViewController:(UIViewController *)viewController {
 
-    UINavigationController *navdid=tabBarController.selectedViewController;
-    UINavigationController *nav=(UINavigationController*)viewController;
+    UINavigationController *navdid = tabBarController.selectedViewController;
+    UINavigationController *nav = (UINavigationController *) viewController;
     if (![navdid.topViewController isEqual:self]) {
         self.tapTimeInterval = 0;
     }
@@ -536,12 +532,12 @@ UIViewControllerPreviewingDelegate>
         NSTimeInterval time = [[NSDate date] timeIntervalSince1970] - self.tapTimeInterval;
         if (time > 0 && time < 1.2f) {
             if (self.recentChats.count) {
-                NSIndexPath* indexPat = [NSIndexPath indexPathForRow:0 inSection:0];
+                NSIndexPath *indexPat = [NSIndexPath indexPathForRow:0 inSection:0];
                 [self.tableView scrollToRowAtIndexPath:indexPat atScrollPosition:UITableViewScrollPositionBottom animated:YES];
             }
         }
         self.tapTimeInterval = 0;
-    } else{
+    } else {
         if ([nav.topViewController isEqual:self]) {
             self.tapTimeInterval = [[NSDate date] timeIntervalSince1970];
         }

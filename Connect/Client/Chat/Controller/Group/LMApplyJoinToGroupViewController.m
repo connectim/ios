@@ -183,7 +183,7 @@ typedef NS_ENUM(NSInteger, GetGroupInfoType) {
 
 
 - (void)getGroupInfoWithToken {
-    __weak typeof(self)weakSelf = self;
+    __weak typeof(self) weakSelf = self;
     [MBProgressHUD showLoadingMessageToView:self.view];
     GroupToken *token = [GroupToken new];
     token.token = self.token;
@@ -207,7 +207,7 @@ typedef NS_ENUM(NSInteger, GetGroupInfoType) {
                 [weakSelf dispalyAllView];
                 [weakSelf.groupAvatarImageView setImageWithAvatarUrl:groupBaseInfo.avatar];
                 weakSelf.groupNameLabel.text = groupBaseInfo.name;
-                weakSelf.countLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Chat Member Max", nil), groupBaseInfo.count,200];
+                weakSelf.countLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Chat Member Max", nil), groupBaseInfo.count, 200];
                 weakSelf.sumaryLabel.text = groupBaseInfo.summary;
 
                 weakSelf.groupApply.identifier = groupBaseInfo.identifier;
@@ -230,7 +230,7 @@ typedef NS_ENUM(NSInteger, GetGroupInfoType) {
 
 
 - (void)getGroupInfoWithIdentifier {
-    __weak typeof(self)weakSelf = self;
+    __weak typeof(self) weakSelf = self;
     [MBProgressHUD showLoadingMessageToView:self.view];
     GroupId *groupId = [GroupId new];
     groupId.identifier = self.identifier;
@@ -241,9 +241,9 @@ typedef NS_ENUM(NSInteger, GetGroupInfoType) {
         HttpResponse *hResponse = (HttpResponse *) response;
         if (hResponse.code != successCode) {
             [MBProgressHUD showToastwithText:LMLocalizedString(@"Link Group invitation is invalid", nil) withType:ToastTypeFail showInView:self.view complete:^{
-                 [weakSelf.navigationController popViewControllerAnimated:YES];
+                [weakSelf.navigationController popViewControllerAnimated:YES];
             }];
-            
+
             return;
         }
         NSData *data = [ConnectTool decodeHttpResponse:hResponse];
@@ -254,7 +254,7 @@ typedef NS_ENUM(NSInteger, GetGroupInfoType) {
                 [weakSelf dispalyAllView];
                 [weakSelf.groupAvatarImageView setImageWithAvatarUrl:groupBaseInfo.avatar];
                 weakSelf.groupNameLabel.text = groupBaseInfo.name;
-                weakSelf.countLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Chat Member Max", nil), groupBaseInfo.count,200];
+                weakSelf.countLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Chat Member Max", nil), groupBaseInfo.count, 200];
                 weakSelf.sumaryLabel.text = groupBaseInfo.summary;
                 weakSelf.groupApply.hash_p = groupBaseInfo.hash_p;
                 if (!groupBaseInfo.public_p) {
@@ -300,7 +300,7 @@ typedef NS_ENUM(NSInteger, GetGroupInfoType) {
             GroupInfoBase *groupBaseInfo = [GroupInfoBase parseFromData:data error:&error];
             [weakSelf.groupAvatarImageView setImageWithAvatarUrl:groupBaseInfo.avatar];
             weakSelf.groupNameLabel.text = groupBaseInfo.name;
-            weakSelf.countLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Chat Member Max", nil), groupBaseInfo.count,200];
+            weakSelf.countLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Chat Member Max", nil), groupBaseInfo.count, 200];
             weakSelf.sumaryLabel.text = groupBaseInfo.summary;
         }
     }                                  fail:^(NSError *error) {

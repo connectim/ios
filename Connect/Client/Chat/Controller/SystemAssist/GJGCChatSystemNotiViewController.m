@@ -15,7 +15,6 @@
 #import "NetWorkOperationTool.h"
 #import "LMVerifyInGroupViewController.h"
 #import "ApplyJoinToGroupCell.h"
-#import "LMBaseSSDBManager.h"
 #import "LMRedLuckyShowView.h"
 #import "SystemTool.h"
 
@@ -72,7 +71,7 @@
     NSIndexPath *tapIndexPath = [self.chatListTable indexPathForCell:tappedCell];
     GJGCChatFriendContentModel *chatContentModel = (GJGCChatFriendContentModel *) [self.dataSourceManager contentModelAtIndex:tapIndexPath.row];
     LMOtherModel *model = (LMOtherModel *) chatContentModel.contentModel;
-    
+
     ApplyJoinToGroupCell *joinToGroupCell = (ApplyJoinToGroupCell *) tappedCell;
     if (!model.userIsinGroup) {
         chatContentModel.statusMessageString = [GJGCChatSystemNotiCellStyle formateCellStatusWithHandle:NO refused:NO isNoted:YES];
@@ -89,7 +88,7 @@
     }
     LMVerifyInGroupViewController *page = [[LMVerifyInGroupViewController alloc] init];
     page.model = model;
-    
+
     if (!model.handled) {
         page.VerifyCallback = ^(BOOL refused) {
 
@@ -250,7 +249,7 @@
             } else {
                 if (self.taklInfo.talkType == GJGCChatFriendTalkTypeGroup) {
                     user = [[GroupDBManager sharedManager] getGroupMemberByGroupId:self.taklInfo.chatIdendifier memberAddress:address];
-                } else{
+                } else {
                     user = [[UserDBManager sharedManager] getUserByAddress:bagInfo.redpackage.sendAddress];
                 }
             }

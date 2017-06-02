@@ -21,7 +21,7 @@
 
 @interface ChatFriendSetViewController ()
 
-@property (nonatomic ,strong) NSMutableArray *members;
+@property(nonatomic, strong) NSMutableArray *members;
 @property(nonatomic, strong) GJGCChatFriendTalkModel *talkModel;
 @property(nonatomic, copy) NSString *groupEcdhKey;
 
@@ -29,7 +29,7 @@
 
 @implementation ChatFriendSetViewController
 
-- (instancetype)initWithTalkModel:(GJGCChatFriendTalkModel *)talkModel{
+- (instancetype)initWithTalkModel:(GJGCChatFriendTalkModel *)talkModel {
     if (self = [super init]) {
         self.members = [NSMutableArray array];
         [self.members addObject:talkModel.chatUser];
@@ -45,7 +45,7 @@
 
 - (void)setupCellData {
     __weak __typeof(&*self) weakSelf = self;
-    
+
     //-----
     CellGroup *group = [[CellGroup alloc] init];
     CellItem *item = [[CellItem alloc] init];
@@ -88,16 +88,16 @@
     CellGroup *group1 = [[CellGroup alloc] init];
 
     CellItem *clearHistory = [CellItem itemWithIcon:@"chat_friend_set_clearhistory" title:LMLocalizedString(@"Link Clear Chat History", nil) type:CellItemTypeNone operation:^{
-        UIAlertController* actionController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
-        UIAlertAction* deleteAction = [UIAlertAction actionWithTitle:LMLocalizedString(@"Link Clear Chat History", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        UIAlertController *actionController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+        UIAlertAction *deleteAction = [UIAlertAction actionWithTitle:LMLocalizedString(@"Link Clear Chat History", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *_Nonnull action) {
             [weakSelf clearAllChatHistory];
         }];
-        UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:LMLocalizedString(@"Common Cancel", nil) style:UIAlertActionStyleCancel handler:nil];
-        
+        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:LMLocalizedString(@"Common Cancel", nil) style:UIAlertActionStyleCancel handler:nil];
+
         [actionController addAction:deleteAction];
         [actionController addAction:cancelAction];
         [weakSelf presentViewController:actionController animated:YES completion:nil];
-        
+
     }];
     clearHistory.type = CellItemTypeNone;
 
@@ -223,7 +223,7 @@
     for (AccountInfo *user in array) {
         AddGroupUserInfo *addUser = [[AddGroupUserInfo alloc] init];
         addUser.address = user.address;
-        
+
         GcmData *groupInfoGcmData = [ConnectTool createGcmWithData:groupMessage.data publickey:user.pub_key needEmptySalt:YES];
         NSString *backUp = [NSString stringWithFormat:@"%@/%@", [[LKUserCenter shareCenter] currentLoginUser].pub_key, [StringTool hexStringFromData:groupInfoGcmData.data]];
         addUser.backup = backUp;
@@ -296,9 +296,9 @@
             [content appendFormat:@"%@、", info.username];
         }
     }
-    content = [NSString stringWithFormat:LMLocalizedString(@"Link invited to the group chat", nil),LMLocalizedString(@"Chat You", nil),content].mutableCopy;
+    content = [NSString stringWithFormat:LMLocalizedString(@"Link invited to the group chat", nil), LMLocalizedString(@"Chat You", nil), content].mutableCopy;
     NSString *groupName = groupInfo.group.name;
-  //  [content appendString:LMLocalizedString(@"Link Join Group", nil)];
+    //  [content appendString:LMLocalizedString(@"Link Join Group", nil)];
 
     LMGroupInfo *lmGroup = [[LMGroupInfo alloc] init];
     lmGroup.groupName = groupInfo.group.name;
@@ -308,7 +308,7 @@
     lmGroup.isPublic = groupInfo.group.public_p;
     lmGroup.isGroupVerify = groupInfo.group.reviewed;
     lmGroup.summary = groupInfo.group.summary;
-    
+
     NSMutableArray *AccoutInfoArray = [NSMutableArray array];
     for (GroupMember *member in groupInfo.membersArray) {
         AccountInfo *accountInfo = [[AccountInfo alloc] init];
@@ -356,10 +356,10 @@
     [GCDQueue executeInMainQueue:^{
         [MBProgressHUD hideHUDForView:self.view];
     }];
-    
+
     // inteface jump
     [self.navigationController popToRootViewControllerAnimated:NO];
-    AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+    AppDelegate *appDelegate = (AppDelegate *) [UIApplication sharedApplication].delegate;
     [[appDelegate shareMainTabController] createGroupWithGroupInfo:lmGroup content:content];
 }
 

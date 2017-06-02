@@ -18,7 +18,6 @@
 #import "GJGCChatFriendTalkModel.h"
 #import "GJGCChatGroupViewController.h"
 #import "LMVerifyTableHeadView.h"
-#import "GroupDBManager.h"
 
 
 typedef NS_ENUM(NSUInteger, CellType) {
@@ -47,9 +46,9 @@ static NSString *cellFrom_ID = @"LMGroupFromTableViewCellID";
     [self.displayTbaleView registerNib:[UINib nibWithNibName:@"LMGroupVerifyOtherTableViewCell" bundle:nil] forCellReuseIdentifier:cellOther_ID];
     [self.displayTbaleView registerNib:[UINib nibWithNibName:@"LMGroupFromTableViewCell" bundle:nil] forCellReuseIdentifier:cellFrom_ID];
     self.displayTbaleView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    
+
     if (self.model.handled ||
-        self.model.userIsinGroup) {
+            self.model.userIsinGroup) {
         [self creatEnterGroupButton];
     } else {
         [self creatButtonHandleButton];
@@ -177,7 +176,7 @@ static NSString *cellFrom_ID = @"LMGroupFromTableViewCellID";
     footView.backgroundColor = LMBasicBackgroudGray;
     self.displayTbaleView.tableFooterView = footView;
 
-    
+
     BOOL enabled = [[GroupDBManager sharedManager] groupInfoExisitByGroupIdentifier:self.model.groupIdentifier];
     if (enabled) {
         self.enterButton = [[ConnectButton alloc] initWithNormalTitle:LMLocalizedString(@"Chat Group chat", nil) disableTitle:nil];
@@ -199,12 +198,12 @@ static NSString *cellFrom_ID = @"LMGroupFromTableViewCellID";
             make.height.mas_equalTo(AUTO_HEIGHT(1));
             make.width.mas_equalTo(DEVICE_SIZE.width);
         }];
-    } else{
+    } else {
         self.acceptButton = [[ConnectButton alloc] initWithNormalTitle:LMLocalizedString(@"Chat You have left the group", nil) disableTitle:nil];
         self.acceptButton.enabled = NO;
         [self.acceptButton addTarget:self action:@selector(acceptAction:) forControlEvents:UIControlEventTouchUpInside];
         [footView addSubview:self.acceptButton];
-        
+
         [self.acceptButton mas_makeConstraints:^(MASConstraintMaker *make) {
             make.top.equalTo(footView.mas_top).offset(AUTO_HEIGHT (100));
             make.centerX.equalTo(self.view);
@@ -235,20 +234,20 @@ static NSString *cellFrom_ID = @"LMGroupFromTableViewCellID";
         self.acceptButton = [[ConnectButton alloc] initWithNormalTitle:LMLocalizedString(@"Link Accept", nil) disableTitle:nil];
         [self.acceptButton addTarget:self action:@selector(acceptAction:) forControlEvents:UIControlEventTouchUpInside];
         [footView addSubview:self.acceptButton];
-        
+
         [self.acceptButton mas_makeConstraints:^(MASConstraintMaker *make) {
             make.top.equalTo(footView.mas_top).offset(AUTO_HEIGHT (100));
             make.centerX.equalTo(self.view);
             make.height.mas_equalTo(self.acceptButton.height);
             make.width.mas_equalTo(self.acceptButton.width);
         }];
-        
+
         self.refuseButton = [[ConnectButton alloc] initWithNormalTitle:LMLocalizedString(@"Link Refuse", nil) disableTitle:nil];
         [self.refuseButton addTarget:self action:@selector(refuseAction:) forControlEvents:UIControlEventTouchUpInside];
         [self.refuseButton setBackgroundImage:[UIImage imageWithColor:[UIColor whiteColor]] forState:UIControlStateNormal];
         [self.refuseButton setTitleColor:LMBasicRed forState:UIControlStateNormal];
         [footView addSubview:self.refuseButton];
-        
+
         [self.refuseButton mas_makeConstraints:^(MASConstraintMaker *make) {
             make.top.equalTo(self.acceptButton.mas_bottom).offset(AUTO_HEIGHT(45));
             make.centerX.equalTo(self.view);
@@ -264,12 +263,12 @@ static NSString *cellFrom_ID = @"LMGroupFromTableViewCellID";
             make.height.mas_equalTo(AUTO_HEIGHT(1));
             make.width.mas_equalTo(DEVICE_SIZE.width);
         }];
-    } else{
+    } else {
         self.acceptButton = [[ConnectButton alloc] initWithNormalTitle:LMLocalizedString(@"Chat You have left the group", nil) disableTitle:nil];
         self.acceptButton.enabled = NO;
         [self.acceptButton addTarget:self action:@selector(acceptAction:) forControlEvents:UIControlEventTouchUpInside];
         [footView addSubview:self.acceptButton];
-        
+
         [self.acceptButton mas_makeConstraints:^(MASConstraintMaker *make) {
             make.top.equalTo(footView.mas_top).offset(AUTO_HEIGHT (100));
             make.centerX.equalTo(self.view);
@@ -300,13 +299,13 @@ static NSString *cellFrom_ID = @"LMGroupFromTableViewCellID";
     CreateGroupMessage *createGroup = [CreateGroupMessage new];
     createGroup.identifier = reviewed.identifier;
     createGroup.secretKey = [[GroupDBManager sharedManager] getGroupEcdhKeyByGroupIdentifier:self.model.groupIdentifier];
-    
+
     GcmData *groupInfoGcmData = [ConnectTool createGcmWithData:createGroup.data publickey:self.model.publickey needEmptySalt:YES];
 
     NSString *backUp = [NSString stringWithFormat:@"%@/%@", [[LKUserCenter shareCenter] currentLoginUser].pub_key, [StringTool hexStringFromData:groupInfoGcmData.data]];
     reviewed.backup = backUp;
 
-    
+
     NSString *messageID = [ConnectTool generateMessageId];
     MessageData *messageData = [[MessageData alloc] init];
     messageData.cipherData = groupInfoGcmData;
@@ -323,25 +322,24 @@ static NSString *cellFrom_ID = @"LMGroupFromTableViewCellID";
 
     [NetWorkOperationTool POSTWithUrlString:GroupReviewewUrl postProtoData:reviewed.data complete:^(id response) {
         HttpResponse *hResponse = (HttpResponse *) response;
-        
+
         switch (hResponse.code) {
-                case 2432: //Not Group Master
+            case 2432: //Not Group Master
             {
                 [MBProgressHUD showToastwithText:LMLocalizedString(@"Chat Not Group Master", nil) withType:ToastTypeFail showInView:self.view complete:nil];
             }
                 break;
-                case 2433: //already in group
+            case 2433: //already in group
             {
                 [MBProgressHUD showToastwithText:LMLocalizedString(@"Chat User already in group", nil) withType:ToastTypeFail showInView:self.view complete:nil];
             }
                 break;
-                case 2434: //VerifyCode not match
+            case 2434: //VerifyCode not match
             {
                 [MBProgressHUD showToastwithText:LMLocalizedString(@"Chat VerifyCode has expired", nil) withType:ToastTypeFail showInView:self.view complete:nil];
             }
                 break;
-            case successCode:
-            {
+            case successCode: {
                 [MBProgressHUD showToastwithText:LMLocalizedString(@"Login Successful", nil) withType:ToastTypeSuccess showInView:self.view complete:^{
                     [self.navigationController popViewControllerAnimated:YES];
                 }];
@@ -370,23 +368,22 @@ static NSString *cellFrom_ID = @"LMGroupFromTableViewCellID";
     [NetWorkOperationTool POSTWithUrlString:GroupRejectUrl postProtoData:reviewed.data complete:^(id response) {
         HttpResponse *hResponse = (HttpResponse *) response;
         switch (hResponse.code) {
-                case 2432: //Not Group Master
+            case 2432: //Not Group Master
             {
                 [MBProgressHUD showToastwithText:LMLocalizedString(@"Chat Not Group Master", nil) withType:ToastTypeFail showInView:self.view complete:nil];
             }
                 break;
-                case 2433: //already in group
+            case 2433: //already in group
             {
                 [MBProgressHUD showToastwithText:LMLocalizedString(@"Chat User already in group", nil) withType:ToastTypeFail showInView:self.view complete:nil];
             }
                 break;
-                case 2434: //VerifyCode not match
+            case 2434: //VerifyCode not match
             {
                 [MBProgressHUD showToastwithText:LMLocalizedString(@"Chat VerifyCode has expired", nil) withType:ToastTypeFail showInView:self.view complete:nil];
             }
                 break;
-                case successCode:
-            {
+            case successCode: {
                 [MBProgressHUD showToastwithText:LMLocalizedString(@"Login Successful", nil) withType:ToastTypeSuccess showInView:self.view complete:^{
                     [self.navigationController popViewControllerAnimated:YES];
                 }];
@@ -406,21 +403,21 @@ static NSString *cellFrom_ID = @"LMGroupFromTableViewCellID";
 }
 
 - (void)entergroupAction {
-    
+
     UINavigationController *nav = self.navigationController;
     NSMutableArray *controllers = [NSMutableArray arrayWithArray:nav.viewControllers];
     if (controllers.count > 1) {
         [controllers removeObjectsInRange:NSMakeRange(1, controllers.count - 1)];
     }
     nav.viewControllers = controllers;
-    
+
     LMGroupInfo *group = [[GroupDBManager sharedManager] getgroupByGroupIdentifier:self.model.groupIdentifier];
     GJGCChatFriendTalkModel *talk = [[GJGCChatFriendTalkModel alloc] init];
     talk.talkType = GJGCChatFriendTalkTypeGroup;
     talk.chatIdendifier = group.groupIdentifer;
     talk.group_ecdhKey = group.groupEcdhKey;
     talk.chatGroupInfo = group;
-    
+
     [SessionManager sharedManager].chatSession = talk.chatIdendifier;
     [SessionManager sharedManager].chatObject = group;
     talk.name = GJCFStringIsNull(group.groupName) ? [NSString stringWithFormat:LMLocalizedString(@"Group chat(%lu)", nil), (unsigned long) talk.chatGroupInfo.groupMembers.count] : [NSString stringWithFormat:@"%@(%lu)", group.groupName, (unsigned long) talk.chatGroupInfo.groupMembers.count];

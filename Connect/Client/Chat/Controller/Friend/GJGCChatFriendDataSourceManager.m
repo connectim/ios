@@ -74,7 +74,7 @@
             chatContentModel.readState = chatMessage.state;
             chatContentModel.readTime = chatMessage.readTime;
             if (chatMessage.messageType == GJGCChatFriendContentTypeAudio &&
-                chatMessage.state != 2) { //Voice message not played complete
+                    chatMessage.state != 2) { //Voice message not played complete
                 chatContentModel.readTime = 0;
             }
             if ([self.ignoreMessageTypes containsObject:@(chatContentModel.contentType)]) {
@@ -112,7 +112,7 @@
 - (void)readLastMessagesFromDB {
 
     [super readLastMessagesFromDB];
-    
+
     NSArray *messages = [[MessageDBManager sharedManager] getMessagesWithMessageOwer:self.taklInfo.chatIdendifier Limit:20 beforeTime:0];
 
     //Show encrypted chat tips
@@ -144,7 +144,7 @@
     for (ChatMessageInfo *messageInfo in messages) {
         [self addMMMessage:messageInfo];
     }
-    
+
     [self resortAllChatContentBySendTime];
 
     if (self.delegate && [self.delegate respondsToSelector:@selector(dataSourceManagerRequireFinishRefresh:)]) {
@@ -155,6 +155,7 @@
 
 
 #pragma mark -
+
 - (void)updateMsgContentHeightWithContentModel:(GJGCChatContentBaseModel *)contentModel {
 }
 

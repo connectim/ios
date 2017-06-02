@@ -12,6 +12,6 @@
 
 - (instancetype)initWithMembers:(NSArray *)members;
 
-@property (nonatomic ,copy) void (^ChooseGroupMemberCallBack)(AccountInfo *member);
+@property(nonatomic, copy) void (^ChooseGroupMemberCallBack)(AccountInfo *member);
 
 @end

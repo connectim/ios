@@ -51,7 +51,7 @@
     [self setNavigationLeftWithTitle:LMLocalizedString(@"Common Cancel", nil)];
 
     self.title = LMLocalizedString(@"Chat Send a namecard", nil);
-    __weak typeof(self)weakSelf = self;
+    __weak typeof(self) weakSelf = self;
 
     [GCDQueue executeInMainQueue:^{
         [MBProgressHUD showLoadingMessageToView:weakSelf.view];
@@ -78,7 +78,7 @@
             [MBProgressHUD hideHUDForView:weakSelf.view];
             [weakSelf.tableView reloadData];
         }];
-        
+
     }];
 }
 
@@ -207,7 +207,7 @@
             group[@"title"] = prex;
             for (AccountInfo *info in self.friendsArr) {
                 NSString *name = @"";
-                if (info.remarks && info.remarks.length > 0) { 
+                if (info.remarks && info.remarks.length > 0) {
                     name = info.remarks;
                 } else {
                     name = info.username;

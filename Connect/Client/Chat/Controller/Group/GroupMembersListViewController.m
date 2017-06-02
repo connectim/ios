@@ -19,7 +19,6 @@
 #import "ChooseContactViewController.h"
 #import "GroupDBManager.h"
 #import "MessageDBManager.h"
-#import "StringTool.h"
 #import "MyInfoPage.h"
 #include "RecentChatDBManager.h"
 
@@ -78,6 +77,7 @@
 }
 
 #pragma mark - invite new group member
+
 - (void)doRight:(id)sender {
     ChooseContactViewController *page = [[ChooseContactViewController alloc] initWithChooseComplete:^(NSArray *selectContactArray) {
         DDLogInfo(@"%@", selectContactArray);
@@ -150,11 +150,11 @@
                 message.sendstatus = GJGCChatFriendSendMessageStatusSending;
                 chatMessage.message = message;
                 [[MessageDBManager sharedManager] saveMessage:chatMessage];
-                
+
                 [[RecentChatDBManager sharedManager] createNewChatWithIdentifier:info.pub_key groupChat:NO lastContentShowType:0 lastContent:[GJGCChatFriendConstans lastContentMessageWithType:message.type textMessage:nil]];
-                
+
                 [[IMService instance] asyncSendMessageMessage:message onQueue:nil completion:^(MMMessage *message, NSError *error) {
-                
+
                     ChatMessageInfo *chatMessage = [[MessageDBManager sharedManager] getMessageInfoByMessageid:message.message_id messageOwer:message.publicKey];
                     chatMessage.message = message;
                     chatMessage.sendstatus = message.sendstatus;
@@ -219,7 +219,7 @@
         if (info != [membsers lastObject]) {
             [welcomeTip appendString:@"、"];
         }
-        
+
         GcmData *groupInfoGcmData = [ConnectTool createGcmWithData:groupMessage.data publickey:info.pub_key needEmptySalt:YES];
         NSString *messageID = [ConnectTool generateMessageId];
 
@@ -235,7 +235,7 @@
         [[IMService instance] asyncSendGroupInfo:messagePost];
     }
     //create local message
-    NSString *myChatTip = [NSString stringWithFormat:LMLocalizedString(@"Link invited to the group chat", nil),LMLocalizedString(@"Chat You", nil),welcomeTip];
+    NSString *myChatTip = [NSString stringWithFormat:LMLocalizedString(@"Link invited to the group chat", nil), LMLocalizedString(@"Chat You", nil), welcomeTip];
     SendNotify(ConnnectGroupInfoDidAddMembers, myChatTip);
     NSString *msgId = [ConnectTool generateMessageId];
     ChatMessageInfo *chatMessage = [[ChatMessageInfo alloc] init];
@@ -340,12 +340,13 @@
 }
 
 #pragma mark - group manage
+
 - (void)detailManageWithAlert:(AccountInfo *)contact {
     __weak typeof(self) weakSelf = self;
     NSString *disPlayName = [NSString stringWithFormat:LMLocalizedString(@"Link Selecting  new owner  release your ownership", nil), contact.username];
     UIAlertController *alertControl = [UIAlertController alertControllerWithTitle:nil message:disPlayName preferredStyle:UIAlertControllerStyleAlert];
     UIAlertAction *okAction = [UIAlertAction actionWithTitle:LMLocalizedString(@"Common OK", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *_Nonnull action) {
-        
+
         [weakSelf groupAttornWithNewAdmin];
     }];
     UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:LMLocalizedString(@"Common Cancel", nil) style:UIAlertActionStyleDefault handler:nil];
@@ -542,6 +543,7 @@
 
 
 #pragma mark - remove user
+
 - (void)removeUserFromThisGroup:(UITableViewCell *)cell {
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
     __weak __typeof(&*self) weakSelf = self;
@@ -564,17 +566,17 @@
             }];
             return;
         }
-        
+
         [[GroupDBManager sharedManager] removeMemberWithAddress:willRemoveUser.address groupId:weakSelf.groupid];
-        
-        NSArray* groupArray = [[GroupDBManager sharedManager] getgroupMemberByGroupIdentifier:weakSelf.groupid];
+
+        NSArray *groupArray = [[GroupDBManager sharedManager] getgroupMemberByGroupIdentifier:weakSelf.groupid];
         if (groupArray.count <= 1) {
             [[GroupDBManager sharedManager] deletegroupWithGroupId:weakSelf.groupid];
-        } else{
+        } else {
             [GCDQueue executeInMainQueue:^{
                 SendNotify(ConnnectGroupInfoDidChangeNotification, weakSelf.groupid);
             }];
-            
+
             [weakSelf createRemoveMessageWithUser:willRemoveUser];
         }
 
@@ -613,6 +615,7 @@
 
 
 #pragma mark - group attorn
+
 - (void)groupAttornWithNewAdmin {
 
     if (GJCFStringIsNull(self.groupid) || GJCFStringIsNull(self.adminAttron.address)) {

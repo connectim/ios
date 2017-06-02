@@ -33,26 +33,13 @@
 
 - (void)dataSourceManagerSnapChatUpdateListTable:(GJGCChatDetailDataSourceManager *)dataManager;
 
-- (void)dataSourceManagerSnapChatUpdateListTable:(GJGCChatDetailDataSourceManager *)dataManager scrollToBottom:(BOOL)scrollToBottom;
-
 - (void)dataSourceManagerRequireUpdateListTable:(GJGCChatDetailDataSourceManager *)dataManager;
 
 - (void)dataSourceManagerEnterSnapChat:(GJGCChatDetailDataSourceManager *)dataManager;
 
 - (void)dataSourceManagerCloseSnapChat:(GJGCChatDetailDataSourceManager *)dataManager;
 
-- (void)dataSourceManagerRequireUpdateListTable:(GJGCChatDetailDataSourceManager *)dataManager reloadAtIndex:(NSInteger)index;
-
-- (void)dataSourceManagerRequireUpdateListTable:(GJGCChatDetailDataSourceManager *)dataManager reloadIndexPaths:(NSArray *)indexPaths;
-
-
 - (void)dataSourceManagerRequireUpdateListTable:(GJGCChatDetailDataSourceManager *)dataManager reloadForUpdateMsgStateAtIndex:(NSInteger)index;
-
-- (void)dataSourceManagerRequireUpdateListTable:(GJGCChatDetailDataSourceManager *)dataManager insertWithIndex:(NSInteger)index;
-
-- (void)dataSourceManagerRequireTriggleLoadMore:(GJGCChatDetailDataSourceManager *)dataManager;
-
-- (void)dataSourceManagerRequireFinishLoadMore:(GJGCChatDetailDataSourceManager *)dataManager;
 
 - (void)dataSourceManagerRequireFinishRefresh:(GJGCChatDetailDataSourceManager *)dataManager;
 
@@ -62,19 +49,7 @@
 
 - (void)dataSourceManagerRequireDeleteMessages:(GJGCChatDetailDataSourceManager *)dataManager deletePaths:(NSArray *)paths deleteModels:(NSArray *)models;
 
-- (void)dataSourceManagerRequireDeleteMessages:(GJGCChatDetailDataSourceManager *)dataManager deleteIndex:(NSInteger)index;
-
-- (void)dataSourceManagerRequireDeleteMessages:(GJGCChatDetailDataSourceManager *)dataManager dict:(NSDictionary *)dict;
-
 - (void)dataSourceManagerRequireUpdateListTable:(GJGCChatDetailDataSourceManager *)dataManager insertIndexPaths:(NSArray *)indexPaths;
-
-- (void):(GJGCChatDetailDataSourceManager *)dataManager
-
-state: (BOOL)enable;
-
-- (void)dataSourceManagerRequireAutoPlayNextAudioAtIndex:(NSInteger)index;
-
-- (void)dataSourceManagerDidRecievedChatContent:(GJGCChatFriendContentModel *)chatContent;
 
 @end
 
@@ -105,8 +80,6 @@ state: (BOOL)enable;
 
 @property(nonatomic, copy) void (^ReadedMessageBlock)(NSString *messageid);
 
-@property(nonatomic, strong) dispatch_queue_t updateMessageInfoQueue;
-
 @property(nonatomic, strong) NSArray *ignoreMessageTypes; //Need to ignore the type of burn after reading
 
 @property(nonatomic, strong) CADisplayLink *snapChatDisplayLink;
@@ -117,8 +90,9 @@ state: (BOOL)enable;
  */
 - (void)showfirstChatSecureTipWithTime:(long long)time;
 
-/*
-   lucky packge tips
+/**
+ * lucky packge tips
+ * @param msg
  */
 - (void)showGetRedBagMessageWithWithMessage:(MMMessage *)msg;
 
@@ -132,18 +106,7 @@ state: (BOOL)enable;
  */
 - (void)showReceiptMessageMessageWithPayName:(NSString *)payName receiptName:(NSString *)receiptName isCrowd:(BOOL)isCrowd;
 
-/**
- *  Update countdown schedule
- */
-- (void)updateMessageReadState:(MMMessage *)theMessage;
-
-- (void)removeUpdateMessageReadState;
-
 - (void)openSnapMessageCounterState:(GJGCChatFriendContentModel *)findContent;
-
-- (void)readedMessageAndCountTime:(MMMessage *)message;
-
-- (void)readedAckWithMessageid:(NSString *)message_id;
 
 - (void)viewControllerWillDisMissToCheckSendingMessageSaveSendStateFail;
 
@@ -191,14 +154,6 @@ state: (BOOL)enable;
 - (void)updateAudioFinishRead:(NSString *)localMsgId;
 
 /**
- *  Update the data source object and affect the height of the data source
- *
- *  @param contentModel
- *  @param index
- */
-- (NSNumber *)updateContentModel:(GJGCChatContentBaseModel *)contentModel atIndex:(NSInteger)index;
-
-/**
  *  Update the corresponding information in the database
  *
  *  @param contentModel
@@ -227,8 +182,6 @@ state: (BOOL)enable;
 
 - (void)resortAllChatContentBySendTime;
 
-- (void)resortAllSystemNotiContentBySendTime;
-
 - (void)resetFirstAndLastMsgId;
 
 - (void)readLastMessagesFromDB;
@@ -253,8 +206,7 @@ state: (BOOL)enable;
 
 - (void)trigglePullHistoryMsgForEarly;
 
-@property(nonatomic, strong) NSMutableArray *sendingMessages; //正在发送的消息
-
+@property(nonatomic, strong) NSMutableArray *sendingMessages;
 
 - (void)pushAddMoreMsg:(NSArray *)array;
 
@@ -265,33 +217,16 @@ state: (BOOL)enable;
  */
 - (void)updateLastMsg:(GJGCChatFriendContentModel *)contentModel;
 
-- (void)updateLastMsgForRecentTalk;
-
-- (void)updateLastSystemMessageForRecentTalk;
-
-#pragma mark - Add data to the data monitoring process, requiring UI refresh
-
-- (void)insertNewMessageWithStartIndex:(NSInteger)startIndex Count:(NSInteger)count;
-
 /**
  *  Clear early history
  */
 - (void)clearOverEarlyMessage;
-
-/**
- *  take history messages
- *
- *  @return
- */
-- (NSArray *)reTryGetLocalMessageWhileHistoryMessageIsSubMessagesOfLocalMessages;
 
 - (GJGCChatFriendContentType)formateChatFriendContent:(GJGCChatFriendContentModel *)chatContentModel withMsgModel:(MMMessage *)msgModel;
 
 - (GJGCChatFriendContentModel *)addMMMessage:(ChatMessageInfo *)aMessage;
 
 - (BOOL)sendMesssage:(GJGCChatFriendContentModel *)messageContent;
-
-- (void)sendMesssages:(NSArray *)messageContents;
 
 /**
  *  Resend a message
@@ -310,9 +245,6 @@ state: (BOOL)enable;
  *  Open burn after reading
  */
 - (void)openSnapChatModeWithTime:(int)time;
-
-
-- (void)enterSnapchatMode;
 
 /**
  *  Burn after reading

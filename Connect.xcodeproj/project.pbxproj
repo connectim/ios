@@ -641,6 +641,7 @@
 		D92233331E83DBC300D67110 /* RedBagNetWorkTool.m in Sources */ = {isa = PBXBuildFile; fileRef = D922332C1E83DBC300D67110 /* RedBagNetWorkTool.m */; };
 		D92233341E83DBC300D67110 /* SetGlobalHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = D922332E1E83DBC300D67110 /* SetGlobalHandler.m */; };
 		D92233361E83DBC300D67110 /* WallteNetWorkTool.m in Sources */ = {isa = PBXBuildFile; fileRef = D92233321E83DBC300D67110 /* WallteNetWorkTool.m */; };
+		D926FEB41EE13EE00080DA56 /* LMTransactionModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D926FEB31EE13EE00080DA56 /* LMTransactionModel.m */; };
 		D943CD5C1EB083B100BE94EF /* GcmDataModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D943CD5B1EB083B100BE94EF /* GcmDataModel.m */; };
 		D943CD7A1EB0866C00BE94EF /* GJGCChatSystemNotiCellStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = D943CD681EB0866C00BE94EF /* GJGCChatSystemNotiCellStyle.m */; };
 		D943CD7C1EB0866C00BE94EF /* GJGCChatSystemNotiModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D943CD6C1EB0866C00BE94EF /* GJGCChatSystemNotiModel.m */; };
@@ -2185,6 +2186,8 @@
 		D922332E1E83DBC300D67110 /* SetGlobalHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SetGlobalHandler.m; sourceTree = "<group>"; };
 		D92233311E83DBC300D67110 /* WallteNetWorkTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WallteNetWorkTool.h; sourceTree = "<group>"; };
 		D92233321E83DBC300D67110 /* WallteNetWorkTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WallteNetWorkTool.m; sourceTree = "<group>"; };
+		D926FEB21EE13EE00080DA56 /* LMTransactionModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LMTransactionModel.h; sourceTree = "<group>"; };
+		D926FEB31EE13EE00080DA56 /* LMTransactionModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LMTransactionModel.m; sourceTree = "<group>"; };
 		D943CD5A1EB083B100BE94EF /* GcmDataModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GcmDataModel.h; sourceTree = "<group>"; };
 		D943CD5B1EB083B100BE94EF /* GcmDataModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GcmDataModel.m; sourceTree = "<group>"; };
 		D943CD671EB0866C00BE94EF /* GJGCChatSystemNotiCellStyle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GJGCChatSystemNotiCellStyle.h; sourceTree = "<group>"; };
@@ -14532,6 +14535,8 @@
 				192351801E8123FF0022D844 /* ChatMessageInfo.m */,
 				19234FBE1E811A290022D844 /* RecentChatModel.h */,
 				19234FBF1E811A290022D844 /* RecentChatModel.m */,
+				D926FEB21EE13EE00080DA56 /* LMTransactionModel.h */,
+				D926FEB31EE13EE00080DA56 /* LMTransactionModel.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -33342,6 +33347,7 @@
 				192350461E811F520022D844 /* NCellSwitch.m in Sources */,
 				19234FAA1E8118AE0022D844 /* RecentChatCell.m in Sources */,
 				D922327B1E822BF800D67110 /* NSData+Gzip.m in Sources */,
+				D926FEB41EE13EE00080DA56 /* LMTransactionModel.m in Sources */,
 				1923506C1E81200D0022D844 /* LinkmanFriendCell.m in Sources */,
 				1923512A1E8121CB0022D844 /* LMBitAddressTableViewCell.m in Sources */,
 				D95C044A1E810902006C5C8A /* GJGCChatFriendBaseCell.m in Sources */,

@@ -7,15 +7,10 @@
 //
 
 #import "ChooseContactViewController.h"
-
 #import "ChooseContactCell.h"
-
 #import "NCellHeader.h"
-
 #import "ConnectTableHeaderView.h"
-
 #import "UserDBManager.h"
-
 #import "NSString+Pinyin.h"
 
 @interface ChooseContactViewController () <UITableViewDelegate, UITableViewDataSource>
@@ -98,12 +93,12 @@
     [GCDQueue executeInMainQueue:^{
         [MBProgressHUD showLoadingMessageToView:self.view];
     }];
-    
+
     [[UserDBManager sharedManager] getAllUsersNoConnectWithComplete:^(NSArray *contacts) {
         [GCDQueue executeInMainQueue:^{
             [MBProgressHUD hideHUDForView:self.view];
         }];
-        
+
         self.contacts = contacts;
         //set data
         for (AccountInfo *selectedInfo in self.selectedUsers) {
@@ -115,9 +110,9 @@
             }
         }
         [GCDQueue executeInMainQueue:^{
-           [self.tableView reloadData];
+            [self.tableView reloadData];
         }];
-       
+
     }];
 }
 
