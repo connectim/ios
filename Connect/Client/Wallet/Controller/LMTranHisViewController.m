@@ -43,46 +43,47 @@
     [self.view addSubview:self.tableView];
     NSData *data = [[LMHistoryCacheManager sharedManager] getTransferContactsCache];
     Transactions *address = [Transactions parseFromData:data error:nil];
-    for (int i = 0; i < address.transactionsArray.count; i++) {
-        LMUserInfo *info = [[LMUserInfo alloc] init];
-        Transaction *trans = [address.transactionsArray objectAtIndexCheck:i];
-        info.hashId = trans.hash_p;
-        info.txType = trans.txType;
-        DDLogInfo(@"Transaction raw data:%@", trans);
-        UserInfoBalance *infoBalance = nil;
-        NSMutableArray *headersUrls = [NSMutableArray array];
-        for (UserInfoBalance *temInfoBalance in trans.userInfosArray) {
-            if (!GJCFStringIsNull(temInfoBalance.avatar) && [temInfoBalance.avatar hasPrefix:@"http"]) {
-                if (!infoBalance) {
-                    infoBalance = temInfoBalance;
+    [GCDQueue executeInGlobalQueue:^{
+        for (int i = 0; i < address.transactionsArray.count; i++) {
+            LMUserInfo *info = [[LMUserInfo alloc] init];
+            Transaction *trans = [address.transactionsArray objectAtIndexCheck:i];
+            info.hashId = trans.hash_p;
+            info.txType = trans.txType;
+            UserInfoBalance *infoBalance = nil;
+            NSMutableArray *headersUrls = [NSMutableArray array];
+            for (UserInfoBalance *temInfoBalance in trans.userInfosArray) {
+                if (!GJCFStringIsNull(temInfoBalance.avatar) && [temInfoBalance.avatar hasPrefix:@"http"]) {
+                    if (!infoBalance) {
+                        infoBalance = temInfoBalance;
+                    }
+                    NSString *avatar = temInfoBalance.avatar;
+                    [headersUrls objectAddObject:avatar];
                 }
-                NSString *avatar = temInfoBalance.avatar;
-                [headersUrls objectAddObject:avatar];
             }
+            if (infoBalance) {
+                infoBalance = [trans.userInfosArray firstObject];
+            }
+            info.userName = infoBalance.username;
+            NSString *avatar = infoBalance.avatar;
+            info.imageUrl = avatar;
+            if (headersUrls.count > 1) {
+                info.userName = LMLocalizedString(@"Wallet Multiple transfers", nil);
+                info.imageUrls = headersUrls;
+            }
+            if (!infoBalance && GJCFStringIsNull(infoBalance.avatar)) {
+                info.imageUrl = @"default_user_avatar";
+                info.userName = [trans.userInfosArray firstObject].address;
+            }
+            info.balance = trans.balance;
+            info.createdAt = [NSString stringWithFormat:@"%llu", trans.createdAt];
+            info.category = trans.category;
+            info.confirmation = trans.confirmations > 0;
+            [self.dataArr objectAddObject:info];
         }
-        if (infoBalance) {
-            infoBalance = [trans.userInfosArray firstObject];
-        }
-        info.userName = infoBalance.username;
-        NSString *avatar = infoBalance.avatar;
-        info.imageUrl = avatar;
-        if (headersUrls.count > 1) {
-            info.userName = LMLocalizedString(@"Wallet Multiple transfers", nil);
-            info.imageUrls = headersUrls;
-        }
-        if (!infoBalance && GJCFStringIsNull(infoBalance.avatar)) {
-            info.imageUrl = @"default_user_avatar";
-            info.userName = [trans.userInfosArray firstObject].address;
-        }
-        info.balance = trans.balance;
-        info.createdAt = [NSString stringWithFormat:@"%llu", trans.createdAt];
-        info.category = trans.category;
-        info.confirmation = trans.confirmations > 0;
-        [self.dataArr objectAddObject:info];
-    }
-    [self.tableView reloadData];
-
-
+        [GCDQueue executeInMainQueue:^{
+            [self.tableView reloadData];
+        }];
+    }];
     __weak __typeof(&*self) weakSelf = self;
     NSString *recodsUrl = [NSString stringWithFormat:WalletAddressTransRecodsUrl, self.address, self.page, self.pagesize];
     MJRefreshNormalHeader *header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
@@ -184,7 +185,7 @@
             }
             [self.tableView reloadData];
         }];
-    }                                 fail:^(NSError *error) {
+    } fail:^(NSError *error) {
         [GCDQueue executeInMainQueue:^{
             [self.tableView.mj_header endRefreshing];
             [self.tableView.mj_footer endRefreshing];
