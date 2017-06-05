@@ -8,10 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-typedef NS_ENUM(NSUInteger,ContactType) {
-    ContactTypeLink   = 1 << 0,
-    ContactTypeShare  = 1 << 1
-};
 @protocol LMLinkManDataManagerDelegate <NSObject>
 
 - (void)listChange:(NSMutableArray *)linkDataArray withTabBarCount:(NSUInteger)count;
@@ -25,25 +21,51 @@ typedef NS_ENUM(NSUInteger,ContactType) {
 + (instancetype)sharedManager;
 
 #pragma mark - 外界需要的方法
-
-// get common group
+/**
+ *  get common group
+ *
+ */
 - (NSMutableArray *)getListCommonGroup;
-
-// get all friend
+/**
+ *  get all friend
+ *
+ */
 - (NSMutableArray *)getListFriendsArr;
-
-// get sort data
+/**
+ *  get sort data
+ *
+ */
 - (NSMutableArray *)getListGroupsFriend;
-
-// get indexs
+/**
+ *  get indexs
+ *
+ */
 - (NSMutableArray *)getListIndexs;
-
-// clear all array
+/**
+ *  get indexs
+ *
+ */
+- (NSMutableArray *)getOffenFriend;
+/**
+ *  clear all array
+ *
+ */
 - (void)clearArrays;
-
-// get user message
-- (void)getAllLinkMan:(ContactType)contactType withUser:(AccountInfo *)contact withComplete:(void(^)(BOOL isComplete))complete;
-
+/**
+ *  get user message
+ *
+ */
+- (void)getAllLinkMan;
+/**
+ *  clear unread bridge
+ *
+ */
 - (void)clearUnreadCountWithType:(int)type;
+/**
+ *  get share contact
+ *
+ */
+- (NSMutableArray *)getListGroupsFriend:(AccountInfo *)shareContact;
+
 
 @end

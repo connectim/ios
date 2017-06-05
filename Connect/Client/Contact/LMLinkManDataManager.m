@@ -21,8 +21,8 @@
 #import "LMHistoryCacheManager.h"
 
 
-@interface LMLinkManDataManager ()
-typedef void(^CompleteBlock)(BOOL isComplete);
+@interface LMLinkManDataManager ()<NSMutableCopying>
+
 // user list
 @property(nonatomic, strong) NSMutableArray *friendsArr;
 // common friends
@@ -39,8 +39,6 @@ typedef void(^CompleteBlock)(BOOL isComplete);
 @property(nonatomic, strong) NSMutableArray *indexs;
 // point members
 @property(assign, nonatomic) NSUInteger redCount;
-@property(nonatomic, strong) AccountInfo *requestFriend;
-@property(nonatomic, strong) CompleteBlock completeBlock;
 
 @end
 
@@ -60,7 +58,7 @@ CREATE_SHARED_MANAGER(LMLinkManDataManager)
                         [self.commonGroup replaceObjectAtIndex:[self.commonGroup indexOfObject:group] withObject:group];
                     }
                 }
-                [self formartFiendsGrouping:ContactTypeLink withUser:nil];
+                [self formartFiendsGrouping];
             }];
         }];
         // regiser notification
@@ -110,7 +108,6 @@ CREATE_SHARED_MANAGER(LMLinkManDataManager)
     }
     return _groupsFriend;
 }
-
 - (NewFriendItemModel *)friendNewItem {
     if (!_friendNewItem) {
         _friendNewItem = [NewFriendItemModel new];
@@ -141,10 +138,107 @@ CREATE_SHARED_MANAGER(LMLinkManDataManager)
     return self.groupsFriend;
 }
 
+- (NSMutableArray *)getOffenFriend {
+    return self.offenFriends;
+
+}
+
 - (NSMutableArray *)getListIndexs {
     return self.indexs;
 }
+- (NSMutableArray *)getListGroupsFriend:(AccountInfo *)shareContact {
+    
+    if (shareContact.address.length <= 0 || self.groupsFriend.count <= 1) {
+        return nil;
+    }
+    //get prex
+    NSString *prex = [self getPrex:shareContact];
+    NSMutableArray *temGroupArray = [NSMutableArray array];
+    for (NSInteger index = 1; index < self.groupsFriend.count;index++) {
+        NSMutableDictionary * dic = [self.groupsFriend[index] mutableCopy];
+        NSMutableArray *temArray = [dic[@"items"] mutableCopy];
+        NSString *temTitle = dic[@"title"];
+        NSMutableArray *temCommonArray = [NSMutableArray array];
+        id data = temArray[0];
+        if ([data isKindOfClass:[AccountInfo class]]) {
+            if (![prex isEqualToString:@"C"]) { // is not egual with connect
+                if ([temArray containsObject:shareContact]) {  //delete shareContact
+                    if (![self judgeDic:dic addArray:temCommonArray withArray:temArray withUser:shareContact]) {
+                        continue;
+                    };
+                } else {  // delete Connect
+                    if ([temTitle isEqualToString:@"C"]) {
+                        if (![self judgeDic:dic addArray:temCommonArray withArray:temArray withUser:nil]) {
+                            continue;
+                        };
+                    }
+                }
+            }else {    // is equal connect
+                if ([self.offenFriends containsObject:shareContact]) {  // shareConnect exiset in offenArray
+                    if (![self judgeDic:dic addArray:temCommonArray withArray:temArray withUser:shareContact]) {
+                        continue;
+                    };
+                }else {    // connect and shareConnect is common group
+                    if ([temArray containsObject:shareContact]) {
+                        if (![self judgeSpecialDic:dic addArray:temCommonArray withArray:temArray withUser:shareContact]) {
+                            continue;
+                        }
+                    }
+                }
+            }
+        }
+        [temGroupArray addObject:dic];
+     }
+    return temGroupArray;
 
+}
+- (BOOL)judgeSpecialDic:(NSMutableDictionary *)dic addArray:(NSMutableArray *)temCommonArray withArray:(NSMutableArray *)temArray withUser:(AccountInfo *)user {
+    if (temArray.count > 2) {
+        for (AccountInfo *info in temArray) {
+            if (![info.address isEqualToString:user.address] && ![info.pub_key isEqualToString:kSystemIdendifier]) {
+                [temCommonArray addObject:[info mutableCopy]];
+            }
+            dic[@"items"] = temCommonArray;
+        }
+        return YES;
+    }else {
+        return NO;
+    }
+}
+- (BOOL)judgeDic:(NSMutableDictionary *)dic addArray:(NSMutableArray *)temCommonArray withArray:(NSMutableArray *)temArray withUser:(AccountInfo *)user {
+    if (temArray.count > 1) {
+        for (AccountInfo *info in temArray) {
+            if (user) {
+                if (![info.address isEqualToString:user.address]) {
+                    [temCommonArray addObject:[info mutableCopy]];
+                }
+            }else {
+                if (![info.pub_key isEqualToString:kSystemIdendifier]) {
+                    [temCommonArray addObject:[info mutableCopy]];
+                }
+            }
+            dic[@"items"] = temCommonArray;
+        }
+        return YES;
+    }else {
+        return NO;
+    }
+}
+- (NSString *)getPrex:(AccountInfo *)contact {
+    
+    NSString *prex = @"";
+    NSString *name = contact.normalShowName;
+    if (name.length) {
+        prex = [[name transformToPinyin] substringToIndex:1];
+    }
+    // to leave
+    if ([self preIsInAtoZ:prex]) {
+        prex = [prex uppercaseString];
+    } else {
+        prex = @"#";
+    }
+    return prex;
+}
 - (void)clearArrays {
 
     [self.friendsArr removeAllObjects];
@@ -161,13 +255,12 @@ CREATE_SHARED_MANAGER(LMLinkManDataManager)
     self.groupsFriend = nil;
 
     self.friendNewItem = nil;
-    self.requestFriend = nil;
 }
 
 /**
  *  get all user array
  */
-- (void)getAllLinkMan:(ContactType)contactType withUser:(AccountInfo *)contact withComplete:(void (^)(BOOL isComplete))complete {
+- (void)getAllLinkMan {
     
     [[GroupDBManager sharedManager] getCommonGroupListWithComplete:^(NSArray *groups) {
         [GCDQueue executeInMainQueue:^{
@@ -177,8 +270,7 @@ CREATE_SHARED_MANAGER(LMLinkManDataManager)
                     [self.commonGroup objectAddObject:group];
                 }
             }
-            [self formartFiendsGrouping:contactType withUser:contact];
-            self.completeBlock = complete;
+            [self formartFiendsGrouping];
         }];
     }];
 }
@@ -356,7 +448,7 @@ CREATE_SHARED_MANAGER(LMLinkManDataManager)
                     [self.commonGroup replaceObjectAtIndex:[self.commonGroup indexOfObject:group] withObject:group];
                 }
             }
-            [self formartFiendsGrouping:ContactTypeLink withUser:nil];
+            [self formartFiendsGrouping];
         }];
     }];
 
@@ -439,7 +531,7 @@ CREATE_SHARED_MANAGER(LMLinkManDataManager)
                         [self.commonGroup replaceObjectAtIndex:[self.commonGroup indexOfObject:group] withObject:group];
                     }
                 }
-                [self formartFiendsGrouping:ContactTypeLink withUser:nil];
+                [self formartFiendsGrouping];
             }];
         }];
     }
@@ -512,7 +604,6 @@ CREATE_SHARED_MANAGER(LMLinkManDataManager)
 - (void)clearUnreadCountWithType:(int)type {
     [[BadgeNumberManager shareManager] clearBadgeNumber:ALTYPE_CategoryTwo_NewFriend Completion:^{
         self.friendNewItem.addMeUser = nil;
-        self.requestFriend = nil;
         [self reloadBadgeValue];
     }];
 }
@@ -543,7 +634,7 @@ CREATE_SHARED_MANAGER(LMLinkManDataManager)
             break;
         }
     }
-    [self addDataToGroupArray:ContactTypeLink];
+    [self addDataToGroupArray];
 }
 
 /**
@@ -560,7 +651,7 @@ CREATE_SHARED_MANAGER(LMLinkManDataManager)
     } else if (changeUser.isOffenContact) {
         [self.normalFriends removeObject:changeUser];
     }
-    [self formartFiendsGrouping:ContactTypeLink withUser:nil];
+    [self formartFiendsGrouping];
     return;
 }
 
@@ -574,7 +665,6 @@ CREATE_SHARED_MANAGER(LMLinkManDataManager)
         return;
     }
     self.friendNewItem.addMeUser = newFriend;
-    self.requestFriend = newFriend;
     [self reloadBadgeValue];
 }
 
@@ -592,7 +682,6 @@ CREATE_SHARED_MANAGER(LMLinkManDataManager)
                 self.redCount = 0;
                 if (self.friendNewItem.FriendBadge) {
                     self.friendNewItem.FriendBadge = nil;
-                    self.requestFriend = nil;
                 }
                 if ([self.delegate respondsToSelector:@selector(listChange: withTabBarCount:)]) {
                     [self.delegate listChange:self.groupsFriend withTabBarCount:self.redCount];
@@ -609,7 +698,7 @@ CREATE_SHARED_MANAGER(LMLinkManDataManager)
     [[GroupDBManager sharedManager] getCommonGroupListWithComplete:^(NSArray *commonGroups) {
         [self.commonGroup removeAllObjects];
         self.commonGroup = commonGroups.mutableCopy;
-        [self formartFiendsGrouping:ContactTypeLink withUser:nil];
+        [self formartFiendsGrouping];
     }];
 }
 
@@ -622,10 +711,10 @@ CREATE_SHARED_MANAGER(LMLinkManDataManager)
     if (!userInfo) {
         return;
     }
-    [self formartFiendsGrouping:ContactTypeLink withUser:nil];
+    [self formartFiendsGrouping];
 }
 
-- (void)formartFiendsGrouping:(ContactType)contactType withUser:(AccountInfo*)shareContact {
+- (void)formartFiendsGrouping {
     [[UserDBManager sharedManager] getAllUsersWithComplete:^(NSArray *contacts) {
         [GCDQueue executeInMainQueue:^{
             
@@ -645,22 +734,13 @@ CREATE_SHARED_MANAGER(LMLinkManDataManager)
                 if (![self.friendsArr containsObject:contact]) {
                     [self.friendsArr objectAddObject:contact];
                 }
-                if ((contactType == ContactTypeShare)&&([shareContact.address isEqualToString:contact.address]|| [contact.pub_key isEqualToString:kSystemIdendifier])) {
-                    
-                    [self.normalFriends removeObject:contact];
-                    [self.friendsArr removeObject:contact];
-                    [self.offenFriends removeObject:contact];
-                }
             }
-            [self addDataToGroupArray:contactType];
-            if (self.completeBlock) {
-                self.completeBlock(YES);
-            }
+            [self addDataToGroupArray];
         }];
     }];
 }
 
-- (void)addDataToGroupArray:(ContactType)contactType {
+- (void)addDataToGroupArray {
 
     //indexs
     NSMutableSet *set = [NSMutableSet set];
@@ -707,19 +787,14 @@ CREATE_SHARED_MANAGER(LMLinkManDataManager)
     }];
 
     [self.groupsFriend removeAllObjects];
-    if (contactType == ContactTypeLink) {
-        // new friends
-        NSMutableDictionary *newGroup = [NSMutableDictionary dictionary];
-        NSMutableArray *newItems = [NSMutableArray array];
-        if (self.requestFriend.address.length > 0) {
-            self.friendNewItem.addMeUser = self.requestFriend;
-        }else {
-            self.friendNewItem.addMeUser = nil;
-        }
-        [newItems objectAddObject:self.friendNewItem];
-        newGroup[@"items"] = newItems;
-        [self.groupsFriend objectAddObject:newGroup];
-    }
+    // new friends
+    NSMutableDictionary *newGroup = [NSMutableDictionary dictionary];
+    NSMutableArray *newItems = [NSMutableArray array];
+    self.friendNewItem.addMeUser = nil;
+    [newItems objectAddObject:self.friendNewItem];
+    newGroup[@"items"] = newItems;
+    [self.groupsFriend objectAddObject:newGroup];
+    
     // common
     if (self.offenFriends.count) {
         NSMutableDictionary *offenFriendGroup = [NSMutableDictionary dictionary];
@@ -747,10 +822,8 @@ CREATE_SHARED_MANAGER(LMLinkManDataManager)
         group[@"items"] = items;
         [self.groupsFriend objectAddObject:group];
     }
-    if (contactType == ContactTypeLink) {
-        // refresh
-        [self reloadBadgeValue];
-    }
+    [self reloadBadgeValue];
+    
 }
 
 - (void)dealloc {
