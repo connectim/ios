@@ -55,7 +55,6 @@
 #import "LMMessageTool.h"
 
 #define GJGCActionSheetCallPhoneNumberTag 132134
-#define GJGCInputViewToastLabelTag 3344556611
 
 static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheetAssociateKey";
 
@@ -819,7 +818,6 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
     chatContentModel.headUrl = [[LKUserCenter shareCenter] currentLoginUser].avatar;
 
     [self.dataSourceManager reSendMesssage:chatContentModel];
-
 }
 
 

@@ -69,20 +69,7 @@
  */
 - (void)stopLoadMore;
 
-/**
- *  start refresh
- */
-- (void)startRefresh;
-
-/**
- *  stop load more
- */
-- (void)startLoadMore;
-
-
 - (void)triggleRefreshing;
-
-- (void)triggleLoadingMore;
 
 /*
  * stop audio paly

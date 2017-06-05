@@ -164,17 +164,13 @@
         case GJGCChatFriendContentTypeAudio:
         case GJGCChatFriendContentTypeImage:
         case GJGCChatFriendContentTypeVideo:
-            return nil;
+            return message;
             break;
         case GJGCChatFriendContentTypeMapLocation: {
-            if ([SessionManager sharedManager].talkType == GJGCChatFriendTalkTypePostSystem) {
-                message.locationExt = @{@"locationLatitude": @(messageContent.locationLatitude),
-                                        @"locationLongitude": @(messageContent.locationLongitude),
-                                        @"address": messageContent.originTextMessage};
-                return message;
-            } else {
-                return nil;
-            }
+            message.locationExt = @{@"locationLatitude": @(messageContent.locationLatitude),
+                                    @"locationLongitude": @(messageContent.locationLongitude),
+                                    @"address": messageContent.originTextMessage};
+            return message;
         }
             break;
         case GJGCChatFriendContentTypeGif: {
@@ -1000,8 +996,7 @@
     chatContentModel.isFromSelf = YES;
     chatContentModel.talkType = talkModel.talkType;
     
-    NSDate *sendTime = [NSDate date];
-    chatContentModel.sendTime = [sendTime timeIntervalSince1970];
+    chatContentModel.sendTime = [[NSDate date] timeIntervalSince1970] * 1000;
 
     return chatContentModel;
 }

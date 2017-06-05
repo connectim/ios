@@ -145,22 +145,6 @@
 
 - (CGFloat)rowHeightAtIndex:(NSInteger)index;
 
-
-/**
- *  To update the state of the voice playback as read, the subclass needs to be implemented
- *
- *  @param localMsgId
- */
-- (void)updateAudioFinishRead:(NSString *)localMsgId;
-
-/**
- *  Update the corresponding information in the database
- *
- *  @param contentModel
- */
-- (void)updateMsgContentHeightWithContentModel:(GJGCChatContentBaseModel *)contentModel;
-
-
 /**
  *  Updates some values of the data source object, but does not affect the height of the data source
  *
@@ -171,7 +155,6 @@
 
 /**
  *  Add a message model
- *
  *  @param contentModel
  *
  *  @return

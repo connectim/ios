@@ -11,13 +11,15 @@
 #import "LMSocketHandleDelegate.h"
 #import "LMCommandManager.h"
 #import "LMMessageSendManager.h"
+#import "GJCFFileUploadManager.h"
+#import "GJGCChatFriendContentModel.h"
 
 
 @interface UploadChatCookieModel : NSObject
 
-@property (nonatomic ,strong) ChatCookieData *chatCookieData;
-@property (nonatomic ,strong) ChatCacheCookie *chatCookie;
-@property (nonatomic ,strong) SendMessageModel *sendMessageModel;
+@property(nonatomic, strong) ChatCookieData *chatCookieData;
+@property(nonatomic, strong) ChatCacheCookie *chatCookie;
+@property(nonatomic, strong) SendMessageModel *sendMessageModel;
 
 @end
 
@@ -112,6 +114,37 @@
  * @return
  */
 - (BOOL)asyncSendGroupInfo:(MessagePost *)msg;
+
+
+/**
+ * send message with upload callback
+ * @param message
+ * @param faildBlock
+ * @param completionBlock
+ * @param progressBlock
+ * @param ecdhKey
+ * @param messageContent
+ * @param completion
+ */
+- (void)asyncSendMessage:(MMMessage *)message
+     uploadFileFailBlock:(GJCFFileUploadManagerTaskFaildBlock)faildBlock
+   uploadCompletionBlock:(GJCFFileUploadManagerTaskCompletionBlock)completionBlock
+           progressBlock:(GJCFFileUploadManagerUpdateTaskProgressBlock)progressBlock
+             chatEcdhKey:(NSString *)ecdhKey
+            contentModel:(GJGCChatFriendContentModel *)messageContent
+   sendMessageCompletion:(void (^)(MMMessage *message,
+           NSError *error))completion;
+
+/**
+ * send message eg:text gif.. not image audio
+ * @param message
+ * @param ecdhKey
+ * @param completion
+ */
+- (void)asyncSendMessage:(MMMessage *)message
+             chatEcdhKey:(NSString *)ecdhKey
+   sendMessageCompletion:(void (^)(MMMessage *message,
+                                   NSError *error))completion;
 
 /**
  * Send messages asynchronously to friends

@@ -234,16 +234,6 @@
     }
 }
 
-- (void)updateAudioFinishRead:(NSString *)localMsgId {
-
-}
-
-#pragma mark - 更新数据库中消息得高度
-
-- (void)updateMsgContentHeightWithContentModel:(GJGCChatContentBaseModel *)contentModel {
-
-}
-
 #pragma mark - 重试发送状态消息
 
 - (void)reTryAllSendingStateMsgDetailAction {
