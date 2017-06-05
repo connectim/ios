@@ -65,6 +65,7 @@
         self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
         self.tableView.sectionIndexBackgroundColor = [UIColor clearColor];
         self.tableView.sectionIndexTrackingBackgroundColor = [UIColor clearColor];
+        self.tableView.sectionIndexColor = LMBasicDarkGray;
         self.tableView.delegate = self;
         self.tableView.dataSource = self;
     }

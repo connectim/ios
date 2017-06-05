@@ -119,7 +119,7 @@
     [self.tableView registerNib:[UINib nibWithNibName:@"NewFriendTipCell" bundle:nil] forCellReuseIdentifier:@"NewFriendTipCellID"];
     [self.tableView registerClass:[ConnectTableHeaderView class] forHeaderFooterViewReuseIdentifier:@"ConnectTableHeaderViewID"];
     self.tableView.rowHeight = AUTO_HEIGHT(111);
-    self.tableView.sectionIndexColor = [UIColor lightGrayColor];
+    self.tableView.sectionIndexColor = LMBasicDarkGray;
     self.tableView.sectionIndexBackgroundColor = [UIColor clearColor];
     self.tableView.backgroundColor = GJCFQuickHexColor(@"F0F0F6");
     // head tip view
