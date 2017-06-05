@@ -14,15 +14,10 @@
 @class MMMessage;
 
 @protocol LMConversionListChangeManagerDelegate <NSObject>
+
 - (void)conversationListDidChanged:(NSArray<RecentChatModel *> *)conversationList;
-
 - (void)unreadMessageNumberDidChanged;
-
 - (void)unreadMessageNumberDidChangedNeedSyncbadge;
-
-- (void)unreadMessageNumberChange:(NSUInteger)unreadCount;
-
-- (NSMutableArray<RecentChatModel *> *)currentConversationList;
 
 @end
 

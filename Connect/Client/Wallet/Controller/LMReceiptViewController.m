@@ -46,7 +46,7 @@
     self.title = LMLocalizedString(@"Wallet Receipt", nil);
     // get usermessage
     AccountInfo *ainfo = [[LKUserCenter shareCenter] currentLoginUser];
-    self.userNameAccoutInformation = ainfo.address;
+    self.userNameAccoutInformation = [NSString stringWithFormat:@"bitcoin:%@",ainfo.address];
     self.view.backgroundColor = [UIColor blackColor];
     // qr code
     [self addQRcodeImageView];
@@ -202,7 +202,8 @@
     NSDecimalNumber *amount = [NSDecimalNumber decimalNumberWithString:textField.text];
     self.rightBarBtn.enabled = amount.doubleValue > 0;
     if (self.rightBarBtn.enabled) {
-        NSString *moneyAddress = [NSString stringWithFormat:@"bitcoin:%@?amount=%@", self.userNameAccoutInformation, self.bitTextField.text];
+        NSString *address = [self.userNameAccoutInformation stringByReplacingOccurrencesOfString:@"bitcoin:" withString:@""];
+        NSString *moneyAddress = [NSString stringWithFormat:@"bitcoin:%@?amount=%@", address, self.bitTextField.text];
         self.payRequestUrl = moneyAddress;
         _imageView.image = [BarCodeTool barCodeImageWithString:moneyAddress withSize:400];
     }

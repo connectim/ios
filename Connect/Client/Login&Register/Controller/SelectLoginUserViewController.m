@@ -67,7 +67,6 @@
             user.isSelected = NO;
         }
     }
-    
     [self.tableView reloadData];
 }
 
@@ -79,7 +78,7 @@
         // delete preferences
         NSString *plistPath = GJCFAppDoucmentPath(@"AccountSetInfo.plist");
         NSMutableDictionary *data = [[NSMutableDictionary alloc] initWithContentsOfFile:plistPath];
-        NSLog(@"%@", data);
+        DDLogInfo(@"%@", data);
         NSMutableArray *accounts = [data valueForKey:@"accounts"];
         for (NSDictionary *temD in accounts) {
             if ([temD valueForKey:willDeleteUser.address]) {
@@ -96,7 +95,7 @@
         //delete user db 
         NSString *dbPath = [MMGlobal getDBFile:willDeleteUser.pub_key];
         GJCFFileDeleteFile(dbPath);
-
+        [[MMAppSetting sharedSetting] deleteLocalUserWithAddress:willDeleteUser.address];
         BOOL isSelectedUser = willDeleteUser.isSelected;
         [self.users removeObject:willDeleteUser];
         [GCDQueue executeInMainQueue:^{

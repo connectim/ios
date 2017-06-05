@@ -21,6 +21,8 @@
 #import "RegisteredPrivkeyLoginPage.h"
 #import "SystemTool.h"
 #import "SetUserInfoPage.h"
+#import "LMHandleScanResultManager.h"
+
 
 @interface PhoneLoginPage ()
 
@@ -28,8 +30,6 @@
 @property(nonatomic, strong) BottomLineTextField *phoneField;
 @property(nonatomic, strong) ConnectButton *nextBtn;
 @property(nonatomic, strong) ConnectLabel *tipLabel;
-
-@property(nonatomic, strong) NSString *scanCodeString;
 // country code
 @property(nonatomic, assign) int countryCode;
 @property(nonatomic, copy) NSString *coutryLocalCode;
@@ -153,6 +153,7 @@
 #pragma mark - event
 
 - (void)updateCountryInfo {
+    
     SelectCountryViewController *page = [[SelectCountryViewController alloc] initWithCallBackBlock:^(id countryInfo) {
         self.countryCode = [countryInfo[@"phoneCode"] intValue];
         self.coutryLocalCode = [countryInfo valueForKey:@"countryCode"];
@@ -181,8 +182,7 @@
             {
                 [GCDQueue executeInMainQueue:^{
                     ScanQRCodePage *page = [[ScanQRCodePage alloc] initWithCallBack:^(NSString *value) {
-                        self.scanCodeString = value;
-                        [self handleScanCodeString];
+                    [[LMHandleScanResultManager sharedManager] handleLoginScanResult:value controller:self];
                     }];
                     [self.navigationController pushViewController:page animated:YES];
                 }];
@@ -200,85 +200,8 @@
         }
     }];
 }
-
-- (void)handleScanCodeString {
-    __weak typeof(self) weakSelf = self;
-    if ([_scanCodeString hasPrefix:@"connect://"]) { // encription pri
-        NSString *content = [_scanCodeString stringByReplacingOccurrencesOfString:@"connect://" withString:@""];
-        NSData *data = [NSData dataWithBase64EncodedString:content];
-        if (data) {
-            ExoprtPrivkeyQrcode *exportQrcode = [ExoprtPrivkeyQrcode parseFromData:data error:nil];
-            switch (exportQrcode.version) {
-                case 1:
-                case 2: {
-                    AccountInfo *user = [[AccountInfo alloc] init];
-                    user.username = exportQrcode.username;
-                    user.encryption_pri = exportQrcode.encriptionPri;
-                    user.password_hint = exportQrcode.passwordHint;
-                    user.bondingPhone = exportQrcode.phone;
-                    user.contentId = exportQrcode.connectId;
-                    user.avatar = [NSString stringWithFormat:@"%@/avatar/v1/%@.jpg", baseServer,exportQrcode.avatar];
-                    AccountInfo *getChainUser = [[MMAppSetting sharedSetting] getLoginChainUsersByEncodePri:user.encryption_pri];
-                    if (getChainUser) {
-                        user = getChainUser;
-                        if (exportQrcode.phone.length > 0) {
-                            user.bondingPhone = exportQrcode.phone;
-                        }
-                        
-                    }
-                    LocalAccountLoginPage *page = [[LocalAccountLoginPage alloc] initWithUser:user];
-                    [self.navigationController pushViewController:page animated:YES];
-                }
-                    break;
-                default:
-                    [GCDQueue executeInMainQueue:^{
-                        [MBProgressHUD showToastwithText:LMLocalizedString(@"Login Invalid version number", nil) withType:ToastTypeFail showInView:self.view complete:nil];
-                    }];
-                    break;
-            }
-        } else {
-            [GCDQueue executeInMainQueue:^{
-                [MBProgressHUD showToastwithText:LMLocalizedString(@"ErrorCode data error", nil) withType:ToastTypeFail showInView:self.view complete:nil];
-            }];
-        }
-    } else {
-        if ([KeyHandle checkPrivkey:_scanCodeString]) {
-            [MBProgressHUD showLoadingMessageToView:self.view];
-            // weathre is regist prikey
-            [NetWorkOperationTool POSTWithUrlString:PrivkeyLoginExistedUrl postProtoData:nil pirkey:_scanCodeString publickey:[KeyHandle createPubkeyByPrikey:_scanCodeString] complete:^(id response) {
-                [GCDQueue executeInMainQueue:^{
-                    [MBProgressHUD hideHUDForView:self.view];
-                }];
-                HttpResponse *hResponse = (HttpResponse *) response;
-                if (hResponse.code == 2404) {
-                    SetUserInfoPage *page = [[SetUserInfoPage alloc] initWithPrikey:_scanCodeString];
-                    [self.navigationController pushViewController:page animated:YES];
-                } else if(hResponse.code != successCode) {
-                    [GCDQueue executeInMainQueue:^{
-                        [MBProgressHUD showToastwithText:LMLocalizedString(@"Set Query failed", nil) withType:ToastTypeFail showInView:self.view complete:nil];
-                    }];
-                } else {
-                    NSData *data = [ConnectTool decodeHttpResponse:hResponse withPrivkey:_scanCodeString publickey:nil emptySalt:YES];
-                    if (data && data.length > 0) {
-                        NSError *error = nil;
-                        UserExistedToken *userExisted = [UserExistedToken parseFromData:data error:&error];
-                        if (!error) {
-                            RegisteredPrivkeyLoginPage *page = [[RegisteredPrivkeyLoginPage alloc] initWithUserToken:userExisted privkey:_scanCodeString];
-                            [self.navigationController pushViewController:page animated:YES];
-                        }
-                    }
-                }
-            }                                  fail:^(NSError *error) {
-                [GCDQueue executeInMainQueue:^{
-                    [MBProgressHUD hideHUDForView:self.view];
-                    [MBProgressHUD showToastwithText:[LMErrorCodeTool showToastErrorType:ToastErrorTypeLoginOrReg withErrorCode:error.code withUrl:PrivkeyLoginExistedUrl] withType:ToastTypeFail showInView:weakSelf.view complete:nil];
-                }];
-            }];
-        }
-    }
-}
-
 - (void)showLocalAcount {
+    
     NSArray *users = [[MMAppSetting sharedSetting] getKeyChainUsers];
     if (users.count <= 0) {
         LMRandomSeedController *randomSeedVC = [[LMRandomSeedController alloc] init];

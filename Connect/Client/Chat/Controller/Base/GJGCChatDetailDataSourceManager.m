@@ -175,11 +175,6 @@
         default:
             break;
     }
-//    GJGCChatBaseCell *baseCell = [[cellClass alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
-//    [baseCell setContentModel:contentModel];
-
-//    CGFloat contentHeight = [baseCell heightForContentModel:contentModel];
-//    CGSize  contentSize = [baseCell contentSize];
     CGFloat cellHeight = ((CGFloat (*)(id, SEL, id)) objc_msgSend)([cellClass class], @selector(cellHeightForContentModel:), contentModel);
     return @[@(cellHeight), [NSValue valueWithCGSize:CGSizeZero]];
 }
@@ -463,28 +458,10 @@
     NSArray *contentHeightArray = [self heightForContentModel:contentModel];
     contentModel.contentHeight = [[contentHeightArray firstObject] floatValue];
     contentModel.contentSize = [[contentHeightArray lastObject] CGSizeValue];
-
-    __weak __typeof(&*self) weakSelf = self;
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
-
-        [weakSelf updateMsgContentHeightWithContentModel:contentModel];
-
-    });
-
     [self.chatListArray replaceObjectAtIndex:index withObject:contentModel];
 
     return @(contentModel.contentHeight);
 }
-
-- (void)updateAudioFinishRead:(NSString *)localMsgId {
-
-}
-
-- (void)updateMsgContentHeightWithContentModel:(GJGCChatContentBaseModel *)contentModel {
-
-}
-
-
 - (GJGCChatContentBaseModel *)contentModelByLocalMsgId:(NSString *)localMsgId {
     for (int i = 0; i < self.chatListArray.count; i++) {
 
@@ -501,15 +478,7 @@
 }
 
 - (void)updateContentModelValuesNotEffectRowHeight:(GJGCChatContentBaseModel *)contentModel atIndex:(NSInteger)index {
-    if ([contentModel.class isSubclassOfClass:[GJGCChatFriendContentModel class]]) {
 
-        GJGCChatFriendContentModel *friendChatModel = (GJGCChatFriendContentModel *) contentModel;
-
-        if (friendChatModel.contentType == GJGCChatFriendContentTypeAudio && friendChatModel.isPlayingAudio) {
-
-            [self updateAudioFinishRead:friendChatModel.localMsgId];
-        }
-    }
     [self.chatListArray replaceObjectAtIndex:index withObject:contentModel];
 }
 
@@ -524,8 +493,6 @@
         NSArray *contentHeightArray = [self heightForContentModel:contentModel];
         contentModel.contentHeight = [[contentHeightArray firstObject] floatValue];
         contentModel.contentSize = [[contentHeightArray lastObject] CGSizeValue];
-
-        [self updateMsgContentHeightWithContentModel:contentModel];
 
     } else {
 
@@ -689,16 +656,8 @@
 
     GJGCChatFriendContentModel *currentTimeSubModel = nil;
     for (NSInteger i = 0; i < self.totalCount; i++) {
-
         GJGCChatFriendContentModel *contentModel = [self.chatListArray objectAtIndex:i];
-        if (contentModel.contentType == GJGCChatFriendContentTypeTime) {
-            NSLog(@"contentModel is time :%@", contentModel.uniqueIdentifier);
-        }
-
-        DDLogInfo(@"contentModel.sendTime %lld", contentModel.sendTime);
-
         NSString *timeString = [GJGCChatSystemNotiCellStyle timeAgoStringByLastMsgTime:contentModel.sendTime lastMsgTime:firstMsgTimeInterval];
-
         if (timeString) {
 
             /* Create a time block and insert it into the data source */
@@ -1144,11 +1103,8 @@
             }
         }
     }
-    
     messageContent.isSnapChatMode = self.taklInfo.snapChatOutDataTime > 0;
-
     int count = 1;
-
     GJGCChatContentBaseModel *temModel = [GJGCChatContentBaseModel new];
     temModel.sendTime = messageContent.sendTime;
     GJGCChatContentBaseModel *timeConttentModel = [self updateTheNewMsgTimeString:temModel];
@@ -1157,6 +1113,7 @@
         [self.chatListArray objectAddObject:timeConttentModel];
         count += 1;
     }
+    //judge height
     [self addChatContentModel:messageContent];
     dispatch_source_merge_data(_refreshListSource, count);
     self.lastSendMsgTime = [[NSDate date] timeIntervalSince1970] * 1000;

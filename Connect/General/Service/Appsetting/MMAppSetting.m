@@ -127,6 +127,18 @@ static MMAppSetting *manager = nil;
     }
 }
 
+- (void)deleteLocalUserWithAddress:(NSString *)address{
+    if (!GJCFStringIsNull(address)) {
+        for (NSDictionary *userDefault in self.temAllSets) {
+            if ([[userDefault.allKeys firstObject] isEqualToString:address]) {
+                [self.temAllSets removeObject:userDefault];
+                break;
+            }
+        }
+        [self saveToFile];
+    }
+}
+
 #pragma mark - Basic read and write delete method
 - (void)removeObjectForKey:(NSString *)key{
     if (self.userSet) {

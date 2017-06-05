@@ -207,9 +207,4 @@
     }
 }
 
-- (void)updateMsgContentHeightWithContentModel:(GJGCChatContentBaseModel *)contentModel {
-
-}
-
-
 @end

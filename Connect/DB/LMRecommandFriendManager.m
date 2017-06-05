@@ -67,8 +67,9 @@ static LMRecommandFriendManager *manager = nil;
         accountInfo.avatar = user.avatar;
         accountInfo.pub_key = user.pubKey;
         accountInfo.recommandStatus = 1;
-        [addArray objectAddObject:@[accountInfo.username, accountInfo.address, accountInfo.avatar, accountInfo.pub_key, @(accountInfo.recommandStatus)]];
-
+        if (accountInfo.address.length > 0) {
+            [addArray objectAddObject:@[accountInfo.username, accountInfo.address, accountInfo.avatar, accountInfo.pub_key, @(accountInfo.recommandStatus)]];
+        }
     }
     if (addArray.count > 0) {
         [self batchInsertTableName:RecommandFriendTable fields:@[Scope] batchValues:addArray];
@@ -145,7 +146,9 @@ static LMRecommandFriendManager *manager = nil;
         accountInfo.avatar = [dic safeObjectForKey:@"avatar"];
         accountInfo.pub_key = [dic safeObjectForKey:@"pub_key"];
         accountInfo.recommandStatus = status;
-        [resultArray objectAddObject:accountInfo];
+        if (accountInfo.address.length > 0) {
+           [resultArray objectAddObject:accountInfo];
+        }
     }
     NSArray *result = resultArray.copy;
     result = [result sortedArrayUsingComparator:^NSComparisonResult(AccountInfo *obj1, AccountInfo *obj2) {

@@ -98,6 +98,8 @@ static UserDBManager *manager = nil;
     [[MessageDBManager sharedManager] deleteAllMessageByMessageOwer:pubKey];
     //delete chat
     [[RecentChatDBManager sharedManager] deleteByIdentifier:pubKey];
+    //delete chat setting
+    [[RecentChatDBManager sharedManager] deleteRecentChatSettingWithIdentifier:pubKey];
     //delete request
     [self deleteRequestUserByAddress:[KeyHandle getAddressByPubkey:pubKey]];
     //delete user
@@ -288,7 +290,7 @@ static UserDBManager *manager = nil;
         findUser.pub_key = [resultDict safeObjectForKey:@"pub_key"];
         findUser.avatar = [resultDict safeObjectForKey:@"avatar"];
         findUser.username = [resultDict safeObjectForKey:@"username"];
-        findUser.source = [[resultDict safeObjectForKey:@"source"] integerValue];
+        findUser.source = [[resultDict safeObjectForKey:@"source"] intValue];
         findUser.status = [[resultDict safeObjectForKey:@"status"] integerValue];
         findUser.requestRead = [[resultDict safeObjectForKey:@"read"] boolValue];
         findUser.message = [resultDict safeObjectForKey:@"tips"];

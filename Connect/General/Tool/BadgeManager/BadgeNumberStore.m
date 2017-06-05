@@ -61,7 +61,9 @@
         NSFileManager * fm = [NSFileManager defaultManager];
         [fm createFileAtPath:self.plistPath contents:nil attributes:nil];
         _RootDic = [[NSMutableDictionary alloc]init];
-        [_RootDic writeToFile:self.plistPath atomically:YES];
+        if (_RootDic) {
+            [_RootDic writeToFile:self.plistPath atomically:YES];
+        }
     }else
     {
         _RootDic = [[NSMutableDictionary alloc]initWithContentsOfFile:self.plistPath];

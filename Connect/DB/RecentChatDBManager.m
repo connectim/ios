@@ -203,7 +203,8 @@ static RecentChatDBManager *manager = nil;
     }
 
     BOOL result = [self deleteTableName:RecentChatTable conditions:@{@"identifier": identifier}];
-    [self deleteTableName:RecentChatTableSetting conditions:@{@"identifier": identifier}];
+    
+
 
     //remove draft
     [self removeDraftWithIdentifier:identifier];
@@ -213,6 +214,13 @@ static RecentChatDBManager *manager = nil;
         DDLogError(@"fail");
     }
     [[LMConversionManager sharedManager] deleteConversationWithIdentifier:identifier];
+}
+
+- (void)deleteRecentChatSettingWithIdentifier:(NSString *)identifier{
+    if (GJCFStringIsNull(identifier)) {
+        return;
+    }
+    [self deleteTableName:RecentChatTableSetting conditions:@{@"identifier": identifier}];
 }
 
 - (void)getAllUnReadCountWithComplete:(void (^)(int count))complete {
@@ -237,6 +245,18 @@ static RecentChatDBManager *manager = nil;
     }
     [self updateTableName:RecentChatTableSetting fieldsValues:@{@"snap_time": @(snapTime)} conditions:@{@"identifier": identifier}];
 }
+
+- (int)getSnapTimeWithChatIdentifer:(NSString *)identifier {
+    if (GJCFStringIsNull(identifier)) {
+        return 0;
+    }
+    NSDictionary *snapTime = [[self getDatasFromTableName:RecentChatTableSetting conditions:@{@"identifier": identifier} fields:@[@"snap_time"]] lastObject];
+    if (snapTime) {
+        return [[snapTime safeObjectForKey:@"snap_time"] intValue];
+    }
+    return 0;
+}
+
 
 - (RecentChatModel *)getRecentModelByIdentifier:(NSString *)identifier {
     if (GJCFStringIsNull(identifier)) {
@@ -576,6 +596,8 @@ static RecentChatDBManager *manager = nil;
                 recentChat.chatUser = contact;
             }
         }
+        recentChat.notifyStatus = [self getMuteStatusWithIdentifer:recentChat.identifier];
+        recentChat.snapChatDeleteTime = [self getSnapTimeWithChatIdentifer:recentChat.identifier];
         [self save:recentChat];
     }
     [GCDQueue executeInMainQueue:^{
@@ -664,7 +686,6 @@ static RecentChatDBManager *manager = nil;
                 recentChat.chatUser = contact;
                 recentChat.content = content;
             } else {
-                ecdhKey = [KeyHandle getECDHkeyUsePrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey PublicKey:identifier];
                 recentChat = [[RecentChatModel alloc] init];
                 recentChat.headUrl = contact.avatar;
                 recentChat.name = contact.normalShowName;
@@ -677,6 +698,9 @@ static RecentChatDBManager *manager = nil;
                     recentChat.unReadCount = 1;
                 }
                 recentChat.chatUser = contact;
+                
+                recentChat.notifyStatus = [self getMuteStatusWithIdentifer:recentChat.identifier];
+                recentChat.snapChatDeleteTime = [self getSnapTimeWithChatIdentifer:recentChat.identifier];
             }
         }
         [self save:recentChat];

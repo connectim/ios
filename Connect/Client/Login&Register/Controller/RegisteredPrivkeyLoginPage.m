@@ -94,7 +94,6 @@
     self.passwordField.delegate = self;
     self.passwordField.placeholder = LMLocalizedString(@"Login Password Standard Tip", nil);
     self.passwordField.font = [UIFont systemFontOfSize:FONT_SIZE(48)];
-    [self.passwordField addTarget:self action:@selector(textValueChange:) forControlEvents:UIControlEventEditingChanged];
     [self.view addSubview:_passwordField];
     self.passwordField.size = self.accountUserNameView.size;
     self.passwordField.left = self.accountUserNameView.left;
@@ -133,8 +132,6 @@
     [self.view addSubview:passTipTextView];
     passTipTextView.contentAttributedString = passTipAtt;
     passTipTextView.gjcf_size = [GJCFCoreTextContentView contentSuggestSizeWithAttributedString:passTipAtt forBaseContentSize:passTipTextView.contentBaseSize];
-
-
     __weak __typeof(&*self) weakSelf = self;
     // Add a response to the modified password prompt
     [passTipTextView appenTouchObserverForKeyword:actionWord withHanlder:^(NSString *keyword, NSRange keywordRange) {
@@ -169,22 +166,19 @@
     if (!self.completeBtn.enabled) {
         return;
     }
-    __weak __typeof(&*self) weakSelf = self;
     UIAlertController *alertController = [UIAlertController alertControllerWithTitle:LMLocalizedString(@"Set Password Hint", nil) message:@"" preferredStyle:UIAlertControllerStyleAlert];
     [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-        weakSelf.passTipTextField = textField;
         [GCDQueue executeInMainQueue:^{
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textFiledEditChanged:)
-                                                         name:UITextFieldTextDidChangeNotification object:textField];
+        [textField addTarget:self action:@selector(textFiledEditChanged:) forControlEvents:UIControlEventEditingChanged];
         }];
     }];
 
     UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:LMLocalizedString(@"Common Cancel", nil) style:UIAlertActionStyleCancel handler:nil];
     UIAlertAction *okAction = [UIAlertAction actionWithTitle:LMLocalizedString(@"Set Save", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *_Nonnull action) {
-        weakSelf.loginUser.password_hint = weakSelf.passTipTextField.text;
-        weakSelf.passTipTextField.text = nil;
+        self.loginUser.password_hint = self.passTipTextField.text;
+        self.passTipTextField.text = nil;
         //Empty state
-        [weakSelf reloadTipView];
+        [self reloadTipView];
     }];
     [alertController addAction:cancelAction];
     [alertController addAction:okAction];
@@ -200,9 +194,8 @@
     return YES;
 }
 
-- (void)textFiledEditChanged:(NSNotification *)obj {
-    
-    UITextField *textField = (UITextField *) obj.object;
+- (void)textFiledEditChanged:(UITextField *)textField {
+    self.passTipTextField = textField;
     NSString *toBeString = textField.text;
     NSString *lang = [textField.textInputMode primaryLanguage];
     if ([lang isEqualToString:@"zh-Hans"]) {
@@ -215,9 +208,7 @@
                 textField.text = [toBeString substringToIndex:MAX_TIP_LENGTH];
             }
         }
-    }
-        // Chinese input method other than the statistical restrictions can be directly, regardless of other language situation
-    else {
+    }else {
         if (toBeString.length > MAX_TIP_LENGTH) {
             NSRange rangeIndex = [toBeString rangeOfComposedCharacterSequenceAtIndex:MAX_TIP_LENGTH];
             if (rangeIndex.length == 1) {
@@ -315,11 +306,6 @@
         }];
     }];
 }
-
-- (void)textValueChange:(UITextField *)sender {
-
-}
-
 #pragma mark - getter setter
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {

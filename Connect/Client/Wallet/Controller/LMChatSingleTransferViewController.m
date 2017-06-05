@@ -166,9 +166,9 @@
     __weak typeof(&*self) weakSelf = self;
     // balance
     if ([PayTool getPOW8Amount:money] > self.blance) {
-        [MBProgressHUD hideHUDForView:self.view];
-        [MBProgressHUD showToastwithText:LMLocalizedString(@"Wallet Insufficient balance", nil) withType:ToastTypeFail showInView:weakSelf.view complete:nil];
-
+       [GCDQueue executeInMainQueue:^{
+            [MBProgressHUD showToastwithText:LMLocalizedString(@"Wallet Insufficient balance", nil) withType:ToastTypeFail showInView:weakSelf.view complete:nil];
+       }];
         self.comfrimButton.enabled = YES;
         return;
     }
@@ -176,7 +176,6 @@
     [self.view endEditing:YES];
 
     NSArray *toAddresses = @[@{@"address": self.info.address, @"amount": money.stringValue}];
-    
     BOOL isDusk = [LMPayCheck dirtyAlertWithAddress:toAddresses withController:self];
     if (isDusk) {
         self.comfrimButton.enabled = YES;
@@ -247,20 +246,18 @@
                 }];
                 return;
             }
-            [InputPayPassView showInputPayPassWithComplete:^(InputPayPassView *passView, NSError *error, BOOL result) {
+    [InputPayPassView showInputPayPassWithComplete:^(InputPayPassView *passView, NSError *error, BOOL result) {
                 if (result) {
                     [weakSelf successAction:rawModel decimalMoney:amount note:note passView:passView];
-                
                 } else {
                     weakSelf.comfrimButton.enabled = YES;
-                    [MBProgressHUD hideHUDForView:weakSelf.view];
                     if (![errorMsg isEqualToString:@"NO"]) {
                         [GCDQueue executeInMainQueue:^{
-                            [MBProgressHUD showToastwithText:LMLocalizedString(@"Wallet Transfer Failed", nil) withType:ToastTypeFail showInView:weakSelf.view complete:nil];
+                            [MBProgressHUD showToastwithText:LMLocalizedString(@"Wallet Transfer Failed", nil) withType:ToastTypeFail showInView:passView complete:nil];
                         }];
                     }
                 }
-            }                              forgetPassBlock:^{
+            }   forgetPassBlock:^{
                 [GCDQueue executeInMainQueue:^{
                     [MBProgressHUD hideHUDForView:weakSelf.view];
                     weakSelf.comfrimButton.enabled = YES;

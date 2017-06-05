@@ -19,12 +19,10 @@
 		1921AF6E1E702C660020C853 /* Connect_IMUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1921AF6C1E702C660020C853 /* Connect_IMUITests.m */; };
 		1921AF6F1E702C660020C853 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 1921AF6D1E702C660020C853 /* Info.plist */; };
 		19234F421E8113D60022D844 /* CaptureAvatarPage.m in Sources */ = {isa = PBXBuildFile; fileRef = 19234F291E8113D60022D844 /* CaptureAvatarPage.m */; };
-		19234F431E8113D60022D844 /* LMDisplayProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 19234F2B1E8113D60022D844 /* LMDisplayProgressView.m */; };
 		19234F441E8113D60022D844 /* LMRandomSeedController.m in Sources */ = {isa = PBXBuildFile; fileRef = 19234F2D1E8113D60022D844 /* LMRandomSeedController.m */; };
 		19234F451E8113D60022D844 /* LMRandomSeedController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 19234F2E1E8113D60022D844 /* LMRandomSeedController.xib */; };
 		19234F461E8113D60022D844 /* LMRegisterPrivkeyBackupTipView.m in Sources */ = {isa = PBXBuildFile; fileRef = 19234F301E8113D60022D844 /* LMRegisterPrivkeyBackupTipView.m */; };
 		19234F471E8113D60022D844 /* LMRegisterPrivkeyBackupTipView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 19234F311E8113D60022D844 /* LMRegisterPrivkeyBackupTipView.xib */; };
-		19234F481E8113D60022D844 /* LMselectCountryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 19234F331E8113D60022D844 /* LMselectCountryCell.m */; };
 		19234F491E8113D60022D844 /* LocalAccountLoginPage.m in Sources */ = {isa = PBXBuildFile; fileRef = 19234F351E8113D60022D844 /* LocalAccountLoginPage.m */; };
 		19234F4A1E8113D60022D844 /* PhoneLoginPage.m in Sources */ = {isa = PBXBuildFile; fileRef = 19234F371E8113D60022D844 /* PhoneLoginPage.m */; };
 		19234F4B1E8113D60022D844 /* RegisteredPrivkeyLoginPage.m in Sources */ = {isa = PBXBuildFile; fileRef = 19234F391E8113D60022D844 /* RegisteredPrivkeyLoginPage.m */; };
@@ -1006,6 +1004,8 @@
 		F16FD8451EC32060002F9395 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F16FD7B71EC3205B002F9395 /* libssl.a */; };
 		F17114DB1E9C80890000E270 /* LMPayCheck.m in Sources */ = {isa = PBXBuildFile; fileRef = F17114DA1E9C80890000E270 /* LMPayCheck.m */; };
 		F172A66F1EB8843C006E186C /* MMMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = F172A66E1EB8843C006E186C /* MMMessage.m */; };
+		F17CBE2F1ED40C700067234D /* LMselectCountryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F17CBE2E1ED40C700067234D /* LMselectCountryCell.m */; };
+		F17CBE321ED536920067234D /* LMDisplayProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = F17CBE311ED536920067234D /* LMDisplayProgressView.m */; };
 		F1B363D21E85255600B65086 /* LMSearchTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = F1B363D11E85255600B65086 /* LMSearchTextField.m */; };
 		F1CC2E941E95E7F80045FBB7 /* NSMutableArray+LMSafeMethod.m in Sources */ = {isa = PBXBuildFile; fileRef = F1CC2E931E95E7F80045FBB7 /* NSMutableArray+LMSafeMethod.m */; };
 		F1CC2ED91E95F0BA0045FBB7 /* NSArray+LMSafeMethod.m in Sources */ = {isa = PBXBuildFile; fileRef = F1CC2ED81E95F0BA0045FBB7 /* NSArray+LMSafeMethod.m */; };
@@ -1071,16 +1071,12 @@
 		1921AF6D1E702C660020C853 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		19234F281E8113D60022D844 /* CaptureAvatarPage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CaptureAvatarPage.h; sourceTree = "<group>"; };
 		19234F291E8113D60022D844 /* CaptureAvatarPage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CaptureAvatarPage.m; sourceTree = "<group>"; };
-		19234F2A1E8113D60022D844 /* LMDisplayProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LMDisplayProgressView.h; sourceTree = "<group>"; };
-		19234F2B1E8113D60022D844 /* LMDisplayProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LMDisplayProgressView.m; sourceTree = "<group>"; };
 		19234F2C1E8113D60022D844 /* LMRandomSeedController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LMRandomSeedController.h; sourceTree = "<group>"; };
 		19234F2D1E8113D60022D844 /* LMRandomSeedController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LMRandomSeedController.m; sourceTree = "<group>"; };
 		19234F2E1E8113D60022D844 /* LMRandomSeedController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LMRandomSeedController.xib; sourceTree = "<group>"; };
 		19234F2F1E8113D60022D844 /* LMRegisterPrivkeyBackupTipView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LMRegisterPrivkeyBackupTipView.h; sourceTree = "<group>"; };
 		19234F301E8113D60022D844 /* LMRegisterPrivkeyBackupTipView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LMRegisterPrivkeyBackupTipView.m; sourceTree = "<group>"; };
 		19234F311E8113D60022D844 /* LMRegisterPrivkeyBackupTipView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LMRegisterPrivkeyBackupTipView.xib; sourceTree = "<group>"; };
-		19234F321E8113D60022D844 /* LMselectCountryCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LMselectCountryCell.h; sourceTree = "<group>"; };
-		19234F331E8113D60022D844 /* LMselectCountryCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LMselectCountryCell.m; sourceTree = "<group>"; };
 		19234F341E8113D60022D844 /* LocalAccountLoginPage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalAccountLoginPage.h; sourceTree = "<group>"; };
 		19234F351E8113D60022D844 /* LocalAccountLoginPage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LocalAccountLoginPage.m; sourceTree = "<group>"; };
 		19234F361E8113D60022D844 /* PhoneLoginPage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhoneLoginPage.h; sourceTree = "<group>"; };
@@ -12534,6 +12530,10 @@
 		F17114DA1E9C80890000E270 /* LMPayCheck.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LMPayCheck.m; sourceTree = "<group>"; };
 		F172A66D1EB8843C006E186C /* MMMessage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MMMessage.h; sourceTree = "<group>"; };
 		F172A66E1EB8843C006E186C /* MMMessage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MMMessage.m; sourceTree = "<group>"; };
+		F17CBE2D1ED40C700067234D /* LMselectCountryCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LMselectCountryCell.h; sourceTree = "<group>"; };
+		F17CBE2E1ED40C700067234D /* LMselectCountryCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LMselectCountryCell.m; sourceTree = "<group>"; };
+		F17CBE301ED536920067234D /* LMDisplayProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LMDisplayProgressView.h; sourceTree = "<group>"; };
+		F17CBE311ED536920067234D /* LMDisplayProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LMDisplayProgressView.m; sourceTree = "<group>"; };
 		F198A98A1EAF6043008D97E7 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F198A98B1EAF6048008D97E7 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		F1B363D01E85255600B65086 /* LMSearchTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LMSearchTextField.h; sourceTree = "<group>"; };
@@ -14697,16 +14697,12 @@
 				19234FED1E811C220022D844 /* ScanQRCodePage.m */,
 				19234F281E8113D60022D844 /* CaptureAvatarPage.h */,
 				19234F291E8113D60022D844 /* CaptureAvatarPage.m */,
-				19234F2A1E8113D60022D844 /* LMDisplayProgressView.h */,
-				19234F2B1E8113D60022D844 /* LMDisplayProgressView.m */,
 				19234F2C1E8113D60022D844 /* LMRandomSeedController.h */,
 				19234F2D1E8113D60022D844 /* LMRandomSeedController.m */,
 				19234F2E1E8113D60022D844 /* LMRandomSeedController.xib */,
 				19234F2F1E8113D60022D844 /* LMRegisterPrivkeyBackupTipView.h */,
 				19234F301E8113D60022D844 /* LMRegisterPrivkeyBackupTipView.m */,
 				19234F311E8113D60022D844 /* LMRegisterPrivkeyBackupTipView.xib */,
-				19234F321E8113D60022D844 /* LMselectCountryCell.h */,
-				19234F331E8113D60022D844 /* LMselectCountryCell.m */,
 				19234F341E8113D60022D844 /* LocalAccountLoginPage.h */,
 				19234F351E8113D60022D844 /* LocalAccountLoginPage.m */,
 				19234F361E8113D60022D844 /* PhoneLoginPage.h */,
@@ -14737,6 +14733,10 @@
 		D95C02AF1E8101A6006C5C8A /* View */ = {
 			isa = PBXGroup;
 			children = (
+				F17CBE301ED536920067234D /* LMDisplayProgressView.h */,
+				F17CBE311ED536920067234D /* LMDisplayProgressView.m */,
+				F17CBE2D1ED40C700067234D /* LMselectCountryCell.h */,
+				F17CBE2E1ED40C700067234D /* LMselectCountryCell.m */,
 				192350721E8120520022D844 /* PhoneRegisterCell.h */,
 				192350731E8120520022D844 /* PhoneRegisterCell.m */,
 				1923500F1E811D3E0022D844 /* AccountUserNameWidget.h */,
@@ -32760,6 +32760,7 @@
 				D95C04851E810902006C5C8A /* LMMessageTextView.m in Sources */,
 				D95C04831E810902006C5C8A /* LMCollectionEmojiTip.m in Sources */,
 				D95C02F91E8102FF006C5C8A /* PeerMessageHandler.m in Sources */,
+				F17CBE321ED536920067234D /* LMDisplayProgressView.m in Sources */,
 				D92232541E822BF800D67110 /* Adapter.m in Sources */,
 				D95C04401E810902006C5C8A /* ChatNameCardCell.m in Sources */,
 				192350691E81200D0022D844 /* AccountWListCell.m in Sources */,
@@ -32982,7 +32983,6 @@
 				D92232A41E822BF800D67110 /* GJCFUploadFileModel.m in Sources */,
 				19234F421E8113D60022D844 /* CaptureAvatarPage.m in Sources */,
 				192352971E81275B0022D844 /* KQXPasswordInputView.m in Sources */,
-				19234F481E8113D60022D844 /* LMselectCountryCell.m in Sources */,
 				D92232921E822BF800D67110 /* UIImage+GJFixOrientation.m in Sources */,
 				192350DD1E8121A20022D844 /* LMLabels.m in Sources */,
 				D95C046E1E810902006C5C8A /* GJGCChatInputBarItem.m in Sources */,
@@ -33316,6 +33316,7 @@
 				D9B084C11E810DDC0067EC4A /* SetCurrencyPage.m in Sources */,
 				1910B1CC1E81443400576620 /* MGSwipeButton.m in Sources */,
 				192350461E811F520022D844 /* NCellSwitch.m in Sources */,
+				F17CBE2F1ED40C700067234D /* LMselectCountryCell.m in Sources */,
 				19234FAA1E8118AE0022D844 /* RecentChatCell.m in Sources */,
 				D922327B1E822BF800D67110 /* NSData+Gzip.m in Sources */,
 				1923506C1E81200D0022D844 /* LinkmanFriendCell.m in Sources */,
@@ -33348,7 +33349,6 @@
 				1923512F1E8121CB0022D844 /* LMLabelsTableViewCell.m in Sources */,
 				D97FDCB71E86664800B161C8 /* NSParagraphStyle+YYText.m in Sources */,
 				D95C04441E810902006C5C8A /* ChatTransferCell.m in Sources */,
-				19234F431E8113D60022D844 /* LMDisplayProgressView.m in Sources */,
 				D95C04791E810902006C5C8A /* GJGCChatInputPanelStyle.m in Sources */,
 				D95C03691E8108D8006C5C8A /* LMchatGroupQRCodeViewController.m in Sources */,
 				D9222FCF1E822A3100D67110 /* UIFont+YYAdd.m in Sources */,

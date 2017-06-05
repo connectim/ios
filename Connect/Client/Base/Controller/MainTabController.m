@@ -31,6 +31,7 @@
 #import "LMConversionManager.h"
 #import "CommonSetPage.h"
 #import "RecentChatDBManager.h"
+#import "GJGCChatGroupViewController.h"
 
 @interface MainTabController (){
     dispatch_source_t _timer;
@@ -227,6 +228,41 @@
 
 
 #pragma mark - 会话页面导航
+
+- (void)createGroupWithGroupInfo:(LMGroupInfo *)groupInfo content:(NSString *)tipMessage{
+    
+    NSString *localMsgId = [ConnectTool generateMessageId];
+    ChatMessageInfo *chatMessage = [[ChatMessageInfo alloc] init];
+    chatMessage.messageId = localMsgId;
+    chatMessage.messageOwer = groupInfo.groupIdentifer;
+    chatMessage.messageType = GJGCChatFriendContentTypeStatusTip;
+    chatMessage.sendstatus = GJGCChatFriendSendMessageStatusSuccess;
+    chatMessage.createTime = (long long) ([[NSDate date] timeIntervalSince1970] * 1000);
+    MMMessage *message = [[MMMessage alloc] init];
+    message.type = GJGCChatFriendContentTypeStatusTip;
+    message.content = tipMessage;
+    message.sendtime = [[NSDate date] timeIntervalSince1970] * 1000;
+    message.message_id = localMsgId;
+    message.sendstatus = GJGCChatFriendSendMessageStatusSuccess;
+    chatMessage.message = message;
+    [[MessageDBManager sharedManager] saveMessage:chatMessage];
+    
+    GJGCChatFriendTalkModel *talk = [[GJGCChatFriendTalkModel alloc] init];
+    talk.talkType = GJGCChatFriendTalkTypeGroup;
+    talk.chatIdendifier = groupInfo.groupIdentifer;
+    talk.group_ecdhKey = groupInfo.groupEcdhKey;
+    talk.chatGroupInfo = groupInfo;
+    talk.name = [NSString stringWithFormat:@"%@(%lu)", groupInfo.groupName, (unsigned long) talk.chatGroupInfo.groupMembers.count];
+    [SessionManager sharedManager].chatSession = talk.chatIdendifier;
+    [SessionManager sharedManager].chatObject = groupInfo;
+    
+    GJGCChatGroupViewController *groupChat = [[GJGCChatGroupViewController alloc] initWithTalkInfo:talk];
+    groupChat.hidesBottomBarWhenPushed = YES;
+    UINavigationController *nav = [self selectedViewController];
+    [nav pushViewController:groupChat animated:YES];
+
+}
+
 - (void)chatWithFriend:(AccountInfo *)chatUser{
     [self chatWithFriend:chatUser withObject:nil];
 }
@@ -246,8 +282,9 @@
     talk.headUrl = user.avatar;
     talk.chatIdendifier = user.pub_key;
     talk.chatUser = user;
-    talk.mute = [[RecentChatDBManager sharedManager] getMuteStatusWithIdentifer:talk.chatIdendifier];;
+    talk.mute = [[RecentChatDBManager sharedManager] getMuteStatusWithIdentifer:talk.chatIdendifier];
     talk.top = [[RecentChatDBManager sharedManager] isTopChat:talk.chatIdendifier];
+    talk.snapChatOutDataTime = [[RecentChatDBManager sharedManager] getSnapTimeWithChatIdentifer:talk.chatIdendifier];
     if ([user.pub_key isEqualToString:kSystemIdendifier]) {
         GJGCChatSystemNotiViewController *systemChat = [[GJGCChatSystemNotiViewController alloc] initWithTalkInfo:talk];
         talk.talkType = GJGCChatFriendTalkTypePostSystem;
