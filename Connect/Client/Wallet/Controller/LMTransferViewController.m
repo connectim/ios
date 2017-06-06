@@ -30,18 +30,22 @@ static NSString *transIdentifier = @"transfer";
     [super viewDidLoad];
 
     self.title = LMLocalizedString(@"Wallet Transfer", nil);
-
-    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, AUTO_HEIGHT(30), VSIZE.width, VSIZE.height - AUTO_HEIGHT(30)) style:UITableViewStylePlain];
-    self.tableView.backgroundColor = [UIColor colorWithRed:236 / 255.0 green:236 / 255.0 blue:236 / 255.0 alpha:1.0];
-    self.tableView.delegate = self;
-    self.tableView.dataSource = self;
-    self.tableView.tableFooterView = [[UIView alloc] init];
     [self.view addSubview:self.tableView];
-    [self.tableView registerNib:[UINib nibWithNibName:@"LMFriendTableViewCell" bundle:nil] forCellReuseIdentifier:identifier];
-    [self.tableView registerNib:[UINib nibWithNibName:@"LMaddTableViewCell" bundle:nil] forCellReuseIdentifier:transIdentifier];
+}
+#pragma mark - lazy
+- (UITableView *)tableView {
+    if (!_tableView) {
+        self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, AUTO_HEIGHT(30), VSIZE.width, VSIZE.height - AUTO_HEIGHT(30)) style:UITableViewStylePlain];
+        self.tableView.backgroundColor = LMBasicBackgroudGray;
+        self.tableView.delegate = self;
+        self.tableView.dataSource = self;
+        self.tableView.tableFooterView = [[UIView alloc] init];
+        [self.tableView registerNib:[UINib nibWithNibName:@"LMFriendTableViewCell" bundle:nil] forCellReuseIdentifier:identifier];
+        [self.tableView registerNib:[UINib nibWithNibName:@"LMaddTableViewCell" bundle:nil] forCellReuseIdentifier:transIdentifier];
+    }
+    return _tableView;
 
 }
-
 #pragma mark --tableview delegate methods
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -126,12 +130,12 @@ static NSString *transIdentifier = @"transfer";
 - (nullable UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
     if (section == 1) {
         UIView *bgView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, VSIZE.width, AUTO_HEIGHT(40))];
-        bgView.backgroundColor = [UIColor colorWithRed:236 / 255.0 green:236 / 255.0 blue:236 / 255.0 alpha:1.0];
+        bgView.backgroundColor = LMBasicBackgroudGray;
         UILabel *titleOneLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, 0, VSIZE.width - 20, AUTO_HEIGHT(40))];
-        titleOneLabel.backgroundColor = [UIColor colorWithRed:236 / 255.0 green:236 / 255.0 blue:236 / 255.0 alpha:1.0];
+        titleOneLabel.backgroundColor = LMBasicBackgroudGray;
         titleOneLabel.text = LMLocalizedString(@"Wallet Recent transfer", nil);
         titleOneLabel.font = [UIFont systemFontOfSize:FONT_SIZE(22)];
-        titleOneLabel.textColor = [UIColor blackColor];
+        titleOneLabel.textColor = LMBasicBlack;
         titleOneLabel.textAlignment = NSTextAlignmentLeft;
         [bgView addSubview:titleOneLabel];
         return bgView;
