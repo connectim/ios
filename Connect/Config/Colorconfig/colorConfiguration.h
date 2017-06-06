@@ -11,6 +11,7 @@
 
 //========== APP colour combination ============
 #define LMBasicRed                  GJCFQuickHexColor(@"DF5D4D")
+#define LMBasicYellow               GJCFQuickHexColor(@"ECC437")
 #define LMBasicBlue                 GJCFQuickHexColor(@"007AFF")
 #define LMBasicBlack                GJCFQuickHexColor(@"161A21")
 #define LMBasicGreen                GJCFQuickHexColor(@"00C400")

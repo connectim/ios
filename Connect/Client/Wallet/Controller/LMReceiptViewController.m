@@ -43,6 +43,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
+    [self setNavigationRight:@"wallet_share_payment"];
     self.title = LMLocalizedString(@"Wallet Receipt", nil);
     // get usermessage
     AccountInfo *ainfo = [[LKUserCenter shareCenter] currentLoginUser];
@@ -50,8 +51,6 @@
     self.view.backgroundColor = [UIColor blackColor];
     // qr code
     [self addQRcodeImageView];
-    [self setNavigationRight:@"wallet_share_payment"];
-
     [self.view addSubview:self.errorTipLabel];
 }
 
@@ -99,8 +98,8 @@
     [self.setAmountButton setTitle:LMLocalizedString(@"Wallet Set Amount", nil) forState:UIControlStateNormal];
     [self.setAmountButton setTitle:LMLocalizedString(@"Wallet Clear", nil) forState:UIControlStateSelected];
     self.setAmountButton.titleLabel.font = [UIFont systemFontOfSize:FONT_SIZE(28)];
-    [self.setAmountButton setTitleColor:[UIColor colorWithRed:236 / 255.0 green:196 / 255.0 blue:55 / 255.0 alpha:1.0f] forState:UIControlStateNormal];
-    [self.setAmountButton addTarget:self action:@selector(rightBtnClick:) forControlEvents:UIControlEventTouchUpInside];
+    [self.setAmountButton setTitleColor:LMBasicYellow forState:UIControlStateNormal];
+    [self.setAmountButton addTarget:self action:@selector(btnChange:) forControlEvents:UIControlEventTouchUpInside];
 
     [self.view addSubview:self.setAmountButton];
     [_setAmountButton mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -110,14 +109,12 @@
 
 
     self.titleLabel = [[UILabel alloc] init];
-
     NSString *title = [NSString stringWithFormat:LMLocalizedString(@"Wallet Your Bitcoin Address", nil), [[LKUserCenter shareCenter] currentLoginUser].address];
     self.titleLabel.numberOfLines = 0;
     self.titleLabel.text = title;
     self.titleLabel.font = [UIFont boldSystemFontOfSize:FONT_SIZE(25)];
-    self.titleLabel.textColor = [UIColor blackColor];
+    self.titleLabel.textColor = LMBasicBlack;
     self.titleLabel.textAlignment = NSTextAlignmentCenter;
-
     self.titleLabel.userInteractionEnabled = YES;
 
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapAddress)];
@@ -213,9 +210,9 @@
     [self.bitTextField resignFirstResponder];
 }
 
-#pragma mark --rightBtnClick
+#pragma mark --
 
-- (void)rightBtnClick:(UIButton *)btn {
+- (void)btnChange:(UIButton *)btn {
     btn.selected = !btn.selected;
     self.leftView.hidden = !btn.selected;
     if (btn.selected) {
