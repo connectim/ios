@@ -61,6 +61,18 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    NSString *draft = [[RecentChatDBManager sharedManager] getDraftWithIdentifier:self.taklInfo.chatIdendifier];
+    if (!GJCFStringIsNull(draft)) {
+        //set draft
+        //stop tableview scroll
+        [self.chatListTable setContentOffset:self.chatListTable.contentOffset animated:NO];
+        if (!textField && [self.inputPanel isInputTextFirstResponse]) {
+            textField = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+            [self.view addSubview:textField];
+            textField.hidden = YES;
+        }
+        [textField becomeFirstResponder];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -84,7 +96,6 @@
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     self.isKeyboardShowing = [self.inputPanel isInputTextFirstResponse];
-    [self.dataSourceManager viewControllerWillDisMissToCheckSendingMessageSaveSendStateFail];
     [self clearAllFirstResponse];
     if (![self.navigationController.childViewControllers containsObject:self]) {
         self.willDisappear = YES;
@@ -98,6 +109,7 @@
         }
     }
 }
+
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -115,15 +127,13 @@
     [self configFileDownloadManager];
 
     //add notification
-    RegisterNotify(@"im.connect.DeleteMessageHistoryNotification", @selector(deleteMessageHistory));
+    RegisterNotify(DeleteMessageHistoryNotification, @selector(deleteMessageHistory));
     RegisterNotify(kAcceptNewFriendRequestNotification, @selector(friendAccept:))
-    RegisterNotify(@"RereweetMessageNotification", @selector(retweetMessage:));
-    [self observeApplicationState];
+    RegisterNotify(RereweetMessageNotification, @selector(retweetMessage:));
     RegisterNotify(TransactionStatusChangeNotification, @selector(transactionStatusChange:));
     RegisterNotify(GroupAdminChangeNotification, @selector(groupAdmingChange));
-    RegisterNotify(@"deleteGroupReviewedMessageNotification", @selector(deleteReviewMessage:));
+    RegisterNotify(DeleteGroupReviewedMessageNotification, @selector(deleteReviewMessage:));
     RegisterNotify(ConnnectGroupDismissNotification, @selector(groupdissmiss:));
-
     RegisterNotify(UIApplicationDidChangeStatusBarFrameNotification, @selector(statusBarFrameChange:));
 }
 
@@ -388,10 +398,12 @@
     }];
     [self.view addSubview:self.inputPanel];
 
-    //set draft
-    [self.inputPanel setLastMessageDraft:[[RecentChatDBManager sharedManager] getDraftWithIdentifier:self.taklInfo.chatIdendifier]];
-
-
+    NSString *draft = [[RecentChatDBManager sharedManager] getDraftWithIdentifier:self.taklInfo.chatIdendifier];
+    if (!GJCFStringIsNull(draft)) {
+        //set draft
+        [self.inputPanel setLastMessageDraft:[[RecentChatDBManager sharedManager] getDraftWithIdentifier:self.taklInfo.chatIdendifier]];
+    }
+    
     self.refreshHeadView = [[GJGCRefreshHeaderView alloc] init];
     self.refreshHeadView.delegate = self;
     [self.refreshHeadView setupChatFooterStyle];
@@ -742,22 +754,16 @@
         GJGCChatBaseCell *baceCell = (GJGCChatBaseCell *) cell;
         [baceCell willDisplayCell];
     }
-
-
     if (self.taklInfo.talkType == GJGCChatFriendTalkTypePostSystem) {
         return;
     }
-
     GJGCChatFriendContentModel *model = (GJGCChatFriendContentModel *) [self.dataSourceManager contentModelAtIndex:indexPath.row];
-    if (model.isFromSelf) {
-        return;
-    }
-
-    //pre load rich message
+    
+    //pre-download rich message
     [self downloadRichtextWhenShowAtIndexPath:indexPath contentModel:model];
 
     //message read ack
-    if (![self.dataSourceManager.ignoreMessageTypes containsObject:@(model.contentType)]) {
+    if (![self.dataSourceManager.ignoreMessageTypes containsObject:@(model.contentType)] && !model.isFromSelf) {
         if (model.snapTime > 0 && model.readState == GJGCChatFriendMessageReadStateUnReaded) {
             if (model.contentType == GJGCChatFriendContentTypeVideo || model.contentType == GJGCChatFriendContentTypeAudio || model.contentType == GJGCChatFriendContentTypeImage) {
                 return;
@@ -884,6 +890,17 @@
     }];
 }
 
+- (void)dataSourceManager:(GJGCChatDetailDataSourceManager *)dataManager snapChatUpdateProgressWithIndexPaths:(NSArray *)indexPaths{
+    for (NSIndexPath *indexPath in indexPaths) {
+        GJGCChatFriendBaseCell *baceCell = [self.chatListTable cellForRowAtIndexPath:indexPath];
+        if ([self.chatListTable.visibleCells containsObject:baceCell]) {
+            if ([baceCell respondsToSelector:@selector(updateSnapChatProgress)]) {
+                [baceCell updateSnapChatProgress];
+            }
+        }
+    }
+}
+
 - (void)dataSourceManagerSnapChatUpdateListTable:(GJGCChatDetailDataSourceManager *)dataManager {
     [GCDQueue executeInMainQueue:^{
         [self reloadData];
@@ -974,17 +991,6 @@
 
 - (void)clearAllEarlyMessage {
 
-}
-
-#pragma mark - back / frongroup note
-
-- (void)observeApplicationState {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(becomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
-}
-
-- (void)becomeActive:(NSNotification *)noti {
-    dispatch_async(dispatch_get_main_queue(), ^{
-    });
 }
 
 #pragma -mark  UIGestureRecognizerDelegate-》》 Gesture conflict can not be the key word

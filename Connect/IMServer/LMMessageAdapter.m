@@ -326,7 +326,7 @@
                     BOOL isExist = [[MessageDBManager sharedManager] isMessageIsExistWithMessageId:applyMessage.messageId messageOwer:kSystemIdendifier];
                     if (isExist) {
                         [GCDQueue executeInMainQueue:^{
-                            SendNotify(@"deleteGroupReviewedMessageNotification", applyMessage.messageId);
+                            SendNotify(DeleteGroupReviewedMessageNotification, applyMessage.messageId);
                         }];
 
                         [[MessageDBManager sharedManager] deleteMessageByMessageId:applyMessage.messageId messageOwer:kSystemIdendifier];

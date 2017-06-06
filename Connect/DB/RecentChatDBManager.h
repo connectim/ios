@@ -126,13 +126,6 @@
 - (NSString *)getDraftWithIdentifier:(NSString *)identifier;
 
 /**
- * recent chat is top status
- * @param publiKeyOrGroupid
- * @return
- */
-- (BOOL)isTopChat:(NSString *)publiKeyOrGroupid;
-
-/**
  * updata custum field value
  * @param fieldsValues
  * @param identifier

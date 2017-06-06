@@ -350,7 +350,7 @@ typedef NS_ENUM(NSUInteger, SourceType) {
     }
     [[MessageDBManager sharedManager] deleteAllMessageByMessageOwer:self.talkModel.chatIdendifier];
     [GCDQueue executeInMainQueue:^{
-        SendNotify(@"im.connect.DeleteMessageHistoryNotification", nil);
+        SendNotify(DeleteMessageHistoryNotification, nil);
     }];
 
 }

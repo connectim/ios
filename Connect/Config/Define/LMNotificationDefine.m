@@ -103,3 +103,9 @@ NSString *const GroupAdminChangeNotification = @"GroupAdminChangeNotification";
 NSString *const GroupNewMemberEnterNotification = @"GroupNewMemberEnterNotification";
 
 NSString *const SocketDataVerifyIllegalityNotification = @"SocketDataVerifyIllegalityNotification";
+
+NSString *const DeleteMessageHistoryNotification = @"DeleteMessageHistoryNotification";
+
+NSString *const RereweetMessageNotification = @"RereweetMessageNotification";
+
+NSString *const DeleteGroupReviewedMessageNotification = @"DeleteGroupReviewedMessageNotification";

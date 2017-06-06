@@ -282,15 +282,17 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
 
 - (void)dataSourceManagerRequireDeleteMessages:(GJGCChatDetailDataSourceManager *)dataManager deletePaths:(NSArray *)willDeletePaths deleteModels:(NSArray *)models {
     for (NSIndexPath *indexPath in willDeletePaths) {
-
         NSInteger index = [willDeletePaths indexOfObject:indexPath];
-
         GJGCChatContentBaseModel *model = [models objectAtIndexCheck:index];
         [self cancelDownloadAtIndexPath:indexPath];
         [self stopPlayCurrentAudio];
-
         [[MessageDBManager sharedManager] deleteMessageByMessageId:model.localMsgId messageOwer:self.taklInfo.chatIdendifier];
         [ChatMessageFileManager deleteRecentChatMessageFileByMessageID:model.localMsgId Address:self.taklInfo.fileDocumentName];
+    }
+    if (willDeletePaths.count) {
+        [self.chatListTable beginUpdates];
+        [self.chatListTable deleteRowsAtIndexPaths:willDeletePaths withRowAnimation:UITableViewRowAnimationBottom];
+        [self.chatListTable endUpdates];
     }
 }
 
@@ -902,14 +904,6 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
     }
 }
 
-#pragma mark - textFieldChange -delegate
-
-- (void)textFieldChange:(UITextField *)currentTextField {
-    if (currentTextField.text.length > 20) {
-        currentTextField.text = [currentTextField.text substringToIndex:20];
-    }
-}
-
 - (void)chatCellDidTapOnNameCard:(GJGCChatBaseCell *)tappedCell {
 
     NSIndexPath *tapIndexPath = [self.chatListTable indexPathForCell:tappedCell];
@@ -1031,14 +1025,6 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
         }
     }];
 
-}
-
-#pragma mark - lucky packge delegate
-
-- (void)redLuckyShowView:(LMRedLuckyShowView *)showView goRedLuckyDetailWithSender:(UIButton *)sender {
-    [showView dismissRedLuckyView];
-    [MBProgressHUD showLoadingMessageToView:self.view];
-    [self showRedBagDetailWithHashId:showView.hashId];
 }
 
 - (void)getSystemRedBagDetailWithHashId:(NSString *)hashId {
@@ -1544,6 +1530,20 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
             break;
         default:
             break;
+    }
+}
+
+#pragma mark - lucky packge delegate
+- (void)redLuckyShowView:(LMRedLuckyShowView *)showView goRedLuckyDetailWithSender:(UIButton *)sender {
+    [showView dismissRedLuckyView];
+    [MBProgressHUD showLoadingMessageToView:self.view];
+    [self showRedBagDetailWithHashId:showView.hashId];
+}
+
+#pragma mark - textFieldChange -delegate
+- (void)textFieldChange:(UITextField *)currentTextField {
+    if (currentTextField.text.length > 20) {
+        currentTextField.text = [currentTextField.text substringToIndex:20];
     }
 }
 
@@ -2369,7 +2369,7 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
 }
 
 
-#pragma mark - 发送红包
+#pragma mark - send luckypackge
 
 - (void)showCreateRedPage {
     NSInteger redPackType = 0;
@@ -2412,6 +2412,8 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
     [self.dataSourceManager sendMesssage:chatContentModel];
 }
 
+
+#pragma mark - send transfer message
 - (void)transfer {
     if (self.taklInfo.talkType == GJGCChatFriendTalkTypeGroup) {
         LMGroupFriendsViewController *page = [[LMGroupFriendsViewController alloc] init];
@@ -2432,8 +2434,6 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
         [self presentViewController:nav animated:YES completion:nil];
     }
 }
-
-#pragma mark - send transfer message
 
 - (void)sendTransferMessageWithAmount:(NSString *)amount transactionID:(NSString *)transactionID note:(NSString *)note {
     LMTransactionModel *transactionModel = [LMTransactionModel new];
@@ -2507,6 +2507,8 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
     [self.dataSourceManager sendMesssage:chatContentModel];
 }
 
+
+#pragma mark -privte method
 - (NSString *)createTumbWithImage:(UIImage *)thumbImage withOriginImagePath:(NSString *)originImagePath imageID:(NSString *)imageID {
 
     NSString *thumbName = [NSString stringWithFormat:@"%@-thumb.jpg", imageID];

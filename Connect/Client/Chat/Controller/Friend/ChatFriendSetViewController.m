@@ -114,7 +114,7 @@
     }
     [[MessageDBManager sharedManager] deleteAllMessageByMessageOwer:self.talkModel.chatUser.pub_key];
     [GCDQueue executeInMainQueue:^{
-        SendNotify(@"im.connect.DeleteMessageHistoryNotification", nil);
+        SendNotify(DeleteMessageHistoryNotification, nil);
     }];
 
 }

@@ -33,6 +33,8 @@
 
 - (void)dataSourceManagerSnapChatUpdateListTable:(GJGCChatDetailDataSourceManager *)dataManager;
 
+- (void)dataSourceManager:(GJGCChatDetailDataSourceManager *)dataManager snapChatUpdateProgressWithIndexPaths:(NSArray *)indexPaths;
+
 - (void)dataSourceManagerRequireUpdateListTable:(GJGCChatDetailDataSourceManager *)dataManager;
 
 - (void)dataSourceManagerEnterSnapChat:(GJGCChatDetailDataSourceManager *)dataManager;
@@ -107,8 +109,6 @@
 - (void)showReceiptMessageMessageWithPayName:(NSString *)payName receiptName:(NSString *)receiptName isCrowd:(BOOL)isCrowd;
 
 - (void)openSnapMessageCounterState:(GJGCChatFriendContentModel *)findContent;
-
-- (void)viewControllerWillDisMissToCheckSendingMessageSaveSendStateFail;
 
 /**
  *  Time interval control of transmitting messages

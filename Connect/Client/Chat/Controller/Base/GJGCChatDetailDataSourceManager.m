@@ -20,7 +20,7 @@
 #import "GJCFFileUploadManager.h"
 #import "LMMessageTool.h"
 
-@interface GJGCChatDetailDataSourceManager () <PeerMessageHandlerGetNewMessage, GroupMessageHandlerGetNewMessage, SystemMessageHandlerGetNewMessage>
+@interface GJGCChatDetailDataSourceManager () <MessageHandlerGetNewMessage>
 
 @property(nonatomic, strong) dispatch_source_t refreshListSource;
 @property(nonatomic, strong) NSMutableArray *snapDeleteModels;
@@ -182,7 +182,7 @@
 - (CADisplayLink *)snapChatDisplayLink {
     if (!_snapChatDisplayLink &&
         self.taklInfo.talkType == GJGCChatFriendTalkTypePrivate &&
-        self.taklInfo.snapChatOutDataTime > 0) {
+        self.snapMessageContents.count > 0) {
         _snapChatDisplayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(updateProgressSnapMessageCell)];
         if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"10.0")) {
             _snapChatDisplayLink.preferredFramesPerSecond = 1;
@@ -194,6 +194,55 @@
     }
 
     return _snapChatDisplayLink;
+}
+
+#pragma mark - 更新阅后即焚的消息状态
+
+- (void)updateProgressSnapMessageCell {
+    if (self.isLoadingMore) {
+        return;
+    }
+    if (self.snapMessageContents.count <= 0) {
+        self.snapChatDisplayLink.paused = YES;
+        return;
+    }
+    
+    for (GJGCChatFriendContentModel *model in self.snapMessageContents) {
+        int long long readTime = model.readTime;
+        int long long currentTime = [[NSDate date] timeIntervalSince1970] * 1000;
+        CGFloat progress = (currentTime - readTime) / (model.snapTime * 1.f);
+        model.snapProgress = progress;
+        NSInteger findIndex = [self getContentModelIndexByLocalMsgId:model.localMsgId];
+        if (progress > 1) {
+            //delete
+            [self.snapDeleteModels objectAddObject:model];
+            [self.snapDeleteIndexPaths objectAddObject:[NSIndexPath indexPathForRow:findIndex inSection:0]];
+        }
+    }
+    //Delete expired messages
+    if (self.snapDeleteModels.count > 0) {
+        [self.chatListArray removeObjectsInArray:self.snapDeleteModels];
+        [self.snapMessageContents removeObjectsInArray:self.snapDeleteModels];
+        //To delete a file, you need to create a new array object to avoid Collection <__NSArrayM:> was mutated while being enumerated.
+        if ([self.delegate respondsToSelector:@selector(dataSourceManagerRequireDeleteMessages:deletePaths:deleteModels:)]) {
+            [self.delegate dataSourceManagerRequireDeleteMessages:self
+                                                      deletePaths:[NSMutableArray arrayWithArray:self.snapDeleteIndexPaths]
+                                                     deleteModels:[NSMutableArray arrayWithArray:self.snapDeleteModels]];
+        }
+        //clear
+        [self.snapDeleteModels removeAllObjects];
+        [self.snapDeleteIndexPaths removeAllObjects];
+    }
+    NSMutableArray *indexPaths = [NSMutableArray array];
+    for (GJGCChatFriendContentModel *model in self.snapMessageContents) {
+        NSInteger index = [self.chatListArray indexOfObject:model];
+        if (index != NSNotFound) {
+            [indexPaths addObject:[NSIndexPath indexPathForRow:index inSection:0]];
+        }
+    }
+    if ([self.delegate respondsToSelector:@selector(dataSourceManager:snapChatUpdateProgressWithIndexPaths:)]) {
+        [self.delegate dataSourceManager:self snapChatUpdateProgressWithIndexPaths:indexPaths];
+    }
 }
 
 - (void)handleSnapChatMessageWithMessageID:(NSString *)messageid {
@@ -225,51 +274,6 @@
     }                                     onQueue:nil];
 }
 
-
-#pragma mark - 更新阅后即焚的消息状态
-
-- (void)updateProgressSnapMessageCell {
-
-    [GCDQueue executeInGlobalQueue:^{
-        if (self.isLoadingMore) {
-            return;
-        }
-        if (self.snapMessageContents.count <= 0) {
-            self.snapChatDisplayLink.paused = YES;
-            return;
-        }
-
-        for (GJGCChatFriendContentModel *model in self.snapMessageContents) {
-            int long long readTime = model.readTime;
-            int long long currentTime = [[NSDate date] timeIntervalSince1970] * 1000;
-            CGFloat progress = (currentTime - readTime) / (model.snapTime * 1.f);
-            model.snapProgress = progress;
-            NSInteger findIndex = [self getContentModelIndexByLocalMsgId:model.localMsgId];
-            if (progress > 1) {
-                //delete
-                [self.snapDeleteModels objectAddObject:model];
-                [self.snapDeleteIndexPaths objectAddObject:[NSIndexPath indexPathForRow:findIndex inSection:0]];
-            }
-        }
-        //Delete expired messages
-        if (self.snapDeleteModels.count > 0) {
-            [self.chatListArray removeObjectsInArray:self.snapDeleteModels];
-            [self.snapMessageContents removeObjectsInArray:self.snapDeleteModels];
-            //To delete a file, you need to create a new array object to avoid Collection <__NSArrayM:> was mutated while being enumerated.
-            if ([self.delegate respondsToSelector:@selector(dataSourceManagerRequireDeleteMessages:deletePaths:deleteModels:)]) {
-                [self.delegate dataSourceManagerRequireDeleteMessages:self
-                                                          deletePaths:[NSMutableArray arrayWithArray:self.snapDeleteIndexPaths]
-                                                         deleteModels:[NSMutableArray arrayWithArray:self.snapDeleteModels]];
-            }
-            //clear
-            [self.snapDeleteModels removeAllObjects];
-            [self.snapDeleteIndexPaths removeAllObjects];
-        }
-        if ([self.delegate respondsToSelector:@selector(dataSourceManagerSnapChatUpdateListTable:)]) {
-            [self.delegate dataSourceManagerSnapChatUpdateListTable:self];
-        }
-    }];
-}
 
 #pragma mark - Dispatch reload tableview
 
@@ -622,45 +626,16 @@
     [LMMessageTool savaSendMessageToDB:message];
 
     [[RecentChatDBManager sharedManager] openSnapChatWithIdentifier:self.taklInfo.chatIdendifier snapTime:time openOrCloseByMyself:YES];
-
     [self sendMessagePost:message];
-    [self enterSnapchatMode];
+    if (time == 0) {
+        [self outSnapchatMode];
+    } else {
+        [self enterSnapchatMode];
+    }
 }
 
 - (void)closeSnapChatMode {
-    self.taklInfo.snapChatOutDataTime = 0;
-
-    GJGCChatFriendContentModel *snapChatModel = [GJGCChatFriendContentModel timeSubModel];
-    snapChatModel.baseMessageType = GJGCChatBaseMessageTypeChatMessage;
-    snapChatModel.contentType = GJGCChatFriendContentTypeSnapChat;
-    snapChatModel.snapChatTipString = [GJGCChatSystemNotiCellStyle formateOpensnapChatWithTime:0 isSendToMe:NO chatUserName:self.taklInfo.chatUser.normalShowName];
-    snapChatModel.originTextMessage = snapChatModel.snapChatTipString.string;
-    NSArray *contentHeightArray = [self heightForContentModel:snapChatModel];
-    snapChatModel.contentHeight = [[contentHeightArray firstObject] floatValue];
-    NSDate *sendTime = [NSDate date];
-    snapChatModel.sendTime = (long long int) ([sendTime timeIntervalSince1970] * 1000);
-
-
-    snapChatModel.localMsgId = [ConnectTool generateMessageId];
-
-    [self addChatContentModel:snapChatModel];
-
-    MMMessage *message = [[MMMessage alloc] init];
-    message.content = @"0";
-    message.type = GJGCChatFriendContentTypeSnapChat;
-    message.message_id = snapChatModel.localMsgId;
-    message.sendtime = snapChatModel.sendTime;
-    message.publicKey = self.taklInfo.chatIdendifier;
-    message.user_id = self.taklInfo.chatUser.address;
-    message.sendstatus = GJGCChatFriendSendMessageStatusSuccess;
-
-    [LMMessageTool savaSendMessageToDB:message];
-
-    [[RecentChatDBManager sharedManager] openSnapChatWithIdentifier:self.taklInfo.chatIdendifier snapTime:0 openOrCloseByMyself:YES];
-
-    [self sendMessagePost:message];
-
-    [self outSnapchatMode];
+    [self openSnapChatModeWithTime:0];
 }
 
 
@@ -1025,13 +1000,6 @@
     return YES;
 }
 
-- (void)viewControllerWillDisMissToCheckSendingMessageSaveSendStateFail {
-    for (GJGCChatFriendContentModel *model in self.chatListArray) {
-        if (model.sendStatus == GJGCChatFriendSendMessageStatusSending) {
-            DDLogInfo(@"Failed to save the message status in the message！！！");
-        }
-    }
-}
 
 /**
  *  upload message success callback
@@ -1048,7 +1016,6 @@
     } else {
         fileUrl = [NSString stringWithFormat:@"%@?pub_key=%@&token=%@", fileData.URL, messageContent.reciverPublicKey, fileData.token];
     }
-
     switch (messageContent.contentType) {
         case GJGCChatFriendContentTypeVideo:
         case GJGCChatFriendContentTypeImage: {
@@ -1171,46 +1138,11 @@
 }
 
 #pragma mark - add message model
-
 - (GJGCChatFriendContentModel *)addMMMessage:(ChatMessageInfo *)chatMessage {
     return nil;
 }
 
-#pragma mark - recivi system message
-
-- (void)getNewSystemMessages:(NSArray *)messages {
-    [self getBitchNewMessage:messages];
-}
-
-- (void)getNewSystemMessage:(ChatMessageInfo *)message {
-    int type = message.messageType;
-    switch (type) {
-        case 101:
-        case 102: {
-            GJGCChatContentBaseModel *temModel = [GJGCChatContentBaseModel new];
-            temModel.sendTime = message.message.sendtime;
-            GJGCChatContentBaseModel *timeConttentModel = [self updateTheNewMsgTimeString:temModel];
-            if (timeConttentModel) {
-                [self.chatListArray addObject:timeConttentModel];
-            }
-            [self addMMMessage:message];
-            dispatch_source_merge_data(_refreshListSource, 1);
-        }
-            break;
-        default:
-            [self getNewMessage:message];
-            break;
-    }
-}
-
-#pragma mark - recive group message
-
-- (void)getBitchGroupMessage:(NSArray *)messages {
-    [self getBitchNewMessage:messages];
-}
-
-#pragma mark - recive private message
-
+#pragma mark - recive read ack message
 - (void)getReadAckWithMessageID:(NSString *)messageId chatUserPublickey:(NSString *)publickey {
     if (![publickey isEqualToString:self.taklInfo.chatIdendifier]) {
         return;
@@ -1218,25 +1150,14 @@
     [self handleSnapChatMessageWithMessageID:messageId];
 }
 
-- (void)getNewMessage:(ChatMessageInfo *)message {
 
-    if (![message.messageOwer isEqualToString:self.taklInfo.chatIdendifier]) {
-        return;
-    }
-    //message de emphasis
-    if (message.messageType != GJGCChatFriendContentTypeSnapChatReadedAck && [self contentModelByMsgId:message.messageId]) {
-        return;
-    }
-    [self handleGetMessage:message isBitch:NO complete:NO];
-
-}
+#pragma mark - receive message
 
 - (void)getBitchNewMessage:(NSArray *)messages {
     if (messages.count == 1) {
         [self getNewMessage:[messages lastObject]];
     } else {
         for (ChatMessageInfo *message in messages) {
-
             BOOL complete = message == [messages lastObject];
             if (![message.messageOwer isEqualToString:self.taklInfo.chatIdendifier]) {
                 return;
@@ -1250,6 +1171,18 @@
     }
 }
 
+- (void)getNewMessage:(ChatMessageInfo *)message {
+    
+    if (![message.messageOwer isEqualToString:self.taklInfo.chatIdendifier]) {
+        return;
+    }
+    //message de emphasis
+    if (message.messageType != GJGCChatFriendContentTypeSnapChatReadedAck && [self contentModelByMsgId:message.messageId]) {
+        return;
+    }
+    [self handleGetMessage:message isBitch:NO complete:NO];
+    
+}
 
 - (void)handleGetMessage:(ChatMessageInfo *)message isBitch:(BOOL)bitch complete:(BOOL)complete {
 

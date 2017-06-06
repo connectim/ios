@@ -27,10 +27,15 @@
 
 @end
 
-@protocol SystemMessageHandlerGetNewMessage <NSObject>
+@protocol MessageHandlerGetNewMessage <NSObject>
 
-- (void)getNewSystemMessage:(ChatMessageInfo *)message;
-- (void)getNewSystemMessages:(NSArray *)messages;
+@optional
+
+//get messages
+- (void)getBitchNewMessage:(NSArray *)messages;
+
+//get message read ack
+- (void)getReadAckWithMessageID:(NSString *)messageId chatUserPublickey:(NSString *)publickey;
 
 @end
 

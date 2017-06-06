@@ -98,12 +98,6 @@ static RecentChatDBManager *manager = nil;
 
 }
 
-- (NSArray *)getAllRecentChatWithoutSystemChat {
-
-    return nil;
-}
-
-
 - (NSArray *)getAllRecentChat {
 
     NSString *querySql = @"select c.identifier,c.name,c.avatar,c.draft,c.stranger,c.last_time,c.unread_count,c.top,c.notice,c.type,c.content,s.snap_time,s.disturb from t_conversion c,t_conversion_setting s where c.identifier = s.identifier order by c.last_time desc";
@@ -201,11 +195,7 @@ static RecentChatDBManager *manager = nil;
     if (GJCFStringIsNull(identifier)) {
         return;
     }
-
     BOOL result = [self deleteTableName:RecentChatTable conditions:@{@"identifier": identifier}];
-    
-
-
     //remove draft
     [self removeDraftWithIdentifier:identifier];
     if (result) {

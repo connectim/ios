@@ -82,15 +82,11 @@
 }
 
 - (void)rightButtonPressed:(id)sender {
-
     ChatGroupSetViewController *setController = [[ChatGroupSetViewController alloc] initWithTalkInfo:self.taklInfo];
-
     [self.navigationController pushViewController:setController animated:YES];
-
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t) (0.26 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [self reserveChatInputPanelState];
     });
-
 }
 
 #pragma mark - Group chat when adding a @ function
