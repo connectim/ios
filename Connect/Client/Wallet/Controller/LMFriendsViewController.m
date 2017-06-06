@@ -13,6 +13,7 @@
 #import "NSString+Pinyin.h"
 #import "UIImage+Color.h"
 #import "NSString+Size.h"
+#import "LMLinkManDataManager.h"
 
 
 @interface LMFriendsViewController () <UITableViewDelegate, UITableViewDataSource>
@@ -21,8 +22,7 @@
 
 @property(nonatomic, strong) NSMutableArray *dataArr;
 
-@property(nonatomic, strong) NSMutableArray *sectionArr;
-@property(nonatomic, strong) NSMutableArray *alphaArr;
+@property(nonatomic, strong) NSMutableArray *sectionTitleArr;
 
 @property(nonatomic, strong) UITableView *tableView;
 
@@ -37,25 +37,11 @@ static NSString *friends = @"friends";
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = LMLocalizedString(@"Wallet Select friends", nil);
-    self.dataArr = @[].mutableCopy;
-    self.alphaArr = @[].mutableCopy;
-
-    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 64, VSIZE.width, VSIZE.height - 64) style:UITableViewStylePlain];
-    self.tableView.delegate = self;
-    self.tableView.dataSource = self;
-    self.tableView.rowHeight = AUTO_HEIGHT(115);
-    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    self.tableView.tableFooterView = [[UIView alloc] init];
     [self.view addSubview:self.tableView];
-
+    
     if ([self respondsToSelector:@selector(automaticallyAdjustsScrollViewInsets)]) {
         self.automaticallyAdjustsScrollViewInsets = NO;
     }
-
-    self.tableView.sectionIndexColor = [UIColor lightGrayColor];
-    self.tableView.sectionIndexBackgroundColor = [UIColor clearColor];
-
-    [self.tableView registerNib:[UINib nibWithNibName:@"LMSelectTableViewCell" bundle:nil] forCellReuseIdentifier:friends];
     [self setRightBarButtonItemWithEnable:NO withDispalyString:LMLocalizedString(@"Wallet Transfer", nil) withDisplayColor:[UIColor colorWithWhite:1.0 alpha:0.5]];
 
     // Get friends
@@ -63,21 +49,68 @@ static NSString *friends = @"friends";
     [GCDQueue executeInMainQueue:^{
         [MBProgressHUD showLoadingMessageToView:weakSelf.view];
     }];
+    
     [GCDQueue executeInGlobalQueue:^{
-        [[UserDBManager sharedManager] getAllUsersNoConnectWithComplete:^(NSArray *contacts) {
-
-            [weakSelf.dataArr addObjectsFromArray:contacts];
-            [weakSelf.alphaArr addObjectsFromArray:[weakSelf accordingTheChineseAndEnglishNameToGenerateAlphabet]];
-            [weakSelf nameIsAlphabeticalAscending];
+            self.dataArr = [[LMLinkManDataManager sharedManager] getFriendsArrWithNoConnect];
+            self.sectionTitleArr = [self getIndexArray:self.dataArr];
             [GCDQueue executeInMainQueue:^{
                 [MBProgressHUD hideHUDForView:weakSelf.view];
                 [weakSelf.tableView reloadData];
             }];
-
-        }];
     }];
 }
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [self.tableView reloadData];
+}
 
+#pragma mark - lazy
+- (NSMutableArray *)dataArr {
+    if (!_dataArr) {
+        self.dataArr = [NSMutableArray array];
+    }
+    return _dataArr;
+}
+- (NSMutableArray *)sectionTitleArr {
+    if (!_sectionTitleArr) {
+        self.sectionTitleArr = [NSMutableArray array];
+    }
+    return _sectionTitleArr;
+}
+- (NSMutableArray *)selectedList {
+    if (!_selectedList) {
+        self.selectedList = [NSMutableArray array];
+    }
+    return _selectedList;
+}
+- (UITableView *)tableView {
+    if (!_tableView) {
+        self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 64, VSIZE.width, VSIZE.height - 64) style:UITableViewStylePlain];
+        self.tableView.delegate = self;
+        self.tableView.dataSource = self;
+        self.tableView.rowHeight = AUTO_HEIGHT(115);
+        self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+        self.tableView.tableFooterView = [[UIView alloc] init];
+        self.tableView.sectionIndexColor = [UIColor lightGrayColor];
+        self.tableView.sectionIndexBackgroundColor = [UIColor clearColor];
+        [self.tableView registerNib:[UINib nibWithNibName:@"LMSelectTableViewCell" bundle:nil] forCellReuseIdentifier:friends];
+    }
+    return _tableView;
+
+}
+#pragma mark - method
+- (NSMutableArray *)getIndexArray:(NSMutableArray *)groupArray {
+    if (groupArray.count <= 0) {
+        return nil;
+    }
+    NSMutableArray *temArray = [NSMutableArray array];
+    for (NSMutableDictionary* dic in groupArray) {
+        if ([RegexKit isNotChinsesWithUrl:dic[@"title"]]) {
+            [temArray addObject:dic[@"title"]];
+        }
+    }
+    return temArray;
+}
 - (void)setRightBarButtonItemWithEnable:(BOOL)enable withDispalyString:(NSString *)titleName withDisplayColor:(UIColor *)color {
     self.navigationItem.rightBarButtonItems = nil;
 
@@ -100,27 +133,16 @@ static NSString *friends = @"friends";
 
     self.transferBtn.enabled = enable;
 }
-
-- (void)btnClicked:(UIButton *)btn {
-
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-
-
-    [self.tableView reloadData];
-}
-
 #pragma mark -- Get friends
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return self.sectionArr.count;
+    return self.dataArr.count;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    NSArray *array = self.sectionArr[section];
-    return [array count];
+    NSMutableDictionary *dic = self.dataArr[section];
+    NSMutableArray * temArray = dic[@"items"];
+    return temArray.count;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -129,10 +151,10 @@ static NSString *friends = @"friends";
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
     UIView *bgView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, VSIZE.width, AUTO_HEIGHT(40))];
-    bgView.backgroundColor = [UIColor colorWithRed:236 / 255.0 green:236 / 255.0 blue:236 / 255.0 alpha:1.0];
+    bgView.backgroundColor = LMBasicBackgroudGray;
     UILabel *titleOneLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, 0, VSIZE.width - 20, AUTO_HEIGHT(40))];
-    titleOneLabel.backgroundColor = [UIColor colorWithRed:236 / 255.0 green:236 / 255.0 blue:236 / 255.0 alpha:1.0];
-    titleOneLabel.text = [NSString stringWithFormat:@"%@", self.alphaArr[section]];
+    titleOneLabel.backgroundColor = LMBasicBackgroudGray;
+    titleOneLabel.text = [NSString stringWithFormat:@"%@", self.sectionTitleArr[section]];
     titleOneLabel.font = [UIFont systemFontOfSize:FONT_SIZE(26)];
     titleOneLabel.textColor = [UIColor blackColor];
     titleOneLabel.textAlignment = NSTextAlignmentLeft;
@@ -141,7 +163,7 @@ static NSString *friends = @"friends";
 }
 
 - (NSArray<NSString *> *)sectionIndexTitlesForTableView:(UITableView *)tableView {
-    return self.alphaArr;
+    return self.sectionTitleArr;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index {
@@ -157,7 +179,8 @@ static NSString *friends = @"friends";
     if (!cell) {
         cell = [[LMSelectTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:friends];
     }
-    AccountInfo *info = self.sectionArr[indexPath.section][indexPath.row];
+    NSMutableDictionary *dic = self.dataArr[indexPath.section];
+    AccountInfo *info = dic[@"items"][indexPath.row];
     [cell setAccoutInfo:info];
     [cell.checkBox setOn:info.isSelected animated:YES];
     return cell;
@@ -166,7 +189,8 @@ static NSString *friends = @"friends";
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     LMSelectTableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-    AccountInfo *info = self.sectionArr[indexPath.section][indexPath.row];
+    NSMutableDictionary *dic = self.dataArr[indexPath.section];
+    AccountInfo *info = dic[@"items"][indexPath.row];
     info.isSelected = !info.isSelected;
     [cell.checkBox setOn:info.isSelected animated:YES];
     if ([self.selectedList containsObject:info]) {
@@ -203,78 +227,4 @@ static NSString *friends = @"friends";
     };
     [self.navigationController pushViewController:transfer animated:YES];
 }
-
-- (NSArray *)accordingTheChineseAndEnglishNameToGenerateAlphabet {
-    NSMutableArray *alphatArr = [[NSMutableArray alloc] init];
-    for (AccountInfo *info in self.dataArr) {
-        NSString *pinyin = [info.normalShowName transformToPinyin];
-        NSString *pinyinFirst = [[pinyin substringToIndex:1] uppercaseString];
-        if ([self preIsInAtoZ:pinyinFirst]) {
-            if (![alphatArr containsObject:pinyinFirst]) {
-                [alphatArr objectAddObject:pinyinFirst];
-            }
-
-        } else {
-            if (![alphatArr containsObject:@"#"]) {
-                [alphatArr objectAddObject:@"#"];
-            }
-        }
-    }
-
-    // sort array
-    NSArray *arr = [alphatArr sortedArrayUsingComparator:^NSComparisonResult(NSString *obj1, NSString *obj2) {
-        NSComparisonResult result = [obj1 compare:obj2];
-        return result;
-    }];
-    return arr;
-}
-
-- (void)nameIsAlphabeticalAscending {
-
-    for (NSString *alphat in self.alphaArr) {
-        NSMutableArray *sectionArr = [[NSMutableArray alloc] init];
-        for (int i = 0; i < self.dataArr.count; i++) {
-            AccountInfo *info = self.dataArr[i];
-            NSString *pinyin = [info.normalShowName transformToPinyin];
-            NSString *pinyinFirst = [[pinyin substringToIndex:1] uppercaseString];
-            // First determine pinyinFirst is not the letter set to #
-            if (pinyinFirst.length > 0) {
-                NSString *regex = @"[a-zA-Z]";
-                NSPredicate *pred = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", regex];
-                if (![pred evaluateWithObject:pinyinFirst]) {
-                    pinyinFirst = @"#";
-                }
-
-            }
-            if ([pinyinFirst isEqualToString:alphat]) {
-                [sectionArr objectAddObject:info];
-            }
-        }
-        [self.sectionArr objectAddObject:sectionArr];
-    }
-
-}
-
-#pragma mark --lazy
-
-- (NSMutableArray *)selectedList {
-    if (_selectedList == nil) {
-        _selectedList = [NSMutableArray array];
-    }
-    return _selectedList;
-}
-
-- (NSMutableArray *)sectionArr {
-    if (_sectionArr == nil) {
-        _sectionArr = [NSMutableArray array];
-    }
-    return _sectionArr;
-}
-
-#pragma mark - privkey Method
-
-- (BOOL)preIsInAtoZ:(NSString *)str {
-    return [@"QWERTYUIOPLKJHGFDSAZXCVBNM" containsString:str] || [[@"QWERTYUIOPLKJHGFDSAZXCVBNM" lowercaseString] containsString:str];
-}
-
 @end

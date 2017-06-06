@@ -48,10 +48,9 @@
     self.navigationItem.leftBarButtonItems = nil;
     self.navigationController.title = LMLocalizedString(@"Link Contacts", nil);
     [self setNavigationRight:@"add_white"];
+    [[LMLinkManDataManager sharedManager] getAllLinkMan];
     [LMLinkManDataManager sharedManager].delegate = self;
     [self configTableView];
-    [self refreshData];
-    RegisterNotify(LinkRefreshLinkData, @selector(clickShare));
     // set left button
     [self setLeftButton];
     
@@ -59,30 +58,8 @@
 - (void)clickShare {
     self.isClickShare = YES;
 }
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-    if (self.isClickShare) {
-        [self refreshData];
-    }
-
-}
-- (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-    self.isClickShare = NO;
-}
 - (void)dealloc {
     RemoveNofify;
-}
-- (void)refreshData {
-    
-    [[LMLinkManDataManager sharedManager] getAllLinkMan:ContactTypeLink withUser:nil withComplete:^(BOOL isComplete) {
-        if (isComplete) {
-            [GCDQueue executeInMainQueue:^{
-                [self.tableView reloadData];
-            }];
-        }
-    }];
-
 }
 -(void)setLeftButton
 {
@@ -142,7 +119,7 @@
     [self.tableView registerNib:[UINib nibWithNibName:@"NewFriendTipCell" bundle:nil] forCellReuseIdentifier:@"NewFriendTipCellID"];
     [self.tableView registerClass:[ConnectTableHeaderView class] forHeaderFooterViewReuseIdentifier:@"ConnectTableHeaderViewID"];
     self.tableView.rowHeight = AUTO_HEIGHT(111);
-    self.tableView.sectionIndexColor = [UIColor lightGrayColor];
+    self.tableView.sectionIndexColor = LMBasicDarkGray;
     self.tableView.sectionIndexBackgroundColor = [UIColor clearColor];
     self.tableView.backgroundColor = GJCFQuickHexColor(@"F0F0F6");
     // head tip view

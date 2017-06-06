@@ -16,7 +16,6 @@
 #import "ScanAddPage.h"
 #import "LMHandleScanResultManager.h"
 
-#define isPad (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad)
 
 @interface WalletItem : NSObject
 
@@ -53,8 +52,9 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self setupSubView];
     self.navigationItem.leftBarButtonItems = nil;
+    
+    [self setupSubView];
     [self addRightBarButtonItem];
     [self addLeftBarButtonItem];
 }
@@ -63,21 +63,14 @@
     [super viewWillAppear:animated];
     [self queryBlance];
 }
-
-- (void)currencyChange {
-    [super currencyChange];
-    __weak __typeof(&*self) weakSelf = self;
-    [[PayTool sharedInstance] getRateComplete:^(NSDecimalNumber *rate, NSError *error) {
-        if (error) {
-
-        } else {
-            [GCDQueue executeInMainQueue:^{
-                [weakSelf.walletBlanceButton setTitle:[NSString stringWithFormat:@"%@ %.2f", weakSelf.symbol, rate.doubleValue * [[MMAppSetting sharedSetting] getBalance] * pow(10, -8)] forState:UIControlStateSelected];
-            }];
-        }
-    }];
+#pragma lazy
+- (AccountInfo *)loginUser {
+    if (!_loginUser) {
+        _loginUser = [[LKUserCenter shareCenter] currentLoginUser];
+    }
+    
+    return _loginUser;
 }
-
 #pragma mark -- add button
 
 - (void)addRightBarButtonItem {
@@ -117,18 +110,20 @@
     [self.navigationController pushViewController:HistoryVc animated:YES];
 }
 
-- (AccountInfo *)loginUser {
-    if (!_loginUser) {
-        _loginUser = [[LKUserCenter shareCenter] currentLoginUser];
-    }
-
-    return _loginUser;
+- (void)currencyChange {
+    [super currencyChange];
+    __weak __typeof(&*self) weakSelf = self;
+    [[PayTool sharedInstance] getRateComplete:^(NSDecimalNumber *rate, NSError *error) {
+        if (!error) {
+            [GCDQueue executeInMainQueue:^{
+                [weakSelf.walletBlanceButton setTitle:[NSString stringWithFormat:@"%@ %.2f", weakSelf.symbol, rate.doubleValue * [[MMAppSetting sharedSetting] getBalance] * pow(10, -8)] forState:UIControlStateSelected];
+            }];
+        }
+    }];
 }
-
-
 - (void)setupSubView {
 
-    self.view.backgroundColor = GJCFQuickHexColor(@"F1F1F1");
+    self.view.backgroundColor = LMBasicBackgroudGray;
     UIImageView *logImageView = [[UIImageView alloc] init];
     logImageView.image = [UIImage imageNamed:@"wallet_bitcoin_icon"];
     [self.headerView addSubview:logImageView];
@@ -146,7 +141,7 @@
     }];
     tipLabel.text = LMLocalizedString(@"Wallet My Balance", nil);
     tipLabel.font = [UIFont systemFontOfSize:FONT_SIZE(32)];
-    tipLabel.textColor = GJCFQuickHexColor(@"161A21");
+    tipLabel.textColor = LMBasicBlack;
     [tipLabel sizeToFit];
     tipLabel.center = self.view.center;
     tipLabel.textAlignment = NSTextAlignmentCenter;
@@ -159,7 +154,7 @@
         make.top.equalTo(tipLabel.mas_bottom).offset(AUTO_HEIGHT(25));
         make.centerX.equalTo(self.headerView);
     }];
-    [self.walletBlanceButton setTitleColor:GJCFQuickHexColor(@"38425F") forState:UIControlStateNormal];
+    [self.walletBlanceButton setTitleColor:LMBasicBlanceBtnTitleColor forState:UIControlStateNormal];
     [self.walletBlanceButton setTitle:[NSString stringWithFormat:@"฿ %@", [PayTool getBtcStringWithAmount:[[MMAppSetting sharedSetting] getBalance]]] forState:UIControlStateNormal];
     [self.walletBlanceButton setTitle:[NSString stringWithFormat:@"%@ %.2f", self.symbol, [[MMAppSetting sharedSetting] getBalance] * pow(10, -8) * [[MMAppSetting sharedSetting] getRate]] forState:UIControlStateSelected];
 
@@ -213,7 +208,9 @@
 - (void)queryBlance {
     __weak __typeof(&*self) weakSelf = self;
     [[PayTool sharedInstance] getBlanceWithComplete:^(NSString *blance, UnspentAmount *unspentAmount, NSError *error) {
-        [weakSelf.walletBlanceButton setTitle:[NSString stringWithFormat:@"฿ %@", [PayTool getBtcStringWithAmount:unspentAmount.amount]] forState:UIControlStateNormal];
+        if (!error) {
+           [weakSelf.walletBlanceButton setTitle:[NSString stringWithFormat:@"฿ %@", [PayTool getBtcStringWithAmount:unspentAmount.amount]] forState:UIControlStateNormal];
+        }
     }];
 
     [[PayTool sharedInstance] getRateComplete:^(NSDecimalNumber *rate, NSError *error) {
@@ -269,10 +266,10 @@
     if (!_collectionView) {
         UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
         CGFloat w = DEVICE_SIZE.width / 3;
-        if (GJCFSystemiPhone5 || GJCFSystemiPhone6 || ([UIScreen mainScreen].bounds.size.width >= 390 && [UIScreen mainScreen].bounds.size.width <= 444)) {
-            layout.itemSize = CGSizeMake(w, AUTO_HEIGHT(165));
-        } else {
-            layout.itemSize = CGSizeMake(w, 80);
+        if ([self checkDevice:@"iPhone"]) {
+             layout.itemSize = CGSizeMake(w, AUTO_HEIGHT(165));
+        }else {
+             layout.itemSize = CGSizeMake(w, 80);
         }
         layout.minimumLineSpacing = 0;
         layout.minimumInteritemSpacing = 0;
@@ -286,7 +283,12 @@
     }
     return _collectionView;
 }
-
+-(BOOL)checkDevice:(NSString*)name
+{
+    NSString* deviceType = [UIDevice currentDevice].model;
+    NSRange range = [deviceType rangeOfString:name];
+    return range.location != NSNotFound;
+}
 - (UIView *)headerView {
     if (!_headerView) {
         _headerView = [[UIView alloc] init];
@@ -296,7 +298,4 @@
 
     return _headerView;
 }
-
-#pragma mark -
-
 @end

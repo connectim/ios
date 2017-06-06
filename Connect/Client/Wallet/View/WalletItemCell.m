@@ -10,7 +10,6 @@
 
 
 @interface WalletItemCell ()
-@property(weak, nonatomic) IBOutlet NSLayoutConstraint *lableBottomConstaton;
 
 
 @end
@@ -22,11 +21,6 @@
     // Initialization code
     self.titleLabel.textColor = LMBasicBlack;
     self.titleLabel.font = [UIFont systemFontOfSize:FONT_SIZE(24)];
-    if (GJCFSystemiPhone5) {
-        self.lableBottomConstaton.constant = 5;
-    } else {
-        self.lableBottomConstaton.constant = AUTO_HEIGHT(30);
-    }
 }
 
 - (CGFloat)heightForCell {

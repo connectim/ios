@@ -89,22 +89,21 @@
                 self.iconImageView.image = [UIImage imageNamed:@"luckpacket_record"];
             }
                 break;
+            case 6: {
+                self.iconImageView.image = [UIImage imageNamed:@"bitcoin_luckybag"];
+            }
+                break;
             case 7: // System red envelopes
             {
                 self.iconImageView.image = [UIImage imageNamed:@"luckpacket_record"];
-            }
-                break;
-            case 6: {
-                self.iconImageView.image = [UIImage imageNamed:@"bitcoin_luckybag"];
+                self.nameLabel.text = LMLocalizedString(@"Wallet From Connect team", nil);
             }
                 break;
             default:
                 [self.iconImageView setPlaceholderImageWithAvatarUrl:model.imageUrl];
                 break;
         }
-        if (model.txType == 7) {
-            self.nameLabel.text = LMLocalizedString(@"Wallet From Connect team", nil);
-        } else {
+        if (model.txType != 7) {
             self.nameLabel.text = model.userName;
         }
         self.sureLabel.text = model.confirmation ? LMLocalizedString(@"Wallet Confirmed", nil) : LMLocalizedString(@"Wallet Unconfirmed", nil);
@@ -112,7 +111,7 @@
         if (model.confirmation) {
             self.sureLabel.textColor = [UIColor colorWithWhite:0.702 alpha:1.000];
         } else {
-            self.sureLabel.textColor = [UIColor redColor];
+            self.sureLabel.textColor = LMBasicRed;
         }
 
         // Time processing

@@ -25,6 +25,7 @@
 #import "ConnectTableHeaderView.h"
 #import "LMRetweetMessageManager.h"
 #import "LMLinkManDataManager.h"
+#import "RegexKit.h"
 
 @interface LMShareContactViewController () <UITableViewDelegate, UITableViewDataSource>
 
@@ -64,6 +65,7 @@
         self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
         self.tableView.sectionIndexBackgroundColor = [UIColor clearColor];
         self.tableView.sectionIndexTrackingBackgroundColor = [UIColor clearColor];
+        self.tableView.sectionIndexColor = LMBasicDarkGray;
         self.tableView.delegate = self;
         self.tableView.dataSource = self;
     }
@@ -87,15 +89,12 @@
     [super viewDidLoad];
     self.title = LMLocalizedString(@"Link Share", nil);
     [self.view addSubview:self.tableView];
-    [[LMLinkManDataManager sharedManager] getAllLinkMan:ContactTypeShare withUser:self.contact withComplete:^(BOOL isComplete) {
-        if (isComplete) {
-            [GCDQueue executeInMainQueue:^{
-                self.groupsFriendArray = [[LMLinkManDataManager sharedManager] getListGroupsFriend];
-                self.indexsArray = [[LMLinkManDataManager sharedManager] getListIndexs];
-                [self.tableView reloadData];
-                SendNotify(LinkRefreshLinkData, nil);
-            }];
-        }
+    [GCDQueue executeInGlobalQueue:^{
+        self.groupsFriendArray = [[LMLinkManDataManager sharedManager] getListGroupsFriend:self.contact];
+        self.indexsArray = [self getIndexArray:self.groupsFriendArray];
+        [GCDQueue executeInMainQueue:^{
+            [self.tableView reloadData];
+        }];
     }];
 }
 #pragma mark - Table view data source
@@ -173,7 +172,18 @@
     alertController.automaticallyAdjustsScrollViewInsets = NO;
     [self presentViewController:alertController animated:YES completion:nil];
 }
-
+- (NSMutableArray *)getIndexArray:(NSMutableArray *)groupArray {
+    if (groupArray.count <= 0) {
+        return nil;
+    }
+    NSMutableArray *temArray = [NSMutableArray array];
+    for (NSMutableDictionary* dic in groupArray) {
+        if ([RegexKit isNotChinsesWithUrl:dic[@"title"]]) {
+            [temArray addObject:dic[@"title"]];
+        }
+    }
+    return temArray;
+}
 - (void)sendShareCardMessageWithChat:(id)data {
 
 
