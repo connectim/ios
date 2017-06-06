@@ -102,47 +102,22 @@
 - (id)mutableCopyWithZone:(nullable NSZone *)zone
 {
     
-    AccountInfo * accountInfo = [[self class] allocWithZone:zone];
-    
-    accountInfo.address = self.address;
-    accountInfo.avatar = self.avatar;
-    accountInfo.avatar400 = self.avatar400;
-    accountInfo.encryption_pri = self.encryption_pri;
-    accountInfo.password_hint = self.password_hint;
-    accountInfo.pub_key = self.pub_key;
-    accountInfo.username = self.username;
-    accountInfo.remarks = self.remarks;
-    accountInfo.bonding = self.bonding;
-    accountInfo.bondingPhone = self.bondingPhone;
-    accountInfo.groupNickName = self.groupNickName;
-    accountInfo.prikey = self.prikey;
-    accountInfo.contentId = self.contentId;
-    accountInfo.groupShowName = self.groupShowName;
-    accountInfo.normalShowName = self.normalShowName;
-    accountInfo.phoneContactName = self.phoneContactName;
-    accountInfo.phoneContactName = self.phoneContactName;
-    accountInfo.lastLoginTime = self.lastLoginTime;
-    accountInfo.tags = self.tags;
-    accountInfo.requestRead = self.requestRead;
-    accountInfo.message = self.message;
-    accountInfo.times = self.times;
-    accountInfo.source = self.source;
-    accountInfo.status = self.status;
-    accountInfo.customOperation = self.customOperation;
-    accountInfo.customOperationWithInfo = self.customOperationWithInfo;
-    accountInfo.isSelected = self.isSelected;
-    accountInfo.isGroupAdmin = self.isGroupAdmin;
-    accountInfo.isThisGroupMember = self.isThisGroupMember;
-    accountInfo.stranger = self.stranger;
-    accountInfo.roleInGroup = self.roleInGroup;
-    accountInfo.groupMute = self.groupMute;
-    accountInfo.isBlackMan = self.isBlackMan;
-    accountInfo.isOffenContact = self.isOffenContact;
-    accountInfo.isUnRegisterAddress = self.isUnRegisterAddress;
-    accountInfo.recommandStatus = self.recommandStatus;
-    accountInfo.recommend = self.recommend;
-    
-    return accountInfo;
-
+    id copy = [[[self class] allocWithZone:zone] init];
+    unsigned int count = 0;
+    Ivar *listArray = class_copyIvarList([self class], &count);
+    for (int index = 0; index < count; index++) {
+        Ivar ivar = listArray[index];
+        NSString *name_ = [NSString stringWithUTF8String:ivar_getName(ivar)];
+        NSString *name = nil;
+        if (name_.length > 1) {
+          name = [name_ substringFromIndex:1];
+          id value = [self valueForKey:name];
+          [copy setValue:value forKey:name];
+        }else {
+          continue;
+        }
+    }
+    free(listArray);
+    return copy;
 }
 @end
