@@ -18,7 +18,7 @@
 #define SOCKET_PORT 19090
 #define DefaultHeadUrl @"https://short.connect.im/avatar/" APIVersion "/b040e0a970bc6d80b675586c5a55f9e9109168ba.png"
 
-#define nationalAppDownloadUrl @"https://connect.im/guide"
+#define nationalAppDownloadUrl @"itms-services://?action=download-manifest&url=https://connect.im/app/download/manifest.plist"
 #define appstoreAppDownloadUrl @"https://itunes.apple.com/app/connect-p2p-encrypted-instant/id1181365735"
 #define appOpensourceUrl       @"https://www.connect.im/mobile/developer"
 #define AppCrashUrl            @"https://collector.bughd.com/kscrash?key=21bc82c6e76df952ccb0c45ca358e87a"
