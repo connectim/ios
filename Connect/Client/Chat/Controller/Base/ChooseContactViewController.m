@@ -121,16 +121,12 @@
 }
 
 - (void)doRight:(id)sender {
-    __weak typeof(self) weakSelf = self;
     if (self.complete) {
         self.complete(self.selectedContacts);
     }
-
     if (self.dynamicComplete) {
         self.dynamicComplete(self.selectedContacts);
     }
-
-
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 

@@ -27,7 +27,8 @@ typedef void (^TransferInputValueLagelBlock)(BOOL lagel);
 // Default note text
 @property(nonatomic, copy) NSString *noteDefaultString;
 // Enter the default amount of the box
-@property(nonatomic, assign) double textDefaultAmount;
+@property(nonatomic, copy) NSString *defaultAmountString;
+
 // Whether to hide fee default no
 @property(nonatomic, assign) BOOL isHidenFee;
 // The top of the label

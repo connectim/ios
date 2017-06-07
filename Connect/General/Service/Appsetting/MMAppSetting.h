@@ -183,6 +183,9 @@
 - (void)saveBalance:(long long int)balance;
 - (long long int)getBalance;
 
+- (void)saveAvaliableAmount:(NSString *)balance;
+- (long long int)getAvaliableAmount;
+
 #pragma mark - rate
 - (void)saveRate:(float)rate;
 - (double)getRate;

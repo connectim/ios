@@ -144,8 +144,8 @@ static NSString *identifier = @"cellIdentifier";
             make.bottom.equalTo(self.view).offset(-AUTO_HEIGHT(25));
         }];
         self.userBalanceLabel = [[UILabel alloc] init];
-        self.amount = [[MMAppSetting sharedSetting] getBalance];
-        self.userBalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance", nil), [PayTool getBtcStringWithAmount:self.amount]];
+        self.amount = [[MMAppSetting sharedSetting] getAvaliableAmount];
+        self.userBalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance Credit", nil), [PayTool getBtcStringWithAmount:self.amount]];
         self.userBalanceLabel.textColor = [UIColor colorWithHexString:@"38425F"];
         self.userBalanceLabel.font = [UIFont systemFontOfSize:FONT_SIZE(28)];
         self.userBalanceLabel.textAlignment = NSTextAlignmentCenter;
@@ -153,7 +153,7 @@ static NSString *identifier = @"cellIdentifier";
         // get packet message
         [[PayTool sharedInstance] getBlanceWithComplete:^(NSString *blance, UnspentAmount *unspentAmount, NSError *error) {
             [GCDQueue executeInMainQueue:^{
-                weakSelf.userBalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance", nil), [PayTool getBtcStringWithAmount:unspentAmount.avaliableAmount]];
+                weakSelf.userBalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance Credit", nil), [PayTool getBtcStringWithAmount:unspentAmount.avaliableAmount]];
                 weakSelf.amount = unspentAmount.avaliableAmount;
             }];
         }];
@@ -312,7 +312,6 @@ static NSString *identifier = @"cellIdentifier";
         if (passView.requestCallBack) {
             passView.requestCallBack([NSError errorWithDomain:hResponse.message code:hResponse.code userInfo:nil]);
         }
-            
             return;
         }
        
@@ -326,14 +325,6 @@ static NSString *identifier = @"cellIdentifier";
             Crowdfunding *crowdInfo = [Crowdfunding parseFromData:data error:&error];
             [[LMMessageExtendManager sharedManager]updateMessageExtendPayCount:(int)(crowdInfo.size - crowdInfo.remainSize)status:(int)crowdInfo.status withHashId:crowdInfo.hashId];
             if (!error) {
-                //update packet balance
-                [[PayTool sharedInstance] getBlanceWithComplete:^(NSString *blance, UnspentAmount *unspentAmount, NSError *error) {
-                    [GCDQueue executeInMainQueue:^{
-                        weakSelf.blance = unspentAmount.avaliableAmount;
-                        weakSelf.userBalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance", nil), [PayTool getBtcStringWithAmount:unspentAmount.avaliableAmount]];
-                    }];
-                }];
-                
                 weakSelf.crowdfundingInfo = crowdInfo;
                 //refresh list
                 [weakSelf reloadView];
@@ -350,12 +341,6 @@ static NSString *identifier = @"cellIdentifier";
        
     }];
 
-}
-
-- (void)updateBalanceLabelWithBitInfo:(BitcoinInfo *)info {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.userBalanceLabel setText:[NSString stringWithFormat:LMLocalizedString(@"Wallet Balance", nil), [info.bitcoinAccout floatValue]]];
-    });
 }
 
 #pragma mark --tableView代理方法

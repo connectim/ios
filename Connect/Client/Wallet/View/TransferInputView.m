@@ -241,20 +241,17 @@
     [self.noteButton setTitle:noteDefaultString forState:UIControlStateNormal];
 }
 
-- (void)setTextDefaultAmount:(double)textDefaultAmount {
-    _textDefaultAmount = textDefaultAmount;
-    if (textDefaultAmount > 0) {
-        self.amount = [[NSDecimalNumber alloc] initWithDouble:textDefaultAmount];
+- (void)setDefaultAmountString:(NSString *)defaultAmountString {
+    if (defaultAmountString.doubleValue > 0) {
+        _defaultAmountString = defaultAmountString;
+        self.amount = [NSDecimalNumber decimalNumberWithString:defaultAmountString];
+        NSString *amountString = [self limitPoint:defaultAmountString withSympol:@"฿"];
+        self.inputTextField.text = amountString;
 
-        NSString *nameString = nil;
-        nameString = [NSString stringWithFormat:@"%0.8f", textDefaultAmount];
-        nameString = [self limitPoint:nameString withSympol:@"฿"];
-        self.inputTextField.text = nameString;
-
-        nameString = [NSString stringWithFormat:@"%@ %f", self.sympol, [[MMAppSetting sharedSetting] getRate] * textDefaultAmount];
-        nameString = [self limitPoint:nameString withSympol:self.sympol];
-
-        [self.rateChangeButton setTitle:nameString forState:UIControlStateNormal];
+        
+        NSString *reteAmountString = [NSString stringWithFormat:@"%@ %f", self.sympol, [[MMAppSetting sharedSetting] getRate] * defaultAmountString.doubleValue];
+        reteAmountString = [self limitPoint:reteAmountString withSympol:self.sympol];
+        [self.rateChangeButton setTitle:reteAmountString forState:UIControlStateNormal];
     }
 }
 
@@ -416,7 +413,7 @@
     if (self.valueChangeBlock) {
         self.valueChangeBlock(self.inputTextField.text, self.amount);
     }
-    if (self.textDefaultAmount == MAX_REDMIN_AMOUNT) { // Red envelopes amount
+    if (self.amount.doubleValue == MAX_REDMIN_AMOUNT) { // Red envelopes amount
         if (self.amount.doubleValue<MAX_REDMIN_AMOUNT || self.amount.doubleValue>MAX_REDBAG_AMOUNT) {
             if (self.lagelBlock) {
                 self.lagelBlock(NO);
@@ -527,7 +524,7 @@
     // Enter the amount of control
     NSDecimalNumber *deAmount = [NSDecimalNumber decimalNumberWithString:textField.text];
     double amount = [deAmount doubleValue];
-    if (self.textDefaultAmount == MAX_REDMIN_AMOUNT) {
+    if (self.amount.doubleValue == MAX_REDMIN_AMOUNT) {
         if (amount < MAX_REDMIN_AMOUNT) {
             textField.text = [NSString stringWithFormat:@"%f", MAX_REDMIN_AMOUNT];
             BaseViewController *controller = (BaseViewController *) [self viewController];
