@@ -126,9 +126,7 @@
 
 - (void)initTabelViewCell {
     self.BalanceLabel = [[UILabel alloc] init];
-
-    [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance", nil), [PayTool getBtcStringWithAmount:[[MMAppSetting sharedSetting] getBalance]]];
-
+    self.BalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance", nil), [PayTool getBtcStringWithAmount:[[MMAppSetting sharedSetting] getBalance]]];
     self.BalanceLabel.textColor = [UIColor colorWithHexString:@"38425F"];
     self.BalanceLabel.font = [UIFont systemFontOfSize:FONT_SIZE(28)];
     self.BalanceLabel.textAlignment = NSTextAlignmentCenter;
@@ -256,7 +254,6 @@
 }
 
 - (void)makeTransfer:(LMRawTransactionModel *)rawModel decimalMoney:(NSDecimalNumber *)amount note:(NSString *)note {
-
 
     [MBProgressHUD showTransferLoadingViewtoView:self.view];
     self.vtsArray = rawModel.vtsArray;
