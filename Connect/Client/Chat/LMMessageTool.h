@@ -42,4 +42,6 @@
 
 + (GJGCChatFriendContentModel *)packContentModelWithTalkModel:(GJGCChatFriendTalkModel *)talkModel contentType:(GJGCChatFriendContentType)contentType extData:(id)extData;
 
++ (BOOL)checkRichtextUploadStatuts:(MMMessage *)message;
+
 @end

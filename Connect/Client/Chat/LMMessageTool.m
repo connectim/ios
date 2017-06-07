@@ -1048,4 +1048,27 @@
 }
 
 
++ (BOOL)checkRichtextUploadStatuts:(MMMessage *)message {
+    switch (message.type) {
+        case GJGCChatFriendContentTypeAudio:
+        case GJGCChatFriendContentTypeImage:
+        case GJGCChatFriendContentTypeMapLocation:
+            if (message.content) {
+                return YES;
+            }
+            break;
+            
+        case GJGCChatFriendContentTypeVideo:
+            if (message.content && message.url) {
+                return YES;
+            }
+            break;
+        default:
+            return YES;
+            break;
+    }
+    return NO;
+}
+
+
 @end
