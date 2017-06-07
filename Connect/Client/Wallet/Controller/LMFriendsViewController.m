@@ -227,4 +227,13 @@ static NSString *friends = @"friends";
     };
     [self.navigationController pushViewController:transfer animated:YES];
 }
+-(void)dealloc {
+    [self.selectedList removeAllObjects];
+    self.selectedList = nil;
+    [self.sectionTitleArr removeAllObjects];
+    self.sectionTitleArr = nil;
+    [self.dataArr removeAllObjects];
+    self.dataArr = nil;
+
+}
 @end
