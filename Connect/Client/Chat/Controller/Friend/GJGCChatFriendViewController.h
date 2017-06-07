@@ -15,6 +15,18 @@
  */
 - (void)makePhoneCall:(NSString *)phoneNumber;
 
+/**
+ * garb private luckypackage
+ * @param hashId
+ */
+- (void)getSystemRedBagDetailWithHashId:(NSString *)hashId;
+
+/**
+ * garb connect term luckypackage
+ * @param hashId
+ */
+- (void)showRedBagDetailWithHashId:(NSString *)hashId;
+
 @property(nonatomic, copy) NSString *outterRedpackHashid;
 
 @end

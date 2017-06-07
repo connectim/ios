@@ -825,10 +825,7 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
 
 - (void)chatCellDidTapOnHeadView:(GJGCChatBaseCell *)tapedCell {
     NSIndexPath *tapIndexPath = [self.chatListTable indexPathForCell:tapedCell];
-
     GJGCChatFriendContentModel *chatContentModel = (GJGCChatFriendContentModel *) [self.dataSourceManager contentModelAtIndex:tapIndexPath.row];
-
-
     if (chatContentModel.isFromSelf) {
 
     } else {
@@ -839,6 +836,7 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
                     info = [[UserDBManager sharedManager] getUserByAddress:groupUser.address];
                     if (!info) {
                         info = groupUser;
+                        info.stranger = YES;
                     }
                     break;
                 }
@@ -852,7 +850,6 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
         if (!info) {
             return;
         }
-
         if (!info.stranger) {
             if (self.taklInfo.talkType == GJGCChatFriendTalkTypePostSystem) {
                 return;
@@ -966,7 +963,9 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
             [MBProgressHUD hideHUDForView:self.view];
         }];
         if (error) {
-
+            [GCDQueue executeInMainQueue:^{
+                [MBProgressHUD showToastwithText:LMLocalizedString(@"Chat Network connection failed please check network", nil) withType:ToastTypeFail showInView:self.view complete:nil];
+            }];
         } else {
             switch (response.status) {
                 case 0://fail

@@ -42,7 +42,6 @@
 }
 
 - (void)transforCellDidTap:(GJGCChatBaseCell *)tapedCell {
-
     NSIndexPath *tapIndexPath = [self.chatListTable indexPathForCell:tapedCell];
     GJGCChatFriendContentModel *chatContentModel = (GJGCChatFriendContentModel *) [self.dataSourceManager contentModelAtIndex:tapIndexPath.row];
     NSString *url = [NSString stringWithFormat:@"%@%@", txDetailBaseUrl, chatContentModel.hashID];
@@ -56,7 +55,7 @@
     NSIndexPath *tapIndexPath = [self.chatListTable indexPathForCell:tapedCell];
     GJGCChatFriendContentModel *chatContentModel = (GJGCChatFriendContentModel *) [self.dataSourceManager contentModelAtIndex:tapIndexPath.row];
     if ([chatContentModel.typeString isEqualToString:@"redpackge"]) {
-        [self showPrivateRedBagDetailWithHashId:chatContentModel.hashID];
+        [self showRedBagDetailWithHashId:chatContentModel.hashID];
     }
     if ([chatContentModel.typeString isEqualToString:@"addressnotify"]) {
         NSString *url = [NSString stringWithFormat:@"%@%@", txDetailBaseUrl, chatContentModel.hashID];
@@ -91,12 +90,9 @@
 
     if (!model.handled) {
         page.VerifyCallback = ^(BOOL refused) {
-
             chatContentModel.statusMessageString = [GJGCChatSystemNotiCellStyle formateCellStatusWithHandle:YES refused:refused isNoted:YES];
             model.handled = YES;
-
             [joinToGroupCell showStatusLabelWithResult:refused];
-
             MMMessage *msg = [self.dataSourceManager messageByMessageId:chatContentModel.localMsgId];
             NSMutableDictionary *temDict = [msg.ext1 mutableCopy];
             [temDict setObject:@(refused) forKey:@"refused"];
@@ -117,7 +113,6 @@
 
 
 - (void)grabRedBagWithHashId:(NSString *)hashId senderName:(NSString *)senderName sendAddress:(NSString *)sendAddress {
-
     [MBProgressHUD showLoadingMessageToView:self.view];
     [RedBagNetWorkTool grabSystemRedBagWithHashId:hashId complete:^(GrabRedPackageResp *response, NSError *error) {
         [GCDQueue executeInMainQueue:^{
@@ -168,7 +163,7 @@
                     break;
                 case 2: //have garbed
                 {
-                    [self showSystemRedBagDetailWithHashId:hashId];
+                    [self getSystemRedBagDetailWithHashId:hashId];
                 }
                     break;
                 case 4: //luckypackage is complete
@@ -221,146 +216,8 @@
 - (void)redLuckyShowView:(LMRedLuckyShowView *)showView goRedLuckyDetailWithSender:(UIButton *)sender {
     [showView dismissRedLuckyView];
     [MBProgressHUD showLoadingMessageToView:self.view];
-    [self showSystemRedBagDetailWithHashId:showView.hashId];
+    [self getSystemRedBagDetailWithHashId:showView.hashId];
 }
-
-
-- (void)showSystemRedBagDetailWithHashId:(NSString *)hashId {
-    __weak __typeof(&*self) weakSelf = self;
-    [RedBagNetWorkTool getSystemRedBagDetailWithHashId:hashId complete:^(RedPackageInfo *bagInfo, NSError *error) {
-        [GCDQueue executeInMainQueue:^{
-            [MBProgressHUD hideHUDForView:weakSelf.view];
-        }];
-        if (error) {
-            [MBProgressHUD showToastwithText:LMLocalizedString(@"Network equest failed please try again later", nil) withType:ToastTypeFail showInView:self.view complete:nil];
-            return;
-        }
-        if (bagInfo.redpackage.system) {
-            LMChatRedLuckyDetailController *page = [[LMChatRedLuckyDetailController alloc] initWithUserInfo:nil redLuckyInfo:bagInfo];
-            [GCDQueue executeInMainQueue:^{
-                [weakSelf presentViewController:[[UINavigationController alloc] initWithRootViewController:page] animated:YES completion:nil];
-            }];
-        } else {
-
-            AccountInfo *user = nil;
-            NSString *address = bagInfo.redpackage.sendAddress;
-            if ([address isEqualToString:[[LKUserCenter shareCenter] currentLoginUser].address]) {
-                user = [[LKUserCenter shareCenter] currentLoginUser];
-            } else {
-                if (self.taklInfo.talkType == GJGCChatFriendTalkTypeGroup) {
-                    user = [[GroupDBManager sharedManager] getGroupMemberByGroupId:self.taklInfo.chatIdendifier memberAddress:address];
-                } else {
-                    user = [[UserDBManager sharedManager] getUserByAddress:bagInfo.redpackage.sendAddress];
-                }
-            }
-            if (!user) {
-                SearchUser *usrAddInfo = [[SearchUser alloc] init];
-                usrAddInfo.criteria = address;
-                [NetWorkOperationTool POSTWithUrlString:ContactUserSearchUrl postProtoData:usrAddInfo.data complete:^(id response) {
-                    NSError *error;
-                    HttpResponse *respon = (HttpResponse *) response;
-                    if (respon.code != successCode) {
-                        [GCDQueue executeInMainQueue:^{
-                            [MBProgressHUD showToastwithText:LMLocalizedString(@"Server error", nil) withType:ToastTypeFail showInView:weakSelf.view complete:nil];
-                        }];
-                    }
-                    NSData *data = [ConnectTool decodeHttpResponse:respon];
-                    if (data) {
-
-                        UserInfo *info = [[UserInfo alloc] initWithData:data error:&error];
-                        AccountInfo *accoutInfo = [[AccountInfo alloc] init];
-                        accoutInfo.username = info.username;
-                        accoutInfo.avatar = info.avatar;
-                        accoutInfo.pub_key = info.pubKey;
-                        accoutInfo.address = info.address;
-
-                        if (error) {
-
-                        } else {
-                            LMChatRedLuckyDetailController *page = [[LMChatRedLuckyDetailController alloc] initWithUserInfo:accoutInfo redLuckyInfo:bagInfo];
-                            page.groupMembers = self.taklInfo.chatGroupInfo.groupMembers;
-                            [self presentViewController:[[UINavigationController alloc] initWithRootViewController:page] animated:YES completion:nil];
-                        }
-                    }
-                }                                  fail:^(NSError *error) {
-                    [GCDQueue executeInMainQueue:^{
-                        [MBProgressHUD showToastwithText:LMLocalizedString(@"Network Server error", nil) withType:ToastTypeFail showInView:weakSelf.view complete:nil];
-                    }];
-                }];
-            } else {
-                LMChatRedLuckyDetailController *page = [[LMChatRedLuckyDetailController alloc] initWithUserInfo:user redLuckyInfo:bagInfo];
-                [GCDQueue executeInMainQueue:^{
-                    [weakSelf presentViewController:[[UINavigationController alloc] initWithRootViewController:page] animated:YES completion:nil];
-                }];
-            }
-        }
-    }];
-
-}
-
-
-- (void)showPrivateRedBagDetailWithHashId:(NSString *)hashId {
-
-    [MBProgressHUD showLoadingMessageToView:self.view];
-    __weak __typeof(&*self) weakSelf = self;
-    [RedBagNetWorkTool getRedBagDetailWithHashId:hashId complete:^(RedPackageInfo *bagInfo, NSError *error) {
-        [GCDQueue executeInMainQueue:^{
-            [MBProgressHUD hideHUDForView:weakSelf.view];
-        }];
-        if (error) {
-            [MBProgressHUD showToastwithText:LMLocalizedString(@"Network equest failed please try again later", nil) withType:ToastTypeFail showInView:self.view complete:nil];
-            return;
-        }
-        AccountInfo *user = nil;
-        NSString *address = bagInfo.redpackage.sendAddress;
-        if ([address isEqualToString:[[LKUserCenter shareCenter] currentLoginUser].address]) {
-            user = [[LKUserCenter shareCenter] currentLoginUser];
-        } else {
-            user = [[UserDBManager sharedManager] getUserByAddress:bagInfo.redpackage.sendAddress];
-        }
-        if (!user) {
-            SearchUser *usrAddInfo = [[SearchUser alloc] init];
-            usrAddInfo.criteria = address;
-            [NetWorkOperationTool POSTWithUrlString:ContactUserSearchUrl postProtoData:usrAddInfo.data complete:^(id response) {
-                NSError *error;
-                HttpResponse *respon = (HttpResponse *) response;
-                if (respon.code != successCode) {
-                    [GCDQueue executeInMainQueue:^{
-                        [MBProgressHUD showToastwithText:LMLocalizedString(@"Network Server error", nil) withType:ToastTypeFail showInView:weakSelf.view complete:nil];
-                    }];
-                }
-                NSData *data = [ConnectTool decodeHttpResponse:respon];
-                if (data) {
-                    UserInfo *info = [[UserInfo alloc] initWithData:data error:&error];
-                    AccountInfo *accoutInfo = [[AccountInfo alloc] init];
-                    accoutInfo.username = info.username;
-                    accoutInfo.avatar = info.avatar;
-                    accoutInfo.pub_key = info.pubKey;
-                    accoutInfo.address = info.address;
-
-                    if (error) {
-
-                    } else {
-                        LMChatRedLuckyDetailController *page = [[LMChatRedLuckyDetailController alloc] initWithUserInfo:accoutInfo redLuckyInfo:bagInfo];
-                        page.groupMembers = self.taklInfo.chatGroupInfo.groupMembers;
-                        [self presentViewController:[[UINavigationController alloc] initWithRootViewController:page] animated:YES completion:nil];
-                    }
-                }
-            }                                  fail:^(NSError *error) {
-                [GCDQueue executeInMainQueue:^{
-                    [MBProgressHUD showToastwithText:LMLocalizedString(@"Network Server error", nil) withType:ToastTypeFail showInView:weakSelf.view complete:nil];
-                }];
-            }];
-        } else {
-            LMChatRedLuckyDetailController *page = [[LMChatRedLuckyDetailController alloc] initWithUserInfo:user redLuckyInfo:bagInfo];
-            [GCDQueue executeInMainQueue:^{
-                [weakSelf presentViewController:[[UINavigationController alloc] initWithRootViewController:page] animated:YES completion:nil];
-            }];
-        }
-    }];
-
-}
-
 
 #pragma mark - cell tap
 
