@@ -114,6 +114,10 @@ static NSDictionary *pbRuleDict;
             return YES;
             break;
         }
+        CASE(@"float") {
+            return YES;
+            break;
+        }
         CASE(@"bool") {
             return YES;
             break;
