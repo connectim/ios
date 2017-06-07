@@ -151,9 +151,13 @@
     self.snapChatTimeoutProgressView.progress = contentModel.snapProgress;
 }
 
+- (void)updateSnapChatProgress{
+    GJGCChatFriendContentModel *chatContentModel = (GJGCChatFriendContentModel *) self.contentModel;
+    [self.snapChatTimeoutProgressView setProgress:chatContentModel.snapProgress animated:YES];
+}
+
 - (void)adjustContent {
     if (self.isFromSelf) {
-
         if (self.contentType == GJGCChatFriendContentTypeRedEnvelope) {
             self.bubbleBackImageView.image = [self bubbleImageByRole:@"message_redbag_sender"];
             self.bubbleBackImageView.highlightedImage = [self bubbleImageByRole:@"message_redbag_sender"];

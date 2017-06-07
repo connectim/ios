@@ -12,25 +12,6 @@
 #import "RecentChatModel.h"
 #import "ChatMessageInfo.h"
 
-@protocol GroupMessageHandlerGetNewMessage <NSObject>
-
-@optional
-
-/**
- *  recive group message
- *
- *  @param message
- */
-- (void)getNewGroupMessage:(ChatMessageInfo *)message;
-
-/**
- * recive bitch group messages
- * @param messages
- */
-- (void)getBitchGroupMessage:(NSArray *)messages;
-
-@end
-
 @interface GroupMessageHandler : NSObject <IMGroupMessageHandler>
 + (GroupMessageHandler *)instance;
 
@@ -41,12 +22,12 @@
  * set obersrver to obervr new message
  * @param oberver
  */
-- (void)addGetNewMessageObserver:(id <GroupMessageHandlerGetNewMessage>)oberver;
+- (void)addGetNewMessageObserver:(id <MessageHandlerGetNewMessage>)oberver;
 
 /**
  * remove obersrver
  * @param oberver
  */
-- (void)removeGetNewMessageObserver:(id <GroupMessageHandlerGetNewMessage>)oberver;
+- (void)removeGetNewMessageObserver:(id <MessageHandlerGetNewMessage>)oberver;
 
 @end

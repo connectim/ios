@@ -302,8 +302,6 @@ CREATE_SHARED_MANAGER(LMCommandManager)
         [GCDQueue executeInMainQueue:^{
             [[IMService instance] publishConnectState:STATE_CONNECTED];
         }];
-        //upload Cookie
-        [[IMService instance] uploadCookie];
     }
 }
 
@@ -540,6 +538,7 @@ CREATE_SHARED_MANAGER(LMCommandManager)
 }
 
 - (void)loginOnNewPhoneUploadChatCookie:(Command *)command {
+    DDLogInfo(@"command %@",command);
     [[IMService instance] uploadCookieDuetoLocalChatCookieNotMatchServerChatCookieWithMessageCallModel:nil];
 }
 
@@ -1216,21 +1215,29 @@ CREATE_SHARED_MANAGER(LMCommandManager)
 }
 
 - (void)uploadCookieAck:(Command *)command {
+    DDLogInfo(@"command %@",command);
     SendCommandModel *sendComModel = [self.sendingCommands valueForKey:command.msgId];
+    UploadChatCookieModel *uploadChatCookie = sendComModel.sendMsg.sendOriginInfo;
+    SendMessageModel *sendModel = uploadChatCookie.sendMessageModel;
     if (command.errNo == 0) {
-        UploadChatCookieModel *uploadChatCookie = sendComModel.sendMsg.sendOriginInfo;
-        SendMessageModel *sendModel = uploadChatCookie.sendMessageModel;
         ChatCookieData *cacheData = uploadChatCookie.chatCookieData;
         ChatCacheCookie *chatCookie = uploadChatCookie.chatCookie;
         [SessionManager sharedManager].loginUserChatCookie = chatCookie;
         [[LMHistoryCacheManager sharedManager] cacheChatCookie:[SessionManager sharedManager].loginUserChatCookie];
         [[LMHistoryCacheManager sharedManager] cacheLeastChatCookie:cacheData];
+        DDLogInfo(@"update chatCookie success!");
         if (sendModel) {
+            DDLogInfo(@"resend message....");
             [[IMService instance] asyncSendMessageMessage:sendModel.sendMsg onQueue:nil completion:sendModel.callBack onQueue:nil];
         }
     } else if (command.errNo == 4) { //time error
         //note ui ,time error
         [SessionManager sharedManager].loginUserChatCookie = nil;
+        if (sendModel.callBack) {
+            sendModel.sendMsg.sendstatus = GJGCChatFriendSendMessageStatusFaild;
+            NSError *error = [NSError errorWithDomain:@"imserver" code:-1 userInfo:nil];
+            sendModel.callBack(sendModel.sendMsg, error);
+        }
     }
 }
 

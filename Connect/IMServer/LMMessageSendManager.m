@@ -185,6 +185,12 @@ CREATE_SHARED_MANAGER(LMMessageSendManager)
                     ChatCookieData *chatInfo = chatCookie.data_p;
                     [[SessionManager sharedManager] setChatCookie:chatInfo chatSession:identifier];
                     [[IMService instance] asyncSendMessageMessage:sendModel.sendMsg onQueue:nil completion:sendModel.callBack onQueue:nil];
+                } else{
+                    if (sendModel.callBack) {
+                        sendModel.sendMsg.sendstatus = GJGCChatFriendSendMessageStatusFaild;
+                        NSError *error = [NSError errorWithDomain:@"imserver" code:-1 userInfo:nil];
+                        sendModel.callBack(sendModel.sendMsg, error);
+                    }
                 }
             }
                 break;

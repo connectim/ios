@@ -12,10 +12,10 @@
 #import "ConnectTableHeaderView.h"
 #import "GroupMemberListCell.h"
 
-@interface LMGroupChooseNoteMemberlistPage ()<UITableViewDelegate, UITableViewDataSource>
+@interface LMGroupChooseNoteMemberlistPage () <UITableViewDelegate, UITableViewDataSource>
 
-@property (nonatomic ,strong) NSMutableArray *groupMembers;
-@property (nonatomic ,strong) UITableView *tableView;
+@property(nonatomic, strong) NSMutableArray *groupMembers;
+@property(nonatomic, strong) UITableView *tableView;
 
 @property(nonatomic, strong) NSMutableArray *groups;
 @property(nonatomic, strong) NSMutableArray *indexs;
@@ -43,11 +43,11 @@
     [self.view addSubview:self.tableView];
     [self configTableView];
     [self addCloseBarItem];
-    
+
     self.title = LMLocalizedString(@"Chat Choose Members", nil);
 }
 
-- (void)closeBtnClicked:(id)sender{
+- (void)closeBtnClicked:(id)sender {
     if (self.ChooseGroupMemberCallBack) {
         self.ChooseGroupMemberCallBack(nil);
     }
@@ -98,14 +98,13 @@
     if (self.ChooseGroupMemberCallBack) {
         self.ChooseGroupMemberCallBack(contact);
     }
-    
+
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 
-
 - (void)configTableView {
-    
+
     [self.tableView registerNib:[UINib nibWithNibName:@"GroupMemberListCell" bundle:nil] forCellReuseIdentifier:@"GroupMemberListCellID"];
     [self.tableView registerClass:[ConnectTableHeaderView class] forHeaderFooterViewReuseIdentifier:@"ConnectTableHeaderViewID"];
     self.tableView.delegate = self;
@@ -131,7 +130,7 @@
     if (!_groups) {
         _groups = [NSMutableArray array];
         NSMutableArray *items = nil;
-        
+
         for (NSString *prex in self.indexs) {
             CellGroup *group = [[CellGroup alloc] init];
             group.headTitle = prex;
@@ -175,7 +174,7 @@
             } else {
                 [_indexs addObject:@"#"];
             }
-            
+
             NSMutableSet *set = [NSMutableSet set];
             for (NSObject *obj in _indexs) {
                 [set addObject:obj];
@@ -184,7 +183,7 @@
             for (NSObject *obj in set) {
                 [_indexs objectAddObject:obj];
             }
-            
+
             [_indexs sortUsingComparator:^NSComparisonResult(id _Nonnull obj1, id _Nonnull obj2) {
                 NSString *str1 = obj1;
                 NSString *str2 = obj2;

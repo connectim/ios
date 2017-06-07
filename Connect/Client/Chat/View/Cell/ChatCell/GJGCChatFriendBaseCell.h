@@ -93,4 +93,6 @@
 
 - (void)updateMessageUploadStatus;
 
+- (void)updateSnapChatProgress;
+
 @end

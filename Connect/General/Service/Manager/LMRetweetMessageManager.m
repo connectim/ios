@@ -337,7 +337,7 @@ CREATE_SHARED_MANAGER(LMRetweetMessageManager)
     [[MessageDBManager sharedManager] saveMessage:messageInfo];
     // send message
     [GCDQueue executeInMainQueue:^{
-        SendNotify(@"RereweetMessageNotification", messageInfo);
+        SendNotify(RereweetMessageNotification, messageInfo);
     }];
 }
 

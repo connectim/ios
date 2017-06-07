@@ -17,6 +17,7 @@
 #import "LMCommandAdapter.h"
 #import "LMMessageAdapter.h"
 #import "LMMessageSendManager.h"
+#import "LMMessageTool.h"
 
 @implementation UploadChatCookieModel
 
@@ -34,6 +35,12 @@
 @property(nonatomic, strong) NSData *sendSalt;
 @property(nonatomic, copy) NSString *randomPrivkey;
 @property(nonatomic, copy) NSString *randomPublickey;
+
+
+//upload file block
+@property (nonatomic ,copy) GJCFFileUploadManagerTaskFaildBlock uploadTaskFailedBlock;
+@property (nonatomic ,copy) GJCFFileUploadManagerTaskCompletionBlock uploadTaskCompleteBlock;
+@property (nonatomic ,copy) GJCFFileUploadManagerUpdateTaskProgressBlock uploadTaskProgressBlock;
 
 @end
 
@@ -71,6 +78,14 @@ static dispatch_once_t onceToken;
         }
     });
     return im;
+}
+
+- (instancetype)init{
+    if (self = [super init]) {
+        //config upload manager server
+        [[GJCFFileUploadManager shareUploadManager] setDefaultHostUrl:UPLOAD_FILE_SERVER_URL];
+    }
+    return self;
 }
 
 
@@ -183,7 +198,6 @@ static dispatch_once_t onceToken;
         return;
     }
     NewConnection *conn = [NewConnection parseFromData:handAckData error:nil];
-    DDLogInfo(@"%@", conn);
 
     NSData *saltData = [StringTool DataXOR1:self.sendSalt DataXOR2:conn.salt];
 
@@ -202,6 +216,8 @@ static dispatch_once_t onceToken;
     if ([SystemTool isNationChannel]) {
         deviceId.cv = 1;
     }
+    ChatCookieData *cacheData = [[LMHistoryCacheManager sharedManager] getLeastChatCookie];
+    deviceId.chatCookieData = cacheData;
     IMTransferData *request = [ConnectTool createTransferWithEcdhKey:extensionPass data:deviceId.data aad:[ServerCenter shareCenter].defineAad];
     Message *m = [[Message alloc] init];
     m.typechar = BM_HANDSHAKE_TYPE;
@@ -212,6 +228,11 @@ static dispatch_once_t onceToken;
 
     //upload version
     [self uploadAppInfoWhenVersionChange];
+
+    //init loginUserChatCookie
+    if (![SessionManager sharedManager].loginUserChatCookie && cacheData) {
+        [SessionManager sharedManager].loginUserChatCookie = [[LMHistoryCacheManager sharedManager] getChatCookieWithSaltVer:cacheData.salt];
+    }
 }
 
 - (void)authSussecc:(Message *)msg {
@@ -269,9 +290,6 @@ static dispatch_once_t onceToken;
 }
 
 - (BOOL)sendPing {
-    //Check whether ChatCookie is expired
-    [self uploadCookie];
-
     if (self.HeartBeatBlock)
         return self.HeartBeatBlock();
     return NO;
@@ -292,60 +310,15 @@ static dispatch_once_t onceToken;
 
 #pragma mark - Command-upload login user chat cookie
 
-- (void)uploadCookie {
-    ChatCookieData *cacheData = [[LMHistoryCacheManager sharedManager] getLeastChatCookie];
-    if (!cacheData ||
-            cacheData.expired < [[NSDate date] timeIntervalSince1970]) {
-        
-        ChatCacheCookie *chatCookie = [ChatCacheCookie new];
-        chatCookie.chatPrivkey = [KeyHandle creatNewPrivkey];
-        chatCookie.chatPubKey = [KeyHandle createPubkeyByPrikey:chatCookie.chatPrivkey];
-        chatCookie.salt = [KeyHandle createRandom512bits];
-        
-        ChatCookieData *cookieData = [ChatCookieData new];
-        cookieData.chatPubKey = chatCookie.chatPubKey;
-        cookieData.salt = chatCookie.salt;
-        cookieData.expired = [[NSDate date] timeIntervalSince1970] + 24 * 60 * 60;
-        
-        ChatCookie *cookie = [ChatCookie new];
-        cookie.data_p = cookieData;
-        cookie.sign = [ConnectTool signWithData:cookieData.data];
-
-        Message *m = [LMCommandAdapter sendAdapterWithExtension:BM_UPLOAD_CHAT_COOKIE_EXT sendData:cookie];
-        
-        UploadChatCookieModel *uploadChatModel = [UploadChatCookieModel new];
-        uploadChatModel.chatCookie = chatCookie;
-        uploadChatModel.chatCookieData = cookieData;
-        m.sendOriginInfo = uploadChatModel;
-        [self sendCommandWithDelay:NO callBlock:^(IMService *imserverSelf) {
-            [imserverSelf sendCommandWith:m comlete:nil];
-        }];
-    } else {
-        if (![SessionManager sharedManager].loginUserChatCookie) {
-            [SessionManager sharedManager].loginUserChatCookie = [[LMHistoryCacheManager sharedManager] getChatCookieWithSaltVer:cacheData.salt];
-        }
-    }
-}
-
-
 - (void)uploadCookieDuetoLocalChatCookieNotMatchServerChatCookieWithMessageCallModel:(SendMessageModel *)callModel {
     
     ChatCacheCookie *chatCookie = [ChatCacheCookie new];
-    ChatCookieData *cacheData = [[LMHistoryCacheManager sharedManager] getLeastChatCookie];
     ChatCookieData *cookieData = [ChatCookieData new];
-    if (cacheData &&
-        [SessionManager sharedManager].loginUserChatCookie &&
-        cacheData.expired > [[NSDate date] timeIntervalSince1970] - 60 * 5) {
-        chatCookie.chatPrivkey = [SessionManager sharedManager].loginUserChatCookie.chatPrivkey;
-        chatCookie.chatPubKey = [SessionManager sharedManager].loginUserChatCookie.chatPubKey;
-        chatCookie.salt = [SessionManager sharedManager].loginUserChatCookie.salt;
-        cookieData.expired = cacheData.expired;
-    } else {
-        chatCookie.chatPrivkey = [KeyHandle creatNewPrivkey];
-        chatCookie.chatPubKey = [KeyHandle createPubkeyByPrikey:chatCookie.chatPrivkey];
-        chatCookie.salt = [KeyHandle createRandom512bits];
-        cookieData.expired = [[NSDate date] timeIntervalSince1970] + 24 * 60 * 60;
-    }
+    chatCookie.chatPrivkey = [KeyHandle creatNewPrivkey];
+    chatCookie.chatPubKey = [KeyHandle createPubkeyByPrikey:chatCookie.chatPrivkey];
+    chatCookie.salt = [KeyHandle createRandom512bits];
+    cookieData.expired = [[NSDate date] timeIntervalSince1970] + 24 * 60 * 60;
+    
     cookieData.chatPubKey = chatCookie.chatPubKey;
     cookieData.salt = chatCookie.salt;
     
@@ -838,6 +811,236 @@ static dispatch_once_t onceToken;
     }
 }
 
+- (void)upLoadChatFile:(GJGCChatFriendContentModel *)messageContent message:(MMMessage *)message ecdhKey:(NSString *)ecdhKey{
+    switch ([SessionManager sharedManager].talkType) {
+        case GJGCChatFriendTalkTypePostSystem: {
+            switch (messageContent.contentType) {
+                case GJGCChatFriendContentTypeAudio: {
+                    NSData *uploadData = [LMMessageTool formateVideoLoacalPath:messageContent];
+                    RichMedia *richMedia = [[RichMedia alloc] init];
+                    richMedia.entity = uploadData;
+                    
+                    NSString *taskIdentifier = nil;
+                    GJCFFileUploadTask *uploadTaskImage = [GJCFFileUploadTask taskWithUploadData:richMedia.data taskObserver:nil getTaskUniqueIdentifier:&taskIdentifier];
+                    messageContent.uploadTaskIdentifier = taskIdentifier;
+                    uploadTaskImage.userInfo = @{@"message": message,
+                                                 @"system": @(YES)};
+                    uploadTaskImage.msgType = [SessionManager sharedManager].talkType;
+                    [[GJCFFileUploadManager shareUploadManager] addTask:uploadTaskImage];
+                }
+                    break;
+                case GJGCChatFriendContentTypeImage: {
+                    NSData *uploadImageData = [NSData dataWithContentsOfFile:messageContent.imageOriginDataCachePath];
+                    RichMedia *richMedia = [[RichMedia alloc] init];
+                    richMedia.entity = uploadImageData;
+                    
+                    NSString *taskIdentifier = nil;
+                    GJCFFileUploadTask *uploadTaskImage = [GJCFFileUploadTask taskWithUploadData:richMedia.data taskObserver:nil getTaskUniqueIdentifier:&taskIdentifier];
+                    messageContent.uploadTaskIdentifier = taskIdentifier;
+                    uploadTaskImage.userInfo = @{@"message": message,
+                                                 @"system": @(YES)};
+                    uploadTaskImage.msgType = [SessionManager sharedManager].talkType;
+                    [[GJCFFileUploadManager shareUploadManager] addTask:uploadTaskImage];
+                    
+                }
+                    break;
+                    
+                case GJGCChatFriendContentTypeVideo: {
+                    message.ext1 = messageContent.videoSize;
+                    NSData *videoData = [NSData dataWithContentsOfFile:messageContent.videoOriginDataPath];
+                    NSData *videoCoverData = [NSData dataWithContentsOfFile:messageContent.videoOriginCoverImageCachePath];
+                    message.size = (int) messageContent.videoDuration;
+                    message.imageOriginWidth = messageContent.originImageWidth;
+                    message.imageOriginHeight = messageContent.originImageHeight;
+                    RichMedia *richMedia = [[RichMedia alloc] init];
+                    richMedia.entity = videoData;
+                    richMedia.thumbnail = videoCoverData;
+                    NSString *taskIdentifier = nil;
+                    GJCFFileUploadTask *uploadTaskImage = [GJCFFileUploadTask taskWithUploadData:richMedia.data taskObserver:nil getTaskUniqueIdentifier:&taskIdentifier];
+                    messageContent.uploadTaskIdentifier = taskIdentifier;
+                    uploadTaskImage.userInfo = @{@"message": message,
+                                                 @"system": @(YES)};
+                    uploadTaskImage.msgType = [SessionManager sharedManager].talkType;
+                    [[GJCFFileUploadManager shareUploadManager] addTask:uploadTaskImage];
+                }
+                    break;
+                    
+                    
+                default:
+                    break;
+            }
+        }
+            break;
+            
+        default: {
+            //upload encrypt data
+            NSData *uploadData = nil;
+            switch (messageContent.contentType) {
+                    
+                case GJGCChatFriendContentTypeAudio: {
+                    
+                    uploadData = [LMMessageTool formateVideoLoacalPath:messageContent];
+                    message.size = messageContent.audioModel.duration;
+                }
+                    break;
+                    
+                case GJGCChatFriendContentTypeImage: {
+                    message.imageOriginWidth = messageContent.originImageWidth;
+                    message.imageOriginHeight = messageContent.originImageHeight;
+                    
+                    NSData *uploadThumbData = [NSData dataWithContentsOfFile:messageContent.thumbImageCachePath];
+                    
+                    NSData *uploadImageData = [NSData dataWithContentsOfFile:messageContent.imageOriginDataCachePath];
+                    NSData *ecdhkey = nil;
+                    if ([SessionManager sharedManager].talkType == GJGCChatFriendTalkTypeGroup) {
+                        ecdhkey = [StringTool hexStringToData:ecdhKey];
+                    } else if ([SessionManager sharedManager].talkType == GJGCChatFriendTalkTypePrivate) {
+                        ecdhkey = [KeyHandle getECDHkeyWithPrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey
+                                                         publicKey:[SessionManager sharedManager].chatSession];
+                    }
+                    ecdhkey = [KeyHandle getAes256KeyByECDHKeyAndSalt:ecdhkey salt:[ConnectTool get64ZeroData]];
+                    GcmData *thumbGcmdata = [ConnectTool createGcmDataWithStructDataEcdhkey:ecdhkey data:uploadThumbData aad:nil];
+                    GcmData *iamgeGcmdata = [ConnectTool createGcmDataWithStructDataEcdhkey:ecdhkey data:uploadImageData aad:nil];
+                    
+                    RichMedia *richMedia = [[RichMedia alloc] init];
+                    richMedia.thumbnail = thumbGcmdata.data;
+                    richMedia.entity = iamgeGcmdata.data;
+                    
+                    NSString *taskIdentifier = nil;
+                    GJCFFileUploadTask *uploadTaskImage = [GJCFFileUploadTask taskWithUploadData:richMedia.data taskObserver:nil getTaskUniqueIdentifier:&taskIdentifier];
+                    messageContent.uploadTaskIdentifier = taskIdentifier;
+                    uploadTaskImage.userInfo = @{@"message": message};
+                    uploadTaskImage.msgType = [SessionManager sharedManager].talkType;
+                    [[GJCFFileUploadManager shareUploadManager] addTask:uploadTaskImage];
+                }
+                    break;
+                case GJGCChatFriendContentTypeMapLocation: {
+                    uploadData = [NSData dataWithContentsOfFile:messageContent.locationImageOriginDataCachePath];
+                }
+                    break;
+                    
+                    
+                case GJGCChatFriendContentTypeVideo: {
+                    message.ext1 = messageContent.videoSize;
+                    NSData *videoData = [NSData dataWithContentsOfFile:messageContent.videoOriginDataPath];
+                    NSData *videoCoverData = [NSData dataWithContentsOfFile:messageContent.videoOriginCoverImageCachePath];
+                    message.size = (int) messageContent.videoDuration;
+                    message.imageOriginWidth = messageContent.originImageWidth;
+                    message.imageOriginHeight = messageContent.originImageHeight;
+                    
+                    NSData *ecdhkey = nil;
+                    if ([SessionManager sharedManager].talkType == GJGCChatFriendTalkTypeGroup) {
+                        ecdhkey = [StringTool hexStringToData:ecdhKey];
+                    } else if ([SessionManager sharedManager].talkType == GJGCChatFriendTalkTypePrivate) {
+                        ecdhkey = [KeyHandle getECDHkeyWithPrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey
+                                                         publicKey:[SessionManager sharedManager].chatSession];
+                    }
+                    ecdhkey = [KeyHandle getAes256KeyByECDHKeyAndSalt:ecdhkey salt:[ConnectTool get64ZeroData]];
+                    GcmData *gcmData = [ConnectTool createGcmDataWithStructDataEcdhkey:ecdhkey data:videoCoverData aad:nil];
+                    GcmData *videoGcmData = [ConnectTool createGcmDataWithStructDataEcdhkey:ecdhkey data:videoData aad:nil];
+                    
+                    RichMedia *richMedia = [[RichMedia alloc] init];
+                    richMedia.thumbnail = gcmData.data;
+                    richMedia.entity = videoGcmData.data;
+                    
+                    NSString *videoTaskIdentifier = nil;
+                    GJCFFileUploadTask *uploadVideoTask = [GJCFFileUploadTask taskWithUploadData:richMedia.data taskObserver:nil getTaskUniqueIdentifier:&videoTaskIdentifier];
+                    messageContent.uploadTaskIdentifier = videoTaskIdentifier;
+                    uploadVideoTask.userInfo = @{@"message": message};
+                    
+                    uploadVideoTask.msgType = [SessionManager sharedManager].talkType;
+                    [[GJCFFileUploadManager shareUploadManager] addTask:uploadVideoTask];
+                }
+                    break;
+                default:
+                    break;
+            }
+            if (messageContent.contentType != GJGCChatFriendContentTypeVideo && messageContent.contentType != GJGCChatFriendContentTypeImage) {
+                NSData *ecdhkey = nil;
+                if ([SessionManager sharedManager].talkType == GJGCChatFriendTalkTypeGroup) {
+                    ecdhkey = [StringTool hexStringToData:ecdhKey];
+                } else if ([SessionManager sharedManager].talkType == GJGCChatFriendTalkTypePrivate) {
+                    ecdhkey = [KeyHandle getECDHkeyWithPrivkey:[[LKUserCenter shareCenter] currentLoginUser].prikey
+                                                     publicKey:[SessionManager sharedManager].chatSession];
+                }
+                ecdhkey = [KeyHandle getAes256KeyByECDHKeyAndSalt:ecdhkey salt:[ConnectTool get64ZeroData]];
+                GcmData *gcmData = [ConnectTool createGcmDataWithStructDataEcdhkey:ecdhkey data:uploadData aad:nil];
+                RichMedia *richMedia = [[RichMedia alloc] init];
+                richMedia.entity = gcmData.data;
+                NSString *taskIdentifier = nil;
+                GJCFFileUploadTask *uploadTask = [GJCFFileUploadTask taskWithUploadData:richMedia.data taskObserver:nil getTaskUniqueIdentifier:&taskIdentifier];
+                messageContent.uploadTaskIdentifier = taskIdentifier;
+                uploadTask.userInfo = @{@"message": message};
+                uploadTask.msgType = [SessionManager sharedManager].talkType;
+                [[GJCFFileUploadManager shareUploadManager] addTask:uploadTask];
+            }
+        }
+            break;
+    }
+}
+
+- (void)asyncSendMessage:(MMMessage *)message
+     uploadFileFailBlock:(GJCFFileUploadManagerTaskFaildBlock)faildBlock
+   uploadCompletionBlock:(GJCFFileUploadManagerTaskCompletionBlock)completionBlock
+           progressBlock:(GJCFFileUploadManagerUpdateTaskProgressBlock)progressBlock
+             chatEcdhKey:(NSString *)ecdhKey
+            contentModel:(GJGCChatFriendContentModel *)messageContent
+   sendMessageCompletion:(void (^)(MMMessage *message,
+                                   NSError *error))completion{
+    switch (message.type) {
+        case GJGCChatFriendContentTypeAudio: // upload
+        case GJGCChatFriendContentTypeImage:
+        case GJGCChatFriendContentTypeVideo:
+        case GJGCChatFriendContentTypeMapLocation: {
+            if (!self.uploadTaskFailedBlock) {
+                self.uploadTaskFailedBlock = faildBlock;
+                [[GJCFFileUploadManager shareUploadManager] setFaildBlock:faildBlock forObserver:self];
+            }
+            if (!self.uploadTaskCompleteBlock) {
+                self.uploadTaskCompleteBlock = completionBlock;
+                [[GJCFFileUploadManager shareUploadManager] setCompletionBlock:completionBlock forObserver:self];
+            }
+            if (!self.uploadTaskProgressBlock) {
+                self.uploadTaskProgressBlock = progressBlock;
+                [[GJCFFileUploadManager shareUploadManager] setProgressBlock:progressBlock forObserver:self];
+            }
+            [self upLoadChatFile:messageContent message:message ecdhKey:ecdhKey];
+        }
+            break;
+        default://send message
+        {
+            [self asyncSendMessage:message chatEcdhKey:ecdhKey sendMessageCompletion:completion];
+        }
+            break;
+    }
+}
+
+- (void)asyncSendMessage:(MMMessage *)message
+             chatEcdhKey:(NSString *)ecdhKey
+   sendMessageCompletion:(void (^)(MMMessage *message,
+                                   NSError *error))completion{
+    switch ([SessionManager sharedManager].talkType) {
+        case GJGCChatFriendTalkTypePrivate:
+        {
+            [self asyncSendMessageMessage:message onQueue:nil completion:completion onQueue:nil];
+        }
+            break;
+            
+        case GJGCChatFriendTalkTypeGroup:
+        {
+            [self asyncSendGroupMessage:message withGroupEckhKey:ecdhKey onQueue:nil completion:completion onQueue:nil];
+        }
+            break;
+        case GJGCChatFriendTalkTypePostSystem:
+        {
+            [self asyncSendSystemMessage:message completion:completion];
+        }
+            break;
+            
+        default:
+            break;
+    }
+}
 
 #pragma mark - Socket layer base send system message
 

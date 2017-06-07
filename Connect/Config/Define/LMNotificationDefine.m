@@ -105,3 +105,9 @@ NSString *const GroupNewMemberEnterNotification = @"GroupNewMemberEnterNotificat
 //refresh link data
 NSString *const LinkRefreshLinkData = @"RefreshLinkData";
 NSString *const SocketDataVerifyIllegalityNotification = @"SocketDataVerifyIllegalityNotification";
+
+NSString *const DeleteMessageHistoryNotification = @"DeleteMessageHistoryNotification";
+
+NSString *const RereweetMessageNotification = @"RereweetMessageNotification";
+
+NSString *const DeleteGroupReviewedMessageNotification = @"DeleteGroupReviewedMessageNotification";

@@ -774,6 +774,15 @@ char* printEnv(void)
     return [[self getValue:@"balance"] integerValue];
 }
 
+- (void)saveAvaliableAmount:(NSString *)balance{
+    if (!GJCFStringIsNull(balance)) {
+        [self setValue:balance forKey:@"avaliableAmount"];
+    }
+}
+- (long long int)getAvaliableAmount{
+    return [[self getValue:@"avaliableAmount"] integerValue];
+}
+
 #pragma mark - rate
 - (void)saveRate:(float)rate{
     [self setValue:[NSString stringWithFormat:@"%f",rate] forKey:@"rate"];

@@ -85,8 +85,8 @@
         HttpNotSignResponse *nosignResponse = (HttpNotSignResponse *) response;
 
         if (nosignResponse.code != successCode) {
-            [UIAlertController showAlertInViewController:self withTitle:LMLocalizedString(@"Link Update Group Name Failed", nil) message:nil cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:@[LMLocalizedString(@"Common OK", nil)] tapBlock:^(UIAlertController * _Nonnull controller, UIAlertAction * _Nonnull action, NSInteger buttonIndex) {
-                
+            [UIAlertController showAlertInViewController:self withTitle:LMLocalizedString(@"Link Update Group Name Failed", nil) message:nil cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:@[LMLocalizedString(@"Common OK", nil)] tapBlock:^(UIAlertController *_Nonnull controller, UIAlertAction *_Nonnull action, NSInteger buttonIndex) {
+
             }];
             return;
         }
@@ -101,15 +101,15 @@
             [MBProgressHUD hideHUDForView:weakSelf.view];
             [MBProgressHUD showToastwithText:LMLocalizedString(@"Link Update Group Name Failed", nil) withType:ToastTypeFail showInView:weakSelf.view complete:nil];
         }];
-        [UIAlertController showAlertInViewController:self withTitle:LMLocalizedString(@"Link Update Group Name Failed", nil) message:nil cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:@[LMLocalizedString(@"Common OK", nil)] tapBlock:^(UIAlertController * _Nonnull controller, UIAlertAction * _Nonnull action, NSInteger buttonIndex) {
-            
+        [UIAlertController showAlertInViewController:self withTitle:LMLocalizedString(@"Link Update Group Name Failed", nil) message:nil cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:@[LMLocalizedString(@"Common OK", nil)] tapBlock:^(UIAlertController *_Nonnull controller, UIAlertAction *_Nonnull action, NSInteger buttonIndex) {
+
         }];
     }];
 
 }
 
 - (void)setupCellData {
-    
+
     CellItem *inputGroupName = [[CellItem alloc] init];
     inputGroupName.type = CellItemTypeRoundTextField;
     inputGroupName.title = self.currentGroupName;

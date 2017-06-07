@@ -14,8 +14,11 @@
 @property(strong, nonatomic) UIButton *whiteButton;
 
 - (void)rightButtonPressed:(UIButton *)sender;
+
 - (void)setStrNavTitle:(NSString *)title;
+
 - (void)setRightButtonWithTitle:(NSString *)title;
+
 - (void)setRightButtonWithStateImage:(NSString *)iconName stateHighlightedImage:(NSString *)highlightIconName stateDisabledImage:(NSString *)disableIconName titleName:(NSString *)title;
 
 @end

@@ -12,18 +12,6 @@
 #import "RecentChatModel.h"
 #import "ChatMessageInfo.h"
 
-@protocol PeerMessageHandlerGetNewMessage <NSObject>
-
-@optional
-
-- (void)getNewMessage:(ChatMessageInfo *)message;
-
-- (void)getBitchNewMessage:(NSArray *)messages;
-
-- (void)getReadAckWithMessageID:(NSString *)messageId chatUserPublickey:(NSString *)publickey;
-
-@end
-
 @interface PeerMessageHandler : NSObject <IMPeerMessageHandler>
 + (PeerMessageHandler *)instance;
 
@@ -33,12 +21,12 @@
  * Add new messsage observer
  * @param oberver
  */
-- (void)addGetNewMessageObserver:(id <PeerMessageHandlerGetNewMessage>)oberver;
+- (void)addGetNewMessageObserver:(id <MessageHandlerGetNewMessage>)oberver;
 
 /**
  * remove GetNewMessage Observer
  * @param oberver
  */
-- (void)removeGetNewMessageObserver:(id <PeerMessageHandlerGetNewMessage>)oberver;
+- (void)removeGetNewMessageObserver:(id <MessageHandlerGetNewMessage>)oberver;
 
 @end

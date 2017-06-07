@@ -226,6 +226,11 @@ static NSString *address = @"address";
 - (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {
     return UITableViewCellEditingStyleDelete;
 }
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+       if (editingStyle == UITableViewCellEditingStyleDelete) {
+    
+           }
+}
 #pragma amrk -- Input box callback
 
 - (void)textFieldDidEndEditingValueChanged:(UITextField *)textField {

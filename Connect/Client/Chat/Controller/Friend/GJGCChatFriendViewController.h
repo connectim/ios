@@ -10,11 +10,22 @@
 #import "GJGCChatFriendDataSourceManager.h"
 
 @interface GJGCChatFriendViewController : GJGCChatDetailViewController <UIActionSheetDelegate>
-
 /* 
  *Click phone number
  */
 - (void)makePhoneCall:(NSString *)phoneNumber;
+
+/**
+ * garb private luckypackage
+ * @param hashId
+ */
+- (void)getSystemRedBagDetailWithHashId:(NSString *)hashId;
+
+/**
+ * garb connect term luckypackage
+ * @param hashId
+ */
+- (void)showRedBagDetailWithHashId:(NSString *)hashId;
 
 @property(nonatomic, copy) NSString *outterRedpackHashid;
 

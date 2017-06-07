@@ -12,6 +12,6 @@
 
 - (id)initWithVideoFileURL:(NSURL *)videoFileURL;
 
-@property (nonatomic ,copy) void (^ClosePlayCallBack)(BOOL playComplete);
+@property(nonatomic, copy) void (^ClosePlayCallBack)(BOOL playComplete);
 
 @end

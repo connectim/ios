@@ -23,7 +23,7 @@
 @property(nonatomic, copy) void (^Cancel)();
 
 @property(nonatomic, copy) NSString *publicKey;
-@property(nonatomic, copy) NSString *name;
+
 
 @end
 
@@ -129,8 +129,20 @@
 #pragma mark - getter setter
 - (NSMutableArray *)groupsFriend {
     if (!_groupsFriend) {
-        _groupsFriend = [NSMutableArray array];
+        self.groupsFriend = [NSMutableArray array];
     }
     return _groupsFriend;
+}
+- (NSMutableArray *)indexs {
+    if (!_indexs) {
+        self.indexs = [NSMutableArray array];
+    }
+    return _indexs;
+}
+-(void)dealloc {
+    [self.groupsFriend removeAllObjects];
+    self.groupsFriend = nil;
+    [self.indexs removeAllObjects];
+    self.indexs = nil;
 }
 @end

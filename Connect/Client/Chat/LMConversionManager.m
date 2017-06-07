@@ -135,7 +135,7 @@ CREATE_SHARED_MANAGER(LMConversionManager)
                 if (lastMessage.message.type == GJGCChatFriendContentTypeSnapChat) {
                     recentModel.snapChatDeleteTime = [lastMessage.message.content intValue];
                 }
-                if (snapChatTime > 0 &&
+                if (snapChatTime >= 0 &&
                     snapChatTime != recentModel.snapChatDeleteTime) {
                     recentModel.snapChatDeleteTime = (int)snapChatTime;
                     [[RecentChatDBManager sharedManager] openOrCloseSnapChatWithTime:recentModel.snapChatDeleteTime chatIdentifer:recentModel.identifier];

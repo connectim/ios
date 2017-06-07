@@ -68,7 +68,7 @@
         LKAnnotation *annotation = [[LKAnnotation alloc] init];
         annotation.coordinate = _location;
         annotation.title = LMLocalizedString(@"Chat Loc", nil);
-        annotation.subtitle = [NSString stringWithFormat:LMLocalizedString(@"Chat latitude longitude",nil),
+        annotation.subtitle = [NSString stringWithFormat:LMLocalizedString(@"Chat latitude longitude", nil),
                                                          _location.latitude,
                                                          _location.longitude];
         [self.mapView addAnnotation:annotation];
@@ -220,7 +220,7 @@
     if (!self.geocoder) {
         self.geocoder = [[CLGeocoder alloc] init];
     }
-    
+
     myCurrentRegion = MKCoordinateRegionMakeWithDistance(loc, 250, 250);
 
     if (self.showLocation) {

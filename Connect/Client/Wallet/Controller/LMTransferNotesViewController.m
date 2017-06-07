@@ -65,22 +65,22 @@ typedef NS_ENUM(NSInteger, LMTransactionStatusType) {
     [self displayTransferInfo];
     [self payStatusInformation];
 
-    __weak __typeof(&*self) weakSelf = self;
     [[PayTool sharedInstance] getBlanceWithComplete:^(NSString *blance, UnspentAmount *unspentAmount, NSError *error) {
         if (error) {
             // address is nil
             [GCDQueue executeInMainQueue:^{
-                [MBProgressHUD showToastwithText:LMLocalizedString(@"Wallet Failed to obtain the balance", nil) withType:ToastTypeFail showInView:weakSelf.view complete:nil];
+                [MBProgressHUD showToastwithText:LMLocalizedString(@"Wallet Failed to obtain the balance", nil) withType:ToastTypeFail showInView:self.view complete:nil];
             }];
             return;
         }
-        weakSelf.blance = unspentAmount.avaliableAmount;
-        weakSelf.blanceString = blance;
+        self.blance = unspentAmount.avaliableAmount;
+        self.blanceString = blance;
         [GCDQueue executeInMainQueue:^{
-            [weakSelf.BalanceLabel setText:[NSString stringWithFormat:LMLocalizedString(@"Wallet Balance", nil), [PayTool getBtcStringWithAmount:unspentAmount.avaliableAmount]]];
+            self.BalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance Credit", nil), [PayTool getBtcStringWithAmount:self.blance]];
         }];
     }];
 
+    __weak __typeof(&*self)weakSelf = self;
     self.trasferComplete = ^{
         [GCDQueue executeInMainQueue:^{
             [weakSelf.navigationController popViewControllerAnimated:YES];
@@ -247,7 +247,7 @@ typedef NS_ENUM(NSInteger, LMTransactionStatusType) {
         self.BalanceLabel.font = [UIFont systemFontOfSize:FONT_SIZE(28)];
         self.BalanceLabel.textColor = [UIColor blackColor];
         self.BalanceLabel.textAlignment = NSTextAlignmentCenter;
-        self.BalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance", nil), [PayTool getBtcStringWithAmount:[[MMAppSetting sharedSetting] getBalance]]];
+        self.BalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance Credit", nil), [PayTool getBtcStringWithAmount:[[MMAppSetting sharedSetting] getAvaliableAmount]]];
         self.BalanceLabel.textColor = [UIColor colorWithHexString:@"38425F"];
         [self.tableViewCell addSubview:self.BalanceLabel];
 
@@ -377,18 +377,9 @@ typedef NS_ENUM(NSInteger, LMTransactionStatusType) {
     __weak __typeof(&*self) weakSelf = self;
     [self paymentToAddress:self.bill.receiver decimalMoney:money hashID:self.bill.hash_p complete:^(NSString *hashId, NSError *error) {
         if (!error) {
-            
             if (passView.requestCallBack) {
                 passView.requestCallBack(nil);
             }
-            
-            // update blance
-            [[PayTool sharedInstance] getBlanceWithComplete:^(NSString *blance, UnspentAmount *unspentAmount, NSError *error) {
-                [GCDQueue executeInMainQueue:^{
-                    weakSelf.blance = unspentAmount.avaliableAmount;
-                    weakSelf.BalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance", nil), [PayTool getBtcStringWithAmount:unspentAmount.avaliableAmount]];
-                }];
-            }];
             // update db status
             [[LMMessageExtendManager sharedManager] updateMessageExtendStatus:1 withHashId:self.bill.hash_p];
             // call back
@@ -396,11 +387,9 @@ typedef NS_ENUM(NSInteger, LMTransactionStatusType) {
                 weakSelf.PayResultBlock(YES);
             }
         } else {
-            
             if (passView.requestCallBack) {
                 passView.requestCallBack(error);
             }
-            
         }
     }];
 }

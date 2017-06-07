@@ -8,10 +8,8 @@
 
 #import "GJGCChatDetailViewController.h"
 #import "GJGCChatFriendBaseCell.h"
-#import "InviteUserPage.h"
 #import "LMMessageExtendManager.h"
 #import "RecentChatDBManager.h"
-#import "IMService.h"
 
 @interface GJGCChatDetailViewController () <
         GJGCRefreshHeaderViewDelegate,
@@ -20,7 +18,7 @@
 @property(nonatomic, assign) BOOL isScrolledToBottom;
 @property(nonatomic, assign) CGFloat inputBarHeight;
 
-@property (nonatomic ,assign) CGFloat statusOffset;
+@property(nonatomic, assign) CGFloat statusOffset;
 
 @end
 
@@ -34,7 +32,7 @@
 
         [self initDataManager];
         CGFloat statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
-        self.statusOffset = (statusBarHeight == 20?0:-20);
+        self.statusOffset = (statusBarHeight == 20 ? 0 : -20);
     }
     return self;
 }
@@ -63,6 +61,18 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    NSString *draft = [[RecentChatDBManager sharedManager] getDraftWithIdentifier:self.taklInfo.chatIdendifier];
+    if (!GJCFStringIsNull(draft)) {
+        //set draft
+        //stop tableview scroll
+        [self.chatListTable setContentOffset:self.chatListTable.contentOffset animated:NO];
+        if (!textField && [self.inputPanel isInputTextFirstResponse]) {
+            textField = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+            [self.view addSubview:textField];
+            textField.hidden = YES;
+        }
+        [textField becomeFirstResponder];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -86,7 +96,6 @@
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     self.isKeyboardShowing = [self.inputPanel isInputTextFirstResponse];
-    [self.dataSourceManager viewControllerWillDisMissToCheckSendingMessageSaveSendStateFail];
     [self clearAllFirstResponse];
     if (![self.navigationController.childViewControllers containsObject:self]) {
         self.willDisappear = YES;
@@ -100,6 +109,7 @@
         }
     }
 }
+
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -117,42 +127,40 @@
     [self configFileDownloadManager];
 
     //add notification
-    RegisterNotify(@"im.connect.DeleteMessageHistoryNotification", @selector(deleteMessageHistory));
+    RegisterNotify(DeleteMessageHistoryNotification, @selector(deleteMessageHistory));
     RegisterNotify(kAcceptNewFriendRequestNotification, @selector(friendAccept:))
-    RegisterNotify(@"RereweetMessageNotification", @selector(retweetMessage:));
-    [self observeApplicationState];
+    RegisterNotify(RereweetMessageNotification, @selector(retweetMessage:));
     RegisterNotify(TransactionStatusChangeNotification, @selector(transactionStatusChange:));
     RegisterNotify(GroupAdminChangeNotification, @selector(groupAdmingChange));
-    RegisterNotify(@"deleteGroupReviewedMessageNotification", @selector(deleteReviewMessage:));
+    RegisterNotify(DeleteGroupReviewedMessageNotification, @selector(deleteReviewMessage:));
     RegisterNotify(ConnnectGroupDismissNotification, @selector(groupdissmiss:));
-    
     RegisterNotify(UIApplicationDidChangeStatusBarFrameNotification, @selector(statusBarFrameChange:));
 }
 
-- (void)statusBarFrameChange:(NSNotification *)note{
+- (void)statusBarFrameChange:(NSNotification *)note {
     [self.view endEditing:YES];
     CGFloat statusBarHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
-    self.statusOffset = (statusBarHeight == 20?0:-20);
+    self.statusOffset = (statusBarHeight == 20 ? 0 : -20);
 
     //reset frame
     self.chatListTable.frame = (CGRect) {0, 0, GJCFSystemScreenWidth, GJCFSystemScreenHeight - self.inputBarHeight + self.statusOffset};
     self.inputPanel.frame = (CGRect) {0, GJCFSystemScreenHeight - self.inputPanel.inputBarHeight + self.statusOffset, GJCFSystemScreenWidth, self.inputBarHeight + kMeunBarHeight};
-    
+
     [self scrollToBottom:YES];
 }
 
-- (void)groupdissmiss:(NSNotification *)note{
+- (void)groupdissmiss:(NSNotification *)note {
     if ([note.object isEqualToString:self.taklInfo.chatIdendifier]) {
         [self.navigationController popViewControllerAnimated:YES];
     }
 }
 
-- (void)deleteReviewMessage:(NSNotification *)note{
+- (void)deleteReviewMessage:(NSNotification *)note {
     NSString *messageid = note.object;
     [self.dataSourceManager removeChatContentModelAtIndex:[self.dataSourceManager getContentModelIndexByLocalMsgId:messageid]];
     [self.chatListTable reloadData];
 }
-    
+
 - (void)groupAdmingChange {
     AccountInfo *currentAdmin = [[GroupDBManager sharedManager] getAdminByGroupId:self.taklInfo.chatGroupInfo.groupIdentifer];
     if (currentAdmin) {
@@ -178,9 +186,9 @@
         return;
     }
     NoticeMessage *notice = [note.object valueForKey:@"notice"];
-    
-    NSString* chatIdentifier = [note.object valueForKey:@"identifier"];
-    NSString* messageId = [[LMMessageExtendManager sharedManager] getMessageId:txId];
+
+    NSString *chatIdentifier = [note.object valueForKey:@"identifier"];
+    NSString *messageId = [[LMMessageExtendManager sharedManager] getMessageId:txId];
     int status = [[LMMessageExtendManager sharedManager] getStatus:txId];
     if ([chatIdentifier isEqualToString:self.taklInfo.chatIdendifier]) {
         GJGCChatFriendContentModel *chatModel = (GJGCChatFriendContentModel *) [self.dataSourceManager contentModelByMsgId:messageId];
@@ -220,22 +228,22 @@
                 if (temA.count == 2) {
                     int payCount = (int) (crowdInfo.size - crowdInfo.remainSize);
                     if (crowdInfo.status) { //crowding complete
-                        payCount = (int)crowdInfo.size;
+                        payCount = (int) crowdInfo.size;
                     }
                     chatModel.payOrReceiptStatusMessage = [GJGCChatSystemNotiCellStyle formateRecieptSubTipsWithTotal:chatModel.memberCount payCount:payCount isCrowding:YES transStatus:status];
-                    
+
                     NSString *payName = nil;
                     NSString *reciverName = nil;
                     NSString *payAddress = [temA lastObject];
                     NSString *reciverAddress = [temA firstObject];
                     switch ([SessionManager sharedManager].talkType) {
                         case GJGCChatFriendTalkTypePrivate: {
-                            
+
                             if ([payAddress isEqualToString:[[LKUserCenter shareCenter] currentLoginUser].address]) {
                                 payName = LMLocalizedString(@"Chat You", nil);
                                 reciverName = self.taklInfo.chatUser.normalShowName;
                             }
-                            
+
                             if ([reciverAddress isEqualToString:[[LKUserCenter shareCenter] currentLoginUser].address]) {
                                 reciverName = LMLocalizedString(@"Chat You", nil);
                                 payName = self.taklInfo.chatUser.normalShowName;
@@ -244,7 +252,7 @@
                             break;
                         case GJGCChatFriendTalkTypeGroup: {
                             for (AccountInfo *groupMember in self.taklInfo.chatGroupInfo.groupMembers) {
-                                
+
                                 if ([payAddress isEqualToString:[[LKUserCenter shareCenter] currentLoginUser].address]) {
                                     payName = LMLocalizedString(@"Chat You", nil);
                                 } else {
@@ -252,7 +260,7 @@
                                         payName = groupMember.normalShowName;
                                     }
                                 }
-                                
+
                                 if ([reciverAddress isEqualToString:[[LKUserCenter shareCenter] currentLoginUser].address]) {
                                     reciverName = LMLocalizedString(@"Chat You", nil);
                                 } else {
@@ -265,7 +273,7 @@
                             break;
                         default:
                             break;
-                            
+
                     }
                     [GCDQueue executeInMainQueue:^{
                         [self.chatListTable reloadData];
@@ -336,13 +344,13 @@
     [self.chatListTable addGestureRecognizer:tap];
     tap.delegate = self;
     self.chatListTable.frame = (CGRect) {0, 0, GJCFSystemScreenWidth, GJCFSystemScreenHeight - self.inputBarHeight + self.statusOffset};
-    self.chatListTable.contentInset = UIEdgeInsetsMake(64 , 0, 0, 0);
+    self.chatListTable.contentInset = UIEdgeInsetsMake(64, 0, 0, 0);
     /* scroll to bottom */
     if (self.dataSourceManager.totalCount > 0) {
         [self.chatListTable reloadData];
         [self.chatListTable scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.dataSourceManager.totalCount - 1 inSection:0] atScrollPosition:UITableViewScrollPositionBottom animated:NO];
     }
-    
+
     self.inputPanel = [[GJGCChatInputPanel alloc] initWithPanelDelegate:self];
     self.inputPanel.frame = (CGRect) {0, GJCFSystemScreenHeight - self.inputPanel.inputBarHeight + self.statusOffset, GJCFSystemScreenWidth, self.inputBarHeight + kMeunBarHeight};
 
@@ -390,9 +398,11 @@
     }];
     [self.view addSubview:self.inputPanel];
 
-    //set draft
-    [self.inputPanel setLastMessageDraft:[[RecentChatDBManager sharedManager] getDraftWithIdentifier:self.taklInfo.chatIdendifier]];
-    
+    NSString *draft = [[RecentChatDBManager sharedManager] getDraftWithIdentifier:self.taklInfo.chatIdendifier];
+    if (!GJCFStringIsNull(draft)) {
+        //set draft
+        [self.inputPanel setLastMessageDraft:[[RecentChatDBManager sharedManager] getDraftWithIdentifier:self.taklInfo.chatIdendifier]];
+    }
     
     self.refreshHeadView = [[GJGCRefreshHeaderView alloc] init];
     self.refreshHeadView.delegate = self;
@@ -403,20 +413,20 @@
     [self addOrRemoveLoadMore];
 
     [self.chatListTable addObserver:self forKeyPath:@"panGestureRecognizer.state" options:NSKeyValueObservingOptionNew context:nil];
-    
-    
+
+
     NSString *textChangeNoti = [GJGCChatInputConst panelNoti:GJGCChatInputTextViewContentShouldChangeNoti formateWithIdentifier:self.inputPanel.panelIndentifier];
     RegisterNotify(textChangeNoti, @selector(inputTextChange:));
-    
+
 }
 
-- (void)inputTextChange:(NSNotification *)note{
+- (void)inputTextChange:(NSNotification *)note {
     NSString *text = note.object;
     [self inputTextChangeWithText:text];
 }
 
-- (void)inputTextChangeWithText:(NSString *)text{
-    
+- (void)inputTextChangeWithText:(NSString *)text {
+
 }
 
 - (void)tapTableView {
@@ -524,7 +534,7 @@
             [self.chatListTable addSubview:self.refreshFootView];
         }
         [self.refreshFootView resetFrameWithTableView:self.chatListTable];
-    } else{
+    } else {
         [self stopLoadMore];
         if (self.refreshFootView) {
             [self.refreshFootView removeFromSuperview];
@@ -744,22 +754,16 @@
         GJGCChatBaseCell *baceCell = (GJGCChatBaseCell *) cell;
         [baceCell willDisplayCell];
     }
-
-
     if (self.taklInfo.talkType == GJGCChatFriendTalkTypePostSystem) {
         return;
     }
-
     GJGCChatFriendContentModel *model = (GJGCChatFriendContentModel *) [self.dataSourceManager contentModelAtIndex:indexPath.row];
-    if (model.isFromSelf) {
-        return;
-    }
-
-    //pre load rich message
+    
+    //pre-download rich message
     [self downloadRichtextWhenShowAtIndexPath:indexPath contentModel:model];
 
     //message read ack
-    if (![self.dataSourceManager.ignoreMessageTypes containsObject:@(model.contentType)]) {
+    if (![self.dataSourceManager.ignoreMessageTypes containsObject:@(model.contentType)] && !model.isFromSelf) {
         if (model.snapTime > 0 && model.readState == GJGCChatFriendMessageReadStateUnReaded) {
             if (model.contentType == GJGCChatFriendContentTypeVideo || model.contentType == GJGCChatFriendContentTypeAudio || model.contentType == GJGCChatFriendContentTypeImage) {
                 return;
@@ -886,48 +890,21 @@
     }];
 }
 
-- (void)dataSourceManagerRequireTriggleLoadMore:(GJGCChatDetailDataSourceManager *)dataManager {
-    __weak __typeof(&*self) weakSelf = self;
-    GJCFAsyncMainQueue(^{
-        [weakSelf startLoadMore];
-    });
-}
-
-- (void)dataSourceManagerSnapChatUpdateListTable:(GJGCChatDetailDataSourceManager *)dataManager scrollToBottom:(BOOL)scrollToBottom {
-    [GCDQueue executeInMainQueue:^{
-        [self reloadData];
-        NSIndexPath *lastIndexPath = [NSIndexPath indexPathForRow:self.dataSourceManager.totalCount - 1 inSection:0];
-        if (scrollToBottom) {
-            [self.chatListTable scrollToRowAtIndexPath:lastIndexPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
+- (void)dataSourceManager:(GJGCChatDetailDataSourceManager *)dataManager snapChatUpdateProgressWithIndexPaths:(NSArray *)indexPaths{
+    for (NSIndexPath *indexPath in indexPaths) {
+        GJGCChatFriendBaseCell *baceCell = [self.chatListTable cellForRowAtIndexPath:indexPath];
+        if ([self.chatListTable.visibleCells containsObject:baceCell]) {
+            if ([baceCell respondsToSelector:@selector(updateSnapChatProgress)]) {
+                [baceCell updateSnapChatProgress];
+            }
         }
-    }];
+    }
 }
 
 - (void)dataSourceManagerSnapChatUpdateListTable:(GJGCChatDetailDataSourceManager *)dataManager {
     [GCDQueue executeInMainQueue:^{
         [self reloadData];
     }];
-}
-
-- (void)dataSourceManagerRequireFinishLoadMore:(GJGCChatDetailDataSourceManager *)dataManager {
-    __weak __typeof(&*self) weakSelf = self;
-    dispatch_async(dispatch_get_main_queue(), ^{
-
-        BOOL isNeedScrollToBottom = NO;
-        if (weakSelf.chatListTable.contentOffset.y >= weakSelf.chatListTable.contentSize.height - weakSelf.chatListTable.height - weakSelf.refreshHeadView.height) {
-            isNeedScrollToBottom = YES;
-        }
-
-        [weakSelf reloadData];
-
-        [weakSelf.dataSourceManager resetFirstAndLastMsgId];
-
-        if (isNeedScrollToBottom) {
-            [weakSelf scrollToBottom:YES];
-        }
-
-    });
-
 }
 
 - (void)dataSourceManagerRequireFinishRefresh:(GJGCChatDetailDataSourceManager *)dataManager {
@@ -968,23 +945,6 @@
 
 }
 
-- (void)dataSourceManagerRequireUpdateListTable:(GJGCChatDetailDataSourceManager *)dataManager reloadIndexPaths:(NSArray *)indexPaths {
-    if (indexPaths.count) {
-        [self.chatListTable reloadRowsAtIndexPaths:indexPaths withRowAnimation:UITableViewRowAnimationNone];
-    }
-}
-
-- (void)dataSourceManagerRequireUpdateListTable:(GJGCChatDetailDataSourceManager *)dataManager reloadAtIndex:(NSInteger)index {
-    if (index >= 0 && index < self.dataSourceManager.totalCount) {
-        NSIndexPath *reloadPath = [NSIndexPath indexPathForRow:index inSection:0];
-        [self.chatListTable reloadRowsAtIndexPaths:@[reloadPath] withRowAnimation:UITableViewRowAnimationNone];
-        if (reloadPath.row == self.dataSourceManager.totalCount - 1) {
-            [self.chatListTable reloadData];
-            [self.chatListTable scrollToRowAtIndexPath:reloadPath atScrollPosition:UITableViewScrollPositionBottom animated:YES];
-        }
-    }
-}
-
 - (void)dataSourceManagerRequireUpdateListTable:(GJGCChatDetailDataSourceManager *)dataManager reloadForUpdateMsgStateAtIndex:(NSInteger)index {
     if (index >= 0 && index < self.dataSourceManager.totalCount) {
 
@@ -1000,21 +960,6 @@
             [chatCell faildWithType:contentModel.faildType andReason:contentModel.faildReason];
         }
     }
-}
-
-- (void)dataSourceManagerRequireUpdateListTable:(GJGCChatDetailDataSourceManager *)dataManager insertWithIndex:(NSInteger)index {
-    __weak __typeof(&*self) weakSelf = self;
-    dispatch_async(dispatch_get_main_queue(), ^{
-
-        if (index >= 0 && index < weakSelf.dataSourceManager.totalCount) {
-
-            [weakSelf cancelMenuVisiableCellFirstResponse];
-
-            NSIndexPath *insertPath = [NSIndexPath indexPathForRow:index inSection:0];
-
-            [weakSelf.chatListTable insertRowsAtIndexPaths:@[insertPath] withRowAnimation:UITableViewRowAnimationAutomatic];
-        }
-    });
 }
 
 - (void)dataSourceManagerRequireUpdateListTable:(GJGCChatDetailDataSourceManager *)dataManager insertIndexPaths:(NSArray *)indexPaths {
@@ -1048,18 +993,8 @@
 
 }
 
-#pragma mark - back / frongroup note
-
-- (void)observeApplicationState {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(becomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
-}
-
-- (void)becomeActive:(NSNotification *)noti {
-    dispatch_async(dispatch_get_main_queue(), ^{
-    });
-}
-
 #pragma -mark  UIGestureRecognizerDelegate-》》 Gesture conflict can not be the key word
+
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
     if ([NSStringFromClass([touch.view class]) isEqualToString:@"GJCFCoreTextContentView"]) {
         return NO;

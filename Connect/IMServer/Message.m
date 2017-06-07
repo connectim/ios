@@ -94,68 +94,59 @@ static inline unsigned int bswap_32(unsigned int v) {
 }
 
 - (BOOL)unpack:(NSData *)data {
-    @try {
-
-        unsigned char type;
-        unsigned char extension;
-        int lenInt;
-
-        [[data subdataWithRange:NSMakeRange(0, 1)] getBytes:&type length:sizeof(type)];
-        _typechar = type;
-        [[data subdataWithRange:NSMakeRange(5, 1)] getBytes:&extension length:sizeof(extension)];
-        _extension = extension;
-
-        [[data subdataWithRange:NSMakeRange(1, 4)] getBytes:&lenInt length:sizeof(lenInt)];
-        lenInt = bswap_32(lenInt);
-
-        NSData *resultData = [data subdataWithRange:NSMakeRange(SOCKET_HEAD_LEN - 1, lenInt)];
-        DDLogInfo(@"type:%d ,extension:%d", _typechar, _extension);
-        switch (type) {
-            case BM_SERVER_ERROR_TYPE:
-                [self handlErrorWithExtension:extension];
+    unsigned char type;
+    unsigned char extension;
+    int lenInt;
+    
+    [[data subdataWithRange:NSMakeRange(0, 1)] getBytes:&type length:sizeof(type)];
+    _typechar = type;
+    [[data subdataWithRange:NSMakeRange(5, 1)] getBytes:&extension length:sizeof(extension)];
+    _extension = extension;
+    
+    [[data subdataWithRange:NSMakeRange(1, 4)] getBytes:&lenInt length:sizeof(lenInt)];
+    lenInt = bswap_32(lenInt);
+    
+    NSData *resultData = [data subdataWithRange:NSMakeRange(SOCKET_HEAD_LEN - 1, lenInt)];
+    DDLogInfo(@"type:%d ,extension:%d", _typechar, _extension);
+    switch (type) {
+        case BM_SERVER_ERROR_TYPE:
+            [self handlErrorWithExtension:extension];
+            return YES;
+            break;
+            
+        case BM_COMMAND_TYPE:
+            [self handlCommandWithExtension:extension resultData:resultData];
+            return YES;
+            break;
+            
+        case BM_IM_TYPE:
+            [self handlIMMessageWithExtension:extension resultData:resultData];
+            return YES;
+            break;
+        case BM_ACK_TYPE:
+            [self handlAckWithExtension:extension resultData:resultData];
+            return YES;
+            break;
+        case BM_CUTOFFINE_CONNECT_TYPE:
+            [self handCutOffByServer:extension resultData:resultData];
+            return YES;
+            break;
+            
+        default:
+            if (type == BM_HEARTBEAT_TYPE && extension == BM_HEARTBEAT_EXT) {
                 return YES;
-                break;
-
-            case BM_COMMAND_TYPE:
-                [self handlCommandWithExtension:extension resultData:resultData];
+            } else if (type == BM_HANDSHAKE_TYPE && extension == BM_HANDSHAKE_EXT) {
+                self.body = [IMResponse parseFromData:resultData error:nil];
                 return YES;
-                break;
-
-            case BM_IM_TYPE:
-                [self handlIMMessageWithExtension:extension resultData:resultData];
+            } else if (type == BM_HANDSHAKE_TYPE && extension == BM_HANDSHAKEACK_EXT) {
+                self.body = [IMResponse parseFromData:resultData error:nil];
                 return YES;
-                break;
-            case BM_ACK_TYPE:
-                [self handlAckWithExtension:extension resultData:resultData];
-                return YES;
-                break;
-            case BM_CUTOFFINE_CONNECT_TYPE:
-                [self handCutOffByServer:extension resultData:resultData];
-                return YES;
-                break;
-
-            default:
-                if (type == BM_HEARTBEAT_TYPE && extension == BM_HEARTBEAT_EXT) {
-                    return YES;
-                } else if (type == BM_HANDSHAKE_TYPE && extension == BM_HANDSHAKE_EXT) {
-                    self.body = [IMResponse parseFromValidationData:resultData error:nil];
-                    return YES;
-                } else if (type == BM_HANDSHAKE_TYPE && extension == BM_HANDSHAKEACK_EXT) {
-                    self.body = [IMResponse parseFromValidationData:resultData error:nil];
-                    return YES;
-                } else {
-                    DDLogError(@"can not package，。。。");
-                }
-                break;
-        }
-
-
-    } @catch (NSException *exception) {
-        DDLogError(@"package error！！！！！");
-        DDLogError(@"type:%d ,extension:%d", _typechar, _extension);
-        return NO;
+            } else {
+                DDLogError(@"can not package，。。。");
+            }
+            break;
     }
-    return NO;
+    return YES;
 }
 
 
@@ -184,7 +175,7 @@ static inline unsigned int bswap_32(unsigned int v) {
 - (void)handlAckWithExtension:(unsigned char)extension resultData:(NSData *)resultData {
     switch (extension) {
         case BM_ACK_EXT: {
-            IMTransferData *imTransfer = [IMTransferData parseFromValidationData:resultData error:nil];
+            IMTransferData *imTransfer = [IMTransferData parseFromData:resultData error:nil];
             if ([ConnectTool vertifyWithData:imTransfer.cipherData.data sign:imTransfer.sign]) {
                 NSData *decodeData = [ConnectTool decodeGcmDataWithEcdhKey:[ServerCenter shareCenter].extensionPass GcmData:imTransfer.cipherData];
                 self.body = decodeData;
@@ -200,11 +191,11 @@ static inline unsigned int bswap_32(unsigned int v) {
 - (void)handCutOffByServer:(unsigned char)extension resultData:(NSData *)resultData {
     switch (extension) {
         case BM_CUTOFFINE_CONNECT_EXT: {
-            IMTransferData *imTransfer = [IMTransferData parseFromValidationData:resultData error:nil];
+            IMTransferData *imTransfer = [IMTransferData parseFromData:resultData error:nil];
             if ([ConnectTool vertifyWithData:imTransfer.cipherData.data sign:imTransfer.sign]) {
                 NSData *data = [ConnectTool decodeGcmDataWithEcdhKey:[ServerCenter shareCenter].extensionPass GcmData:imTransfer.cipherData];
                 NSError *erro = nil;
-                QuitMessage *quitMessage = [QuitMessage parseFromValidationData:data error:&erro];
+                QuitMessage *quitMessage = [QuitMessage parseFromData:data error:&erro];
                 if (!erro) {
                     self.body = quitMessage;
                 } else {
@@ -247,7 +238,7 @@ static inline unsigned int bswap_32(unsigned int v) {
         case BM_UPLOAD_CHAT_COOKIE_EXT:
         case BM_FRIEND_CHAT_COOKIE_EXT:
         case BM_FROCEUODATA_CHAT_COOKIE_EXT:{
-            IMTransferData *imTransfer = [IMTransferData parseFromValidationData:resultData error:nil];
+            IMTransferData *imTransfer = [IMTransferData parseFromData:resultData error:nil];
             if ([ConnectTool vertifyWithData:imTransfer.cipherData.data sign:imTransfer.sign]) {
                 NSData *decodeData = [ConnectTool decodeGcmDataWithEcdhKey:[ServerCenter shareCenter].extensionPass GcmData:imTransfer.cipherData];
                 self.body = decodeData;
@@ -272,11 +263,11 @@ static inline unsigned int bswap_32(unsigned int v) {
         case BM_IM_MESSAGE_ACK_EXT:
         case BM_IM_NO_RALATIONSHIP_EXT:
         case BM_IM_EXT: {
-            IMTransferData *imTransfer = [IMTransferData parseFromValidationData:resultData error:nil];
+            IMTransferData *imTransfer = [IMTransferData parseFromData:resultData error:nil];
             if ([ConnectTool vertifyWithData:imTransfer.cipherData.data sign:imTransfer.sign]) {
                 NSData *data = [ConnectTool decodeGcmDataWithEcdhKey:[ServerCenter shareCenter].extensionPass GcmData:imTransfer.cipherData];
                 NSError *erro = nil;
-                MessagePost *post = [MessagePost parseFromValidationData:data error:&erro];
+                MessagePost *post = [MessagePost parseFromData:data error:&erro];
                 if (!erro) {
                     self.body = post;
                 } else {
@@ -286,11 +277,11 @@ static inline unsigned int bswap_32(unsigned int v) {
         }
             break;
         case BM_IM_ROBOT_EXT: {
-            IMTransferData *imTransfer = [IMTransferData parseFromValidationData:resultData error:nil];
+            IMTransferData *imTransfer = [IMTransferData parseFromData:resultData error:nil];
             if ([ConnectTool vertifyWithData:imTransfer.cipherData.data sign:imTransfer.sign]) {
                 NSData *data = [ConnectTool decodeGcmDataWithEcdhKey:[ServerCenter shareCenter].extensionPass GcmData:imTransfer.cipherData];
                 NSError *erro = nil;
-                MSMessage *post = [MSMessage parseFromValidationData:data error:&erro];
+                MSMessage *post = [MSMessage parseFromData:data error:&erro];
                 if (!erro) {
                     self.body = post;
                 } else {
@@ -301,11 +292,11 @@ static inline unsigned int bswap_32(unsigned int v) {
             break;
 
         case BM_SERVER_NOTE_EXT: {
-            IMTransferData *imTransfer = [IMTransferData parseFromValidationData:resultData error:nil];
+            IMTransferData *imTransfer = [IMTransferData parseFromData:resultData error:nil];
             if ([ConnectTool vertifyWithData:imTransfer.cipherData.data sign:imTransfer.sign]) {
                 NSData *data = [ConnectTool decodeGcmDataWithEcdhKey:[ServerCenter shareCenter].extensionPass GcmData:imTransfer.cipherData];
                 NSError *erro = nil;
-                NoticeMessage *post = [NoticeMessage parseFromValidationData:data error:&erro];
+                NoticeMessage *post = [NoticeMessage parseFromData:data error:&erro];
                 if (!erro) {
                     self.body = post;
                 } else {
@@ -315,11 +306,11 @@ static inline unsigned int bswap_32(unsigned int v) {
         }
             break;
         case BM_TRASACTION_NOTI_EXT: {
-            IMTransferData *imTransfer = [IMTransferData parseFromValidationData:resultData error:nil];
+            IMTransferData *imTransfer = [IMTransferData parseFromData:resultData error:nil];
             if ([ConnectTool vertifyWithData:imTransfer.cipherData.data sign:imTransfer.sign]) {
                 NSData *data = [ConnectTool decodeGcmDataWithEcdhKey:[ServerCenter shareCenter].extensionPass GcmData:imTransfer.cipherData];
                 NSError *erro = nil;
-                SendToUserMessage *post = [SendToUserMessage parseFromValidationData:data error:&erro];
+                SendToUserMessage *post = [SendToUserMessage parseFromData:data error:&erro];
                 if (!erro) {
                     self.body = post;
                 } else {
@@ -329,11 +320,11 @@ static inline unsigned int bswap_32(unsigned int v) {
         }
             break;
         case BM_IM_UNARRIVE_EXT: {
-            IMTransferData *imTransfer = [IMTransferData parseFromValidationData:resultData error:nil];
+            IMTransferData *imTransfer = [IMTransferData parseFromData:resultData error:nil];
             if ([ConnectTool vertifyWithData:imTransfer.cipherData.data sign:imTransfer.sign]) {
                 NSData *data = [ConnectTool decodeGcmDataWithEcdhKey:[ServerCenter shareCenter].extensionPass GcmData:imTransfer.cipherData];
                 NSError *erro = nil;
-                RejectMessage *post = [RejectMessage parseFromValidationData:data error:&erro];
+                RejectMessage *post = [RejectMessage parseFromData:data error:&erro];
                 if (!erro) {
                     self.body = post;
                 } else {

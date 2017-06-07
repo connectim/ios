@@ -108,7 +108,7 @@
                 if (erro.code == -1011) {
                     return ;
                 }
-                NSDecimalNumber *deciNum = [[NSDecimalNumber alloc] initWithLong:[[MMAppSetting sharedSetting] getBalance]];
+                NSDecimalNumber *deciNum = [[NSDecimalNumber alloc] initWithLong:[[MMAppSetting sharedSetting] getAvaliableAmount]];
                 NSDecimalNumber *change = [[NSDecimalNumber alloc] initWithLong:pow(10, 8)];
                 NSDecimalNumber *blanceNum = [deciNum decimalNumberByDividingBy:change];
                 unspentAmount = [UnspentAmount new];
@@ -117,7 +117,12 @@
                 complete(blanceNum.stringValue,unspentAmount,erro);
             } else{
                 NSDecimalNumber *deciNum = [[NSDecimalNumber alloc] initWithLong:unspentAmount.amount];
+                NSDecimalNumber *avaliableAmount = [[NSDecimalNumber alloc] initWithLong:unspentAmount.avaliableAmount];
+                //save balance
                 [[MMAppSetting sharedSetting] saveBalance:deciNum.longLongValue];
+                
+                //save avaliableAmount
+                [[MMAppSetting sharedSetting] saveAvaliableAmount:avaliableAmount.stringValue];
                 NSDecimalNumber *change = [[NSDecimalNumber alloc] initWithLong:pow(10, 8)];
                 NSDecimalNumber *blanceNum = [deciNum decimalNumberByDividingBy:change];
                 complete(blanceNum.stringValue,unspentAmount,erro);

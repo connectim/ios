@@ -22,13 +22,13 @@
  * add GetNewMessage Observer
  * @param oberver
  */
-- (void)addGetNewMessageObserver:(id <SystemMessageHandlerGetNewMessage>)oberver;
+- (void)addGetNewMessageObserver:(id <MessageHandlerGetNewMessage>)oberver;
 
 /**
  * remove GetNewMessage Observer
  * @param oberver
  */
-- (void)removeGetNewMessageObserver:(id <SystemMessageHandlerGetNewMessage>)oberver;
+- (void)removeGetNewMessageObserver:(id <MessageHandlerGetNewMessage>)oberver;
 
 /**
  * handleMessage

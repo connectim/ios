@@ -59,8 +59,8 @@
     __weak __typeof(&*self) weakSelf = self;
     [SetGlobalHandler updateGroupMynameWithIdentifer:self.groupID myName:self.updateNickName complete:^(NSError *erro) {
         if (erro) {
-            [UIAlertController showAlertInViewController:weakSelf withTitle:LMLocalizedString(@"Link An error occurred change nickname", nil) message:nil cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:@[LMLocalizedString(@"Common OK", nil)] tapBlock:^(UIAlertController * _Nonnull controller, UIAlertAction * _Nonnull action, NSInteger buttonIndex) {
-                
+            [UIAlertController showAlertInViewController:weakSelf withTitle:LMLocalizedString(@"Link An error occurred change nickname", nil) message:nil cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:@[LMLocalizedString(@"Common OK", nil)] tapBlock:^(UIAlertController *_Nonnull controller, UIAlertAction *_Nonnull action, NSInteger buttonIndex) {
+
             }];
         } else {
             [GCDQueue executeInMainQueue:^{

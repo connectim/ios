@@ -30,8 +30,7 @@
 }
 
 
-
-- (void)deleteGroupMember:(NSNotification *)note{
+- (void)deleteGroupMember:(NSNotification *)note {
     NSString *groupName = note.object;
     for (AccountInfo *groupMember in self.noteGroupMembers) {
         if ([groupName isEqualToString:groupMember.groupShowName]) {
@@ -83,30 +82,27 @@
 }
 
 - (void)rightButtonPressed:(id)sender {
-
     ChatGroupSetViewController *setController = [[ChatGroupSetViewController alloc] initWithTalkInfo:self.taklInfo];
-
     [self.navigationController pushViewController:setController animated:YES];
-
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t) (0.26 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         [self reserveChatInputPanelState];
     });
-
 }
 
 #pragma mark - Group chat when adding a @ function
-- (void)inputTextChangeWithText:(NSString *)text{
-    __weak typeof(self)weakSelf = self;
+
+- (void)inputTextChangeWithText:(NSString *)text {
+    __weak typeof(self) weakSelf = self;
     if ([text isEqualToString:@"@"]) {
         LMGroupChooseNoteMemberlistPage *page = [[LMGroupChooseNoteMemberlistPage alloc] initWithMembers:self.taklInfo.chatGroupInfo.groupMembers];
         UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:page];
-        page.ChooseGroupMemberCallBack = ^(AccountInfo *membser){
+        page.ChooseGroupMemberCallBack = ^(AccountInfo *membser) {
             if (membser) {
                 [weakSelf.inputPanel appendFocusOnOther:[NSString stringWithFormat:@"@%@ ", membser.groupShowName]];
                 if (![weakSelf.noteGroupMembers containsObject:membser]) {
                     [weakSelf.noteGroupMembers objectAddObject:membser];
                 }
-            } else{
+            } else {
                 [weakSelf.inputPanel appendFocusOnOther:@"@"];
             }
         };
@@ -115,6 +111,7 @@
 }
 
 #pragma mark -Long press headavatar @ funcation
+
 - (void)chatCellDidLongPressOnHeadView:(GJGCChatBaseCell *)tapedCell {
     NSIndexPath *tapIndexPath = [self.chatListTable indexPathForCell:tapedCell];
     GJGCChatFriendContentModel *contentModel = (GJGCChatFriendContentModel *) [self.dataSourceManager contentModelAtIndex:tapIndexPath.row];
