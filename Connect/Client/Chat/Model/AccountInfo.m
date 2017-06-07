@@ -99,5 +99,25 @@
     }
     return _groupNickName;
 }
-
+- (id)mutableCopyWithZone:(nullable NSZone *)zone
+{
+    
+    id copy = [[[self class] allocWithZone:zone] init];
+    unsigned int count = 0;
+    Ivar *listArray = class_copyIvarList([self class], &count);
+    for (int index = 0; index < count; index++) {
+        Ivar ivar = listArray[index];
+        NSString *name_ = [NSString stringWithUTF8String:ivar_getName(ivar)];
+        NSString *name = nil;
+        if (name_.length > 1) {
+          name = [name_ substringFromIndex:1];
+          id value = [self valueForKey:name];
+          [copy setValue:value forKey:name];
+        }else {
+          continue;
+        }
+    }
+    free(listArray);
+    return copy;
+}
 @end

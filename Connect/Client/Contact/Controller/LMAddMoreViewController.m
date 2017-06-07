@@ -12,8 +12,8 @@
 #import "InviteUserPage.h"
 #import "UserDBManager.h"
 #import "LMLinkManDataManager.h"
-
-@interface LMAddMoreViewController ()
+#import "IMService.h"
+@interface LMAddMoreViewController ()<MGSwipeTableCellDelegate>
 @property(strong, nonatomic) NSMutableArray *allArray;
 @property(nonatomic, assign) int page;
 
@@ -99,6 +99,7 @@
     fcell.addButtonBlock = ^(AccountInfo *userInfo) {
         [weakSelf addActionWithUserInfo:userInfo];
     };
+    fcell.delegate = self;
     fcell.data = self.allArray[indexPath.row];
     return fcell;
 }
@@ -109,9 +110,72 @@
     AccountInfo *userInfo = self.allArray[indexPath.row];
     [self addActionWithUserInfo:userInfo];
 }
+#pragma mark - MGSwipeTableCellDelegate
+
+- (BOOL)swipeTableCell:(MGSwipeTableCell *)cell canSwipe:(MGSwipeDirection)direction; {
+    return YES;
+}
+
+- (NSArray *)swipeTableCell:(MGSwipeTableCell *)cell swipeButtonsForDirection:(MGSwipeDirection)direction
+              swipeSettings:(MGSwipeSettings *)swipeSettings expansionSettings:(MGSwipeExpansionSettings *)expansionSettings {
+    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
+    __weak __typeof(&*self) weakSelf = self;
+    CGFloat padding = AUTO_WIDTH(50);
+    if (direction == MGSwipeDirectionRightToLeft) {
+        MGSwipeButton *trashButton = [MGSwipeButton buttonWithTitle:@"" icon:[UIImage imageNamed:@"message_trash"] backgroundColor:[UIColor whiteColor] padding:padding callback:^BOOL(MGSwipeTableCell *sender) {
+            AccountInfo *userInfo = weakSelf.allArray[indexPath.row];
+            [weakSelf NotInterestedWithAddress:userInfo.address];
+            return YES;
+        }];
+        return @[trashButton];
+    }
+    return nil;
+}
+- (void)swipeTableCell:(MGSwipeTableCell *)cell didChangeSwipeState:(MGSwipeState)state gestureIsActive:(BOOL)gestureIsActive {
+    if (state == MGSwipeStateNone) {
+        self.tableView.scrollEnabled = YES;
+    } else {
+        self.tableView.scrollEnabled = NO;
+    }
+}
 
 #pragma mark -  add methods
-
+- (void)NotInterestedWithAddress:(NSString *)oldAddress {
+    
+    [MBProgressHUD showLoadingMessageToView:self.view];
+    [[IMService instance] setRecommandUserNoInterestAdress:oldAddress comlete:^(NSError *error, id data) {
+        if (error == nil) {
+            [GCDQueue executeInMainQueue:^{
+                [MBProgressHUD hideHUDForView:self.view];
+            }];
+            NSString *address = (NSString *) data;
+            [[LMRecommandFriendManager sharedManager] updateRecommandFriendStatus:3 withAddress:address];
+            if (self.deleBlcok) {
+                self.deleBlcok();
+            }
+            [self creatAllArray:address];
+        } else {
+            [GCDQueue executeInMainQueue:^{
+                [MBProgressHUD showToastwithText:LMLocalizedString(@"Link Operation failed", nil) withType:ToastTypeFail showInView:self.view complete:nil];
+            }];
+        }
+    }];
+}
+- (void)creatAllArray:(NSString *)address {
+    AccountInfo* deleteUser = nil;
+    for (AccountInfo *user in self.allArray) {
+        if ([user.address isEqualToString:address]) {
+            deleteUser = user;
+            break;
+        }
+    }
+    if (deleteUser.address.length > 0) {
+        [self.allArray removeObject:deleteUser];
+        [GCDQueue executeInMainQueue:^{
+            [self.tableView reloadData];
+        }];
+    }
+}
 - (void)addActionWithUserInfo:(AccountInfo *)userInfo {
     userInfo.source = UserSourceTypeRecommend;
     userInfo.stranger = YES;

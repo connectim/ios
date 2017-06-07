@@ -382,11 +382,8 @@
 }
 
 - (void)updateContentModelValuesNotEffectRowHeight:(GJGCChatContentBaseModel *)contentModel atIndex:(NSInteger)index {
-    if ([contentModel.class isSubclassOfClass:[GJGCChatFriendContentModel class]]) {
-
-        GJGCChatFriendContentModel *friendChatModel = (GJGCChatFriendContentModel *) contentModel;
-        if (friendChatModel.contentType == GJGCChatFriendContentTypeAudio && friendChatModel.isPlayingAudio) {
-        }
+    GJGCChatFriendContentModel *friendChatModel = (GJGCChatFriendContentModel *) contentModel;
+    if (friendChatModel.contentType == GJGCChatFriendContentTypeAudio && friendChatModel.isPlayingAudio) {
     }
     [self.chatListArray replaceObjectAtIndex:index withObject:contentModel];
 }
@@ -905,6 +902,7 @@
     if (timeConttentModel) {
         [self.chatListArray objectAddObject:timeConttentModel];
     }
+    //judge height
     [self addChatContentModel:messageContent];
     dispatch_source_merge_data(_refreshListSource, 1);
     self.lastSendMsgTime = [[NSDate date] timeIntervalSince1970] * 1000;

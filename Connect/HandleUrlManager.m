@@ -194,11 +194,11 @@
                     UIWindow *window = [[UIApplication sharedApplication] keyWindow];
                     window.userInteractionEnabled = NO;
                     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:window animated:YES];
-                    hud.labelText = LMLocalizedString(@"Receiving", nil);
+                    hud.labelText = LMLocalizedString(@"Common Loading", nil);
                 }];
                 if (!GJCFStringIsNull(token)) {
                     [[IMService instance] reciveMoneyWihtToken:token complete:^(NSError *erro, id data) {
-                        
+
                     }];
                 }
             }
@@ -209,12 +209,12 @@
                     UIWindow *window = [[UIApplication sharedApplication] keyWindow];
                     window.userInteractionEnabled = NO;
                     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:window animated:YES];
-                    hud.labelText = LMLocalizedString(@"Receiving", nil);
+                    hud.labelText = LMLocalizedString(@"Common Loading", nil);
                 }];
                 NSString *token = [parms valueForKey:@"token"];
                 if (!GJCFStringIsNull(token)) {
                     [[IMService instance] openRedPacketWihtToken:token complete:^(NSError *erro, id data) {
-                        
+
                     }];
                 }
             }

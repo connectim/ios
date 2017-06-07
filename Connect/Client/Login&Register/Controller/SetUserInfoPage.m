@@ -281,6 +281,7 @@
 }
 
 - (void)textFiledEditChanged:(NSNotification *)obj {
+    
     UITextField *textField = (UITextField *) obj.object;
     NSString *toBeString = textField.text;
     NSString *lang = [textField.textInputMode primaryLanguage];
@@ -294,9 +295,7 @@
                 textField.text = [toBeString substringToIndex:MAX_TIP_LENGTH];
             }
         }
-    }
-        // Chinese input method other than the statistical restrictions can be directly, regardless of other language situation
-    else {
+    } else {
         if (toBeString.length > MAX_TIP_LENGTH) {
             NSRange rangeIndex = [toBeString rangeOfComposedCharacterSequenceAtIndex:MAX_TIP_LENGTH];
             if (rangeIndex.length == 1) {
@@ -423,12 +422,6 @@
 
 - (void)registerAction {
     __weak __typeof(&*self) weakSelf = self;
-    if (GJCFStringIsNull(self.avatar)) {
-        if (!self.uploadingAvataring) {
-            [self uploadAvatar];
-            return;
-        }
-    }
     if (GJCFStringIsNull(_nickNameFiled.text)) {
         self.completeBtn.enabled = NO;
         return;
@@ -466,17 +459,15 @@
         }
         // save user message
         [weakSelf saveUserInfoToKeyChain];
-
         // refrsh cache
         UIImage *corImage = [self.clipImage imageByRoundCornerRadius:6];
         [[YYImageCache sharedCache] setImage:self.clipImage forKey:[NSString stringWithFormat:@"%@?size=600", self.avatar]];
         [[YYImageCache sharedCache] setImage:corImage forKey:self.avatar];
         // regiset message
         [[LKUserCenter shareCenter] registerUser:self.currentAccount];
-    }                                  fail:^(NSError *error) {
+    }  fail:^(NSError *error) {
         [GCDQueue executeInMainQueue:^{
-            [MBProgressHUD hideHUDForView:weakSelf.view];
-            [MBProgressHUD showToastwithText:[LMErrorCodeTool showToastErrorType:ToastErrorTypeLoginOrReg withErrorCode:error.code withUrl:LoginSignUpUrl] withType:ToastTypeFail showInView:weakSelf.view complete:nil];
+            [MBProgressHUD showToastwithText:LMLocalizedString(@"Network Server error", nil) withType:ToastTypeFail showInView:weakSelf.view complete:nil];
         }];
     }];
 

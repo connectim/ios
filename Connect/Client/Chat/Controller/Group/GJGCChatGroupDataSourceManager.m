@@ -233,7 +233,6 @@
 
     }
 }
-
 #pragma mark - 重试发送状态消息
 
 - (void)reTryAllSendingStateMsgDetailAction {

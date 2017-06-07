@@ -88,7 +88,6 @@
 
     self.view.backgroundColor = [UIColor whiteColor];
 
-
     self.titleLabel = [[UILabel alloc] init];
     if (self.phoneLogin) {
         _titleLabel.text = LMLocalizedString(@"Login Welcome", nil);

@@ -2098,7 +2098,6 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
         return;
     }
     GJGCChatFriendContentModel *chatContentModel = [LMMessageTool packContentModelWithTalkModel:self.taklInfo contentType:GJGCChatFriendContentTypeAudio extData:audioFile];
-
     [self.dataSourceManager sendMesssage:chatContentModel];
 }
 
@@ -2152,14 +2151,11 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
         }
     }
     [self.noteGroupMembers removeAllObjects];
-
-
     [self.dataSourceManager sendMesssage:chatContentModel];
 }
 
 - (void)chatInputPanel:(GJGCChatInputPanel *)panel sendGIFMessage:(NSString *)gifCode {
     GJGCChatFriendContentModel *chatContentModel = [LMMessageTool packContentModelWithTalkModel:self.taklInfo contentType:GJGCChatFriendContentTypeGif extData:gifCode];
-
     [self.dataSourceManager sendMesssage:chatContentModel];
 
 }
@@ -2354,7 +2350,6 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
             @"filePath": filePath,
             @"videoSize": videoSize};
     GJGCChatFriendContentModel *chatContentModel = [LMMessageTool packContentModelWithTalkModel:self.taklInfo contentType:GJGCChatFriendContentTypeVideo extData:dataDict];
-
     [self.dataSourceManager sendMesssage:chatContentModel];
 }
 
@@ -2363,7 +2358,6 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
 - (void)sendImages:(NSArray *)images {
     for (NSDictionary *imageInfo in images) {
         GJGCChatFriendContentModel *chatContentModel = [LMMessageTool packContentModelWithTalkModel:self.taklInfo contentType:GJGCChatFriendContentTypeImage extData:imageInfo];
-
         [self.dataSourceManager sendMesssage:chatContentModel];
     }
 }
@@ -2396,19 +2390,16 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
     transactionModel.note = tips;
     transactionModel.hashId = hashId;
     GJGCChatFriendContentModel *chatContentModel = [LMMessageTool packContentModelWithTalkModel:self.taklInfo contentType:GJGCChatFriendContentTypeRedEnvelope extData:transactionModel];
-
     [self.dataSourceManager sendMesssage:chatContentModel];
 }
 
 - (void)sendLocation:(NSDictionary *)locationInfo {
     GJGCChatFriendContentModel *chatContentModel = [LMMessageTool packContentModelWithTalkModel:self.taklInfo contentType:GJGCChatFriendContentTypeMapLocation extData:locationInfo];
-
     [self.dataSourceManager sendMesssage:chatContentModel];
 }
 
 - (void)sendContact:(AccountInfo *)user {
     GJGCChatFriendContentModel *chatContentModel = [LMMessageTool packContentModelWithTalkModel:self.taklInfo contentType:GJGCChatFriendContentTypeNameCard extData:user];
-
     [self.dataSourceManager sendMesssage:chatContentModel];
 }
 
@@ -2485,9 +2476,7 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
     transactionModel.size = totalMember;
     transactionModel.hashId = transactionID;
     transactionModel.amount = amount;
-
     GJGCChatFriendContentModel *chatContentModel = [LMMessageTool packContentModelWithTalkModel:self.taklInfo contentType:GJGCChatFriendContentTypePayReceipt extData:transactionModel];
-
     //save trancation status
     [GCDQueue executeInGlobalQueue:^{
         NSMutableDictionary *dict = [NSMutableDictionary dictionary];
@@ -2502,8 +2491,6 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
         }
         [[LMMessageExtendManager sharedManager] saveBitchMessageExtendDict:dict];
     }];
-
-
     [self.dataSourceManager sendMesssage:chatContentModel];
 }
 

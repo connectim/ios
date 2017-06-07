@@ -21,6 +21,8 @@
 #import "SearchResultController.h"
 #import "UIScrollView+EmptyDataSet.h"
 #import "GJGCChatGroupViewController.h"
+#import "GJGCChatSystemNotiViewController.h"
+
 #define cancelWidth  AUTO_WIDTH(150)
 
 @interface SearchPage () <UITableViewDelegate, DZNEmptyDataSetDelegate, DZNEmptyDataSetSource, UITableViewDataSource, UITextFieldDelegate>
@@ -59,7 +61,6 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-
     [self.view endEditing:YES];
     
 }
@@ -67,10 +68,8 @@
     [super viewDidLoad];
 
     self.navigationItem.leftBarButtonItems = nil;
-
-
     [self.view addSubview:self.tableView];
-    [_tableView mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.tableView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.view);
         make.right.left.bottom.equalTo(self.view);
     }];
@@ -141,7 +140,7 @@
 - (void)textDidChange {
 
     [self.resultSearchDatas removeAllObjects];
-    NSString *conditionText = [_searchTextFiled.text uppercaseString];
+    NSString *conditionText = [self.searchTextFiled.text uppercaseString];
     if (GJCFStringIsNull(conditionText)) {
         [self.tableView reloadData];
         return;
@@ -155,9 +154,9 @@
 
         NSMutableArray *groups = @[].mutableCopy;
         for (LMGroupInfo *info in self.groups) {
-            NSString *name = info.groupName;
-            name = [name uppercaseString];
-            if ([name containsString:conditionText]) { //username contact
+            NSString *name = [info.groupName uppercaseString];
+            if ([name containsString:conditionText]) {
+                
                 if (![groups containsObject:info]) {
                     [groups objectAddObject:info];
                 }
@@ -211,33 +210,6 @@
         }];
     }];
 }
-
-
-- (void)transferToAddress:(AccountInfo *)userInfo {
-    LMBitAddressViewController *page = [[LMBitAddressViewController alloc] init];
-    page.address = userInfo.address;
-    [self.navigationController pushViewController:page animated:YES];
-}
-
-- (void)reloadTableViewWith:(AccountInfo *)userInfo {
-
-    userInfo.stranger = ![[UserDBManager sharedManager] isFriendByAddress:userInfo.address];
-    __weak __typeof(&*userInfo) weakUser = userInfo;
-    __weak __typeof(&*self) weakSelf = self;
-    userInfo.customOperation = ^{
-        __strong __typeof(&*weakUser) strongUser = weakUser;
-        InviteUserPage *page = [[InviteUserPage alloc] initWithUser:strongUser];
-        page.sourceType = UserSourceTypeSearch;
-        [weakSelf.navigationController pushViewController:page animated:YES];
-    };
-    [self.resultSearchDatas removeAllObjects];
-
-    [self.resultSearchDatas objectAddObject:userInfo];
-
-    [self.tableView reloadData];
-
-}
-
 #pragma mark - UITextFieldDelegate
 
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
@@ -287,44 +259,61 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    if (indexPath.section == 0) {
-        SearchResultController *page = [[SearchResultController alloc] initWithSearchKey:self.searchTextFiled.text];
-        [self.navigationController pushViewController:page animated:YES];
-        return;
-    }
-
-    CellGroup *group = self.resultSearchDatas[indexPath.section];
-    id data = [group.items objectAtIndexCheck:indexPath.row];
-    if ([data isKindOfClass:[AccountInfo class]]) {
-        AccountInfo *user = (AccountInfo*)data;
-        if (user.isUnRegisterAddress) {
+    [self.searchTextFiled resignFirstResponder];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.25 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        if (indexPath.section == 0) {
+            SearchResultController *page = [[SearchResultController alloc] initWithSearchKey:self.searchTextFiled.text];
+            [self.navigationController pushViewController:page animated:YES];
             return;
         }
-        if (!user.stranger) {
-            UserDetailPage *detailPage = [[UserDetailPage alloc] initWithUser:user];
-            detailPage.hidesBottomBarWhenPushed = YES;
-            [self.navigationController pushViewController:detailPage animated:YES];
+        
+        CellGroup *group = self.resultSearchDatas[indexPath.section];
+        id data = [group.items objectAtIndexCheck:indexPath.row];
+        if ([data isKindOfClass:[AccountInfo class]]) {
+            AccountInfo *user = (AccountInfo*)data;
+            if (user.isUnRegisterAddress) {
+                return;
+            }
+            if (!user.stranger) {
+                if ([user.pub_key isEqualToString:kSystemIdendifier]) {
+                    GJGCChatFriendTalkModel *talk = [[GJGCChatFriendTalkModel alloc] init];
+                    talk.talkType = GJGCChatFriendTalkTypePrivate;
+                    talk.chatIdendifier = user.pub_key;
+                    talk.snapChatOutDataTime = 0;
+                    talk.talkType = GJGCChatFriendTalkTypePostSystem;
+                    talk.name = user.username;
+                    talk.headUrl = user.avatar;
+                    talk.chatUser = user;
+                    // save session object
+                    [SessionManager sharedManager].chatSession = talk.chatIdendifier;
+                    [SessionManager sharedManager].chatObject = talk.chatUser;
+                    
+                    GJGCChatSystemNotiViewController *privateChat = [[GJGCChatSystemNotiViewController alloc] initWithTalkInfo:talk];
+                    privateChat.hidesBottomBarWhenPushed = YES;
+                    [self.navigationController pushViewController:privateChat animated:YES];
+                    return;
+                }
+                UserDetailPage *detailPage = [[UserDetailPage alloc] initWithUser:user];
+                detailPage.hidesBottomBarWhenPushed = YES;
+                [self.navigationController pushViewController:detailPage animated:YES];
+            }
+        }else if([data isKindOfClass:[LMGroupInfo class]])
+        {
+            LMGroupInfo* group = (LMGroupInfo*)data;
+            GJGCChatFriendTalkModel *talk = [[GJGCChatFriendTalkModel alloc] init];
+            talk.talkType = GJGCChatFriendTalkTypeGroup;
+            talk.chatIdendifier = group.groupIdentifer;
+            talk.group_ecdhKey = group.groupEcdhKey;
+            talk.chatGroupInfo = group;
+            //save session
+            [SessionManager sharedManager].chatSession = talk.chatIdendifier;
+            [SessionManager sharedManager].chatObject = group;
+            talk.name = GJCFStringIsNull(group.groupName) ? [NSString stringWithFormat:LMLocalizedString(@"Link Group", nil), (unsigned long) talk.chatGroupInfo.groupMembers.count] : [NSString stringWithFormat:@"%@(%lu)", group.groupName, (unsigned long) talk.chatGroupInfo.groupMembers.count];
+            GJGCChatGroupViewController *groupChat = [[GJGCChatGroupViewController alloc] initWithTalkInfo:talk];
+            groupChat.hidesBottomBarWhenPushed = YES;
+            [self.navigationController pushViewController:groupChat animated:YES];
         }
-    }else if([data isKindOfClass:[LMGroupInfo class]])
-    {
-        LMGroupInfo* group = (LMGroupInfo*)data;
-        GJGCChatFriendTalkModel *talk = [[GJGCChatFriendTalkModel alloc] init];
-        talk.talkType = GJGCChatFriendTalkTypeGroup;
-        talk.chatIdendifier = group.groupIdentifer;
-        talk.group_ecdhKey = group.groupEcdhKey;
-        talk.chatGroupInfo = group;
-        //save session
-        [SessionManager sharedManager].chatSession = talk.chatIdendifier;
-        [SessionManager sharedManager].chatObject = group;
-        talk.name = GJCFStringIsNull(group.groupName) ? [NSString stringWithFormat:LMLocalizedString(@"Link Group", nil), (unsigned long) talk.chatGroupInfo.groupMembers.count] : [NSString stringWithFormat:@"%@(%lu)", group.groupName, (unsigned long) talk.chatGroupInfo.groupMembers.count];
-        GJGCChatGroupViewController *groupChat = [[GJGCChatGroupViewController alloc] initWithTalkInfo:talk];
-        groupChat.hidesBottomBarWhenPushed = YES;
-        [self.navigationController pushViewController:groupChat animated:YES];
-    }else
-    {
-        return;
-    }
-    
+    });
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
@@ -349,17 +338,17 @@
 
 - (UITableView *)tableView {
     if (!_tableView) {
-        _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
-        _tableView.delegate = self;
-        _tableView.dataSource = self;
-        _tableView.emptyDataSetSource = self;
-        _tableView.emptyDataSetDelegate = self;
-        _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-        _tableView.rowHeight = AUTO_HEIGHT(110);
-        [_tableView registerNib:[UINib nibWithNibName:@"SearchByNetCell" bundle:nil] forCellReuseIdentifier:@"SearchByNetCellID"];
-        [_tableView registerNib:[UINib nibWithNibName:@"LinkmanFriendCell" bundle:nil] forCellReuseIdentifier:@"LinkmanFriendCellID"];
-        [_tableView registerNib:[UINib nibWithNibName:@"AddFriendCell" bundle:nil] forCellReuseIdentifier:@"AddFriendCellID"];
-        [_tableView registerClass:[ConnectTableHeaderView class] forHeaderFooterViewReuseIdentifier:@"ConnectTableHeaderViewID"];
+        self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
+        self.tableView.delegate = self;
+        self.tableView.dataSource = self;
+        self.tableView.emptyDataSetSource = self;
+        self.tableView.emptyDataSetDelegate = self;
+        self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+        self.tableView.rowHeight = AUTO_HEIGHT(110);
+        [self.tableView registerNib:[UINib nibWithNibName:@"SearchByNetCell" bundle:nil] forCellReuseIdentifier:@"SearchByNetCellID"];
+        [self.tableView registerNib:[UINib nibWithNibName:@"LinkmanFriendCell" bundle:nil] forCellReuseIdentifier:@"LinkmanFriendCellID"];
+        [self.tableView registerNib:[UINib nibWithNibName:@"AddFriendCell" bundle:nil] forCellReuseIdentifier:@"AddFriendCellID"];
+        [self.tableView registerClass:[ConnectTableHeaderView class] forHeaderFooterViewReuseIdentifier:@"ConnectTableHeaderViewID"];
     }
 
     return _tableView;
@@ -367,7 +356,7 @@
 
 - (NSMutableArray *)resultSearchDatas {
     if (!_resultSearchDatas) {
-        _resultSearchDatas = [NSMutableArray array];
+        self.resultSearchDatas = [NSMutableArray array];
     }
     return _resultSearchDatas;
 }
@@ -381,6 +370,10 @@
     self.cancelButton = nil;
     [self.maskView removeFromSuperview];
     self.maskView = nil;
+    self.users = nil;
+    self.groups = nil;
+    [self.resultSearchDatas removeAllObjects];
+    self.resultSearchDatas = nil;
 }
 
 @end

@@ -84,6 +84,7 @@ typedef NS_ENUM(NSInteger ,MessageRejectErrorType) {
                         sendMessageModel.callBack(sendMessageModel.sendMsg, [NSError errorWithDomain:@"over_time" code:OVER_TIME_CODE userInfo:nil]);
                     }
 
+                    
                     [weakSelf.sendingMessages removeObjectForKey:sendMessageModel.sendMsg.message_id];
                 }
             }

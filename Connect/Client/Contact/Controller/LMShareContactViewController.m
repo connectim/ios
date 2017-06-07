@@ -24,22 +24,17 @@
 #import "GroupDBManager.h"
 #import "ConnectTableHeaderView.h"
 #import "LMRetweetMessageManager.h"
+#import "LMLinkManDataManager.h"
+#import "RegexKit.h"
 
 @interface LMShareContactViewController () <UITableViewDelegate, UITableViewDataSource>
 
 @property(nonatomic, strong) UITableView *tableView;
-//  contacts list
-@property(nonatomic, strong) NSMutableArray *contactListArray;
-/// user list
-@property(nonatomic, strong) NSMutableArray *friendsArr;
-//  common friends
-@property(nonatomic, strong) NSMutableArray *normalFriends;
-@property(nonatomic, strong) NSMutableArray *offenFriends;
-// contacts group
-@property(nonatomic, strong) NSMutableArray *commonGroup;
-// indexs
-@property(nonatomic, strong) NSMutableArray *indexs;
+@property(nonatomic, strong) AccountInfo *contact;
 @property(nonatomic, strong) LMRerweetModel *retweetModel;
+@property(nonatomic, strong) NSMutableArray *groupsFriendArray;
+@property(nonatomic, strong) NSMutableArray *indexsArray;
+
 
 
 @end
@@ -52,225 +47,71 @@
     }
     return self;
 }
-
+- (instancetype)initWithAccount:(AccountInfo *)contact {
+    if (self = [super init]) {
+        self.contact = contact;
+    }
+    return self;
+}
 #pragma mark - 懒加载
 
-- (NSMutableArray *)commonGroup {
-    if (!_commonGroup) {
-        _commonGroup = [NSMutableArray array];
-    }
-
-    return _commonGroup;
-}
-
-- (NSMutableArray *)offenFriends {
-    if (!_offenFriends) {
-        _offenFriends = [NSMutableArray array];
-    }
-
-    return _offenFriends;
-}
-
-- (NSMutableArray *)normalFriends {
-    if (!_normalFriends) {
-        _normalFriends = [NSMutableArray array];
-    }
-
-    return _normalFriends;
-}
 
 - (UITableView *)tableView {
     if (!_tableView) {
         _tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
         [self.tableView registerNib:[UINib nibWithNibName:@"LinkmanFriendCell" bundle:nil] forCellReuseIdentifier:@"LinkmanFriendCellID"];
         [self.tableView registerClass:[ConnectTableHeaderView class] forHeaderFooterViewReuseIdentifier:@"ConnectTableHeaderViewID"];
-        _tableView.rowHeight = AUTO_HEIGHT(100);
-        _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-        _tableView.sectionIndexBackgroundColor = [UIColor clearColor];
-        _tableView.sectionIndexTrackingBackgroundColor = [UIColor clearColor];
-        _tableView.delegate = self;
-        _tableView.dataSource = self;
-
+        self.tableView.rowHeight = AUTO_HEIGHT(100);
+        self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+        self.tableView.sectionIndexBackgroundColor = [UIColor clearColor];
+        self.tableView.sectionIndexTrackingBackgroundColor = [UIColor clearColor];
+        self.tableView.sectionIndexColor = LMBasicDarkGray;
+        self.tableView.delegate = self;
+        self.tableView.dataSource = self;
     }
     return _tableView;
 }
-
-- (NSMutableArray *)indexs {
-    if (!_indexs) {
-        _indexs = [NSMutableArray array];
+- (NSMutableArray *)groupsFriendArray {
+    if (!_groupsFriendArray) {
+        self.groupsFriendArray = [NSMutableArray array];
     }
-    return _indexs;
+    return _groupsFriendArray;
 }
-
-- (NSMutableArray *)friendsArr {
-    if (!_friendsArr) {
-        _friendsArr = [[NSMutableArray alloc] initWithArray:[[UserDBManager sharedManager] getAllUsers]];
+- (NSMutableArray *)indexsArray {
+    if (!_indexsArray) {
+        self.indexsArray = [NSMutableArray array];
     }
-
-    return _friendsArr;
+    return _indexsArray;
 }
-
-- (NSMutableArray *)contactListArray {
-    if (_contactListArray == nil) {
-        self.contactListArray = [NSMutableArray array];
-    }
-    return _contactListArray;
-}
-
 #pragma mark - 方法的响应
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = LMLocalizedString(@"Link Share", nil);
     [self.view addSubview:self.tableView];
-    [self creatArray];
-}
-
-- (void)creatArray {
-    [[GroupDBManager sharedManager] getCommonGroupListWithComplete:^(NSArray *groups) {
+    [GCDQueue executeInGlobalQueue:^{
+        self.groupsFriendArray = [[LMLinkManDataManager sharedManager] getListGroupsFriend:self.contact];
+        self.indexsArray = [self getIndexArray:self.groupsFriendArray];
         [GCDQueue executeInMainQueue:^{
-            for (LMGroupInfo *group in groups) {
-                if (![self.commonGroup containsObject:group]) {
-                    [self.commonGroup objectAddObject:group];
-                } else {
-                    [self.commonGroup replaceObjectAtIndex:[self.commonGroup indexOfObject:group] withObject:group];
-                }
-            }
-            [self formartFiendsGrouping];
+            [self.tableView reloadData];
         }];
     }];
 }
-
-- (void)formartFiendsGrouping {
-    [[UserDBManager sharedManager] getAllUsersNoConnectWithComplete:^(NSArray *contacts) {
-        [GCDQueue executeInMainQueue:^{
-            for (AccountInfo *contact in contacts) {
-                if (contact.isOffenContact) {
-                    if (![self.offenFriends containsObject:contact]) {
-                        [self.offenFriends objectAddObject:contact];
-                    } else {
-                        [self.offenFriends replaceObjectAtIndex:[self.offenFriends indexOfObject:contact] withObject:contact];
-                    }
-                    if ([contact.address isEqualToString:self.contact.address]) {
-                        [self.offenFriends removeObject:contact];
-                    }
-                } else {
-                    if (![self.normalFriends containsObject:contact]) {
-                        [self.normalFriends objectAddObject:contact];
-                    } else {
-                        [self.normalFriends replaceObjectAtIndex:[self.normalFriends indexOfObject:contact] withObject:contact];
-                    }
-                    if ([contact.address isEqualToString:self.contact.address]) {
-                        [self.normalFriends removeObject:contact];
-                    }
-                }
-                if (![self.friendsArr containsObject:contact]) {
-                    [self.friendsArr objectAddObject:contact];
-                } else {
-                    [self.friendsArr replaceObjectAtIndex:[self.friendsArr indexOfObject:contact] withObject:contact];
-                }
-                if ([contact.address isEqualToString:self.contact.address]) {
-                    [self.friendsArr removeObject:contact];
-                }
-            }
-            [self addDataToGroupArray];
-        }];
-    }];
-}
-
-- (void)addDataToGroupArray {
-
-    //indexs
-    NSMutableSet *set = [NSMutableSet set];
-    NSMutableDictionary *groupDict = [NSMutableDictionary dictionary];
-    NSMutableArray *temItems = nil;
-    for (AccountInfo *info in self.normalFriends) {
-        NSString *prex = @"";
-        NSString *name = info.normalShowName;
-        if (name.length) {
-            prex = [[name transformToPinyin] substringToIndex:1];
-        }
-        // To heavy
-        if ([self preIsInAtoZ:prex]) {
-            prex = [prex uppercaseString];
-        } else {
-            prex = @"#";
-        }
-        [set addObject:prex];
-        // save items
-        temItems = [groupDict valueForKey:prex];
-        if (!temItems) {
-            temItems = [NSMutableArray array];
-        }
-        [temItems objectAddObject:info];
-        [groupDict setObject:temItems forKey:prex];
-    }
-    for (NSObject *obj in set) {
-        if (![self.indexs containsObject:obj]) {
-            [self.indexs objectAddObject:obj];
-        }
-    }
-
-    NSMutableArray *deleteIndexs = [NSMutableArray array];
-    for (NSString *pre in self.indexs) {
-        if (![set containsObject:pre]) {
-            [deleteIndexs addObject:pre];
-        }
-    }
-    [self.indexs removeObjectsInArray:deleteIndexs];
-    // array sort
-    [self.indexs sortUsingComparator:^NSComparisonResult(id _Nonnull obj1, id _Nonnull obj2) {
-        NSString *str1 = obj1;
-        NSString *str2 = obj2;
-        return [str1 compare:str2];
-    }];
-
-    [self.contactListArray removeAllObjects];
-    // common
-    if (self.offenFriends.count) {
-        NSMutableDictionary *offenFriend = [NSMutableDictionary dictionary];
-        offenFriend[@"title"] = LMLocalizedString(@"Link Favorite Friend", nil);
-        offenFriend[@"titleicon"] = @"table_header_favorite";
-        offenFriend[@"items"] = self.offenFriends;
-        [self.contactListArray objectAddObject:offenFriend];
-    }
-    // common group
-    if (self.commonGroup.count) {
-        NSMutableDictionary *commonGroup = [NSMutableDictionary dictionary];
-        commonGroup[@"title"] = LMLocalizedString(@"Link Group Common", nil);
-        commonGroup[@"titleicon"] = @"contract_group_chat";
-        commonGroup[@"items"] = self.commonGroup;
-        [self.contactListArray objectAddObject:commonGroup];
-    }
-
-    NSMutableDictionary *group = nil;
-    NSMutableArray *items = nil;
-
-    for (NSString *prex in self.indexs) {
-        group = [NSMutableDictionary dictionary];
-        items = [groupDict valueForKey:prex];
-        group[@"title"] = prex;
-        group[@"items"] = items;
-        [self.contactListArray objectAddObject:group];
-    }
-    [GCDQueue executeInMainQueue:^{
-        [self.tableView reloadData];
-    }];
-}
-
 #pragma mark - Table view data source
 
 - (NSArray<NSString *> *)sectionIndexTitlesForTableView:(UITableView *)tableView {
-    return self.indexs;
+    return self.indexsArray.copy;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    NSArray *items = self.contactListArray[section][@"items"];
+    NSArray *items = self.groupsFriendArray[section][@"items"];
     return items.count;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return self.contactListArray.count;
+    
+    return self.groupsFriendArray.count;
+
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -279,22 +120,24 @@
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
     ConnectTableHeaderView *hearderView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:@"ConnectTableHeaderViewID"];
-    hearderView.customTitle.text = [self.contactListArray[section] valueForKey:@"title"];
-    NSString *titleIcon = [self.contactListArray[section] valueForKey:@"titleicon"];
+    hearderView.customTitle.text = [self.groupsFriendArray[section] valueForKey:@"title"];
+    NSString *titleIcon = [self.groupsFriendArray[section] valueForKey:@"titleicon"];
     hearderView.customIcon = titleIcon;
     return hearderView;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    id data = self.contactListArray[indexPath.section][@"items"][indexPath.row];
+    
+    id data = self.groupsFriendArray[indexPath.section][@"items"][indexPath.row];
     LinkmanFriendCell *cell = [tableView dequeueReusableCellWithIdentifier:@"LinkmanFriendCellID" forIndexPath:indexPath];
     cell.data = data;
     return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    id data = self.contactListArray[indexPath.section][@"items"][indexPath.row];
+    id data = self.groupsFriendArray[indexPath.section][@"items"][indexPath.row];
 
     __weak __typeof(&*self) weakSelf = self;
     NSString *displayName = nil;
@@ -314,7 +157,7 @@
         } else if (self.retweetModel.retweetMessage.type == GJGCChatFriendContentTypeImage) {
             title = [NSString stringWithFormat:LMLocalizedString(@"Chat Send image to", nil), displayName];
         } else {
-            title = [NSString stringWithFormat:LMLocalizedString(@"Chat Send vioce", nil), displayName];
+            title = [NSString stringWithFormat:LMLocalizedString(@"Link Send to", nil), displayName];
         }
     }
 
@@ -329,7 +172,18 @@
     alertController.automaticallyAdjustsScrollViewInsets = NO;
     [self presentViewController:alertController animated:YES completion:nil];
 }
-
+- (NSMutableArray *)getIndexArray:(NSMutableArray *)groupArray {
+    if (groupArray.count <= 0) {
+        return nil;
+    }
+    NSMutableArray *temArray = [NSMutableArray array];
+    for (NSMutableDictionary* dic in groupArray) {
+        if ([RegexKit isNotChinsesWithUrl:dic[@"title"]]) {
+            [temArray addObject:dic[@"title"]];
+        }
+    }
+    return temArray;
+}
 - (void)sendShareCardMessageWithChat:(id)data {
 
 
@@ -463,13 +317,14 @@
 }
 
 - (void)dealloc {
+    
     [self.tableView removeFromSuperview];
     self.tableView = nil;
-    self.friendsArr = nil;
-    self.contactListArray = nil;
-    self.indexs = nil;
-    self.offenFriends = nil;
-    self.normalFriends = nil;
+    [self.indexsArray removeAllObjects];
+    self.indexsArray = nil;
+    [self.groupsFriendArray removeAllObjects];
+    self.groupsFriendArray = nil;
+    
 }
 @end
 

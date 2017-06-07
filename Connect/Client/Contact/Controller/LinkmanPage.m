@@ -30,31 +30,36 @@
 @property(nonatomic, strong) UIView *headerView;
 // total members Label
 @property(nonatomic, strong) UILabel *totalContactLabel;
+// weathre is click share
+@property(nonatomic, assign) BOOL isClickShare;
 
 
 @end
 
 @implementation LinkmanPage
 
-
 - (NSMutableArray *)groupsFriend {
     return [[LMLinkManDataManager sharedManager] getListGroupsFriend];
 }
 
 - (void)viewDidLoad {
+    
     [super viewDidLoad];
-
-    [LMLinkManDataManager sharedManager].delegate = self;
-    [[LMLinkManDataManager sharedManager] getAllLinkMan];
-    [self configTableView];
-
     self.navigationItem.leftBarButtonItems = nil;
-
     self.navigationController.title = LMLocalizedString(@"Link Contacts", nil);
     [self setNavigationRight:@"add_white"];
+    [[LMLinkManDataManager sharedManager] getAllLinkMan];
+    [LMLinkManDataManager sharedManager].delegate = self;
+    [self configTableView];
     // set left button
     [self setLeftButton];
     
+}
+- (void)clickShare {
+    self.isClickShare = YES;
+}
+- (void)dealloc {
+    RemoveNofify;
 }
 -(void)setLeftButton
 {
@@ -114,7 +119,7 @@
     [self.tableView registerNib:[UINib nibWithNibName:@"NewFriendTipCell" bundle:nil] forCellReuseIdentifier:@"NewFriendTipCellID"];
     [self.tableView registerClass:[ConnectTableHeaderView class] forHeaderFooterViewReuseIdentifier:@"ConnectTableHeaderViewID"];
     self.tableView.rowHeight = AUTO_HEIGHT(111);
-    self.tableView.sectionIndexColor = [UIColor lightGrayColor];
+    self.tableView.sectionIndexColor = LMBasicDarkGray;
     self.tableView.sectionIndexBackgroundColor = [UIColor clearColor];
     self.tableView.backgroundColor = GJCFQuickHexColor(@"F0F0F6");
     // head tip view

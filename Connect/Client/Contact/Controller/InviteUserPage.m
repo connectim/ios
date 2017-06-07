@@ -134,7 +134,7 @@
 
 }
 
-#pragma mark - 弹出弹框的提示
+#pragma mark - toast tip
 
 - (void)allertController {
     __weak typeof(self) weakSelf = self;

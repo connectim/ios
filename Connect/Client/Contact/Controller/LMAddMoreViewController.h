@@ -8,6 +8,10 @@
 
 #import "BaseTableViewController.h"
 
+typedef void(^DeleBlock)();
+
 @interface LMAddMoreViewController : BaseTableViewController
+
+@property(nonatomic, strong) DeleBlock  deleBlcok;
 
 @end

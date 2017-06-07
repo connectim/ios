@@ -28,7 +28,7 @@ typedef NS_ENUM(NSInteger,RequestFriendStatus) {
 typedef void(^AccountOperation)();
 typedef void(^AccountOperationWithUserInfo)(id userInfo);
 
-@interface AccountInfo : BaseInfo
+@interface AccountInfo : BaseInfo<NSMutableCopying>
 
 @property (nonatomic ,copy) NSString *address;
 @property (nonatomic ,copy) NSString *avatar;
