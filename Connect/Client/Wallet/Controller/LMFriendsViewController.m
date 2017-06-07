@@ -52,7 +52,7 @@ static NSString *friends = @"friends";
     
     [GCDQueue executeInGlobalQueue:^{
             self.dataArr = [[LMLinkManDataManager sharedManager] getFriendsArrWithNoConnect];
-            self.sectionTitleArr = [self getIndexArray:self.dataArr];
+            self.sectionTitleArr = [MMGlobal getIndexArray:self.dataArr];
             [GCDQueue executeInMainQueue:^{
                 [MBProgressHUD hideHUDForView:weakSelf.view];
                 [weakSelf.tableView reloadData];
@@ -99,18 +99,6 @@ static NSString *friends = @"friends";
 
 }
 #pragma mark - method
-- (NSMutableArray *)getIndexArray:(NSMutableArray *)groupArray {
-    if (groupArray.count <= 0) {
-        return nil;
-    }
-    NSMutableArray *temArray = [NSMutableArray array];
-    for (NSMutableDictionary* dic in groupArray) {
-        if ([RegexKit isNotChinsesWithUrl:dic[@"title"]]) {
-            [temArray addObject:dic[@"title"]];
-        }
-    }
-    return temArray;
-}
 - (void)setRightBarButtonItemWithEnable:(BOOL)enable withDispalyString:(NSString *)titleName withDisplayColor:(UIColor *)color {
     self.navigationItem.rightBarButtonItems = nil;
 

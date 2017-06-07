@@ -225,7 +225,9 @@ CREATE_SHARED_MANAGER(LMLinkManDataManager)
     }
 }
 - (NSString *)getPrex:(AccountInfo *)contact {
-    
+    if (!contact) {
+        return nil;
+    }
     NSString *prex = @"";
     NSString *name = contact.normalShowName;
     if (name.length) {
@@ -254,7 +256,7 @@ CREATE_SHARED_MANAGER(LMLinkManDataManager)
             continue;
         }
         if ([temTitle isEqualToString:@"C"]) {
-            if (temArray.count < 1 ) {
+            if (temArray.count <= 1 ) {
                 continue;
             }
         }
@@ -271,6 +273,64 @@ CREATE_SHARED_MANAGER(LMLinkManDataManager)
     return temGroupArray;
 
 }
+- (NSMutableArray *)getFriendsArrWith:(AccountInfo *)info {
+    
+    if ( self.friendsArr.count <= 1) {
+        return nil;
+    }
+    NSString * prex =  [self getPrex:info];
+    NSMutableArray *temGroupArray = [NSMutableArray array];
+    for (NSInteger index = 1; index < self.groupsFriend.count;index++) {
+        
+        NSMutableArray *temCommonArray = [NSMutableArray array];
+        NSMutableDictionary * dic = [self.groupsFriend[index] mutableCopy];
+        NSMutableArray *temArray = [dic[@"items"] mutableCopy];
+        NSString *temTitle = dic[@"title"];
+        // not add common link and common group
+        if ([dic[@"title"] isEqualToString:LMLocalizedString(@"Link Group Common", nil)]|| [dic[@"title"] isEqualToString:LMLocalizedString(@"Link Favorite Friend", nil)]) {
+            continue;
+        }
+        if (!info) { // only delete connect
+            if ([temTitle isEqualToString:@"C"]) {
+                if (temArray.count <= 1 ) {
+                    continue;
+                }
+            }
+            for (AccountInfo *info in temArray) {
+                if (![info.pub_key isEqualToString:kSystemIdendifier]) {
+                    [temCommonArray addObject:info];
+                }
+            }
+            if (temCommonArray.count > 0) {
+                dic[@"items"] = temCommonArray;
+            }
+        }else { // delete info and connect
+            if (![prex isEqualToString:@"C"]) { // is not egual with connect
+                if ([temArray containsObject:info]) {  //delete shareContact
+                    if (![self judgeDic:dic addArray:temCommonArray withArray:temArray withUser:info]) {
+                        continue;
+                    };
+                } else {  // delete Connect
+                    if ([temTitle isEqualToString:@"C"]) {
+                        if (![self judgeDic:dic addArray:temCommonArray withArray:temArray withUser:nil]) {
+                            continue;
+                        };
+                    }
+                }
+            }else {    // is equal connect
+                if ([temArray containsObject:info]) {
+                    if (![self judgeSpecialDic:dic addArray:temCommonArray withArray:temArray withUser:info]) {
+                        continue;
+                    }
+                }
+            }
+        }
+        [temGroupArray addObject:dic];
+    }
+    return temGroupArray;
+
+}
+
 - (void)clearArrays {
 
     [self.friendsArr removeAllObjects];

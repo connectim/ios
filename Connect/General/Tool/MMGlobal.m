@@ -209,5 +209,17 @@
     if ([platform isEqualToString:@"x86_64"])    return @"iPhoneSimulator";
     return platform;
 }
++ (NSMutableArray *)getIndexArray:(NSMutableArray *)groupArray {
+    if (groupArray.count <= 0) {
+        return nil;
+    }
+    NSMutableArray *temArray = [NSMutableArray array];
+    for (NSMutableDictionary* dic in groupArray) {
+        if ([RegexKit isNotChinsesWithUrl:dic[@"title"]]) {
+            [temArray addObject:dic[@"title"]];
+        }
+    }
+    return temArray;
+}
 
 @end

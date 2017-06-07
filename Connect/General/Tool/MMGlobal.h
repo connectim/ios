@@ -40,5 +40,7 @@
 +( NSString*)currentVersion;
 //Get the device model (eg iphone7)
 + (NSString *)getCurrentDeviceModel;
+//get indexs array
++ (NSMutableArray *)getIndexArray:(NSMutableArray *)groupArray;
 
 @end

@@ -67,11 +67,17 @@
  *
  */
 - (NSMutableArray *)getListGroupsFriend:(AccountInfo *)shareContact;
-#pragma mark - Externally provided method, select contact in use
+#pragma mark - Externally provided method, select transfer contact in use
 /**
  *  get Friends Arr No Connect
  *
  */
 - (NSMutableArray *)getFriendsArrWithNoConnect;
+#pragma mark - Externally provided method, Choose a business card in use
+/**
+ *  get Friends Arr No Connect
+ *
+ */
+- (NSMutableArray *)getFriendsArrWith:(AccountInfo *)info;
 
 @end
