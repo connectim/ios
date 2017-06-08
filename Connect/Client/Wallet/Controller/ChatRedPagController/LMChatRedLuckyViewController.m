@@ -60,15 +60,16 @@
 - (void)viewDidLoad {
 
     [super viewDidLoad];
-    [self setUpUiWithStyle];
+    NSString *navTitleString;
+    [self setUpUiWithStyle:navTitleString];
     [self setUpRightButtomItem];
     [self setUpElementsWithTransferView];
     [self navigationConfigureWithTitleString:navTitleString];
     [self initTabelViewCell];
     self.ainfo = [[LKUserCenter shareCenter] currentLoginUser];
 }
-- (void)setUpUiWithStyle {
-    NSString *navTitleString;
+- (void)setUpUiWithStyle:(NSString *)navTitleString {
+    
     navTitleString = LMLocalizedString(@"Wallet Packet", nil);
     if (_style == LMChatRedLuckyStyleOutRedBag) {
         navTitleString = LMLocalizedString(@"Wallet Sent via link luck packet", nil);
@@ -84,7 +85,7 @@
     } else {
         [self setWhitefBackArrowItem];
     }
-
+ 
 }
 - (void)setUpRightButtomItem {
     self.navigationItem.rightBarButtonItems = nil;
