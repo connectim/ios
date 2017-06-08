@@ -13,7 +13,7 @@
 // group name
 @property (nonatomic ,copy) NSString *groupName;
 // group member
-@property (nonatomic ,strong) NSArray *groupMembers;
+@property (nonatomic ,strong) NSMutableArray *groupMembers;
 //address -> memberInfo dic
 @property (nonatomic ,strong) NSMutableDictionary *addressMemberDict;
 // groupAdmin

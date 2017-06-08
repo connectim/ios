@@ -32,7 +32,7 @@
 #import "CommonSetPage.h"
 #import "RecentChatDBManager.h"
 #import "GJGCChatGroupViewController.h"
-
+#import "NSMutableArray+MoveObject.h"
 @interface MainTabController (){
     dispatch_source_t _timer;
 }
@@ -227,7 +227,7 @@
 }
 
 
-#pragma mark - 会话页面导航
+#pragma mark - Conversation page navigation
 
 - (void)createGroupWithGroupInfo:(LMGroupInfo *)groupInfo content:(NSString *)tipMessage{
     
@@ -246,7 +246,11 @@
     message.sendstatus = GJGCChatFriendSendMessageStatusSuccess;
     chatMessage.message = message;
     [[MessageDBManager sharedManager] saveMessage:chatMessage];
-    
+    // Put the current user in the first place
+    AccountInfo * info = [groupInfo.groupMembers firstObject];
+    if (![info.address isEqualToString:[LKUserCenter shareCenter].currentLoginUser.address]) {
+       [groupInfo.groupMembers moveObject:[LKUserCenter shareCenter].currentLoginUser toIndex:0];
+    }
     GJGCChatFriendTalkModel *talk = [[GJGCChatFriendTalkModel alloc] init];
     talk.talkType = GJGCChatFriendTalkTypeGroup;
     talk.chatIdendifier = groupInfo.groupIdentifer;
