@@ -61,23 +61,25 @@
  *
  */
 - (void)clearUnreadCountWithType:(int)type;
-#pragma mark - The outside world needs the method to share in use
 /**
- *  get share contact
+ *  get share contact ,The outside world needs the method to share in use
  *
  */
 - (NSMutableArray *)getListGroupsFriend:(AccountInfo *)shareContact;
-#pragma mark - Externally provided method, select transfer contact in use
 /**
- *  get Friends Arr No Connect
+ *  get Friends Arr No Connect,Externally provided method, select transfer contact in use
  *
  */
 - (NSMutableArray *)getFriendsArrWithNoConnect;
-#pragma mark - Externally provided method, Choose a business card in use
 /**
- *  get Friends Arr No Connect
+ *  get Friends Arr No Connect,Externally provided method, Choose a business card in use
  *
  */
 - (NSMutableArray *)getFriendsArrWith:(AccountInfo *)info;
+/**
+ *  get Friends Arr No Connect，include contacts,Group members, not including connect
+ *
+ */
+- (NSMutableArray *)getFriendsArrWithArray:(NSArray *)selectArray;
 
 @end
