@@ -9,15 +9,13 @@
 #import "SetTransferFeePage.h"
 #import "TextFieldViewButtomCell.h"
 
-#define  GroupDetail LMLocalizedString(@"Set miner fee explain", nil)
+#define  GROUP_DETAIL LMLocalizedString(@"Set miner fee explain", nil)
 
 
 @interface SetTransferFeePage () <UITableViewDelegate>
 
 @property(nonatomic, copy) NSString *transferNewFee; // new transferFee
 
-
-@property(assign, nonatomic) BOOL isSwitchFlag;
 
 @end
 
@@ -122,12 +120,11 @@
         weakAutoCalculateFee.switchIsOn = flag;
         [[MMAppSetting sharedSetting] setAutoCalculateTransactionFee:flag];
         if (flag) {
-            weakSelf.isSwitchFlag = YES;
             [weakSelf.groups removeLastObject];
             [weakSelf.tableView reloadData];
 
             CellGroup *group1 = [[CellGroup alloc] init];
-            group1.footTitle = GroupDetail;
+            group1.footTitle = GROUP_DETAIL;
             group1.headTitle = LMLocalizedString(@"Wallet Set max trasfer fee", nil);//
             NSString *fee = [NSString stringWithFormat:@"฿ %@", [PayTool getBtcStringWithAmount:[[MMAppSetting sharedSetting] getMaxTranferFee]]];
             CellItem *transferfee = [CellItem itemWithTitle:fee type:CellItemTypeTextFieldWithButton operation:nil];
@@ -136,12 +133,11 @@
             [weakSelf.groups objectAddObject:group1];
             [weakSelf.tableView insertSections:[NSIndexSet indexSetWithIndex:1] withRowAnimation:UITableViewRowAnimationBottom];
         } else {
-            weakSelf.isSwitchFlag = NO;
             [weakSelf.groups removeLastObject];
             [weakSelf.tableView reloadData];
 
             CellGroup *group1 = [[CellGroup alloc] init];
-            group1.footTitle = GroupDetail;
+            group1.footTitle = GROUP_DETAIL;
             group1.headTitle = LMLocalizedString(@"Wallet Set transaction fee specified", nil);
             NSString *fee = [NSString stringWithFormat:@"฿ %@", [PayTool getBtcStringWithAmount:[[MMAppSetting sharedSetting] getTranferFee]]];
             CellItem *transferfee = [CellItem itemWithTitle:fee type:CellItemTypeTextFieldWithButton operation:nil];
@@ -157,7 +153,7 @@
     if (autoCalculateFee.switchIsOn) {
         CellGroup *group1 = [[CellGroup alloc] init];
         group1.headTitle = LMLocalizedString(@"Wallet Set max trasfer fee", nil);
-        group1.footTitle = GroupDetail;
+        group1.footTitle = GROUP_DETAIL;
         NSString *fee = [NSString stringWithFormat:@"฿ %@", [PayTool getBtcStringWithAmount:[[MMAppSetting sharedSetting] getMaxTranferFee]]];
         CellItem *transferfee = [CellItem itemWithTitle:fee type:CellItemTypeTextFieldWithButton operation:nil];
         transferfee.tag = 2;
@@ -166,7 +162,7 @@
     } else {
         CellGroup *group1 = [[CellGroup alloc] init];
         group1.headTitle = LMLocalizedString(@"Wallet Set transaction fee specified", nil);
-        group1.footTitle = GroupDetail;
+        group1.footTitle = GROUP_DETAIL;
         NSString *fee = [NSString stringWithFormat:@"฿ %@", [PayTool getBtcStringWithAmount:[[MMAppSetting sharedSetting] getTranferFee]]];
         CellItem *transferfee = [CellItem itemWithTitle:fee type:CellItemTypeTextFieldWithButton operation:nil];
         transferfee.tag = 1;
@@ -243,10 +239,7 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
     if (section == 1) {
-        if (!(GJCFSystemIsOver5 || GJCFSystemiPhone6)) {
-            return 100;
-        }
-        return 100;
+        return AUTO_HEIGHT(200);
     }
     return 0;
 }
