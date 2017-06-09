@@ -41,8 +41,7 @@
     [super viewDidLoad];
 
     self.title = LMLocalizedString(@"Set Payment", nil);
-
-    self.view.backgroundColor = XCColor(241, 241, 241);
+    self.view.backgroundColor = LMBasicBackgroudGray;
 
     __weak __typeof(&*self) weakSelf = self;
     if (![[MMAppSetting sharedSetting] isHaveSyncPaySet]) {
@@ -253,7 +252,6 @@
         [GCDQueue executeInGlobalQueue:^{
 
             if (self.passTextField.text.length <= 0) {
-
                 return;
             }
             self.navigationController.view.userInteractionEnabled = NO;
