@@ -34,12 +34,10 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.view.backgroundColor = XCColor(241, 241, 241);
-    self.title = LMLocalizedString(@"Set Export Private Key", nil);
-
     [self setNavigationRight:@"menu_white"];
-
-
+    self.view.backgroundColor = LMBasicBackgroudGray;
+    self.title = LMLocalizedString(@"Set Export Private Key", nil);
+    
 }
 
 - (void)doRight:(UIButton *)sender {
@@ -71,7 +69,9 @@
 
     // Determine whether the device can send mail
     if (![MFMailComposeViewController canSendMail]) {
-        [MBProgressHUD showToastwithText:LMLocalizedString(@"Set Call failed please check system mail application", nil) withType:ToastTypeFail showInView:self.view complete:nil];
+        [GCDQueue executeInMainQueue:^{
+            [MBProgressHUD showToastwithText:LMLocalizedString(@"Set Call failed please check system mail application", nil) withType:ToastTypeFail showInView:self.view complete:nil];
+            }];
         return;
     }
     MFMailComposeViewController *controller = [[MFMailComposeViewController alloc] init];
@@ -84,9 +84,7 @@
     [controller setMessageBody:LMLocalizedString(@"Set your private key should be properly kep", nil) isHTML:NO];
 
     UIImage *image = [self formartExportImage];
-
     [controller addAttachmentData:UIImagePNGRepresentation(image) mimeType:@"image/" fileName:@"qrcode"];
-
     [self presentViewController:controller animated:YES completion:nil];
 
 }
@@ -137,7 +135,6 @@
     encodePrivkeyImageView.frame = AUTO_RECT(0, 247, 500, 500);
     encodePrivkeyImageView.centerX = self.view.centerX;
     NSString *exportContent = loginUser.prikey;
-
     encodePrivkeyImageView.image = [BarCodeTool barCodeImageWithString:exportContent withSize:encodePrivkeyImageView.width];
 
 
@@ -336,8 +333,6 @@
 
 
     NSString *connect = LMLocalizedString(@"app name im", nil);
-
-
     NSMutableAttributedString *connectAttrString = [[NSMutableAttributedString alloc] initWithString:connect];
     [connectAttrString addAttribute:NSFontAttributeName
                               value:[UIFont systemFontOfSize:FONT_SIZE(30)]
@@ -354,7 +349,6 @@
     [exportFortView addSubview:connectTextView];
     connectTextView.contentAttributedString = connectAttrString;
     connectTextView.gjcf_size = [GJCFCoreTextContentView contentSuggestSizeWithAttributedString:connectAttrString forBaseContentSize:connectTextView.contentBaseSize];
-
 
     UIImage *image = [exportFortView screenShot];
 
