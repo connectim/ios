@@ -14,18 +14,19 @@
         GJGCChatInputExpandMenuPanelDelegate,
         GJCFAudioRecordDelegate
         >
+//input ui
 @property(nonatomic, strong) GJGCChatInputBar *inputBar;
 @property(nonatomic, strong) GJGCChatInputExpandEmojiPanel *emojiPanel;
 @property(nonatomic, strong) GJGCChatInputExpandMenuPanel *menuPanel;
 @property(nonatomic, strong) GJCFAudioRecord *audioRecord;
 
-@property(nonatomic, copy) GJGCChatInputPanelKeyboardFrameChangeBlock frameChangeBlock;
 
+//call back
+@property(nonatomic, copy) GJGCChatInputPanelKeyboardFrameChangeBlock frameChangeBlock;
 @property(nonatomic, copy) GJGCChatInputPanelInputTextViewHeightChangedBlock inputHeightChangeBlock;
 
+//hud view
 @property(nonatomic, strong) GJGCChatInputRecordAudioTipView *recordTipView;
-
-@property(nonatomic, strong) UIVisualEffectView *effectView; //毛玻璃
 
 @end
 
@@ -33,32 +34,18 @@
 
 - (instancetype)initWithPanelDelegate:(id <GJGCChatInputPanelDelegate>)aDelegate; {
     if (self = [super init]) {
-
         self.delegate = aDelegate;
-
         _panelIndentifier = [NSString stringWithFormat:@"GJGCChatInputPanel_%@", GJCFStringCurrentTimeStamp];
-
-        self.emojiPanel = [GJGCChatInputExpandEmojiPanel sharedInstance];
-        self.emojiPanel.top = self.inputBarHeight;
-
+        self.inputBarHeight = AUTO_HEIGHT(100);
+        self.backgroundColor = GJCFQuickHexColor(@"C7C7CD");
         [self initSubViews];
-
     }
     return self;
 }
 
 - (instancetype)initForCommentBarWithPanelDelegate:(id <GJGCChatInputPanelDelegate>)aDelegate {
-    if (self = [super init]) {
-
-        self.delegate = aDelegate;
-
-        _panelIndentifier = [NSString stringWithFormat:@"GJGCChatInputPanel_%@", GJCFStringCurrentTimeStamp];
-        self.emojiPanel = [GJGCChatInputExpandEmojiPanel sharedInstance];
-        self.emojiPanel.top = self.inputBarHeight;
-        [self initSubViews];
-
-        [self adjustLayoutBarItemForCommentStyle];
-    }
+    self = [self initWithPanelDelegate:aDelegate];
+    [self adjustLayoutBarItemForCommentStyle];
     return self;
 }
 
@@ -72,8 +59,6 @@
 }
 
 - (void)initSubViews {
-    self.inputBarHeight = AUTO_HEIGHT(100);
-    self.backgroundColor = GJCFQuickHexColor(@"C7C7CD");
 
     self.inputBar = [[GJGCChatInputBar alloc] initWithFrame:(CGRect) {0, 0, GJCFSystemScreenWidth, self.inputBarHeight}];
     self.inputBar.barHeight = self.inputBarHeight;
@@ -89,14 +74,16 @@
         [weakSelf inputBar:inputBar changeToFrame:changeDelta];
     }];
 
-    [self.inputBar configInputBarRecordActionChangeBlock:^(GJGCChatInputTextViewRecordActionType actionType) {
-        [weakSelf inputBarRecordActionChange:actionType];
-    }];
-
     [self.inputBar configBarTapOnSendTextBlock:^(GJGCChatInputBar *inputBar, NSString *text) {
         [weakSelf inputBar:inputBar sendText:text];
     }];
 
+    [self.inputBar configInputBarRecordActionChangeBlock:^(GJGCChatInputTextViewRecordActionType actionType) {
+        [weakSelf inputBarRecordActionChange:actionType];
+    }];
+
+    self.emojiPanel = [GJGCChatInputExpandEmojiPanel sharedInstance];
+    self.emojiPanel.top = self.inputBarHeight;
     self.emojiPanel.backgroundColor = GJCFQuickHexColor(@"fcfcfc");
     [self addSubview:self.emojiPanel];
 
@@ -246,12 +233,9 @@
 }
 
 - (void)inputBar:(GJGCChatInputBar *)bar changeToFrame:(CGFloat)changeDelta {
-    self.effectView.height += changeDelta;
     if (self.inputHeightChangeBlock) {
-
         self.emojiPanel.gjcf_top = bar.gjcf_bottom;
         self.menuPanel.gjcf_top = bar.gjcf_bottom;
-
         self.inputHeightChangeBlock(self, changeDelta);
     }
 }

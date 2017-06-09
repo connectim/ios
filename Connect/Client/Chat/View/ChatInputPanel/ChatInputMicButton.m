@@ -101,10 +101,8 @@ static const CGFloat outerCircleMinScale = innerCircleRadius / outerCircleRadius
 
 - (UIView *)recordContentView {
     if (!_recordContentView) {
-
-        _recordContentView = [[UIView alloc] initWithFrame:self.chatBarFrame];
+        _recordContentView = [[UIView alloc] init];
         _recordContentView.backgroundColor = self.superview.backgroundColor;
-
 
         UIView *topLine = [[UIView alloc] initWithFrame:CGRectMake(0, 0, GJCFSystemScreenWidth, 0.5)];
         [topLine setBackgroundColor:LMBasicMiddleGray];
@@ -203,10 +201,18 @@ static const CGFloat outerCircleMinScale = innerCircleRadius / outerCircleRadius
             _slideToCancelArrow.alpha = 1;
             _slideToCancelLabel.alpha = 1;
         }];
-
+        if ([self.delegate respondsToSelector:@selector(micButtonFrame)]) {
+            _recordContentView.frame = [self.delegate micButtonFrame];
+        }
     }
-    [self addRecordingDotAnimation];
 
+    if (CGRectEqualToRect(_recordContentView.frame, CGRectZero)) {
+        if ([self.delegate respondsToSelector:@selector(micButtonFrame)]) {
+            _recordContentView.frame = [self.delegate micButtonFrame];
+        }
+    }
+
+    [self addRecordingDotAnimation];
     return _recordContentView;
 }
 
@@ -423,9 +429,9 @@ static const CGFloat outerCircleMinScale = innerCircleRadius / outerCircleRadius
                 _lastTouchTime = CFAbsoluteTimeGetCurrent();
 
                 id <ChatInputMicButtonDelegate> delegate = _delegate;
-                if ([delegate respondsToSelector:@selector(micButtonInteractionBegan)])
+                if ([delegate respondsToSelector:@selector(micButtonInteractionBegan)]) {
                     [delegate micButtonInteractionBegan];
-
+                }
                 _touchLocation = [touch locationInView:self];
             }
         }
@@ -438,6 +444,7 @@ static const CGFloat outerCircleMinScale = innerCircleRadius / outerCircleRadius
 
 - (void)animateIn {
 
+    DDLogInfo(@"animateIn");
     if (![self checkRecordPermission]) {
         return;
     }
@@ -518,6 +525,7 @@ static const CGFloat outerCircleMinScale = innerCircleRadius / outerCircleRadius
 }
 
 - (void)animateOut {
+    _recordContentView.frame = CGRectZero;
     _animatedIn = false;
     _displayLink.paused = true;
     _currentLevel = 0.0f;
