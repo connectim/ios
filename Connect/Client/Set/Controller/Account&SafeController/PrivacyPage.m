@@ -35,16 +35,12 @@
             }];
         }];
     }
-
-
 }
-
 - (void)configTableView {
 
     self.tableView.separatorColor = self.tableView.backgroundColor;
-
+    
     [self.tableView registerClass:[NCellLabel class] forCellReuseIdentifier:@"NCellLabelID"];
-
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"SystemCellID"];
     [self.tableView registerClass:[NCellSwitch class] forCellReuseIdentifier:@"NCellSwitcwID"];
     [self.tableView registerClass:[NCellArrow class] forCellReuseIdentifier:@"NCellArrowID"];
@@ -71,8 +67,7 @@
 
     // second group
     CellGroup *group1 = [[CellGroup alloc] init];
-
-
+    
     CellItem *searchByPhoto = [CellItem itemWithTitle:LMLocalizedString(@"Link Find me by phone number", nil) type:CellItemTypeSwitch operation:nil];
     searchByPhoto.switchIsOn = [[MMAppSetting sharedSetting] isAllowPhone];
     searchByPhoto.operationWithInfo = ^(id userInfo) {
@@ -154,7 +149,10 @@
 
                 if (reject) {
                     [GCDQueue executeInGlobalQueue:^{
-                        [MBProgressHUD hideHUDForView:weakSelf.view];
+                        [GCDQueue executeInMainQueue:^{
+                            [MBProgressHUD hideHUDForView:weakSelf.view];
+                        }];
+                       
                         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:LMLocalizedString(@"Link Address Book Access Denied", nil) message:LMLocalizedString(@"Link access to your Address Book in Settings", nil) preferredStyle:UIAlertControllerStyleAlert];
                         UIAlertAction *okAction = [UIAlertAction actionWithTitle:LMLocalizedString(@"Common OK", nil) style:UIAlertActionStyleDefault handler:nil];
                         [alertController addAction:okAction];
@@ -180,9 +178,7 @@
                         [hashMobiles objectAddObject:phoneInfo];
                     }
                 }
-                [SetGlobalHandler syncPhoneContactWithHashContact:hashMobiles complete:^(NSTimeInterval time) {
-
-                }];
+                [SetGlobalHandler syncPhoneContactWithHashContact:hashMobiles complete:nil];
             }];
             return [[NSDate date] timeIntervalSince1970];
         };
