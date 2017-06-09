@@ -494,6 +494,7 @@
 "Set Link Mobile"="绑定手机";
 "Set Load failed please try again later"="加载失败，请稍候再试";
 "Set Log Out"="退出";
+"Set Log Out Fail"="退出失败，请检查网络";
 "Set Logging out"="正在退出...";
 "Set Logout delete login data still log"="退出登录将删除你的登录信息和手势密码，你仍要退出当前账户么?";
 "Set Miner fee"="手续费";

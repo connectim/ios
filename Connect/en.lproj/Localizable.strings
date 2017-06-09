@@ -493,6 +493,7 @@
 "Set Link Mobile"="Bind Mobile";
 "Set Load failed please try again later"="Load failed, please try again later";
 "Set Log Out"="Log Out";
+"Set Log Out Fail"="Exit failed, please check the network";
 "Set Logging out"="Logging out...";
 "Set Logout delete login data still log"="Logout will delete your login data and pattern. You can still log in with this account";
 "Set Miner fee"="Transaction fee";

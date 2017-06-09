@@ -24,24 +24,11 @@
 @end
 
 @implementation MainSetPage
-
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-}
-
-- (instancetype)init {
-    if (self = [super init]) {
-        self.userInfo = [[LKUserCenter shareCenter] currentLoginUser];
-    }
-
-    return self;
-}
-
 - (void)viewDidLoad {
     [super viewDidLoad];
-
+ 
     self.navigationItem.leftBarButtonItems = nil;
-
+    self.userInfo = [[LKUserCenter shareCenter] currentLoginUser];
     self.tableView.contentInset = UIEdgeInsetsMake(-36, 0, 0, 0);
     RegisterNotify(LKUserCenterUserInfoUpdateNotification, @selector(updataUserInfo:));
 }
@@ -167,7 +154,7 @@
                 [[LKUserCenter shareCenter] loginOutByServerWithInfo:nil];
             } else{
                 [GCDQueue executeInMainQueue:^{
-                    [MBProgressHUD showToastwithText:LMLocalizedString(@"Log Out Fail,Check net!", nil) withType:ToastTypeFail showInView:weakSelf.view complete:nil];
+                    [MBProgressHUD showToastwithText:LMLocalizedString(@"Set Log Out Fail", nil) withType:ToastTypeFail showInView:weakSelf.view complete:nil];
                 }];
             }
         }
