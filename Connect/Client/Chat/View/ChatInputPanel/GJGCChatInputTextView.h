@@ -25,6 +25,7 @@ typedef void (^GJGCChatInputTextViewDidBecomeFirstResponseBlock)(GJGCChatInputTe
 @property(nonatomic, assign) CGFloat maxAutoExpandHeight;
 @property(nonatomic, assign) CGFloat minAutoExpandHeight;
 @property(nonatomic, strong) NSString *panelIdentifier;
+@property(nonatomic, readonly) CGFloat inputTextStateHeight;
 
 - (void)resignFirstResponder;
 
