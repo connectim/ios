@@ -43,14 +43,13 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
+    [self setBlackfBackArrowItem];
+    
     UILabel *titleLabel = [UILabel new];
     titleLabel.text = LMLocalizedString(@"Login Select Country", nil);
     titleLabel.size = [self sizeWithNewFont:titleLabel.font constrainedToNewHeight:44 withString:titleLabel.text];
     titleLabel.font = [UIFont boldSystemFontOfSize:FONT_SIZE(34)];
     self.navigationItem.titleView = titleLabel;
-
-    [self setBlackfBackArrowItem];
 
     [MBProgressHUD showLoadingMessageToView:self.view];
     [GCDQueue executeInGlobalQueue:^{

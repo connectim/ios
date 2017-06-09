@@ -40,7 +40,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = LMLocalizedString(@"Set Change Mobile", nil);
-    self.view.backgroundColor = XCColor(241, 241, 241);
+    self.view.backgroundColor = LMBasicBackgroudGray;
     [self addNewCloseBarItem];
 }
 
@@ -90,7 +90,7 @@
     UILabel *titleLabel = [UILabel new];
     titleLabel.text = LMLocalizedString(@"Set Enter New Mobile Number", nil);
     titleLabel.font = [UIFont systemFontOfSize:20];
-    titleLabel.textColor = [UIColor blackColor];
+    titleLabel.textColor = LMBasicBlack;
     [self.view addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.view).offset(AUTO_HEIGHT(210));
@@ -173,22 +173,6 @@
 }
 
 #pragma mark - event
-
-- (void)countChoose {
-    __weak __typeof(&*self) weakSelf = self;
-    [self.view endEditing:YES];
-    CountryView *countryView = [[CountryView alloc] initCountryViewWithBlock:^(id countryInfo) {
-        self.countryCode = [countryInfo[@"phoneCode"] intValue];
-        [_selectCountryBtn setTitle:[NSString stringWithFormat:@"+%d", self.countryCode] forState:UIControlStateNormal];
-
-        [GCDQueue executeInMainQueue:^{
-            [weakSelf textValueChange];
-        }];
-
-    }                                                            showDissBtn:NO];
-    [countryView show];
-}
-
 - (void)nextBtnClick {
     ChangePhoneVertifyPage *page = [[ChangePhoneVertifyPage alloc] initWithCountryCode:self.countryCode phone:self.phoneField.text];
     [self.navigationController pushViewController:page animated:YES];
