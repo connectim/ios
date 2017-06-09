@@ -46,10 +46,9 @@
 
 - (void)setupCellData {
 
-
-    [self.groups removeAllObjects];
-
+   
     __weak __typeof(&*self) weakSelf = self;
+    [self.groups removeAllObjects];
     // zero group
     CellGroup *group = [[CellGroup alloc] init];
 

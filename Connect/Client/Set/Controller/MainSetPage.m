@@ -24,6 +24,13 @@
 @end
 
 @implementation MainSetPage
+- (instancetype)init {
+    if (self = [super init]) {
+        self.userInfo = [[LKUserCenter shareCenter] currentLoginUser];
+    }
+    
+    return self;
+}
 - (void)viewDidLoad {
     [super viewDidLoad];
  
