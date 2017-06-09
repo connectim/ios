@@ -445,7 +445,8 @@
 "Network"="Вид сети";
 "Network Image loading failed"="Сбой загрузки изображения";
 "Network No data"="Нет данных";
-"Network Server error"="Ошибка сервера";
+"Network Server error"="Ошибка сервера, пожалуйста, повторите попытку позже";
+"Network The request has expired"="Запрос истекло";
 "Network Timeout"="Время ожидания истекло ";
 "Network equest failed please try again later"="При сбое, просьба  повторить попытку через минуту";
 "Set"="Вид установки";
