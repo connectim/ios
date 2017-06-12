@@ -88,14 +88,12 @@
     }];
     CellItem *pricy = [CellItem itemWithTitle:LMLocalizedString(@"Set Privacy", nil) type:CellItemTypeArrow operation:^{
         PrivacyPage *page = [[PrivacyPage alloc] init];
-        page.hidesBottomBarWhenPushed = YES;
-        [weakSelf.navigationController pushViewController:page animated:YES];
+        [weakSelf pushControllerHideBar:page];
     }];
 
     CellItem *common = [CellItem itemWithTitle:LMLocalizedString(@"Set General", nil) type:CellItemTypeArrow operation:^{
         CommonSetPage *page = [[CommonSetPage alloc] init];
-        page.hidesBottomBarWhenPushed = YES;
-        [weakSelf.navigationController pushViewController:page animated:YES];
+        [weakSelf pushControllerHideBar:page];
     }];
 
     CellGroup *group0 = [[CellGroup alloc] init];
@@ -122,7 +120,6 @@
     // quit
 
     CellGroup *group2 = [[CellGroup alloc] init];
-
     CellItem *logout = [CellItem itemWithTitle:LMLocalizedString(@"Set Log Out", nil) type:CellItemTypeLogoutCell operation:^{
 
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:LMLocalizedString(@"Set Logout delete login data still log", nil) preferredStyle:UIAlertControllerStyleAlert];
