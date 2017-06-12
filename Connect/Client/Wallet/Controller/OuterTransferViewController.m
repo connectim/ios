@@ -114,6 +114,10 @@
         make.top.equalTo(self.inputAmountView.mas_bottom).offset(AUTO_HEIGHT(60));
         make.centerX.equalTo(self.view);
     }];
+    UITapGestureRecognizer *tapBalance = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapBalance)];
+    [self.userBalanceLabel addGestureRecognizer:tapBalance];
+    self.userBalanceLabel.userInteractionEnabled = YES;
+    
     self.comfrimButton = [[ConnectButton alloc] initWithNormalTitle:LMLocalizedString(@"Wallet Transfer", nil) disableTitle:LMLocalizedString(@"Wallet Transfer", nil)];
     [self.comfrimButton addTarget:self action:@selector(tapConfrim) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.comfrimButton];
@@ -123,6 +127,13 @@
         make.height.mas_equalTo(self.comfrimButton.height);
         make.width.mas_equalTo(self.comfrimButton.width);
     }];
+}
+
+- (void)tapBalance{
+    if (![[MMAppSetting sharedSetting] canAutoCalculateTransactionFee]) {
+        long long maxAmount = self.blance - [[MMAppSetting sharedSetting] getTranferFee] * 2;
+        self.inputAmountView.defaultAmountString = [[[NSDecimalNumber alloc] initWithLongLong:maxAmount] decimalNumberByDividingBy:[[NSDecimalNumber alloc] initWithLongLong:pow(10, 8)]].stringValue;
+    }
 }
 
 - (void)outerTransferHis {
