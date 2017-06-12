@@ -177,14 +177,11 @@ static GJGCChatContentEmojiParser *manager = nil;
     if (GJCFStringIsNull(sourceString)) {
         return NO;
     }
-    BOOL haveRightHost = [sourceString hasPrefix:@"http://cd.snowball.io:5502"] ||
-            [sourceString hasPrefix:@"https://cd.snowball.io:5502"] ||
-            [sourceString hasPrefix:@"http://short.connect.im"] ||
-            [sourceString hasPrefix:@"https://short.connect.im"] ||
-            [sourceString hasPrefix:@"https://transfer.connect.im"] ||
-            [sourceString hasPrefix:@"http://transfer.connect.im"] ||
-            [sourceString hasPrefix:@"https://luckypacket.connect.im"] ||
-            [sourceString hasPrefix:@"http://luckypacket.connect.im"];
+    NSString *pattern = @"(http|https):\/\/(luckypacket|transfer|short|sandbox).connect.im.*$";
+    NSRegularExpression *regexExpression = [NSRegularExpression regularExpressionWithPattern:pattern options:NSRegularExpressionCaseInsensitive error:nil];
+    NSArray *regexArray = [regexExpression matchesInString:sourceString options:NSMatchingReportCompletion range:NSMakeRange(0, sourceString.length)];
+    BOOL haveRightHost = regexArray.count > 0;
+    
     if (!haveRightHost) {
         return NO;
     }
