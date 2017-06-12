@@ -196,7 +196,9 @@
                 }
 
                 [self updataRecentChatLastMessageStatus:lastMsg messageCount:unReadCount groupNoteMyself:groupNoteMyself];
-
+                //notice onece, clear unread count
+                unReadCount = 0;
+                
             } else {
                 NSMutableArray *pushArray = [NSMutableArray arrayWithArray:pushMessages];
 
