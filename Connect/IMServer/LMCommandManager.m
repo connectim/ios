@@ -525,14 +525,21 @@ CREATE_SHARED_MANAGER(LMCommandManager)
             SendNotify(kNewFriendRequestNotification, newFriend);
         }];
     } else {
-        if (command.errNo == 1) { //add myself error
-            if (sendComModel.callBack) {
-                sendComModel.callBack([NSError errorWithDomain:@"" code:1 userInfo:nil], nil);
+        
+        switch (command.errNo) {
+            case 3:
+            case 1:
+            {
+                if (sendComModel.callBack) {
+                    sendComModel.callBack([NSError errorWithDomain:@"" code:command.errNo userInfo:nil], nil);
+                }
             }
-        } else {
-            if (sendComModel.callBack) {
-                sendComModel.callBack(nil, oriMsg.sendOriginInfo);
-            }
+                break;
+            default:
+                if (sendComModel.callBack) {
+                    sendComModel.callBack(nil, oriMsg.sendOriginInfo);
+                }
+                break;
         }
     }
 }
@@ -1296,39 +1303,47 @@ CREATE_SHARED_MANAGER(LMCommandManager)
     switch (command.errNo) {
         case 1: //msg: "ACCEPT ERROR"
         {
-            NSError *error = [NSError errorWithDomain:command.msg code:-1 userInfo:nil];
+            NSError *error = [NSError errorWithDomain:command.msg code:command.errNo userInfo:nil];
             if (sendComModel.callBack) {
                 sendComModel.callBack(error, nil);
             }
-            return;
         }
             break;
-        default:
+            
+        case 4: //OVER TIME
+        {
+            NSError *error = [NSError errorWithDomain:command.msg code:command.errNo userInfo:nil];
+            if (sendComModel.callBack) {
+                sendComModel.callBack(error, nil);
+            }
+        }
             break;
-    }
-    
-    ReceiveAcceptFriendRequest *syncRalation = [ReceiveAcceptFriendRequest parseFromData:command.detail error:nil];
-    [[UserDBManager sharedManager] updateNewFriendStatusAddress:syncRalation.address withStatus:RequestFriendStatusAdded];
-    
-    if (sendComModel.callBack) {
-        sendComModel.callBack(nil, oriMsg.sendOriginInfo);
-        [[IMService instance] getFriendsWithVersion:[[MMAppSetting sharedSetting] getContactVersion] comlete:^(NSError *error, id data) {
-            if (!error && [data isKindOfClass:[AccountInfo class]]) {
-                AccountInfo *addUser = (AccountInfo *)data;
-                addUser.message = [[UserDBManager sharedManager] getRequestTipsByUserPublickey:addUser.pub_key];
-                [GCDQueue executeInMainQueue:^{
-                    SendNotify(kAcceptNewFriendRequestNotification, addUser);
+        default:{
+            ReceiveAcceptFriendRequest *syncRalation = [ReceiveAcceptFriendRequest parseFromData:command.detail error:nil];
+            [[UserDBManager sharedManager] updateNewFriendStatusAddress:syncRalation.address withStatus:RequestFriendStatusAdded];
+            
+            if (sendComModel.callBack) {
+                sendComModel.callBack(nil, oriMsg.sendOriginInfo);
+                [[IMService instance] getFriendsWithVersion:[[MMAppSetting sharedSetting] getContactVersion] comlete:^(NSError *error, id data) {
+                    if (!error && [data isKindOfClass:[AccountInfo class]]) {
+                        AccountInfo *addUser = (AccountInfo *)data;
+                        addUser.message = [[UserDBManager sharedManager] getRequestTipsByUserPublickey:addUser.pub_key];
+                        [GCDQueue executeInMainQueue:^{
+                            SendNotify(kAcceptNewFriendRequestNotification, addUser);
+                        }];
+                    }
+                }];
+            } else {
+                [[IMService instance] getFriendsWithVersion:[[MMAppSetting sharedSetting] getContactVersion] comlete:^(NSError *error, id data) {
+                    if (!error && [data isKindOfClass:[AccountInfo class]]) {
+                        [GCDQueue executeInMainQueue:^{
+                            SendNotify(kAcceptNewFriendRequestNotification, data);
+                        }];
+                    }
                 }];
             }
-        }];
-    } else {
-        [[IMService instance] getFriendsWithVersion:[[MMAppSetting sharedSetting] getContactVersion] comlete:^(NSError *error, id data) {
-            if (!error && [data isKindOfClass:[AccountInfo class]]) {
-                [GCDQueue executeInMainQueue:^{
-                    SendNotify(kAcceptNewFriendRequestNotification, data);
-                }];
-            }
-        }];
+        }
+            break;
     }
 }
 

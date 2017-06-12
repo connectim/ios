@@ -10,6 +10,7 @@
 #import "GJGCChatInputBarItem.h"
 #import "GJGCChatInputTextView.h"
 #import "GJGCChatInputConst.h"
+#import "ChatInputMicButton.h"
 
 @class GJGCChatInputBar;
 
@@ -41,13 +42,10 @@ typedef void (^GJGCChatInputBarDidTapOnSendTextBlock)(GJGCChatInputBar *inputBar
 @interface GJGCChatInputBar : UIView
 
 @property(nonatomic, assign) CGFloat barHeight;
-
 @property(nonatomic, assign) CGFloat inputTextStateBarHeight;
-
 @property(nonatomic, strong) NSString *panelIdentifier;
-
 @property(nonatomic, strong) NSString *inputTextViewPlaceHolder;
-@property(nonatomic, readonly) GJGCChatInputBarActionType currentActionType;
+@property(nonatomic, assign) GJGCChatInputBarActionType currentActionType;
 @property(nonatomic, assign) GJGCChatInputBarActionType disableActionType;
 
 /**
@@ -65,18 +63,13 @@ typedef void (^GJGCChatInputBarDidTapOnSendTextBlock)(GJGCChatInputBar *inputBar
 - (void)configBarDidChangeActionBlock:(GJGCChatInputBarDidChangeActionBlock)actionBlock;
 
 /**
- *  config record change
- *
- *  @param actionBlock 
- */
-- (void)configInputBarRecordActionChangeBlock:(GJGCChatInputTextViewRecordActionChangeBlock)actionBlock;
-
-/**
  *  config send text
  *
  *  @param sendTextBlock 
  */
 - (void)configBarTapOnSendTextBlock:(GJGCChatInputBarDidTapOnSendTextBlock)sendTextBlock;
+
+- (void)configInputBarRecordActionChangeBlock:(GJGCChatInputTextViewRecordActionChangeBlock)actionBlock;
 
 - (void)setupForCommentBarStyle;
 

@@ -7,17 +7,16 @@
 //
 
 #import "GJGCChatInputBar.h"
-#import "ChatInputMicButton.h"
 
 @interface GJGCChatInputBar () <ChatInputMicButtonDelegate>
-
-@property(nonatomic, strong) GJGCChatInputBarItem *recordAudioBarItem;
 
 @property(nonatomic, strong) GJGCChatInputBarItem *emojiBarItem;
 
 @property(nonatomic, strong) GJGCChatInputBarItem *openPanelBarItem;
 
-@property(nonatomic, strong) GJGCChatInputTextView *inputTextView;//输入框
+@property(nonatomic, strong) ChatInputMicButton *micButton;
+
+@property(nonatomic, strong) GJGCChatInputTextView *inputTextView;
 
 @property(nonatomic, copy) GJGCChatInputBarDidChangeActionBlock changeActionBlock;
 
@@ -31,9 +30,7 @@
 
 @property(nonatomic, strong) UIView *bottomLine;
 
-@property(nonatomic, strong) ChatInputMicButton *micButton;
-
-@property(nonatomic, assign) CGFloat inputViewH; //输入框的高度
+@property(nonatomic, assign) CGFloat inputViewH;
 
 @end
 
@@ -77,48 +74,8 @@
     [self.bottomLine setBackgroundColor:GJCFQuickHexColor(@"d9d9d9")];
     [self addSubview:self.bottomLine];
 
-
     GJCFWeakSelf weakSelf = self;
-    UIImage *recordIcon = GJCFQuickImage(@"chat_icon_video_grey");
     UIImage *keybordIcon = GJCFQuickImage(@"chatbar_keyboard");
-    self.recordAudioBarItem = [[GJGCChatInputBarItem alloc] initWithSelectedIcon:keybordIcon withNormalIcon:recordIcon];
-
-    if (GJCFSystemiPhone6Plus) {
-        self.recordAudioBarItem.frame = CGRectMake(0, 8, 35, 35);
-    } else {
-        self.recordAudioBarItem.frame = CGRectMake(0, 0, 35, 35);
-        self.recordAudioBarItem.gjcf_centerY = self.barHeight / 2;
-    }
-    self.recordAudioBarItem.gjcf_right = GJCFSystemScreenWidth - self.itemToBarMargin;
-
-//    [self addSubview:self.recordAudioBarItem];
-
-
-    [self.recordAudioBarItem configStateChangeEventBlock:^(GJGCChatInputBarItem *item, BOOL changeToState) {
-
-        [weakSelf barItem:item changeToState:changeToState];
-    }];
-
-    [self.recordAudioBarItem configAuthorizeBlock:^BOOL(GJGCChatInputBarItem *item) {
-
-        BOOL canUse = weakSelf.disableActionType != GJGCChatInputBarActionTypeRecordAudio;
-
-        if ([weakSelf.inputTextView isInputTextFirstResponse]) {
-            [weakSelf.inputTextView resignFirstResponder];
-        }
-
-        if (!canUse) {
-
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t) (0.1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-
-                NSLog(@"Audio Record Limit!!!!!!");
-
-            });
-        }
-
-        return canUse;
-    }];
-
     /* 默认参数 */
     self.itemMargin = AUTO_WIDTH(15);
     self.itemToBarMargin = AUTO_WIDTH(15);
@@ -140,10 +97,7 @@
     self.inputViewH = inputViewH;
     self.inputTextView = [[GJGCChatInputTextView alloc] initWithFrame:CGRectMake(self.itemMargin + self.itemToBarMargin + buttonWH, 0, GJCFSystemScreenWidth - buttonWH * 2 - buttonWH * scale - 2 * self.itemToBarMargin - self.itemMargin * 3, inputViewH)];
     [self addSubview:self.inputTextView];
-    [self.inputTextView setRecordAudioBackgroundImage:GJCFQuickImage(@"inputbar_bg_white")];
     [self.inputTextView setInputTextBackgroundImage:GJCFQuickImage(@"inputbar_bg_white")];
-    [self.inputTextView setPreRecordTitle:@"按住说话"];
-    [self.inputTextView setRecordingTitle:@"松开结束"];
     self.inputTextView.gjcf_centerY = self.barHeight / 2;
     [self.inputTextView configFinishInputTextBlock:^(GJGCChatInputTextView *textView, NSString *text) {
         if (weakSelf.textSendBlock) {
@@ -151,10 +105,7 @@
         }
     }];
     [self.inputTextView configTextViewDidBecomeFirstResponse:^(GJGCChatInputTextView *textView) {
-
         weakSelf.inputTextView.recordState = NO;
-        weakSelf.recordAudioBarItem.selected = NO;
-
         weakSelf.emojiBarItem.selected = NO;
         weakSelf.openPanelBarItem.selected = NO;
     }];
@@ -185,34 +136,39 @@
 
     /* 录音按钮 */
     self.micButton = [[ChatInputMicButton alloc] init];
-    _micButton.delegate = self;
-    [_micButton setBackgroundImage:GJCFQuickImage(@"chat_chatbar_audio") forState:UIControlStateNormal];
+    self.micButton.delegate = self;
+    [self.micButton setBackgroundImage:GJCFQuickImage(@"chat_chatbar_audio") forState:UIControlStateNormal];
     UIImageView *micButtonIconView = [[UIImageView alloc] initWithImage:GJCFQuickImage(@"chat_chatbar_audio")];
-    _micButton.iconView = micButtonIconView;
+    self.micButton.iconView = micButtonIconView;
     [self addSubview:_micButton];
-    _micButton.frame = CGRectMake(GJCFSystemScreenWidth - self.itemToBarMargin - buttonWH, 0, buttonWH, buttonWH);
+    self.micButton.frame = CGRectMake(GJCFSystemScreenWidth - self.itemToBarMargin - buttonWH, 0, buttonWH, buttonWH);
     self.micButton.bottom = self.bottom - marginToBottom;
-    [_micButton configStateChangeEventBlock:^(ChatInputMicButton *item, BOOL changeToState) {
+    [self.micButton configStateChangeEventBlock:^(ChatInputMicButton *item, BOOL changeToState) {
         [weakSelf barItem:item changeToState:changeToState];
     }];
 
     /* 观察进入前台 */
     [GJCFNotificationCenter addObserver:self selector:@selector(becomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
-
 }
 
-#pragma mark - 
+#pragma mark -
+
+- (CGRect)micButtonFrame {
+    return CGRectMake(0, DEVICE_SIZE.height - self.barHeight, DEVICE_SIZE.width, self.barHeight);
+}
 
 - (void)micButtonInteractionBegan {
-    self.micButton.chatBarFrame = self.bounds;
+    [self.inputTextView clearInputTextWhenRecord];
     [self setShowRecordingInterface:true velocity:0.0f];
 }
 
 - (void)micButtonInteractionCancelled:(CGFloat)velocity {
+    [self.inputTextView reserveToNormal];
     [self setShowRecordingInterface:false velocity:0.0f];
 }
 
 - (void)micButtonInteractionCompleted:(CGFloat)velocity {
+    [self.inputTextView reserveToNormal];
     [self setShowRecordingInterface:false velocity:0.0f];
 }
 
@@ -222,9 +178,7 @@
 
 
 - (void)setupForCommentBarStyle {
-    self.recordAudioBarItem.hidden = YES;
     self.openPanelBarItem.hidden = YES;
-
     self.inputTextView.gjcf_left = self.itemToBarMargin;
     self.inputTextView.gjcf_width = GJCFSystemScreenWidth - 2 * self.itemToBarMargin - self.itemMargin - self.emojiBarItem.gjcf_width;
     self.emojiBarItem.gjcf_left = self.inputTextView.gjcf_right + self.itemMargin;
@@ -235,12 +189,8 @@
     if ([_inputTextViewPlaceHolder isEqualToString:inputTextViewPlaceHolder]) {
         return;
     }
-
     _inputTextViewPlaceHolder = nil;
-
     _inputTextViewPlaceHolder = [inputTextViewPlaceHolder copy];
-
-    self.inputTextView.placeHolder = _inputTextViewPlaceHolder;
 }
 
 - (void)layoutSubviews {
@@ -253,13 +203,6 @@
     } else {
         self.emojiBarItem.gjcf_bottom = self.gjcf_height - 7.5;
     }
-
-    if (GJCFSystemiPhone6Plus) {
-        self.recordAudioBarItem.gjcf_bottom = self.gjcf_height - 8;
-    } else {
-        self.recordAudioBarItem.gjcf_bottom = self.gjcf_height - 7.5;
-    }
-
     if (GJCFSystemiPhone6Plus) {
         self.openPanelBarItem.gjcf_bottom = self.gjcf_height - 8;
     } else {
@@ -313,9 +256,7 @@
     switch (actionType) {
         case GJGCChatInputBarActionTypeChooseEmoji: {
             self.openPanelBarItem.selected = NO;
-            self.recordAudioBarItem.selected = NO;
             [self.inputTextView setRecordState:NO];
-
             if (!isReserve) {
                 [self.inputTextView resignFirstResponder];
                 [self.inputTextView updateDisplayByInputContentTextChange];
@@ -327,11 +268,8 @@
         }
             break;
         case GJGCChatInputBarActionTypeExpandPanel: {
-
             self.emojiBarItem.selected = NO;
-            self.recordAudioBarItem.selected = NO;
             [self.inputTextView setRecordState:NO];
-
             if (!isReserve) {
                 [self.inputTextView resignFirstResponder];
                 [self.inputTextView updateDisplayByInputContentTextChange];
@@ -344,8 +282,6 @@
             break;
         case GJGCChatInputBarActionTypeInputText: {
             self.inputTextView.recordState = NO;
-            self.recordAudioBarItem.selected = NO;
-
             self.emojiBarItem.selected = NO;
             self.openPanelBarItem.selected = NO;
 
@@ -362,8 +298,6 @@
         case GJGCChatInputBarActionTypeRecordAudio: {
             self.emojiBarItem.selected = NO;
             self.openPanelBarItem.selected = NO;
-
-//            self.inputTextView.gjcf_height = self.inputViewH;
         }
             break;
         default:
@@ -439,8 +373,6 @@
 
 - (void)recordRightStartLimit {
     self.inputTextView.recordState = NO;
-    self.recordAudioBarItem.selected = NO;
-
     self.emojiBarItem.selected = NO;
     self.openPanelBarItem.selected = NO;
 }
