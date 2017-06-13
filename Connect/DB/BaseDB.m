@@ -377,7 +377,7 @@
 }
 
 
-- (NSArray *)getDatasFromTableName:(NSString *)tableName conditions:(NSDictionary *)conditions fields:(NSArray *)fields orderBy:(NSString *)orderby sortWay:(int)sort {
+- (NSArray *)getDatasFromTableName:(NSString *)tableName conditions:(NSDictionary *)conditions fields:(NSArray *)fields orderBy:(NSString *)orderby sortWay:(DBSortWayType)sort {
 
     tableName = [DBTableNameFormart formartTableName:tableName];
 
@@ -443,7 +443,7 @@
 }
 
 
-- (NSArray *)getDatasFromTableName:(NSString *)tableName fields:(NSArray *)fields conditions:(NSDictionary *)conditions limit:(int)limit orderBy:(NSString *)orderby sortWay:(int)sort {
+- (NSArray *)getDatasFromTableName:(NSString *)tableName fields:(NSArray *)fields conditions:(NSDictionary *)conditions limit:(int)limit orderBy:(NSString *)orderby sortWay:(DBSortWayType)sort {
 
     tableName = [DBTableNameFormart formartTableName:tableName];
 
@@ -491,12 +491,13 @@
             [order appendString:@" ORDER BY "];
             [order appendString:orderby];
 
-            if (sort == 1) { //ASC 代表結果會以由小往大的順序列出，而 DESC 代表結果會以由大往小的順序列出
-                [order appendString:@" DESC "];
-            } else if (sort == 2) {
-                [order appendString:@" ASC "];
-            } else {
-                [order appendString:@" DESC "];
+            switch (sort) {
+                case DBSortWayTypeASC: //ASC 代表結果會以由小往大的順序列出，而 DESC 代表結果會以由大往小的順序列出
+                    [order appendString:@" ASC "];
+                    break;
+                default:
+                    [order appendString:@" DESC "];
+                    break;
             }
         }
         int long long offsetIndex = count - limit;
@@ -629,7 +630,7 @@
     FMDatabaseQueue *queue = [FMDatabaseQueue databaseQueueWithPath:dbPath];
     [queue inDatabase:^(FMDatabase *db) {
         NSMutableString *sql = [NSMutableString stringWithFormat:@"SELECT COUNT(*) FROM %@;", tableName];
-        DDLogInfo(sql);
+        DDLogInfo(@"sql %@",sql);
         FMResultSet *resultSet = [db executeQuery:sql];
         if ([resultSet next]) {
             count = [resultSet intForColumnIndex:0];
@@ -668,7 +669,7 @@
 
 
         NSMutableString *sql = [NSMutableString stringWithFormat:@"SELECT COUNT(*) FROM %@ %@;", tableName, conditionM];
-        DDLogInfo(sql);
+        DDLogInfo(@"sql %@",sql);
         FMResultSet *resultSet = [db executeQuery:sql];
         if ([resultSet next]) {
             count = [resultSet intForColumnIndex:0];
@@ -698,7 +699,7 @@
         }
 
         NSMutableString *sql = [NSMutableString stringWithFormat:@"SELECT COUNT(*) FROM %@ %@;", tableName, conditionM];
-        DDLogInfo(sql);
+        DDLogInfo(@"sql %@",sql);
         FMResultSet *resultSet = [db executeQuery:sql];
         if ([resultSet next]) {
             count = [resultSet intForColumnIndex:0];

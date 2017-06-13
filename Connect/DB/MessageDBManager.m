@@ -532,7 +532,7 @@ static MessageDBManager *manager = nil;
         [condition safeSetObject:@(autoMsgid) forKey:@"id < "];
     }
 
-    NSArray *messages = [self getDatasFromTableName:MessageTable fields:@[@"id", @"message_id", @"state", @"message_ower", @"createtime", @"read_time", @"send_status", @"snap_time", @"content"] conditions:condition limit:limit orderBy:@"createtime" sortWay:2];
+    NSArray *messages = [self getDatasFromTableName:MessageTable fields:@[@"id", @"message_id", @"state", @"message_ower", @"createtime", @"read_time", @"send_status", @"snap_time", @"content"] conditions:condition limit:limit orderBy:@"createtime" sortWay:DBSortWayTypeASC];
 
     if (messages.count <= 0) {
         return @[];
@@ -582,7 +582,7 @@ static MessageDBManager *manager = nil;
         [condition safeSetObject:@(time) forKey:@"createtime <= "];
     }
 
-    NSArray *messages = [self getDatasFromTableName:MessageTable fields:@[@"id", @"state", @"message_id", @"message_ower", @"createtime", @"read_time", @"send_status", @"snap_time", @"content"] conditions:condition limit:limit orderBy:@"createtime" sortWay:2];
+    NSArray *messages = [self getDatasFromTableName:MessageTable fields:@[@"id", @"state", @"message_id", @"message_ower", @"createtime", @"read_time", @"send_status", @"snap_time", @"content"] conditions:condition limit:limit orderBy:@"createtime" sortWay:DBSortWayTypeASC];
 
     if (messages.count <= 0) {
         return @[];
