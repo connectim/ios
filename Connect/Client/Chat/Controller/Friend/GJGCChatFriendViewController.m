@@ -2085,10 +2085,6 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
 
 #pragma mark - TBActionSheetDelegate
 
-- (void)willPresentActionSheet:(TBActionSheet *)actionSheet {
-
-}
-
 - (void)chatInputPanel:(GJGCChatInputPanel *)panel didFinishRecord:(GJCFAudioModel *)audioFile {
     if (self.inputPanel.disableActionType == GJGCChatInputBarActionTypeRecordAudio) {
         [self.inputPanel recordRightStartLimit];

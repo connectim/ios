@@ -162,7 +162,6 @@ NS_ASSUME_NONNULL_BEGIN
 // If not defined in the delegate, we simulate a click in the cancel button
 - (void)actionSheetCancel:(TBActionSheet *)actionSheet;
 
-- (void)willPresentActionSheet:(TBActionSheet *)actionSheet;  // before animation and showing view
 - (void)didPresentActionSheet:(TBActionSheet *)actionSheet;  // after animation
 
 - (void)actionSheet:(TBActionSheet *)actionSheet willDismissWithButtonIndex:(NSInteger)buttonIndex; // before animation and hiding view
