@@ -176,7 +176,13 @@
     NSArray *codePhone = [self.phoneNum componentsSeparatedByString:@"-"];
     NSString *phone = [codePhone lastObject];
     NSString *code = [codePhone firstObject];
-
+    // add judge
+    if ([self.phoneNum containsString:@"**"]) {
+       codePhone = [self.phoneNum componentsSeparatedByString:@"**"];
+       phone = [codePhone lastObject];
+       code = [codePhone firstObject];
+    }
+    
     MobileVerify *setMobile = [[MobileVerify alloc] init];
     setMobile.countryCode = [code intValue];
     setMobile.number = phone;
