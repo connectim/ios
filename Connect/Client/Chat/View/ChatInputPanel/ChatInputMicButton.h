@@ -13,12 +13,13 @@
 
 typedef void (^GJGCChatInputTextViewRecordActionChangeBlock)(GJGCChatInputTextViewRecordActionType actionType);
 
-
 typedef void (^ChatInputMicButtonStateChangeEventBlock)(ChatInputMicButton *item, BOOL changeToState);
 
 @protocol ChatInputMicButtonDelegate <NSObject>
 
 @optional
+
+- (CGRect)micButtonFrame;
 
 - (void)micButtonInteractionBegan;
 
@@ -46,9 +47,6 @@ typedef void (^ChatInputMicButtonStateChangeEventBlock)(ChatInputMicButton *item
 - (void)configStateChangeEventBlock:(ChatInputMicButtonStateChangeEventBlock)eventBlock;
 
 @property(nonatomic, copy) NSString *panelIdentifier;
-
-
-@property(nonatomic, assign) CGRect chatBarFrame;
 
 - (void)animateIn;
 

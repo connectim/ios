@@ -394,7 +394,11 @@
         [GCDQueue executeInMainQueue:^{
             if (error) {
                 [GCDQueue executeInMainQueue:^{
-                    [MBProgressHUD showToastwithText:LMLocalizedString(@"Network Server error", nil) withType:ToastTypeFail showInView:self.view complete:nil];
+                    if (error.code == 4) {
+                        [MBProgressHUD showToastwithText:LMLocalizedString(@"Network The request has expired", nil) withType:ToastTypeFail showInView:self.view complete:nil];
+                    } else {
+                        [MBProgressHUD showToastwithText:LMLocalizedString(@"Network Server error", nil) withType:ToastTypeFail showInView:self.view complete:nil];
+                    }
                 }];
             } else {
                 [GCDQueue executeInMainQueue:^{

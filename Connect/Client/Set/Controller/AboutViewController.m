@@ -27,7 +27,7 @@
 
     self.title = LMLocalizedString(@"Set About", nil);
 
-    self.view.backgroundColor = XCColor(241, 241, 241);
+    self.view.backgroundColor = LMBasicBackgroudGray;
 
 }
 

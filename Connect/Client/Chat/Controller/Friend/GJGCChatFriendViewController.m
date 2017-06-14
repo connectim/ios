@@ -416,7 +416,8 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
                 ecdhkey = [KeyHandle getAes256KeyByECDHKeyAndSalt:ecdhkey salt:[ConnectTool get64ZeroData]];
                 downloadTask.ecdhkey = ecdhkey;
             }
-            downloadTask.userInfo = @{@"type": @"audio"};
+            downloadTask.userInfo = @{@"type": @"audio",
+                                      @"localMsgId":contentModel.localMsgId};
             downloadTask.msgIdentifier = [NSString stringWithFormat:@"%@_%@", self.taklInfo.chatIdendifier, contentModel.localMsgId];
             downloadTask.temOriginFilePath = contentModel.audioModel.localAMRStorePath;
             contentModel.downloadTaskIdentifier = taskIdentifier;
@@ -440,8 +441,8 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
     NSDictionary *userInfo = task.userInfo;
     NSString *taskType = userInfo[@"type"];
     if ([taskType isEqualToString:@"audio"]) {
-        NSInteger playingIndex = [self.dataSourceManager getContentModelIndexByLocalMsgId:self.playingAudioMsgId];
-
+        NSString *localMsgId = [userInfo valueForKey:@"localMsgId"];
+        NSInteger playingIndex = [self.dataSourceManager getContentModelIndexByLocalMsgId:localMsgId];
         GJGCChatFriendContentModel *contentModel = (GJGCChatFriendContentModel *) [self.dataSourceManager contentModelAtIndex:playingIndex];
         contentModel.isDownloading = NO;
         contentModel.audioIsDownload = YES;
@@ -575,16 +576,15 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
     NSString *taskType = userInfo[@"type"];
 
     if ([taskType isEqualToString:@"audio"]) {
-        NSInteger playingIndex = [self.dataSourceManager getContentModelIndexByLocalMsgId:self.playingAudioMsgId];
+        NSString *localMsgId = [userInfo valueForKey:@"localMsgId"];
+        NSInteger playingIndex = [self.dataSourceManager getContentModelIndexByLocalMsgId:localMsgId];
         GJGCChatFriendAudioMessageCell *cell = [self.chatListTable cellForRowAtIndexPath:[NSIndexPath indexPathForRow:playingIndex inSection:0]];
         [cell faildDownloadAction];
         GJGCChatFriendContentModel *contentModel = (GJGCChatFriendContentModel *) [self.dataSourceManager contentModelAtIndex:index];
         contentModel.isDownloading = NO;
         contentModel.audioIsDownload = NO;
     }
-
     if ([taskType isEqualToString:@"image"]) {
-
         GJGCChatFriendImageMessageCell *imageCell = [self.chatListTable cellForRowAtIndexPath:indexPath];
         if ([imageCell isKindOfClass:[GJGCChatFriendImageMessageCell class]]) {
             [imageCell faildState];
@@ -596,8 +596,6 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
             [imageCell failDownloadState];
         }
     }
-
-
     if ([taskType isEqualToString:@"videocover"]) {
 
         GJGCChatFriendVideoCell *imageCell = [self.chatListTable cellForRowAtIndexPath:indexPath];

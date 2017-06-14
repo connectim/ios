@@ -134,6 +134,10 @@
         make.top.equalTo(self.inputAmountView.mas_bottom).offset(AUTO_HEIGHT(60));
         make.centerX.equalTo(self.view);
     }];
+    // add gesture
+    UITapGestureRecognizer *tapBalance = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapBalance)];
+    [self.BalanceLabel addGestureRecognizer:tapBalance];
+    self.BalanceLabel.userInteractionEnabled = YES;
     
     __weak __typeof(&*self) weakSelf = self;
     [[PayTool sharedInstance] getBlanceWithComplete:^(NSString *blance, UnspentAmount *unspentAmount, NSError *error) {
@@ -151,7 +155,12 @@
         make.width.mas_equalTo(self.comfrimButton.width);
     }];
 }
-
+- (void)tapBalance{
+    if (![[MMAppSetting sharedSetting] canAutoCalculateTransactionFee]) {
+        long long maxAmount = self.blance - [[MMAppSetting sharedSetting] getTranferFee];
+        self.inputAmountView.defaultAmountString = [[[NSDecimalNumber alloc] initWithLongLong:maxAmount] decimalNumberByDividingBy:[[NSDecimalNumber alloc] initWithLongLong:pow(10, 8)]].stringValue;
+    }
+}
 #pragma mark --rightBtnClick
 
 - (void)rightBtnClick:(UIButton *)btn {

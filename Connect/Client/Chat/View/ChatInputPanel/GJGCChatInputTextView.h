@@ -13,28 +13,19 @@
 
 typedef void (^GJGCChatInputTextViewFrameDidChangeBlock)(GJGCChatInputTextView *textView, CGFloat changeDetal);
 
-typedef void (^GJGCChatInputTextViewRecordActionChangeBlock)(GJGCChatInputTextViewRecordActionType actionType);
-
 typedef void (^GJGCChatInputTextViewFinishInputTextBlock)(GJGCChatInputTextView *textView, NSString *text);
 
 typedef void (^GJGCChatInputTextViewDidBecomeFirstResponseBlock)(GJGCChatInputTextView *textView);
 
 
 @interface GJGCChatInputTextView : UIView
-@property(nonatomic, strong) NSString *preRecordTitle;
-@property(nonatomic, strong) NSString *recordingTitle;
 @property(nonatomic, strong) UIImage *inputTextBackgroundImage;
-@property(nonatomic, strong) UIImage *recordAudioBackgroundImage;
 @property(nonatomic, assign, getter=isRecordState) BOOL recordState;
 @property(nonatomic, strong) NSString *content;
 @property(nonatomic, assign) CGFloat maxAutoExpandHeight;
 @property(nonatomic, assign) CGFloat minAutoExpandHeight;
-@property(nonatomic, strong) NSMutableArray *emojiInfoArray;
 @property(nonatomic, strong) NSString *panelIdentifier;
 @property(nonatomic, readonly) CGFloat inputTextStateHeight;
-@property(nonatomic, strong) NSString *placeHolder;
-
-- (BOOL)isValidateContent;
 
 - (void)resignFirstResponder;
 
@@ -67,5 +58,16 @@ typedef void (^GJGCChatInputTextViewDidBecomeFirstResponseBlock)(GJGCChatInputTe
 - (void)configTextViewDidBecomeFirstResponse:(GJGCChatInputTextViewDidBecomeFirstResponseBlock)firstResponseBlock;
 
 - (void)clearInputText;
+
+
+/**
+ * reserve textView Normal
+ */
+- (void)reserveToNormal;
+
+/**
+ * clear InputText When Record
+ */
+- (void)clearInputTextWhenRecord;
 
 @end

@@ -167,16 +167,16 @@
 
 + (NSDictionary *)paymentMenuPanelItem {
     return @{
-             
-             GJGCChatInputExpandMenuPanelDataSourceTitleKey:LMLocalizedString(@"Wallet Receipt", nil),
-             
-             GJGCChatInputExpandMenuPanelDataSourceIconNormalKey:@"chat_bar_payment",
-             
-             GJGCChatInputExpandMenuPanelDataSourceIconHighlightKey:@"chat_bar_payment",
-             
-             GJGCChatInputExpandMenuPanelDataSourceActionTypeKey:@(GJGCChatInputMenuPanelActionTypePayMent)
-             
-             };
+
+            GJGCChatInputExpandMenuPanelDataSourceTitleKey: LMLocalizedString(@"Wallet Receipt", nil),
+
+            GJGCChatInputExpandMenuPanelDataSourceIconNormalKey: @"chat_bar_payment",
+
+            GJGCChatInputExpandMenuPanelDataSourceIconHighlightKey: @"chat_bar_payment",
+
+            GJGCChatInputExpandMenuPanelDataSourceActionTypeKey: @(GJGCChatInputMenuPanelActionTypePayMent)
+
+    };
 }
 
 + (NSDictionary *)redBagMenuPanelItem {

@@ -508,16 +508,13 @@
         case GJGCChatInputBarActionTypeChooseEmoji:
         case GJGCChatInputBarActionTypeExpandPanel: {
             if (!self.inputPanel.isFullState) {
-                [UIView animateWithDuration:0.3 animations:^{
-                    self.inputPanel.top = GJCFSystemScreenHeight - self.inputPanel.height;
-                    self.chatListTable.height = self.inputPanel.top;
-                }];
+                self.inputPanel.top = GJCFSystemScreenHeight - self.inputPanel.height;
+                self.chatListTable.height = self.inputPanel.top;
                 self.inputPanel.isFullState = YES;
-                [self scrollToBottom:YES];
+                [self scrollToBottom:NO];
             }
         }
             break;
-
         default:
             break;
     }

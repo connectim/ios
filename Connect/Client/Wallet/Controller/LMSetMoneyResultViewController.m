@@ -89,7 +89,6 @@
     self.BalanceLabel.textColor = [UIColor blackColor];
     self.BalanceLabel.textAlignment = NSTextAlignmentCenter;
     [self.view addSubview:self.BalanceLabel];
-
     __weak __typeof(&*self) weakSelf = self;
     [[PayTool sharedInstance] getBlanceWithComplete:^(NSString *blance, UnspentAmount *unspentAmount, NSError *error) {
         weakSelf.blance = unspentAmount.avaliableAmount;
@@ -105,7 +104,6 @@
     [self.view addSubview:self.transferBtn];
 
 }
-
 
 - (IBAction)exChangeRate:(id)sender {
     if (self.btcAmount) {

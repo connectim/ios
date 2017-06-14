@@ -13,8 +13,6 @@
 
 @property(nonatomic, strong) GJGCIconSeprateButton *normalStateButton;
 
-@property(nonatomic, strong) GJGCIconSeprateButton *selectedStateButton;
-
 @property(nonatomic, copy) GJGCChatInputBarControlItemStateChangeEventBlock eventChangeBlock;
 
 @property(nonatomic, copy) GJGCChatInputBarControlItemAuthorizedBlock authorizeBlock;
@@ -72,6 +70,7 @@
 }
 
 #pragma mark - config
+
 - (void)configStateChangeEventBlock:(GJGCChatInputBarControlItemStateChangeEventBlock)eventBlock {
     if (self.eventChangeBlock) {
         self.eventChangeBlock = nil;
