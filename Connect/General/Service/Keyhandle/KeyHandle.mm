@@ -9,11 +9,16 @@
 #import "KeyHandle.h"
 //Note: This class does not reference too many other methods of the class. May be encapsulated
 
-extern "C" {
+#ifdef __cplusplus
+#if __cplusplus
+extern "C"{
 #include "bip39.h"
 #include "ecies.h"
 #include "pbkdf2.h"
 }
+#endif
+#endif /* __cplusplus */
+
 #include "key.h"
 #include <sstream>
 
@@ -45,6 +50,7 @@ extern "C" {
 #include "json_spirit_value.h"
 #import "Protofile.pbobjc.h"
 #include <CommonCrypto/CommonCrypto.h>
+
 
 #define ONTEST 1//1 online ，0 test
 
@@ -1429,9 +1435,7 @@ string HexToBin(const string &strHex)
     return strBin;
 }
 
-// usrID is 36 bytes length     privKey is 32 bytes length
-#define XTALK_USRID_LEN		36
-#define XTALK_PRIVKEY_LEN	32
+
 std::string xtalkUsrPirvKeyEncrypt(unsigned char *usrID, unsigned char *privKey, char *pwd, int n, int ver)
 {
     //  below is the process of E1
