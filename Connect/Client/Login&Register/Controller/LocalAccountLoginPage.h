@@ -8,7 +8,15 @@
 
 #import "BaseViewController.h"
 
+typedef NS_ENUM(NSUInteger,SoureType) {
+   SourTypeCommon    = 1,
+   SourTypeEncryPri  = 2
+    
+};
+
 @interface LocalAccountLoginPage : BaseViewController
+
+@property(nonatomic, assign) SoureType localSourceType;
 
 /**
  *  Mobile download users use this method to create
@@ -18,8 +26,6 @@
  *  @return 
  */
 - (instancetype)initWithUser:(AccountInfo *)downUser;
-
-
 /**
  *  Mobile local users
  *
@@ -28,7 +34,13 @@
  *  @return
  */
 - (instancetype)initWithLocalUsers:(NSArray *)users;
-
+/**
+ *  info
+ *
+ *  @param
+ *
+ *  @return
+ */
 - (void)showLogoutTipWithInfo:(id)info;
 
 @end

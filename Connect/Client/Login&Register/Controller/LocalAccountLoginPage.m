@@ -105,7 +105,11 @@
     }
 
     self.accountUserNameView = [LocalUserInfoView viewWithAccountInfo:_selectedAccount];
-    [_accountUserNameView addTarget:self action:@selector(tapAccountNameView) forControlEvents:UIControlEventTouchUpInside];
+    NSUInteger localSourceValue = self.localSourceType;
+    self.accountUserNameView.soureInfoType = localSourceValue;
+    if (self.localSourceType != SourTypeEncryPri) {
+        [_accountUserNameView addTarget:self action:@selector(tapAccountNameView) forControlEvents:UIControlEventTouchUpInside];
+    }
     [self.view addSubview:_accountUserNameView];
     self.accountUserNameView.top = _titleLabel.bottom + AUTO_HEIGHT(75);
     self.accountUserNameView.width = AUTO_WIDTH(660);

@@ -111,6 +111,7 @@ CREATE_SHARED_MANAGER(LMHandleScanResultManager)
                 }
             }
             LocalAccountLoginPage *page = [[LocalAccountLoginPage alloc] initWithUser:user];
+            page.localSourceType = SourTypeEncryPri;
             [controller.navigationController pushViewController:page animated:YES];
         }
             break;
