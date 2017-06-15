@@ -14,6 +14,11 @@
 #import "NSString+Hash.h"
 #import "NSDictionary+LMSafety.h"
 
+typedef NS_ENUM(NSInteger,DBSortWayType) {
+    DBSortWayTypeDESC = 1,
+    DBSortWayTypeASC = 2,
+};
+
 @interface BaseDB : NSObject
 
 /**
@@ -74,7 +79,7 @@
  * @param sort
  * @return
  */
-- (NSArray *)getDatasFromTableName:(NSString *)tableName conditions:(NSDictionary *)conditions fields:(NSArray *)fields orderBy:(NSString *)orderby sortWay:(int)sort;
+- (NSArray *)getDatasFromTableName:(NSString *)tableName conditions:(NSDictionary *)conditions fields:(NSArray *)fields orderBy:(NSString *)orderby sortWay:(DBSortWayType)sort;
 
 /**
  * getDatasFrom Table
@@ -86,7 +91,7 @@
  * @param sort
  * @return
  */
-- (NSArray *)getDatasFromTableName:(NSString *)tableName fields:(NSArray *)fields conditions:(NSDictionary *)conditions limit:(int)limit orderBy:(NSString *)orderby sortWay:(int)sort;
+- (NSArray *)getDatasFromTableName:(NSString *)tableName fields:(NSArray *)fields conditions:(NSDictionary *)conditions limit:(int)limit orderBy:(NSString *)orderby sortWay:(DBSortWayType)sort;
 
 /**
  * save data to db

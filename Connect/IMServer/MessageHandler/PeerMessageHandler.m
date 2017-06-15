@@ -195,9 +195,11 @@
                 if ([[SessionManager sharedManager].chatSession isEqualToString:lastMsg.messageOwer]) {
                     unReadCount = 0;
                 }
-
+                
                 [self updataRecentChatLastMessageStatus:lastMsg messageCount:unReadCount withSnapChatTime:lastMsg.snapTime];
 
+                //notice onece, clear unread count
+                unReadCount = 0;
             } else {
                 NSMutableArray *pushArray = [NSMutableArray arrayWithArray:pushMessages];
 
