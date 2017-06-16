@@ -360,7 +360,7 @@ typedef NS_ENUM(NSUInteger, SourceType) {
     [[MessageDBManager sharedManager] deleteAllMessageByMessageOwer:self.talkModel.chatIdendifier];
     
     //delete recentchat last contetn
-    [[RecentChatDBManager sharedManager] removeDraftWithIdentifier:self.talkModel.chatIdendifier];
+    [[RecentChatDBManager sharedManager] removeLastContentWithIdentifier:self.talkModel.chatIdendifier];
     [GCDQueue executeInMainQueue:^{
         SendNotify(DeleteMessageHistoryNotification, self.talkModel.chatIdendifier);
     }];

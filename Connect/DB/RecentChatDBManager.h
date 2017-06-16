@@ -126,10 +126,12 @@
 - (NSString *)getDraftWithIdentifier:(NSString *)identifier;
 
 /**
- * remove all draft
+ * remove all chat last message
  * @return
  */
-- (void)removeAllChatDraft;
+- (void)removeAllLastContent;
+
+- (void)removeLastContentWithIdentifier:(NSString *)identifier;
 
 /**
  * updata custum field value

@@ -374,7 +374,10 @@ CREATE_SHARED_MANAGER(LMConversionManager)
     if (!GJCFStringIsNull(identifier)) {
         RecentChatModel *recentModel = [[SessionManager sharedManager] getRecentChatWithIdentifier:identifier];
         recentModel.content = @"";
-        
+    } else {
+        for (RecentChatModel *model in [SessionManager sharedManager].allRecentChats) {
+            model.content = @"";
+        }
     }
     [self reloadRecentChatWithRecentChatModel:nil needReloadBadge:NO];
 }
