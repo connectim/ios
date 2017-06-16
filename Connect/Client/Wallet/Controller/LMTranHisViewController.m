@@ -43,7 +43,7 @@
     [self.view addSubview:self.tableView];
     NSData *data = [[LMHistoryCacheManager sharedManager] getTransferContactsCache];
     Transactions *address = [Transactions parseFromData:data error:nil];
-    [self successAction:address];
+    [self successAction:address withFlag:YES];
     __weak __typeof(&*self) weakSelf = self;
     NSString *recodsUrl = [NSString stringWithFormat:WalletAddressTransRecodsUrl, self.address, self.page, self.pagesize];
     MJRefreshNormalHeader *header = [MJRefreshNormalHeader headerWithRefreshingBlock:^{
@@ -99,7 +99,7 @@
             [self.dataArr removeAllObjects];
         }
         [self.downPages objectAddObject:@(self.page)];
-        [self successAction:address];
+        [self successAction:address withFlag:NO];
     } fail:^(NSError *error) {
         [GCDQueue executeInMainQueue:^{
             [self.tableView.mj_header endRefreshing];
@@ -110,7 +110,7 @@
         }];
     }];
 }
-- (void)successAction:(Transactions *)address {
+- (void)successAction:(Transactions *)address withFlag:(BOOL)flag{
     for (int i = 0; i < address.transactionsArray.count; i++) {
         
         LMUserInfo *info = [[LMUserInfo alloc] init];
@@ -148,7 +148,9 @@
         [self.dataArr objectAddObject:info];
     }
     [GCDQueue executeInMainQueue:^{
-        [self.tableView.mj_header endRefreshing];
+        if (!flag) {
+           [self.tableView.mj_header endRefreshing];
+        }
         if (self.page > 1) {
             if (address.transactionsArray.count <= 0) {
                 [self.tableView.mj_footer endRefreshingWithNoMoreData];
