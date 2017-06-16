@@ -46,6 +46,7 @@
     [NetWorkOperationTool POSTWithUrlString:SetChangeLoginPass postProtoData:changePass.data complete:^(id response) {
         HttpResponse *hResponse = (HttpResponse *) response;
         if (hResponse.code == successCode) {
+            [LKUserCenter shareCenter].currentLoginUser.password_hint = self.passTip;
             [[MMAppSetting sharedSetting] saveUserToKeyChain:[[LKUserCenter shareCenter] currentLoginUser]];
             [GCDQueue executeInMainQueue:^{
                 [MBProgressHUD showToastwithText:LMLocalizedString(@"Login Save successful", nil) withType:ToastTypeSuccess showInView:self.view complete:^{

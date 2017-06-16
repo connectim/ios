@@ -9,7 +9,6 @@
 #import "TransferInputView.h"
 #import "BaseViewController.h"
 #import "LMDrawView.h"
-#import "LMNumberTextField.h"
 #import "SetTransferFeePage.h"
 #import "StringTool.h"
 #import "LMPayCheck.h"
@@ -27,7 +26,7 @@
 // Exchange rate conversion button
 @property(weak, nonatomic) IBOutlet UIButton *rateChangeButton;
 @property(weak, nonatomic) IBOutlet UILabel *feeLabel;
-@property(weak, nonatomic) IBOutlet LMNumberTextField *inputTextField;
+
 @property(weak, nonatomic) IBOutlet LMDrawView *line;
 // Stores the length of the inputTextField
 @property(copy, nonatomic) NSString *inputTextFieldString;

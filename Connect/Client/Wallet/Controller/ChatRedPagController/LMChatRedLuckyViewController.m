@@ -37,7 +37,8 @@
 @property(nonatomic, strong) TransferInputView *inputAmountView;
 // The value of uilable on numField
 @property(strong, nonatomic) UILabel *disPlayLable;
-
+// title
+@property(copy, nonatomic) NSString *navTitleString;
 @end
 
 @implementation LMChatRedLuckyViewController
@@ -60,19 +61,20 @@
 - (void)viewDidLoad {
 
     [super viewDidLoad];
-    NSString *navTitleString;
-    [self setUpUiWithStyle:navTitleString];
+    
+    [self setUpUiWithStyle];
     [self setUpRightButtomItem];
     [self setUpElementsWithTransferView];
-    [self navigationConfigureWithTitleString:navTitleString];
+    [self navigationConfigureWithTitleString:self.navTitleString];
     [self initTabelViewCell];
     self.ainfo = [[LKUserCenter shareCenter] currentLoginUser];
-}
-- (void)setUpUiWithStyle:(NSString *)navTitleString {
     
-    navTitleString = LMLocalizedString(@"Wallet Packet", nil);
+}
+- (void)setUpUiWithStyle {
+    
+    self.navTitleString = LMLocalizedString(@"Wallet Packet", nil);
     if (_style == LMChatRedLuckyStyleOutRedBag) {
-        navTitleString = LMLocalizedString(@"Wallet Sent via link luck packet", nil);
+        self.navTitleString = LMLocalizedString(@"Wallet Sent via link luck packet", nil);
     }
     if (_style == LMChatRedLuckyStyleGroup || _style == LMChatRedLuckyStyleOutRedBag) {
         // If it is a group of red envelopes, you need a red envelope view and change the transfer view location
@@ -85,9 +87,10 @@
     } else {
         [self setWhitefBackArrowItem];
     }
- 
+
 }
 - (void)setUpRightButtomItem {
+    
     self.navigationItem.rightBarButtonItems = nil;
     UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
     NSString *nameString = LMLocalizedString(@"Chat History", nil);
@@ -102,6 +105,7 @@
     button.height = 44;
     [button addTarget:self action:@selector(doRight:) forControlEvents:UIControlEventTouchUpInside];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:button];
+    
 }
 
 - (void)doRight:(id)sender {
@@ -338,7 +342,8 @@
         self.numField.text = [self.numField.text substringToIndex:2];
     }
     int size = [self.numField.text intValue];
-    self.comfrimButton.enabled = size > 0;
+    NSString *numValue = self.inputAmountView.inputTextField.text;
+    self.comfrimButton.enabled = (size > 0 && [numValue floatValue] > MIN_TRANSFER_AMOUNT);
 }
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
