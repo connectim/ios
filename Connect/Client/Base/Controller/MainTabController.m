@@ -247,9 +247,11 @@
     chatMessage.message = message;
     [[MessageDBManager sharedManager] saveMessage:chatMessage];
     // Put the current user in the first place
-    AccountInfo * info = [groupInfo.groupMembers firstObject];
-    if (![info.address isEqualToString:[LKUserCenter shareCenter].currentLoginUser.address]) {
-       [groupInfo.groupMembers moveObject:[LKUserCenter shareCenter].currentLoginUser toIndex:0];
+    if (groupInfo.groupMembers.count > 0) {
+        AccountInfo * info = [groupInfo.groupMembers firstObject];
+        if (![info.address isEqualToString:[LKUserCenter shareCenter].currentLoginUser.address]) {
+            [groupInfo.groupMembers moveObject:[LKUserCenter shareCenter].currentLoginUser toIndex:0];
+        }
     }
     GJGCChatFriendTalkModel *talk = [[GJGCChatFriendTalkModel alloc] init];
     talk.talkType = GJGCChatFriendTalkTypeGroup;
