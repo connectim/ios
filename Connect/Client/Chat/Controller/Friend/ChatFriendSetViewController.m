@@ -325,6 +325,8 @@
         accountInfo.isGroupAdmin = member.role == 1;
         if (!accountInfo.isGroupAdmin) {
             [AccoutInfoArray objectAddObject:accountInfo];
+        } else {
+            admin = accountInfo;
         }
     }
     if (admin) {
