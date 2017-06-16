@@ -32217,7 +32217,7 @@
 					};
 					D9217ECD1CE03D9100953F51 = {
 						CreatedOnToolsVersion = 7.3;
-						DevelopmentTeam = T3YMFT8962;
+						DevelopmentTeam = 9U6ZRRA66C;
 						LastSwiftMigration = 0830;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
@@ -33674,7 +33674,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = T3YMFT8962;
+				DEVELOPMENT_TEAM = 9U6ZRRA66C;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -33733,7 +33733,7 @@
 					"\"SystemConfiguration\"",
 				);
 				OTHER_LIBTOOLFLAGS = "";
-				PRODUCT_BUNDLE_IDENTIFIER = dev.connect.im;
+				PRODUCT_BUNDLE_IDENTIFIER = connect.im;
 				PRODUCT_NAME = Connect;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -33755,7 +33755,7 @@
 				CODE_SIGN_ENTITLEMENTS = Connect/Connect.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = T3YMFT8962;
+				DEVELOPMENT_TEAM = 9U6ZRRA66C;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -33821,7 +33821,7 @@
 					"\"SystemConfiguration\"",
 				);
 				OTHER_LIBTOOLFLAGS = "";
-				PRODUCT_BUNDLE_IDENTIFIER = dev.connect.im;
+				PRODUCT_BUNDLE_IDENTIFIER = connect.im;
 				PRODUCT_NAME = Connect;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
