@@ -36,12 +36,6 @@
 @property(nonatomic, copy) NSString *randomPrivkey;
 @property(nonatomic, copy) NSString *randomPublickey;
 
-
-//upload file block
-@property (nonatomic ,copy) GJCFFileUploadManagerTaskFaildBlock uploadTaskFailedBlock;
-@property (nonatomic ,copy) GJCFFileUploadManagerTaskCompletionBlock uploadTaskCompleteBlock;
-@property (nonatomic ,copy) GJCFFileUploadManagerUpdateTaskProgressBlock uploadTaskProgressBlock;
-
 @end
 
 @implementation IMService
@@ -992,18 +986,9 @@ static dispatch_once_t onceToken;
         case GJGCChatFriendContentTypeImage:
         case GJGCChatFriendContentTypeVideo:
         case GJGCChatFriendContentTypeMapLocation: {
-            if (!self.uploadTaskFailedBlock) {
-                self.uploadTaskFailedBlock = faildBlock;
-                [[GJCFFileUploadManager shareUploadManager] setFaildBlock:faildBlock forObserver:self];
-            }
-            if (!self.uploadTaskCompleteBlock) {
-                self.uploadTaskCompleteBlock = completionBlock;
-                [[GJCFFileUploadManager shareUploadManager] setCompletionBlock:completionBlock forObserver:self];
-            }
-            if (!self.uploadTaskProgressBlock) {
-                self.uploadTaskProgressBlock = progressBlock;
-                [[GJCFFileUploadManager shareUploadManager] setProgressBlock:progressBlock forObserver:self];
-            }
+            [[GJCFFileUploadManager shareUploadManager] setFaildBlock:faildBlock forObserver:self];
+            [[GJCFFileUploadManager shareUploadManager] setCompletionBlock:completionBlock forObserver:self];
+            [[GJCFFileUploadManager shareUploadManager] setProgressBlock:progressBlock forObserver:self];
             [self upLoadChatFile:messageContent message:message ecdhKey:ecdhKey];
         }
             break;
