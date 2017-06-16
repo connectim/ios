@@ -361,6 +361,19 @@ static RecentChatDBManager *manager = nil;
 //    [self updateTableName:RecentChatTable fieldsValues:@{@"draft": @""} conditions:@{@"identifier": identifier}];
 }
 
+- (void)removeAllChatDraft {
+    LMBaseSSDBManager *manager = [LMBaseSSDBManager open:@"system_message"];
+    for (RecentChatModel *model in [SessionManager sharedManager].allRecentChats) {
+        model.draft = @"";
+        if (model.identifier) {
+            NSString *key = [NSString stringWithFormat:@"%@_draft",model.identifier];
+            [manager set:key string:@""];
+        }
+    }
+    [manager close];
+}
+
+
 - (NSString *)getDraftWithIdentifier:(NSString *)identifier {
     if (GJCFStringIsNull(identifier)) {
         return @"";

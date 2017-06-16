@@ -374,8 +374,9 @@ CREATE_SHARED_MANAGER(LMConversionManager)
     if (!GJCFStringIsNull(identifier)) {
         RecentChatModel *recentModel = [[SessionManager sharedManager] getRecentChatWithIdentifier:identifier];
         recentModel.content = @"";
-        [self reloadRecentChatWithRecentChatModel:nil needReloadBadge:NO];
+        
     }
+    [self reloadRecentChatWithRecentChatModel:nil needReloadBadge:NO];
 }
 
 - (BOOL)deleteConversationWithIdentifier:(NSString *)identifier{

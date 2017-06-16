@@ -126,6 +126,12 @@
 - (NSString *)getDraftWithIdentifier:(NSString *)identifier;
 
 /**
+ * remove all draft
+ * @return
+ */
+- (void)removeAllChatDraft;
+
+/**
  * updata custum field value
  * @param fieldsValues
  * @param identifier
