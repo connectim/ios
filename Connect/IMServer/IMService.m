@@ -398,8 +398,8 @@ static dispatch_once_t onceToken;
     ExternalBillingToken *billingToken = [[ExternalBillingToken alloc] init];
     billingToken.token = token;
     
-    Message *m = [LMCommandAdapter sendAdapterWithExtension:BM_OUTER_TRANSFER_EXT sendData:billingToken];
     [self sendCommandWithDelay:YES callBlock:^(IMService *imserverSelf) {
+        Message *m = [LMCommandAdapter sendAdapterWithExtension:BM_OUTER_TRANSFER_EXT sendData:billingToken];
         [imserverSelf sendCommandWith:m comlete:complete];
     }];
 }
@@ -425,8 +425,8 @@ static dispatch_once_t onceToken;
     RedPackageToken *luckyToken = [[RedPackageToken alloc] init];
     luckyToken.token = token;
     
-    Message *m = [LMCommandAdapter sendAdapterWithExtension:BM_OUTER_REDPACKET_EXT sendData:luckyToken];
     [self sendCommandWithDelay:YES callBlock:^(IMService *imserverSelf) {
+        Message *m = [LMCommandAdapter sendAdapterWithExtension:BM_OUTER_REDPACKET_EXT sendData:luckyToken];
         [imserverSelf sendCommandWith:m comlete:complete];
     }];
 }
@@ -439,8 +439,8 @@ static dispatch_once_t onceToken;
     updateSession.address = address;
     updateSession.flag = mute;
     
-    Message *m = [LMCommandAdapter sendAdapterWithExtension:BM_SETMUTE_SESSION sendData:updateSession];
     [self sendCommandWithDelay:YES callBlock:^(IMService *imserverSelf) {
+        Message *m = [LMCommandAdapter sendAdapterWithExtension:BM_SETMUTE_SESSION sendData:updateSession];
         [imserverSelf sendCommandWith:m comlete:complete];
     }];
 }
