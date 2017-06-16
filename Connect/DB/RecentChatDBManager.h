@@ -126,6 +126,14 @@
 - (NSString *)getDraftWithIdentifier:(NSString *)identifier;
 
 /**
+ * remove all chat last message
+ * @return
+ */
+- (void)removeAllLastContent;
+
+- (void)removeLastContentWithIdentifier:(NSString *)identifier;
+
+/**
  * updata custum field value
  * @param fieldsValues
  * @param identifier

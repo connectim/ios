@@ -358,8 +358,20 @@ static RecentChatDBManager *manager = nil;
     LMBaseSSDBManager *manager = [LMBaseSSDBManager open:@"system_message"];
     [manager set:key string:@""];
     [manager close];
-//    [self updateTableName:RecentChatTable fieldsValues:@{@"draft": @""} conditions:@{@"identifier": identifier}];
 }
+
+- (void)removeLastContentWithIdentifier:(NSString *)identifier {
+    if (GJCFStringIsNull(identifier)) {
+        return;
+    }
+    [self updateTableName:RecentChatTable fieldsValues:@{@"content": @""} conditions:@{@"identifier": identifier}];
+}
+
+
+- (void)removeAllLastContent {
+    [self updateTableName:RecentChatTable fieldsValues:@{@"content": @""} conditions:nil];
+}
+
 
 - (NSString *)getDraftWithIdentifier:(NSString *)identifier {
     if (GJCFStringIsNull(identifier)) {
