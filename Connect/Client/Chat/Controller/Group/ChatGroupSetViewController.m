@@ -230,11 +230,13 @@ typedef NS_ENUM(NSUInteger, SourceType) {
     CellItem *topMessage = [CellItem itemWithTitle:LMLocalizedString(@"Chat Sticky on Top chat", nil) type:CellItemTypeSwitch operation:nil];
     topMessage.switchIsOn = self.talkModel.top;
     topMessage.operationWithInfo = ^(id userInfo) {
-        if ([userInfo boolValue]) {
+        BOOL top = [userInfo boolValue];
+        if (top) {
             [SetGlobalHandler topChatWithChatIdentifer:weakSelf.talkModel.chatIdendifier];
         } else {
             [SetGlobalHandler CancelTopChatWithChatIdentifer:weakSelf.talkModel.chatIdendifier];
         }
+        weakSelf.talkModel.top = top;
     };
 
     CellItem *messageNoneNotifi = [CellItem itemWithTitle:LMLocalizedString(@"Chat Mute Notification", nil) type:CellItemTypeSwitch operation:nil];
@@ -248,6 +250,7 @@ typedef NS_ENUM(NSUInteger, SourceType) {
                 } else {
                     [[RecentChatDBManager sharedManager] removeMuteWithIdentifer:weakSelf.talkModel.chatIdendifier];
                 }
+                weakSelf.talkModel.mute = notify;
                 [GCDQueue executeInMainQueue:^{
                     SendNotify(ConnnectMuteNotification, weakSelf.talkModel.chatIdendifier);
                 }];
@@ -258,10 +261,12 @@ typedef NS_ENUM(NSUInteger, SourceType) {
     CellItem *savaToContact = [CellItem itemWithTitle:LMLocalizedString(@"Link Save to Contacts", nil) type:CellItemTypeSwitch operation:nil];
     savaToContact.switchIsOn = self.talkModel.chatGroupInfo.isCommonGroup;
     savaToContact.operationWithInfo = ^(id userInfo) {
-        if ([userInfo boolValue]) {
+        BOOL isCommonGroup = [userInfo boolValue];
+        if (isCommonGroup) {
             [SetGlobalHandler setCommonContactGroupWithIdentifer:weakSelf.talkModel.chatIdendifier complete:^(NSError *error) {
                 if (!error) {
                     [[GroupDBManager sharedManager] addGroupToCommonGroup:weakSelf.talkModel.chatIdendifier];
+                    weakSelf.talkModel.chatGroupInfo.isCommonGroup = isCommonGroup;
                 } else {
                     [GCDQueue executeInMainQueue:^{
                         [MBProgressHUD showToastwithText:LMLocalizedString(@"Update fail", nil) withType:ToastTypeFail showInView:weakSelf.view complete:nil];
@@ -274,6 +279,7 @@ typedef NS_ENUM(NSUInteger, SourceType) {
             [SetGlobalHandler removeCommonContactGroupWithIdentifer:weakSelf.talkModel.chatIdendifier complete:^(NSError *error) {
                 if (!error) {
                     [[GroupDBManager sharedManager] removeFromCommonGroup:weakSelf.talkModel.chatIdendifier];
+                    weakSelf.talkModel.chatGroupInfo.isCommonGroup = isCommonGroup;
                 } else {
                     [GCDQueue executeInMainQueue:^{
                         [MBProgressHUD showToastwithText:LMLocalizedString(@"Fail", nil) withType:ToastTypeFail showInView:weakSelf.view complete:nil];
@@ -342,15 +348,21 @@ typedef NS_ENUM(NSUInteger, SourceType) {
 }
 
 - (void)clearAllChatHistory {
+    //delete file
     AccountInfo *chatUser = [[UserDBManager sharedManager] getUserByPublickey:self.talkModel.chatIdendifier];
     if (chatUser) {
         [ChatMessageFileManager deleteRecentChatAllMessageFilesByAddress:chatUser.address];
     } else {
         [ChatMessageFileManager deleteRecentChatAllMessageFilesByAddress:self.talkModel.chatIdendifier];
     }
+    
+    //delete message
     [[MessageDBManager sharedManager] deleteAllMessageByMessageOwer:self.talkModel.chatIdendifier];
+    
+    //delete recentchat last contetn
+    [[RecentChatDBManager sharedManager] removeDraftWithIdentifier:self.talkModel.chatIdendifier];
     [GCDQueue executeInMainQueue:^{
-        SendNotify(DeleteMessageHistoryNotification, nil);
+        SendNotify(DeleteMessageHistoryNotification, self.talkModel.chatIdendifier);
     }];
 
 }

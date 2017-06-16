@@ -113,8 +113,12 @@
         [ChatMessageFileManager deleteRecentChatAllMessageFilesByAddress:self.talkModel.chatUser.pub_key];
     }
     [[MessageDBManager sharedManager] deleteAllMessageByMessageOwer:self.talkModel.chatUser.pub_key];
+    
+    //delete recentchat last contetn
+    [[RecentChatDBManager sharedManager] removeDraftWithIdentifier:self.talkModel.chatIdendifier];
+    
     [GCDQueue executeInMainQueue:^{
-        SendNotify(DeleteMessageHistoryNotification, nil);
+        SendNotify(DeleteMessageHistoryNotification, self.talkModel.chatIdendifier);
     }];
 
 }
@@ -310,15 +314,21 @@
     lmGroup.summary = groupInfo.group.summary;
 
     NSMutableArray *AccoutInfoArray = [NSMutableArray array];
+    AccountInfo *admin = nil;
     for (GroupMember *member in groupInfo.membersArray) {
         AccountInfo *accountInfo = [[AccountInfo alloc] init];
         accountInfo.username = member.username;
         accountInfo.avatar = member.avatar;
         accountInfo.address = member.address;
-        accountInfo.roleInGroup = member.role;
         accountInfo.groupNickName = member.nick;
         accountInfo.pub_key = member.pubKey;
-        [AccoutInfoArray objectAddObject:accountInfo];
+        accountInfo.isGroupAdmin = member.role == 1;
+        if (!accountInfo.isGroupAdmin) {
+            [AccoutInfoArray objectAddObject:accountInfo];
+        }
+    }
+    if (admin) {
+        [AccoutInfoArray insertObject:admin atIndex:0];
     }
     lmGroup.groupMembers = AccoutInfoArray;
 
