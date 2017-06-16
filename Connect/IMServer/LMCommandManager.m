@@ -1192,6 +1192,11 @@ CREATE_SHARED_MANAGER(LMCommandManager)
             message = LMLocalizedString(@"Wallet You already open this luckypacket", nil);
         }
             break;
+        case 3: //you garbed this luckypackage
+            {
+                message = LMLocalizedString(@"Chat system luckypackage have been frozen", nil);
+            }
+            break;
         default:
             break;
     }

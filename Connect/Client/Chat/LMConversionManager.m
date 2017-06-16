@@ -43,6 +43,8 @@ CREATE_SHARED_MANAGER(LMConversionManager)
         RegisterNotify(ConnnectContactDidChangeDeleteUserNotification, @selector(deleteUser:));
         RegisterNotify(kFriendListChangeNotification,@selector(friendListChange:));
         RegisterNotify(ConnnectMuteNotification, @selector(muteChange:));
+        
+        RegisterNotify(DeleteMessageHistoryNotification, @selector(deleteAllmessage:));
     }
     return self;
 }
@@ -365,6 +367,15 @@ CREATE_SHARED_MANAGER(LMConversionManager)
     messageInfo.readTime = 0;
     [[MessageDBManager sharedManager] saveMessage:messageInfo];
     [self getNewMessagesWithLastMessage:messageInfo newMessageCount:1 type:GJGCChatFriendTalkTypePrivate withSnapChatTime:0];
+}
+
+- (void)deleteAllmessage:(NSNotification *)note{
+    NSString *identifier = (NSString *)note.object;
+    if (!GJCFStringIsNull(identifier)) {
+        RecentChatModel *recentModel = [[SessionManager sharedManager] getRecentChatWithIdentifier:identifier];
+        recentModel.content = @"";
+        [self reloadRecentChatWithRecentChatModel:nil needReloadBadge:NO];
+    }
 }
 
 - (BOOL)deleteConversationWithIdentifier:(NSString *)identifier{

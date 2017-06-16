@@ -639,6 +639,7 @@
 		D92233331E83DBC300D67110 /* RedBagNetWorkTool.m in Sources */ = {isa = PBXBuildFile; fileRef = D922332C1E83DBC300D67110 /* RedBagNetWorkTool.m */; };
 		D92233341E83DBC300D67110 /* SetGlobalHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = D922332E1E83DBC300D67110 /* SetGlobalHandler.m */; };
 		D92233361E83DBC300D67110 /* WallteNetWorkTool.m in Sources */ = {isa = PBXBuildFile; fileRef = D92233321E83DBC300D67110 /* WallteNetWorkTool.m */; };
+		D92241061EF11C290066565C /* LMIMHelper.mm in Sources */ = {isa = PBXBuildFile; fileRef = D92241051EF11C290066565C /* LMIMHelper.mm */; };
 		D926FEB41EE13EE00080DA56 /* LMTransactionModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D926FEB31EE13EE00080DA56 /* LMTransactionModel.m */; };
 		D943CD5C1EB083B100BE94EF /* GcmDataModel.m in Sources */ = {isa = PBXBuildFile; fileRef = D943CD5B1EB083B100BE94EF /* GcmDataModel.m */; };
 		D943CD7A1EB0866C00BE94EF /* GJGCChatSystemNotiCellStyle.m in Sources */ = {isa = PBXBuildFile; fileRef = D943CD681EB0866C00BE94EF /* GJGCChatSystemNotiCellStyle.m */; };
@@ -2182,6 +2183,8 @@
 		D922332E1E83DBC300D67110 /* SetGlobalHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SetGlobalHandler.m; sourceTree = "<group>"; };
 		D92233311E83DBC300D67110 /* WallteNetWorkTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WallteNetWorkTool.h; sourceTree = "<group>"; };
 		D92233321E83DBC300D67110 /* WallteNetWorkTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WallteNetWorkTool.m; sourceTree = "<group>"; };
+		D92241041EF11C290066565C /* LMIMHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LMIMHelper.h; sourceTree = "<group>"; };
+		D92241051EF11C290066565C /* LMIMHelper.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = LMIMHelper.mm; sourceTree = "<group>"; };
 		D926FEB21EE13EE00080DA56 /* LMTransactionModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LMTransactionModel.h; sourceTree = "<group>"; };
 		D926FEB31EE13EE00080DA56 /* LMTransactionModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LMTransactionModel.m; sourceTree = "<group>"; };
 		D943CD5A1EB083B100BE94EF /* GcmDataModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GcmDataModel.h; sourceTree = "<group>"; };
@@ -14943,6 +14946,8 @@
 				D95845141ECAD8C1004C8984 /* Model */,
 				D95C02CC1E8102FF006C5C8A /* IMService.h */,
 				D95C02CD1E8102FF006C5C8A /* IMService.m */,
+				D92241041EF11C290066565C /* LMIMHelper.h */,
+				D92241051EF11C290066565C /* LMIMHelper.mm */,
 				D95845101EC9664F004C8984 /* LMSocketHandleDelegate.h */,
 			);
 			path = IMServer;
@@ -32808,6 +32813,7 @@
 				D95C043A1E810902006C5C8A /* ActionSheetCell.m in Sources */,
 				F1B363D21E85255600B65086 /* LMSearchTextField.m in Sources */,
 				D922328E1E822BF800D67110 /* UIGestureRecognizer+Cancel.m in Sources */,
+				D92241061EF11C290066565C /* LMIMHelper.mm in Sources */,
 				192351F61E8126F60022D844 /* CrowdfoundingHisPage.m in Sources */,
 				19234F811E8117020022D844 /* InviteUserPage.m in Sources */,
 				192350B91E81213F0022D844 /* LMReceiptViewController.m in Sources */,
