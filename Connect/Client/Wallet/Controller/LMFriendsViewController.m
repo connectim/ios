@@ -22,8 +22,6 @@
 
 @property(nonatomic, strong) NSMutableArray *dataArr;
 
-@property(nonatomic, strong) NSMutableArray *sectionTitleArr;
-
 @property(nonatomic, strong) NSMutableArray *sectionIndexArr;
 
 @property(nonatomic, strong) UITableView *tableView;
@@ -54,7 +52,6 @@ static NSString *friends = @"friends";
     
     [GCDQueue executeInGlobalQueue:^{
             self.dataArr = [[LMLinkManDataManager sharedManager] getFriendsArrWithNoConnect];
-            self.sectionTitleArr = [MMGlobal getTitleArray:self.dataArr];
             self.sectionIndexArr = [MMGlobal getIndexArray:self.dataArr];
             [GCDQueue executeInMainQueue:^{
                 [MBProgressHUD hideHUDForView:weakSelf.view];
@@ -73,12 +70,6 @@ static NSString *friends = @"friends";
         self.dataArr = [NSMutableArray array];
     }
     return _dataArr;
-}
-- (NSMutableArray *)sectionTitleArr {
-    if (!_sectionTitleArr) {
-        self.sectionTitleArr = [NSMutableArray array];
-    }
-    return _sectionTitleArr;
 }
 - (NSMutableArray *)sectionIndexArr {
     if (!_sectionIndexArr) {
@@ -152,7 +143,7 @@ static NSString *friends = @"friends";
     bgView.backgroundColor = LMBasicBackgroudGray;
     UILabel *titleOneLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, 0, VSIZE.width - 20, AUTO_HEIGHT(40))];
     titleOneLabel.backgroundColor = LMBasicBackgroudGray;
-    titleOneLabel.text = [NSString stringWithFormat:@"%@", self.sectionTitleArr[section]];
+    titleOneLabel.text = [self.dataArr[section] valueForKey:@"title"];
     titleOneLabel.font = [UIFont systemFontOfSize:FONT_SIZE(26)];
     titleOneLabel.textColor = [UIColor blackColor];
     titleOneLabel.textAlignment = NSTextAlignmentLeft;
@@ -228,8 +219,8 @@ static NSString *friends = @"friends";
 -(void)dealloc {
     [self.selectedList removeAllObjects];
     self.selectedList = nil;
-    [self.sectionTitleArr removeAllObjects];
-    self.sectionTitleArr = nil;
+    [self.sectionIndexArr removeAllObjects];
+    self.sectionIndexArr = nil;
     [self.dataArr removeAllObjects];
     self.dataArr = nil;
 

@@ -221,14 +221,4 @@
     }
     return temArray;
 }
-+ (NSMutableArray *)getTitleArray:(NSMutableArray *)groupArray {
-    if (groupArray.count <= 0) {
-        return nil;
-    }
-    NSMutableArray *temArray = [NSMutableArray array];
-    for (NSMutableDictionary* dic in groupArray) {
-        [temArray addObject:dic[@"title"]];
-    }
-    return temArray;
-}
 @end

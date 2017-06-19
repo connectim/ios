@@ -18,7 +18,6 @@
 
 @property(nonatomic, strong) NSMutableArray *groupsFriend;
 @property(nonatomic, strong) NSMutableArray *indexs;
-
 @property(nonatomic, copy) void (^SelectContactComplete)(AccountInfo *user);
 @property(nonatomic, copy) void (^Cancel)();
 
@@ -53,7 +52,7 @@
     }];
     [GCDQueue executeInGlobalQueue:^{
         AccountInfo* info = [[UserDBManager sharedManager] getUserByPublickey:self.publicKey];
-        self.groupsFriend = [[LMLinkManDataManager sharedManager] getFriendsArrWith:info];
+        self.groupsFriend = [[LMLinkManDataManager sharedManager] getListGroupsFriend:info withTag:YES];
         self.indexs = [MMGlobal getIndexArray:self.groupsFriend];
        [GCDQueue executeInMainQueue:^{
            [MBProgressHUD hideHUDForView:self.view];
