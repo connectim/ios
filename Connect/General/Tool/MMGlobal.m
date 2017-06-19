@@ -8,6 +8,7 @@
 
 #import "MMGlobal.h"
 #import "FxFileUtility.h"
+#import "NSString+Pinyin.h"
 #include <sys/types.h>
 #include <sys/sysctl.h>
 @implementation MMGlobal
@@ -220,5 +221,56 @@
         }
     }
     return temArray;
+}
++ (NSArray *)accordingTheChineseAndEnglishNameToGenerateAlphabet:(NSMutableArray *)contactArray {
+    NSMutableArray *alphatArr = [[NSMutableArray alloc] init];
+    for (AccountInfo *info in contactArray) {
+        NSString *pinyin = [info.normalShowName transformToPinyin];
+        NSString *pinyinFirst = [[pinyin substringToIndex:1] uppercaseString];
+        if ([MMGlobal preIsInAtoZ:pinyinFirst]) {
+            if (![alphatArr containsObject:pinyinFirst]) {
+                [alphatArr objectAddObject:pinyinFirst];
+            }
+        } else {
+            if (![alphatArr containsObject:@"#"]) {
+                [alphatArr objectAddObject:@"#"];
+            }
+        }
+    }
+    // sort array
+    NSArray *arr = [alphatArr sortedArrayUsingComparator:^NSComparisonResult(NSString *obj1, NSString *obj2) {
+        NSComparisonResult result = [obj1 compare:obj2];
+        return result;
+    }];
+    return arr;
+}
++ (NSMutableArray *)nameIsAlphabeticalAscending:(NSMutableArray *)contactArray withAlphaArr:(NSMutableArray *)alphaArray {
+    
+    NSMutableArray *secArray = [NSMutableArray array];
+    for (NSString *alphat in alphaArray) {
+        NSMutableArray *sectionArr = [[NSMutableArray alloc] init];
+        for (int i = 0; i < contactArray.count; i++) {
+            AccountInfo *info = contactArray[i];
+            NSString *pinyin = [info.normalShowName transformToPinyin];
+            NSString *pinyinFirst = [[pinyin substringToIndex:1] uppercaseString];
+            // First determine pinyinFirst is not the letter set to #
+            if (pinyinFirst.length > 0) {
+                NSString *regex = @"[a-zA-Z]";
+                NSPredicate *pred = [NSPredicate predicateWithFormat:@"SELF MATCHES %@", regex];
+                if (![pred evaluateWithObject:pinyinFirst]) {
+                    pinyinFirst = @"#";
+                }
+                
+            }
+            if ([pinyinFirst isEqualToString:alphat]) {
+                [sectionArr objectAddObject:info];
+            }
+        }
+        [secArray objectAddObject:sectionArr];
+    }
+    return secArray;
+}
++ (BOOL)preIsInAtoZ:(NSString *)str {
+    return [@"QWERTYUIOPLKJHGFDSAZXCVBNM" containsString:str] || [[@"QWERTYUIOPLKJHGFDSAZXCVBNM" lowercaseString] containsString:str];
 }
 @end

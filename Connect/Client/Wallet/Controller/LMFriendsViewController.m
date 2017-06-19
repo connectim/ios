@@ -13,7 +13,6 @@
 #import "NSString+Pinyin.h"
 #import "UIImage+Color.h"
 #import "NSString+Size.h"
-#import "LMLinkManDataManager.h"
 
 
 @interface LMFriendsViewController () <UITableViewDelegate, UITableViewDataSource>
@@ -22,7 +21,9 @@
 
 @property(nonatomic, strong) NSMutableArray *dataArr;
 
-@property(nonatomic, strong) NSMutableArray *sectionIndexArr;
+@property(nonatomic, strong) NSMutableArray *sectionArr;
+
+@property(nonatomic, strong) NSMutableArray *alphaArr;
 
 @property(nonatomic, strong) UITableView *tableView;
 
@@ -43,21 +44,24 @@ static NSString *friends = @"friends";
         self.automaticallyAdjustsScrollViewInsets = NO;
     }
     [self setRightBarButtonItemWithEnable:NO withDispalyString:LMLocalizedString(@"Wallet Transfer", nil) withDisplayColor:[UIColor colorWithWhite:1.0 alpha:0.5]];
-
     // Get friends
     __weak typeof(self) weakSelf = self;
     [GCDQueue executeInMainQueue:^{
         [MBProgressHUD showLoadingMessageToView:weakSelf.view];
     }];
-    
     [GCDQueue executeInGlobalQueue:^{
-            self.dataArr = [[LMLinkManDataManager sharedManager] getFriendsArrWithNoConnect];
-            self.sectionIndexArr = [MMGlobal getIndexArray:self.dataArr];
+        [[UserDBManager sharedManager] getAllUsersNoConnectWithComplete:^(NSArray *contacts) {
+            
+            [weakSelf.dataArr addObjectsFromArray:contacts];
+            [weakSelf.alphaArr addObjectsFromArray:[MMGlobal accordingTheChineseAndEnglishNameToGenerateAlphabet:weakSelf.dataArr]];
+            [weakSelf.sectionArr addObjectsFromArray:[MMGlobal nameIsAlphabeticalAscending:weakSelf.dataArr withAlphaArr:weakSelf.alphaArr]];
             [GCDQueue executeInMainQueue:^{
                 [MBProgressHUD hideHUDForView:weakSelf.view];
                 [weakSelf.tableView reloadData];
             }];
+        }];
     }];
+    
 }
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
@@ -71,11 +75,17 @@ static NSString *friends = @"friends";
     }
     return _dataArr;
 }
-- (NSMutableArray *)sectionIndexArr {
-    if (!_sectionIndexArr) {
-        self.sectionIndexArr = [NSMutableArray array];
+- (NSMutableArray *)sectionArr {
+    if (!_sectionArr) {
+        self.sectionArr = [NSMutableArray array];
     }
-    return _sectionIndexArr;
+    return _sectionArr;
+}
+- (NSMutableArray *)alphaArr {
+    if (!_alphaArr) {
+        self.alphaArr = [NSMutableArray array];
+    }
+    return _alphaArr;
 }
 
 - (NSMutableArray *)selectedList {
@@ -122,16 +132,20 @@ static NSString *friends = @"friends";
 
     self.transferBtn.enabled = enable;
 }
+
+- (BOOL)preIsInAtoZ:(NSString *)str {
+    return [@"QWERTYUIOPLKJHGFDSAZXCVBNM" containsString:str] || [[@"QWERTYUIOPLKJHGFDSAZXCVBNM" lowercaseString] containsString:str];
+}
+
 #pragma mark -- Get friends
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return self.dataArr.count;
+    return self.sectionArr.count;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    NSMutableDictionary *dic = self.dataArr[section];
-    NSMutableArray * temArray = dic[@"items"];
-    return temArray.count;
+    NSArray *array = self.sectionArr[section];
+    return [array count];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -143,7 +157,7 @@ static NSString *friends = @"friends";
     bgView.backgroundColor = LMBasicBackgroudGray;
     UILabel *titleOneLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, 0, VSIZE.width - 20, AUTO_HEIGHT(40))];
     titleOneLabel.backgroundColor = LMBasicBackgroudGray;
-    titleOneLabel.text = [self.dataArr[section] valueForKey:@"title"];
+    titleOneLabel.text = [NSString stringWithFormat:@"%@", self.alphaArr[section]];
     titleOneLabel.font = [UIFont systemFontOfSize:FONT_SIZE(26)];
     titleOneLabel.textColor = [UIColor blackColor];
     titleOneLabel.textAlignment = NSTextAlignmentLeft;
@@ -152,7 +166,7 @@ static NSString *friends = @"friends";
 }
 
 - (NSArray<NSString *> *)sectionIndexTitlesForTableView:(UITableView *)tableView {
-    return self.sectionIndexArr;
+    return self.alphaArr;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index {
@@ -168,8 +182,7 @@ static NSString *friends = @"friends";
     if (!cell) {
         cell = [[LMSelectTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:friends];
     }
-    NSMutableDictionary *dic = self.dataArr[indexPath.section];
-    AccountInfo *info = dic[@"items"][indexPath.row];
+    AccountInfo *info = self.sectionArr[indexPath.section][indexPath.row];
     [cell setAccoutInfo:info];
     [cell.checkBox setOn:info.isSelected animated:YES];
     return cell;
@@ -178,8 +191,7 @@ static NSString *friends = @"friends";
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     LMSelectTableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-    NSMutableDictionary *dic = self.dataArr[indexPath.section];
-    AccountInfo *info = dic[@"items"][indexPath.row];
+    AccountInfo *info = self.sectionArr[indexPath.section][indexPath.row];
     info.isSelected = !info.isSelected;
     [cell.checkBox setOn:info.isSelected animated:YES];
     if ([self.selectedList containsObject:info]) {
@@ -189,12 +201,12 @@ static NSString *friends = @"friends";
     }
     if (self.selectedList.count) {
         [self setRightBarButtonItemWithEnable:YES withDispalyString:[NSString stringWithFormat:LMLocalizedString(@"Wallet transfer man", nil), (int) self.selectedList.count] withDisplayColor:LMBasicGreen];
-
+        
     } else {
         [self setRightBarButtonItemWithEnable:NO withDispalyString:LMLocalizedString(@"Wallet Transfer", nil) withDisplayColor:[UIColor colorWithWhite:1.0 alpha:0.5]];
     }
-}
 
+}
 - (void)transferBtnClicked:(UIButton *)btn {
     __weak typeof(self) weakSelf = self;
     if (self.selectedList.count == 0) {
@@ -217,12 +229,15 @@ static NSString *friends = @"friends";
     [self.navigationController pushViewController:transfer animated:YES];
 }
 -(void)dealloc {
+    
     [self.selectedList removeAllObjects];
     self.selectedList = nil;
-    [self.sectionIndexArr removeAllObjects];
-    self.sectionIndexArr = nil;
+    [self.sectionArr removeAllObjects];
+    self.sectionArr = nil;
     [self.dataArr removeAllObjects];
     self.dataArr = nil;
+    [self.alphaArr removeAllObjects];
+    self.alphaArr = nil;
 
 }
 @end

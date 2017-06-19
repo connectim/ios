@@ -38,9 +38,16 @@
 
 // get currrent version
 +( NSString*)currentVersion;
-//Get the device model (eg iphone7)
+// Get the device model (eg iphone7)
 + (NSString *)getCurrentDeviceModel;
-//get indexs array
+// get indexs array
 + (NSMutableArray *)getIndexArray:(NSMutableArray *)groupArray;
+// get accordingTheChineseAndEnglishNameToGenerateAlphabet array
++ (NSArray *)accordingTheChineseAndEnglishNameToGenerateAlphabet:(NSMutableArray *)contactArray;
+// preIsInAtoZ
++ (BOOL)preIsInAtoZ:(NSString *)str;
+// nameIsAlphabeticalAscending
++ (NSMutableArray *)nameIsAlphabeticalAscending:(NSMutableArray *)contactArray withAlphaArr:(NSMutableArray *)alphaArray;
+
 
 @end
