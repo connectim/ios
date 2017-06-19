@@ -66,10 +66,6 @@
  *
  */
 - (NSMutableArray *)getListGroupsFriend:(AccountInfo *)shareContact;
-/**
- *  get Friends Arr No Connect，include contacts,Group members, not including connect
- *
- */
-- (NSMutableArray *)getFriendsArrWithArray:(NSArray *)selectArray;
+
 
 @end

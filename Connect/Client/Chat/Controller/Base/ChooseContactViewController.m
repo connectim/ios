@@ -18,13 +18,17 @@
 @interface ChooseContactViewController () <UITableViewDelegate, UITableViewDataSource>
 
 @property(copy, nonatomic) ChooseContactComplete complete;
+@property(nonatomic, strong) NSArray *contacts;
 
 @property(nonatomic, strong) NSMutableArray *groups;
+
 @property(nonatomic, strong) NSMutableArray *indexs;
-@property(nonatomic, strong) UITableView *tableView;
+
 @property(nonatomic, strong) NSMutableArray *selectedContacts;
+
 @property(nonatomic, strong) NSArray *selectedUsers;
 
+@property(nonatomic, strong) UITableView *tableView;
 
 @end
 
@@ -51,11 +55,22 @@
     [self setUpUI];
     
     [MBProgressHUD showLoadingMessageToView:self.view];
-    [GCDQueue executeInGlobalQueue:^{
-        self.groups = [[LMLinkManDataManager sharedManager] getFriendsArrWithArray:self.selectedUsers];
-        self.indexs = [MMGlobal getIndexArray:self.groups];
+    [[UserDBManager sharedManager] getAllUsersNoConnectWithComplete:^(NSArray *contacts) {
         [GCDQueue executeInMainQueue:^{
             [MBProgressHUD hideHUDForView:self.view];
+        }];
+        
+        self.contacts = contacts;
+        //set data
+        for (AccountInfo *selectedInfo in self.selectedUsers) {
+            for (AccountInfo *info in self.contacts) {
+                if ([selectedInfo.address isEqualToString:info.address]) {
+                    info.isThisGroupMember = YES;
+                    break;
+                }
+            }
+        }
+        [GCDQueue executeInMainQueue:^{
             [self.tableView reloadData];
         }];
     }];
@@ -84,6 +99,30 @@
     }
     [self dismissViewControllerAnimated:YES completion:nil];
 }
+- (NSMutableArray *)groups {
+    if (self.contacts.count <= 0) {
+        return nil;
+    }
+    if (!_groups) {
+        _groups = [NSMutableArray array];
+        [_groups addObjectsFromArray: [MMGlobal getGroupsArray:self.indexs withContactArray:self.contacts.mutableCopy]];
+    }
+    return _groups;
+}
+
+- (NSMutableArray *)indexs {
+    if (self.contacts.count <= 0) {
+        return nil;
+    }
+    if (!_indexs) {
+        _indexs = [NSMutableArray array];
+        [_indexs addObjectsFromArray:[MMGlobal getIndexsWith:self.contacts.mutableCopy]];
+        if (_indexs.count <= 0) {
+            _indexs = nil;
+        }
+    }
+    return _indexs;
+}
 #pragma mark - Table view data source
 
 
@@ -92,9 +131,8 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    NSMutableDictionary *dic = self.groups[section];
-    NSMutableArray *array = dic[@"items"];
-    return array.count;
+    CellGroup *group = self.groups[section];
+    return group.items.count;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -107,16 +145,16 @@
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
     ConnectTableHeaderView *hearderView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:@"ConnectTableHeaderViewID"];
-    hearderView.customTitle.text = [self.groups[section] valueForKey:@"title"];
-    NSString *titleIcon = [self.groups[section] valueForKey:@"titleicon"];
-    hearderView.customIcon = titleIcon;
+    CellGroup *group = self.groups[section];
+    hearderView.customTitle.text = group.headTitle;
     return hearderView;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 
+    CellGroup *group = self.groups[indexPath.section];
     ChooseContactCell *cell = [tableView dequeueReusableCellWithIdentifier:@"ChooseContactCellID" forIndexPath:indexPath];
-    AccountInfo *contact = self.groups[indexPath.section][@"items"][indexPath.row];
+    AccountInfo *contact = group.items[indexPath.row];
     cell.checkBoxView.on = contact.isThisGroupMember;
     cell.userInteractionEnabled = !contact.isThisGroupMember;
     cell.data = contact;
@@ -126,11 +164,12 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    
     ChooseContactCell *cell = [tableView cellForRowAtIndexPath:indexPath];
     [cell.checkBoxView setOn:!cell.checkBoxView.on animated:YES];
-    AccountInfo *contact = self.groups[indexPath.section][@"items"][indexPath.row];
+    CellGroup *group = self.groups[indexPath.section];
+    AccountInfo *contact = group.items[indexPath.row];
     contact.isThisGroupMember = !contact.isThisGroupMember;
+    
     if (cell.checkBoxView.on) {
         if (![self.selectedContacts containsObject:contact]) {
             [self.selectedContacts objectAddObject:contact];
@@ -149,19 +188,6 @@
 }
 #pragma mark -lazy
 
-- (NSMutableArray *)groups {
-    if (!_groups) {
-        self.groups = [NSMutableArray array];
-    }
-    return _groups;
-}
-
-- (NSMutableArray *)indexs {
-    if (!_indexs) {
-        self.indexs = [NSMutableArray array];
-    }
-    return _indexs;
-}
 - (NSArray *)selectedUsers {
     if (!_selectedUsers) {
         self.selectedUsers = [NSArray array];
@@ -197,6 +223,7 @@
     self.selectedUsers = nil;
     [self.selectedContacts removeAllObjects];
     self.selectedContacts = nil;
+    self.contacts = nil;
 }
 
 @end

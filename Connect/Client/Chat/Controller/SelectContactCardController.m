@@ -67,10 +67,8 @@
             if (currentUser) {
                 [users removeObject:currentUser];
             }
-            _friendsArr = users;
-        } else {
-            _friendsArr = users;
         }
+        _friendsArr = users;
         [GCDQueue executeInMainQueue:^{
             [MBProgressHUD hideHUDForView:weakSelf.view];
             [weakSelf.tableView reloadData];

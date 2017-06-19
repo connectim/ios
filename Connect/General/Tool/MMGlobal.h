@@ -48,6 +48,9 @@
 + (BOOL)preIsInAtoZ:(NSString *)str;
 // nameIsAlphabeticalAscending
 + (NSMutableArray *)nameIsAlphabeticalAscending:(NSMutableArray *)contactArray withAlphaArr:(NSMutableArray *)alphaArray;
-
+// getGroupsArray
++ (NSMutableArray *)getGroupsArray:(NSMutableArray *)indexs withContactArray:(NSMutableArray *)contactArray;
+//getIndexsWith
++ (NSMutableArray *)getIndexsWith:(NSMutableArray *)contactArray;
 
 @end

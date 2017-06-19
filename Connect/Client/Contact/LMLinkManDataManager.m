@@ -241,42 +241,6 @@ CREATE_SHARED_MANAGER(LMLinkManDataManager)
     }
     return prex;
 }
-- (NSMutableArray *)getFriendsArrWithArray:(NSArray *)selectArray {
-    if ( self.friendsArr.count <= 1) {
-        return nil;
-    }
-    NSMutableArray *temGroupArray = [NSMutableArray array];
-    for (NSInteger index = 1; index < self.groupsFriend.count;index++) {
-        
-        NSMutableArray *temCommonArray = [NSMutableArray array];
-        NSMutableDictionary * dic = [self.groupsFriend[index] mutableCopy];
-        NSMutableArray *temArray = [dic[@"items"] mutableCopy];
-        NSString *temTitle = dic[@"title"];
-        if ([dic[@"title"] isEqualToString:LMLocalizedString(@"Link Group Common", nil)]) {
-            continue;
-        }
-        if ([temTitle isEqualToString:@"C"]) {
-            if (temArray.count <= 1 ) {
-                continue;
-            }
-        }
-        for (AccountInfo *info in temArray) {
-            if (![info.pub_key isEqualToString:kSystemIdendifier]) {
-                if ([selectArray containsObject:info]) {
-                    info.isThisGroupMember = YES;
-                }else {
-                    info.isThisGroupMember = NO;
-                }
-                [temCommonArray addObject:[info mutableCopy]];
-            }
-        }
-        if (temCommonArray.count > 0) {
-            dic[@"items"] = temCommonArray;
-        }
-        [temGroupArray addObject:dic];
-    }
-    return temGroupArray;
-}
 - (void)clearArrays {
 
     [self.friendsArr removeAllObjects];

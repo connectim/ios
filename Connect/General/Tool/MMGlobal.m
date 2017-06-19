@@ -7,6 +7,7 @@
 //
 
 #import "MMGlobal.h"
+#import "CellGroup.h"
 #import "FxFileUtility.h"
 #import "NSString+Pinyin.h"
 #include <sys/types.h>
@@ -269,6 +270,67 @@
         [secArray objectAddObject:sectionArr];
     }
     return secArray;
+}
++ (NSMutableArray *)getGroupsArray:(NSMutableArray *)indexs withContactArray:(NSMutableArray *)contactArray {
+    NSMutableArray *items = nil;
+    NSMutableArray *temArray = [NSMutableArray array];
+    for (NSString *prex in indexs) {
+        CellGroup *group = [[CellGroup alloc] init];
+        group.headTitle = prex;
+        items = [NSMutableArray array];
+        for (AccountInfo *contact in contactArray) {
+            NSString *name = @"";
+            if (contact.remarks && contact.remarks.length > 0) {
+                name = contact.remarks;
+            } else {
+                name = contact.username;
+            }
+            NSString *namePiny = [[name transformToPinyin] uppercaseString];
+            if (namePiny.length <= 0) {
+                continue;
+            }
+            NSString *pinYPrex = [namePiny substringToIndex:1];
+            if (![MMGlobal preIsInAtoZ:pinYPrex]) {
+                namePiny = [namePiny stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@"#"];
+            }
+            if ([namePiny hasPrefix:prex]) {
+                [items objectAddObject:contact];
+            }
+        }
+        group.items = [NSArray arrayWithArray:items];
+        [temArray objectAddObject:group];
+    }
+    return temArray;
+}
++ (NSMutableArray *)getIndexsWith:(NSMutableArray *)contactArray {
+    NSMutableArray *temArray = [NSMutableArray array];
+    for (AccountInfo *contact in contactArray) {
+        NSString *prex = @"";
+        NSString *name = contact.username;
+        if (name.length <= 0) {
+            continue;
+        }
+        prex = [[name transformToPinyin] substringToIndex:1];
+        if ([MMGlobal preIsInAtoZ:prex]) {
+            [temArray objectAddObject:[prex uppercaseString]];
+        } else {
+            [temArray addObject:@"#"];
+        }
+        NSMutableSet *set = [NSMutableSet set];
+        for (NSObject *obj in temArray) {
+            [set addObject:obj];
+        }
+        [temArray removeAllObjects];
+        for (NSObject *obj in set) {
+            [temArray objectAddObject:obj];
+        }
+        [temArray sortUsingComparator:^NSComparisonResult(id _Nonnull obj1, id _Nonnull obj2) {
+            NSString *str1 = obj1;
+            NSString *str2 = obj2;
+            return [str1 compare:str2];
+        }];
+    }
+    return temArray;
 }
 + (BOOL)preIsInAtoZ:(NSString *)str {
     return [@"QWERTYUIOPLKJHGFDSAZXCVBNM" containsString:str] || [[@"QWERTYUIOPLKJHGFDSAZXCVBNM" lowercaseString] containsString:str];
