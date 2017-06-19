@@ -286,7 +286,7 @@ CREATE_SHARED_MANAGER(LMLinkManDataManager)
         NSMutableDictionary * dic = [self.groupsFriend[index] mutableCopy];
         NSMutableArray *temArray = [dic[@"items"] mutableCopy];
         NSString *temTitle = dic[@"title"];
-        if ([dic[@"title"] isEqualToString:LMLocalizedString(@"Link Group Common", nil)]|| [dic[@"title"] isEqualToString:LMLocalizedString(@"Link Favorite Friend", nil)]) {
+        if ([dic[@"title"] isEqualToString:LMLocalizedString(@"Link Group Common", nil)]) {
             continue;
         }
         if ([temTitle isEqualToString:@"C"]) {
@@ -298,6 +298,8 @@ CREATE_SHARED_MANAGER(LMLinkManDataManager)
             if (![info.pub_key isEqualToString:kSystemIdendifier]) {
                 if ([selectArray containsObject:info]) {
                     info.isThisGroupMember = YES;
+                }else {
+                    info.isThisGroupMember = NO;
                 }
                 [temCommonArray addObject:[info mutableCopy]];
             }
