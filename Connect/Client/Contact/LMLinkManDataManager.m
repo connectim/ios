@@ -146,7 +146,7 @@ CREATE_SHARED_MANAGER(LMLinkManDataManager)
 - (NSMutableArray *)getListIndexs {
     return self.indexs;
 }
-- (NSMutableArray *)getListGroupsFriend:(AccountInfo *)shareContact withTag:(BOOL)flag {
+- (NSMutableArray *)getListGroupsFriend:(AccountInfo *)shareContact {
     
     if (shareContact.address.length <= 0 || self.groupsFriend.count <= 1) {
         return nil;
@@ -187,9 +187,7 @@ CREATE_SHARED_MANAGER(LMLinkManDataManager)
                 }
             }
         }
-        if (!([temTitle isEqualToString:LMLocalizedString(@"Link Group Common", nil)] && flag)) {
-           [temGroupArray addObject:dic];
-        }
+         [temGroupArray addObject:dic];
      }
     return temGroupArray;
 
@@ -242,38 +240,6 @@ CREATE_SHARED_MANAGER(LMLinkManDataManager)
         prex = @"#";
     }
     return prex;
-}
-- (NSMutableArray *)getFriendsArrWithNoConnect {
-    if ( self.friendsArr.count <= 1) {
-        return nil;
-    }
-    NSMutableArray *temGroupArray = [NSMutableArray array];
-    for (NSInteger index = 1; index < self.groupsFriend.count;index++) {
-        
-        NSMutableArray *temCommonArray = [NSMutableArray array];
-        NSMutableDictionary * dic = [self.groupsFriend[index] mutableCopy];
-        NSMutableArray *temArray = [dic[@"items"] mutableCopy];
-        NSString *temTitle = dic[@"title"];
-        if ([dic[@"title"] isEqualToString:LMLocalizedString(@"Link Group Common", nil)]) {
-            continue;
-        }
-        if ([temTitle isEqualToString:@"C"]) {
-            if (temArray.count <= 1 ) {
-                continue;
-            }
-        }
-        for (AccountInfo *info in temArray) {
-            if (![info.pub_key isEqualToString:kSystemIdendifier]) {
-                [temCommonArray addObject:[info mutableCopy]];
-            }
-        }
-        if (temCommonArray.count > 0) {
-            dic[@"items"] = temCommonArray;
-        }
-         [temGroupArray addObject:dic];
-    }
-    return temGroupArray;
-
 }
 - (NSMutableArray *)getFriendsArrWithArray:(NSArray *)selectArray {
     if ( self.friendsArr.count <= 1) {

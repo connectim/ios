@@ -90,7 +90,7 @@
     self.title = LMLocalizedString(@"Link Share", nil);
     [self.view addSubview:self.tableView];
     [GCDQueue executeInGlobalQueue:^{
-        self.groupsFriendArray = [[LMLinkManDataManager sharedManager] getListGroupsFriend:self.contact withTag:NO];
+        self.groupsFriendArray = [[LMLinkManDataManager sharedManager] getListGroupsFriend:self.contact];
         self.indexsArray = [MMGlobal getIndexArray:self.groupsFriendArray];
         [GCDQueue executeInMainQueue:^{
             [self.tableView reloadData];
