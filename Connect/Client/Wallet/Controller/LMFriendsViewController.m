@@ -24,6 +24,8 @@
 
 @property(nonatomic, strong) NSMutableArray *sectionTitleArr;
 
+@property(nonatomic, strong) NSMutableArray *sectionIndexArr;
+
 @property(nonatomic, strong) UITableView *tableView;
 
 @property(nonatomic, strong) TransferButton *transferBtn;
@@ -52,7 +54,8 @@ static NSString *friends = @"friends";
     
     [GCDQueue executeInGlobalQueue:^{
             self.dataArr = [[LMLinkManDataManager sharedManager] getFriendsArrWithNoConnect];
-            self.sectionTitleArr = [MMGlobal getIndexArray:self.dataArr];
+            self.sectionTitleArr = [MMGlobal getTitleArray:self.dataArr];
+            self.sectionIndexArr = [MMGlobal getIndexArray:self.dataArr];
             [GCDQueue executeInMainQueue:^{
                 [MBProgressHUD hideHUDForView:weakSelf.view];
                 [weakSelf.tableView reloadData];
@@ -77,6 +80,13 @@ static NSString *friends = @"friends";
     }
     return _sectionTitleArr;
 }
+- (NSMutableArray *)sectionIndexArr {
+    if (!_sectionIndexArr) {
+        self.sectionIndexArr = [NSMutableArray array];
+    }
+    return _sectionIndexArr;
+}
+
 - (NSMutableArray *)selectedList {
     if (!_selectedList) {
         self.selectedList = [NSMutableArray array];
@@ -151,7 +161,7 @@ static NSString *friends = @"friends";
 }
 
 - (NSArray<NSString *> *)sectionIndexTitlesForTableView:(UITableView *)tableView {
-    return self.sectionTitleArr;
+    return self.sectionIndexArr;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index {

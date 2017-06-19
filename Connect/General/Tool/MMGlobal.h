@@ -42,5 +42,7 @@
 + (NSString *)getCurrentDeviceModel;
 //get indexs array
 + (NSMutableArray *)getIndexArray:(NSMutableArray *)groupArray;
+//get title array
++ (NSMutableArray *)getTitleArray:(NSMutableArray *)groupArray;
 
 @end
