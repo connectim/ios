@@ -29,5 +29,4 @@
 
 - (instancetype)initWithRetweetModel:(LMRerweetModel *)retweetModel;
 
-@property(assign, nonatomic) BOOL isFlagUserDetail;
 @end

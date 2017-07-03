@@ -7,6 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+typedef NS_ENUM(NSUInteger,SourceInfoType) {
+    SourceInfoViewTypeCommon    = 1,
+    SourceInfoViewTypeEncryPri  = 2
+    
+};
 
 @interface LocalUserInfoView : UIControl
 
@@ -21,5 +26,8 @@
 
 // hide sow
 @property(nonatomic, assign) BOOL hidenArrowView;
+
+@property(nonatomic, assign) SourceInfoType soureInfoType;
+
 
 @end

@@ -29,20 +29,27 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
     self.title = LMLocalizedString(@"Set Link Mobile", nil);
+    
+    [self setUpUI];
+    // refresh ui
+    [self reloadView];
+    RegisterNotify(LKUserCenterUserInfoUpdateNotification, @selector(reloadView));
 
 
+}
+- (void)setUpUI {
+    
     UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"setting_phone"]];
     [self.view addSubview:imageView];
     imageView.frame = AUTO_RECT(285, 280, 180, 288);
-
-    self.view.backgroundColor = XCColor(241, 241, 241);
-
-
+    
+    self.view.backgroundColor = LMBasicBackgroudGray;
+    
+    
     self.tipLabel = [[UILabel alloc] init];
     [self.view addSubview:self.tipLabel];
-
+    
     _tipLabel.font = [UIFont systemFontOfSize:FONT_SIZE(28)];
     _tipLabel.textAlignment = NSTextAlignmentCenter;
     [_tipLabel mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -51,7 +58,7 @@
         make.left.mas_equalTo(self.view).offset(10);
         make.right.mas_equalTo(self.view).offset(-10);
     }];
-
+    
     self.phoneLabel = [[UILabel alloc] init];
     [self.view addSubview:self.phoneLabel];
     _phoneLabel.font = [UIFont systemFontOfSize:FONT_SIZE(64)];
@@ -62,12 +69,12 @@
         make.left.mas_equalTo(self.view).offset(10);
         make.right.mas_equalTo(self.view).offset(-10);
     }];
-
+    
     self.boundPhoneButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [self.boundPhoneButton addTarget:self action:@selector(boundNewPhone) forControlEvents:UIControlEventTouchUpInside];
     self.boundPhoneButton.layer.masksToBounds = YES;
     self.boundPhoneButton.layer.cornerRadius = 5;
-    self.boundPhoneButton.backgroundColor = GJCFQuickHexColor(@"00C400");
+    self.boundPhoneButton.backgroundColor = LMBasicGreen;
     [self.boundPhoneButton setTitle:LMLocalizedString(@"Set Change Mobile", nil) forState:UIControlStateNormal];
     _boundPhoneButton.width = AUTO_WIDTH(700);
     _boundPhoneButton.height = AUTO_HEIGHT(100);
@@ -75,14 +82,7 @@
     _boundPhoneButton.bottom = DEVICE_SIZE.height - AUTO_HEIGHT(400);
     [self.view addSubview:self.boundPhoneButton];
 
-
-    // refresh ui
-    [self reloadView];
-    RegisterNotify(LKUserCenterUserInfoUpdateNotification, @selector(reloadView));
-
-
 }
-
 - (void)dealloc {
     RemoveNofify;
 }
@@ -176,7 +176,13 @@
     NSArray *codePhone = [self.phoneNum componentsSeparatedByString:@"-"];
     NSString *phone = [codePhone lastObject];
     NSString *code = [codePhone firstObject];
-
+    // add judge
+    if ([self.phoneNum containsString:@"**"]) {
+       codePhone = [self.phoneNum componentsSeparatedByString:@"**"];
+       phone = [codePhone lastObject];
+       code = [codePhone firstObject];
+    }
+    
     MobileVerify *setMobile = [[MobileVerify alloc] init];
     setMobile.countryCode = [code intValue];
     setMobile.number = phone;
@@ -206,6 +212,9 @@
         }];
 
     }                                  fail:^(NSError *error) {
+        [GCDQueue executeInMainQueue:^{
+            [MBProgressHUD showToastwithText:LMLocalizedString(@"Network Server error", nil) withType:ToastTypeFail showInView:weakSelf.view complete:nil];
+        }];
     }];
 }
 

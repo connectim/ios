@@ -370,15 +370,9 @@
 
         }
             break;
-        case ButtonTypeMessage:  // message
-        {
-
-        }
-            break;
         case ButtonTypeShare:  // share
         {
             ReconmandChatListPage *page = [[ReconmandChatListPage alloc] initWithRecommandContact:self.user];
-            page.isFlagUserDetail = YES;
             [self presentViewController:[[UINavigationController alloc] initWithRootViewController:page] animated:YES completion:nil];
         }
             break;

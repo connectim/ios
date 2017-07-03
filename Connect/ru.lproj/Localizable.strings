@@ -445,7 +445,8 @@
 "Network"="Вид сети";
 "Network Image loading failed"="Сбой загрузки изображения";
 "Network No data"="Нет данных";
-"Network Server error"="Ошибка сервера";
+"Network Server error"="Ошибка сервера, пожалуйста, повторите попытку позже";
+"Network The request has expired"="Запрос истекло";
 "Network Timeout"="Время ожидания истекло ";
 "Network equest failed please try again later"="При сбое, просьба  повторить попытку через минуту";
 "Set"="Вид установки";
@@ -492,6 +493,7 @@
 "Set Link Mobile"="Привязать телефон";
 "Set Load failed please try again later"="Сбой при загрузке, просьба повторить попытку позже";
 "Set Log Out"="Выйти из учетной записи";
+"Set Log Out Fail"="Выход выходит из строя, проверьте сеть";
 "Set Logging out"="Выход...";
 "Set Logout delete login data still log"="При выходе будут удалены данные регистрации и пароль-рисунок, Вы по-прежнему хотите выйти с этой учетной записи?";
 "Set Miner fee"="Комиссионный сбор";

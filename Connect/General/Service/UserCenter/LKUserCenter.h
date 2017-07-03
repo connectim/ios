@@ -10,12 +10,6 @@
 
 #import "AccountInfo.h"
 
-#define LKUserCenterLoginStatusNoti @"LKUserCenterLoginStatusNoti"
-
-#define LKUserCenterLoginFailNoti @"LKUserCenterLoginFailNoti"
-
-#define LKUserCenterUserInfoUpdateNotification @"LKUserCenterUserInfoUpdateNotification"
-
 typedef void (^LKUserCenterLoginCompleteBlock)(NSString *privkey,NSError *error);
 
 @interface LKUserCenter : NSObject

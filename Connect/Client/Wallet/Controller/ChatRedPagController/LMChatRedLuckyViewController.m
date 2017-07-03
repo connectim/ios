@@ -17,23 +17,28 @@
 #import "LMPayCheck.h"
 
 @interface LMChatRedLuckyViewController () <UITextFieldDelegate>
-@property(nonatomic, copy) NSString *reciverIdentifier;         // User address or group ID
-
-@property(nonatomic, strong) UILabel *BalanceLabel;     // Wallet balance
-
-@property(nonatomic, strong) UILabel *titleLabel;     // title label
-@property(nonatomic, strong) LMRedLuckyShowView *showView;       // Red envelope animation view
-@property(nonatomic, strong) UIImageView *avatarIcon;      // Avatar
-@property(nonatomic, strong) UILabel *nameLabel;       // name
-
-@property(nonatomic, strong) PaddingTextField *numField; // Number of red envelopes
-
-@property(nonatomic, strong) UIView *numberOfRedLuckyView; // Number of input boxes
-
-@property(nonatomic, strong) TransferInputView *inputAmountView; // view
+// User address or group ID
+@property(nonatomic, copy) NSString *reciverIdentifier;
+// Wallet balance
+@property(nonatomic, strong) UILabel *BalanceLabel;
+// title label
+@property(nonatomic, strong) UILabel *titleLabel;
+// Red envelope animation view
+@property(nonatomic, strong) LMRedLuckyShowView *showView;
+// Avatar
+@property(nonatomic, strong) UIImageView *avatarIcon;
+// name
+@property(nonatomic, strong) UILabel *nameLabel;
+// Number of red envelopes
+@property(nonatomic, strong) PaddingTextField *numField;
+// Number of input boxes
+@property(nonatomic, strong) UIView *numberOfRedLuckyView;
+// view
+@property(nonatomic, strong) TransferInputView *inputAmountView;
 // The value of uilable on numField
 @property(strong, nonatomic) UILabel *disPlayLable;
-
+// title
+@property(copy, nonatomic) NSString *navTitleString;
 @end
 
 @implementation LMChatRedLuckyViewController
@@ -56,10 +61,20 @@
 - (void)viewDidLoad {
 
     [super viewDidLoad];
-    NSString *navTitleString;
-    navTitleString = LMLocalizedString(@"Wallet Packet", nil);
+    
+    [self setUpUiWithStyle];
+    [self setUpRightButtomItem];
+    [self setUpElementsWithTransferView];
+    [self navigationConfigureWithTitleString:self.navTitleString];
+    [self initTabelViewCell];
+    self.ainfo = [[LKUserCenter shareCenter] currentLoginUser];
+    
+}
+- (void)setUpUiWithStyle {
+    
+    self.navTitleString = LMLocalizedString(@"Wallet Packet", nil);
     if (_style == LMChatRedLuckyStyleOutRedBag) {
-        navTitleString = LMLocalizedString(@"Wallet Sent via link luck packet", nil);
+        self.navTitleString = LMLocalizedString(@"Wallet Sent via link luck packet", nil);
     }
     if (_style == LMChatRedLuckyStyleGroup || _style == LMChatRedLuckyStyleOutRedBag) {
         // If it is a group of red envelopes, you need a red envelope view and change the transfer view location
@@ -72,14 +87,10 @@
     } else {
         [self setWhitefBackArrowItem];
     }
-    [self setUpRightButtomItem];
-    [self setUpElementsWithTransferView];
-    [self navigationConfigureWithTitleString:navTitleString];
-    [self initTabelViewCell];
-    self.ainfo = [[LKUserCenter shareCenter] currentLoginUser];
-}
 
+}
 - (void)setUpRightButtomItem {
+    
     self.navigationItem.rightBarButtonItems = nil;
     UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
     NSString *nameString = LMLocalizedString(@"Chat History", nil);
@@ -94,6 +105,7 @@
     button.height = 44;
     [button addTarget:self action:@selector(doRight:) forControlEvents:UIControlEventTouchUpInside];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:button];
+    
 }
 
 - (void)doRight:(id)sender {
@@ -202,7 +214,7 @@
     UILabel *name = [[UILabel alloc] initWithFrame:CGRectMake(0.f, 0.f, 50.f, 30.f)];
     [name setTextAlignment:NSTextAlignmentCenter];
     [name setFont:[UIFont systemFontOfSize:14.f]];
-    [name setTextColor:[UIColor colorWithHexString:@"161A21"]];
+    name.textColor = LMBasicBlack;
     [name setText:[NSString stringWithFormat:LMLocalizedString(@"Wallet Send Lucky Packet to", nil), _userInfo.username]];
     _nameLabel = name;
     [self.view addSubview:_nameLabel];
@@ -238,7 +250,7 @@
     [self.BalanceLabel addGestureRecognizer:tapBalance];
     self.BalanceLabel.userInteractionEnabled = YES;
     
-    self.BalanceLabel.textColor = [UIColor colorWithHexString:@"38425F"];
+    self.BalanceLabel.textColor = LMBasicBlanceBtnTitleColor;
     self.BalanceLabel.font = [UIFont systemFontOfSize:FONT_SIZE(28)];
     self.BalanceLabel.textAlignment = NSTextAlignmentCenter;
     self.BalanceLabel.backgroundColor = self.view.backgroundColor;
@@ -330,7 +342,8 @@
         self.numField.text = [self.numField.text substringToIndex:2];
     }
     int size = [self.numField.text intValue];
-    self.comfrimButton.enabled = size > 0;
+    NSString *numValue = self.inputAmountView.inputTextField.text;
+    self.comfrimButton.enabled = (size > 0 && [numValue floatValue] > MIN_TRANSFER_AMOUNT);
 }
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {

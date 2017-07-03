@@ -11,14 +11,14 @@
 #import "ConnectTableHeaderView.h"
 #import "LinkmanFriendCell.h"
 #import "UserDBManager.h"
+#import "LMLinkManDataManager.h"
 
 
 @interface SelectContactCardController ()
 
-@property(nonatomic, strong) NSMutableArray *friendsArr;
 @property(nonatomic, strong) NSMutableArray *groupsFriend;
 @property(nonatomic, strong) NSMutableArray *indexs;
-
+@property(nonatomic, strong) NSMutableArray *friendsArr;
 @property(nonatomic, copy) void (^SelectContactComplete)(AccountInfo *user);
 @property(nonatomic, copy) void (^Cancel)();
 
@@ -37,22 +37,19 @@
 
         self.publicKey = name;
     }
-
     return self;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
+    
+    self.navigationItem.leftBarButtonItems = nil;
+    [self setNavigationLeftWithTitle:LMLocalizedString(@"Common Cancel", nil)];
     [self configTableView];
 
-    self.navigationItem.leftBarButtonItems = nil;
-
-    [self setNavigationLeftWithTitle:LMLocalizedString(@"Common Cancel", nil)];
-
     self.title = LMLocalizedString(@"Chat Send a namecard", nil);
-    __weak typeof(self) weakSelf = self;
-
+    
+    __weak typeof(self)weakSelf = self;
     [GCDQueue executeInMainQueue:^{
         [MBProgressHUD showLoadingMessageToView:weakSelf.view];
     }];
@@ -70,15 +67,13 @@
             if (currentUser) {
                 [users removeObject:currentUser];
             }
-            _friendsArr = users;
-        } else {
-            _friendsArr = users;
         }
+        _friendsArr = users;
         [GCDQueue executeInMainQueue:^{
             [MBProgressHUD hideHUDForView:weakSelf.view];
             [weakSelf.tableView reloadData];
         }];
-
+        
     }];
 }
 
@@ -93,6 +88,81 @@
     self.tableView.sectionIndexColor = [UIColor lightGrayColor];
     self.tableView.sectionIndexBackgroundColor = [UIColor clearColor];
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+}
+- (NSMutableArray *)groupsFriend {
+    if (self.friendsArr.count <= 0) {
+        return nil;
+    }
+    if (!_groupsFriend) {
+        _groupsFriend = [NSMutableArray array];
+        NSMutableDictionary *group = nil;
+        NSMutableArray *items = nil;
+        for (NSString *prex in self.indexs) {
+            group = [NSMutableDictionary dictionary];
+            items = @[].mutableCopy;
+            group[@"title"] = prex;
+            for (AccountInfo *info in self.friendsArr) {
+                NSString *name = @"";
+                if (info.remarks && info.remarks.length > 0) {
+                    name = info.remarks;
+                } else {
+                    name = info.username;
+                }
+                NSString *pinY = [name transformToPinyin];
+                NSString *pinYPrex = [pinY substringToIndex:1];
+                if (![MMGlobal preIsInAtoZ:pinYPrex]) {
+                    pinY = [pinY stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@"#"];
+                }
+                if ([[pinY uppercaseString] hasPrefix:prex]) {
+                    [items objectAddObject:info];
+                }
+            }
+            group[@"items"] = items;
+            [_groupsFriend objectAddObject:group];
+        }
+    }
+    return _groupsFriend;
+}
+- (NSMutableArray *)indexs {
+    if (self.friendsArr.count <= 0) {
+        return nil;
+    }
+    if (!_indexs) {
+        
+        _indexs = [NSMutableArray array];
+        
+        for (AccountInfo *info in self.friendsArr) {
+            NSString *prex = @"";
+            NSString *name = @"";
+            if (info.remarks && info.remarks.length > 0) {
+                name = info.remarks;
+            } else {
+                name = info.username;
+            }
+            prex = [[name transformToPinyin] substringToIndex:1];
+            if ([MMGlobal preIsInAtoZ:prex]) {
+                [_indexs addObject:[prex uppercaseString]];
+            } else {
+                [_indexs addObject:@"#"];
+            }
+            NSMutableSet *set = [NSMutableSet set];
+            for (NSObject *obj in _indexs) {
+                [set addObject:obj];
+            }
+            [_indexs removeAllObjects];
+            for (NSObject *obj in set) {
+                [_indexs addObject:obj];
+            }
+            [_indexs sortUsingComparator:^NSComparisonResult(id _Nonnull obj1, id _Nonnull obj2) {
+                NSString *str1 = obj1;
+                NSString *str2 = obj2;
+                return [str1 compare:str2];
+            }];
+        }
+        
+    }
+    
+    return _indexs;
 }
 
 
@@ -118,7 +188,7 @@
 
 - (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
     ConnectTableHeaderView *hearderView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:@"ConnectTableHeaderViewID"];
-
+    
     hearderView.customTitle.text = [self.groupsFriend[section] valueForKey:@"title"];
     NSString *titleIcon = [self.groupsFriend[section] valueForKey:@"titleicon"];
     hearderView.customIcon = titleIcon;
@@ -135,111 +205,29 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-
+    
     AccountInfo *user = self.groupsFriend[indexPath.section][@"items"][indexPath.row];
-
     __weak __typeof(&*self) weakSelf = self;
     [self dismissViewControllerAnimated:YES completion:^{
         if (weakSelf.SelectContactComplete) {
             weakSelf.SelectContactComplete(user);
         }
-
     }];
 }
 
-
 #pragma mark - getter setter
-
-- (NSMutableArray *)indexs {
-    if (self.friendsArr.count <= 0) {
-        return nil;
-    }
-    if (!_indexs) {
-
-        _indexs = [NSMutableArray array];
-
-        for (AccountInfo *info in self.friendsArr) {
-            NSString *prex = @"";
-            NSString *name = @"";
-            if (info.remarks && info.remarks.length > 0) {
-                name = info.remarks;
-            } else {
-                name = info.username;
-            }
-            prex = [[name transformToPinyin] substringToIndex:1];
-            if ([self preIsInAtoZ:prex]) {
-                [_indexs addObject:[prex uppercaseString]];
-            } else {
-                [_indexs addObject:@"#"];
-            }
-            NSMutableSet *set = [NSMutableSet set];
-            for (NSObject *obj in _indexs) {
-                [set addObject:obj];
-            }
-            [_indexs removeAllObjects];
-            for (NSObject *obj in set) {
-                [_indexs addObject:obj];
-            }
-            [_indexs sortUsingComparator:^NSComparisonResult(id _Nonnull obj1, id _Nonnull obj2) {
-                NSString *str1 = obj1;
-                NSString *str2 = obj2;
-                return [str1 compare:str2];
-            }];
-        }
-
-    }
-
-    return _indexs;
-}
-
-
-- (NSMutableArray *)groupsFriend {
-    if (self.friendsArr.count <= 0) {
-        return nil;
-    }
-    if (!_groupsFriend) {
-        _groupsFriend = [NSMutableArray array];
-        NSMutableDictionary *group = nil;
-        NSMutableArray *items = nil;
-        for (NSString *prex in self.indexs) {
-            group = [NSMutableDictionary dictionary];
-            items = @[].mutableCopy;
-            group[@"title"] = prex;
-            for (AccountInfo *info in self.friendsArr) {
-                NSString *name = @"";
-                if (info.remarks && info.remarks.length > 0) {
-                    name = info.remarks;
-                } else {
-                    name = info.username;
-                }
-                NSString *pinY = [name transformToPinyin];
-                NSString *pinYPrex = [pinY substringToIndex:1];
-                if (![self preIsInAtoZ:pinYPrex]) {
-                    pinY = [pinY stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@"#"];
-                }
-                if ([[pinY uppercaseString] hasPrefix:prex]) {
-                    [items objectAddObject:info];
-                }
-            }
-            group[@"items"] = items;
-            [_groupsFriend objectAddObject:group];
-        }
-    }
-    return _groupsFriend;
-}
-
 - (NSMutableArray *)friendsArr {
     if (!_friendsArr) {
         _friendsArr = [NSMutableArray array];
     }
     return _friendsArr;
 }
-
-#pragma mark - privkey Method
-
-- (BOOL)preIsInAtoZ:(NSString *)str {
-    return [@"QWERTYUIOPLKJHGFDSAZXCVBNM" containsString:str] || [[@"QWERTYUIOPLKJHGFDSAZXCVBNM" lowercaseString] containsString:str];
+-(void)dealloc {
+    [self.groupsFriend removeAllObjects];
+    self.groupsFriend = nil;
+    [self.indexs removeAllObjects];
+    self.indexs = nil;
+    [self.friendsArr removeAllObjects];
+    self.friendsArr = nil;
 }
-
-
 @end

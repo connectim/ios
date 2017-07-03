@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-
+#import "LMNumberTextField.h"
 
 typedef void (^TransferInputResultBlock)(NSDecimalNumber *btcMoney, NSString *note);
 
@@ -33,6 +33,8 @@ typedef void (^TransferInputValueLagelBlock)(BOOL lagel);
 @property(nonatomic, assign) BOOL isHidenFee;
 // The top of the label
 @property(weak, nonatomic) IBOutlet UILabel *typeLabel;
+// inputTextField
+@property(weak, nonatomic) IBOutlet LMNumberTextField *inputTextField;
 
 // call block
 - (void)executeBlock;

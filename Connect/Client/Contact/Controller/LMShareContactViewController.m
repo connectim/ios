@@ -91,7 +91,7 @@
     [self.view addSubview:self.tableView];
     [GCDQueue executeInGlobalQueue:^{
         self.groupsFriendArray = [[LMLinkManDataManager sharedManager] getListGroupsFriend:self.contact];
-        self.indexsArray = [self getIndexArray:self.groupsFriendArray];
+        self.indexsArray = [MMGlobal getIndexArray:self.groupsFriendArray];
         [GCDQueue executeInMainQueue:^{
             [self.tableView reloadData];
         }];
@@ -171,18 +171,6 @@
     [alertController addAction:okAction];
     alertController.automaticallyAdjustsScrollViewInsets = NO;
     [self presentViewController:alertController animated:YES completion:nil];
-}
-- (NSMutableArray *)getIndexArray:(NSMutableArray *)groupArray {
-    if (groupArray.count <= 0) {
-        return nil;
-    }
-    NSMutableArray *temArray = [NSMutableArray array];
-    for (NSMutableDictionary* dic in groupArray) {
-        if ([RegexKit isNotChinsesWithUrl:dic[@"title"]]) {
-            [temArray addObject:dic[@"title"]];
-        }
-    }
-    return temArray;
 }
 - (void)sendShareCardMessageWithChat:(id)data {
 

@@ -120,3 +120,9 @@ extern NSString *const DeleteMessageHistoryNotification;
 extern NSString *const RereweetMessageNotification;
 
 extern NSString *const DeleteGroupReviewedMessageNotification;
+// LKUserCenterLoginStatusNoti
+extern NSString *const LKUserCenterLoginStatusNoti;
+// LKUserCenterLoginFailNoti
+extern NSString *const LKUserCenterLoginFailNoti;
+// LKUserCenterUserInfoUpdateNotification
+extern NSString *const LKUserCenterUserInfoUpdateNotification;

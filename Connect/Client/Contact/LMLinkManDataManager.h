@@ -61,17 +61,11 @@
  *
  */
 - (void)clearUnreadCountWithType:(int)type;
-#pragma mark - The outside world needs the method to share in use
 /**
- *  get share contact
+ *  get share contact ,The outside world needs the method to share in use
  *
  */
 - (NSMutableArray *)getListGroupsFriend:(AccountInfo *)shareContact;
-#pragma mark - Externally provided method, select contact in use
-/**
- *  get Friends Arr No Connect
- *
- */
-- (NSMutableArray *)getFriendsArrWithNoConnect;
+
 
 @end

@@ -25,7 +25,6 @@
     [super viewDidLoad];
 
     self.title = LMLocalizedString(@"Set Change password", nil);
-
     [self setRightButtonWithTitle:LMLocalizedString(@"Set Save", nil)];
     self.rightBarBtn.enabled = NO;
 
@@ -42,10 +41,12 @@
     ChangeLoginPassword *changePass = [[ChangeLoginPassword alloc] init];
     changePass.encryptionPri = encodePrivkey;
     changePass.passwordHint = self.passTip;
+    
     [MBProgressHUD showLoadingMessageToView:self.view];
     [NetWorkOperationTool POSTWithUrlString:SetChangeLoginPass postProtoData:changePass.data complete:^(id response) {
         HttpResponse *hResponse = (HttpResponse *) response;
         if (hResponse.code == successCode) {
+            [LKUserCenter shareCenter].currentLoginUser.password_hint = self.passTip;
             [[MMAppSetting sharedSetting] saveUserToKeyChain:[[LKUserCenter shareCenter] currentLoginUser]];
             [GCDQueue executeInMainQueue:^{
                 [MBProgressHUD showToastwithText:LMLocalizedString(@"Login Save successful", nil) withType:ToastTypeSuccess showInView:self.view complete:^{
@@ -54,16 +55,12 @@
             }];
         } else {
             [GCDQueue executeInMainQueue:^{
-                [MBProgressHUD showToastwithText:LMLocalizedString(@"Network Server error", nil) withType:ToastTypeFail showInView:self.view complete:^{
-
-                }];
+                [MBProgressHUD showToastwithText:LMLocalizedString(@"Network Server error", nil) withType:ToastTypeFail showInView:self.view complete:nil];
             }];
         }
     }                                  fail:^(NSError *error) {
         [GCDQueue executeInMainQueue:^{
-            [MBProgressHUD showToastwithText:LMLocalizedString(@"Network Server error", nil) withType:ToastTypeFail showInView:self.view complete:^{
-
-            }];
+            [MBProgressHUD showToastwithText:LMLocalizedString(@"Network Server error", nil) withType:ToastTypeFail showInView:self.view complete:nil];
         }];
     }];
 }
@@ -77,7 +74,7 @@
 
 - (void)setupCellData {
     // zero group 
-    CellItem *newPass = [CellItem itemWithTitle:@"" type:CellItemTypeRoundTextField operation:nil];
+    CellItem *newPass = [CellItem itemWithTitle:nil type:CellItemTypeRoundTextField operation:nil];
     newPass.placeholder = LMLocalizedString(@"Set Enter new password", nil);
     newPass.tag = 2;
 
@@ -88,9 +85,9 @@
     group0.items = @[newPass].copy;
     [self.groups objectAddObject:group0];
     // first group
-    CellItem *passTip = [CellItem itemWithTitle:@"" type:CellItemTypeRoundTextField operation:nil];
+    CellItem *passTip = [CellItem itemWithTitle:nil type:CellItemTypeRoundTextField operation:nil];
     passTip.tag = 3;
-    passTip.placeholder = @"";
+    passTip.placeholder = nil;
     passTip.userInfo = self.passTip;
     CellGroup *group1 = [[CellGroup alloc] init];
 

@@ -24,24 +24,18 @@
 @end
 
 @implementation MainSetPage
-
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-}
-
 - (instancetype)init {
     if (self = [super init]) {
         self.userInfo = [[LKUserCenter shareCenter] currentLoginUser];
     }
-
+    
     return self;
 }
-
 - (void)viewDidLoad {
     [super viewDidLoad];
-
+ 
     self.navigationItem.leftBarButtonItems = nil;
-
+    self.userInfo = [[LKUserCenter shareCenter] currentLoginUser];
     self.tableView.contentInset = UIEdgeInsetsMake(-36, 0, 0, 0);
     RegisterNotify(LKUserCenterUserInfoUpdateNotification, @selector(updataUserInfo:));
 }
@@ -94,14 +88,12 @@
     }];
     CellItem *pricy = [CellItem itemWithTitle:LMLocalizedString(@"Set Privacy", nil) type:CellItemTypeArrow operation:^{
         PrivacyPage *page = [[PrivacyPage alloc] init];
-        page.hidesBottomBarWhenPushed = YES;
-        [weakSelf.navigationController pushViewController:page animated:YES];
+        [weakSelf pushControllerHideBar:page];
     }];
 
     CellItem *common = [CellItem itemWithTitle:LMLocalizedString(@"Set General", nil) type:CellItemTypeArrow operation:^{
         CommonSetPage *page = [[CommonSetPage alloc] init];
-        page.hidesBottomBarWhenPushed = YES;
-        [weakSelf.navigationController pushViewController:page animated:YES];
+        [weakSelf pushControllerHideBar:page];
     }];
 
     CellGroup *group0 = [[CellGroup alloc] init];
@@ -128,7 +120,6 @@
     // quit
 
     CellGroup *group2 = [[CellGroup alloc] init];
-
     CellItem *logout = [CellItem itemWithTitle:LMLocalizedString(@"Set Log Out", nil) type:CellItemTypeLogoutCell operation:^{
 
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:LMLocalizedString(@"Set Logout delete login data still log", nil) preferredStyle:UIAlertControllerStyleAlert];
@@ -167,7 +158,7 @@
                 [[LKUserCenter shareCenter] loginOutByServerWithInfo:nil];
             } else{
                 [GCDQueue executeInMainQueue:^{
-                    [MBProgressHUD showToastwithText:LMLocalizedString(@"Log Out Fail,Check net!", nil) withType:ToastTypeFail showInView:weakSelf.view complete:nil];
+                    [MBProgressHUD showToastwithText:LMLocalizedString(@"Set Log Out Fail", nil) withType:ToastTypeFail showInView:weakSelf.view complete:nil];
                 }];
             }
         }

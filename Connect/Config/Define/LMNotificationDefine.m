@@ -111,3 +111,12 @@ NSString *const DeleteMessageHistoryNotification = @"DeleteMessageHistoryNotific
 NSString *const RereweetMessageNotification = @"RereweetMessageNotification";
 
 NSString *const DeleteGroupReviewedMessageNotification = @"DeleteGroupReviewedMessageNotification";
+// LKUserCenterLoginStatusNoti
+NSString *const LKUserCenterLoginStatusNoti = @"LKUserCenterLoginStatusNoti";
+// LKUserCenterLoginFailNoti
+NSString *const LKUserCenterLoginFailNoti = @"LKUserCenterLoginFailNoti";
+// LKUserCenterUserInfoUpdateNotification
+NSString *const LKUserCenterUserInfoUpdateNotification = @"LKUserCenterUserInfoUpdateNotification";
+
+
+

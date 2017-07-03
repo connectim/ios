@@ -18,23 +18,6 @@
 
 @implementation CommonSetPage
 
-- (void)viewWillDisappear:(BOOL)animated {
-    [super viewWillDisappear:animated];
-    if (![self.navigationController.childViewControllers containsObject:self]) {
-        if (self.tabBarController.tabBar.hidden) {
-            self.tabBarController.tabBar.hidden = NO;
-        }
-    }
-}
-
-
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-    if (self.tabBarController.tabBar.hidden == NO) {
-        self.tabBarController.tabBar.hidden = YES;
-    }
-}
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = LMLocalizedString(@"Set General", nil);
@@ -43,7 +26,6 @@
 - (void)configTableView {
 
     self.tableView.separatorColor = self.tableView.backgroundColor;
-
     [self.tableView registerClass:[NCellLabel class] forCellReuseIdentifier:@"NCellLabelID"];
 
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"SystemCellID"];

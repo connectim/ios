@@ -31,19 +31,22 @@ static NSString *address = @"address";
 
     self.title = LMLocalizedString(@"Wallet Address Book", nil);
     [self addRightBarButtonItem];
-
+    
+    [self setUpUI];
+}
+- (void)setUpUI {
     self.addBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     self.addBtn.frame = CGRectMake(AUTO_WIDTH(30), 84, VSIZE.width - AUTO_WIDTH(60), AUTO_HEIGHT(120));
-    self.addBtn.layer.borderColor = [UIColor lightGrayColor].CGColor;
+    self.addBtn.layer.borderColor = LMBasicMiddleGray.CGColor;
     self.addBtn.layer.borderWidth = 1;
     [self.addBtn setImage:[UIImage imageNamed:@"add_black"] forState:UIControlStateNormal];
-    self.addBtn.backgroundColor = [UIColor colorWithRed:236 / 255.0 green:236 / 255.0 blue:236 / 255.0 alpha:1.0];
+    self.addBtn.backgroundColor = LMBasicBackgroudGray;
     self.addBtn.layer.cornerRadius = 8;
     self.addBtn.layer.masksToBounds = YES;
     [self.addBtn addTarget:self action:@selector(addressBtnClick:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.addBtn];
-
-
+    
+    
     self.bitAddressTextField = [[UITextField alloc] initWithFrame:CGRectMake(AUTO_WIDTH(30), 84, VSIZE.width - AUTO_WIDTH(60), AUTO_HEIGHT(120))];
     self.bitAddressTextField.placeholder = LMLocalizedString(@"Link Enter Bitcoin Address", nil);
     self.bitAddressTextField.font = [UIFont systemFontOfSize:FONT_SIZE(36)];
@@ -54,7 +57,7 @@ static NSString *address = @"address";
     self.bitAddressTextField.backgroundColor = [UIColor whiteColor];
     self.bitAddressTextField.borderStyle = UITextBorderStyleRoundedRect;
     [self.view addSubview:self.bitAddressTextField];
-
+    
     self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(CGRectGetMinX(self.addBtn.frame), CGRectGetMaxY(self.addBtn.frame) + 5, CGRectGetWidth(self.addBtn.frame), VSIZE.height - self.addBtn.bottom) style:UITableViewStyleGrouped];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
@@ -67,14 +70,15 @@ static NSString *address = @"address";
         [self getBitAddressBooks];
     }
 }
-
 - (void)getBitAddressBooks {
 
     __weak __typeof(&*self) weakSelf = self;
     [NetWorkOperationTool POSTWithUrlString:Walletaddress_bookListUrl postProtoData:nil complete:^(id response) {
         HttpResponse *hResponse = (HttpResponse *) response;
         if (hResponse.code != successCode) {
-            [MBProgressHUD showToastwithText:hResponse.message withType:ToastTypeFail showInView:self.view complete:nil];
+            [GCDQueue executeInMainQueue:^{
+              [MBProgressHUD showToastwithText:hResponse.message withType:ToastTypeFail showInView:self.view complete:nil];
+            }];
             return;
         }
         NSData *data = [ConnectTool decodeHttpResponse:hResponse];
@@ -98,7 +102,10 @@ static NSString *address = @"address";
             }];
         }
     }                                  fail:^(NSError *error) {
-        [MBProgressHUD showToastwithText:LMLocalizedString(@"Network Server error", nil) withType:ToastTypeFail showInView:self.view complete:nil];
+        [GCDQueue executeInMainQueue:^{
+            [MBProgressHUD showToastwithText:LMLocalizedString(@"Network Server error", nil) withType:ToastTypeFail showInView:self.view complete:nil];
+        }];
+        
     }];
 }
 
@@ -154,9 +161,7 @@ static NSString *address = @"address";
             [textField addTarget:self action:@selector(textFieldDidEndEditingValueChanged:) forControlEvents:UIControlEventEditingChanged];
         }];
 
-        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:LMLocalizedString(@"Common Cancel", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *_Nonnull action) {
-
-        }];
+        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:LMLocalizedString(@"Common Cancel", nil) style:UIAlertActionStyleCancel handler:nil];
 
         UIAlertAction *okAction = [UIAlertAction actionWithTitle:LMLocalizedString(@"Set Save", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *_Nonnull action) {
             UITextField *textField = alertView.textFields.firstObject;
@@ -221,13 +226,11 @@ static NSString *address = @"address";
 - (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {
     return UITableViewCellEditingStyleDelete;
 }
-
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-
-    }
+       if (editingStyle == UITableViewCellEditingStyleDelete) {
+    
+           }
 }
-
 #pragma amrk -- Input box callback
 
 - (void)textFieldDidEndEditingValueChanged:(UITextField *)textField {
@@ -302,7 +305,10 @@ static NSString *address = @"address";
 
     }                                  fail:^(NSError *error) {
         [GCDQueue executeInMainQueue:^{
-            [MBProgressHUD showToastwithText:LMLocalizedString(@"Link Add Failed", nil) withType:ToastTypeFail showInView:weakSelf.view complete:nil];
+            [GCDQueue executeInMainQueue:^{
+               [MBProgressHUD showToastwithText:LMLocalizedString(@"Link Add Failed", nil) withType:ToastTypeFail showInView:weakSelf.view complete:nil];
+            }];
+            
         }];
     }];
 }
@@ -357,9 +363,5 @@ static NSString *address = @"address";
         [_dataArr addObjectsFromArray:[[LMAddressBookManager sharedManager] getAllAddressBooks]];
     }
     return _dataArr;
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
 }
 @end

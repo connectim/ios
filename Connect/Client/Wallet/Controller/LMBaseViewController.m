@@ -367,4 +367,52 @@
     }
     return _errorTipLabel;
 }
+/**
+ *  Bit Coin Address Transfer / Single Transfer LMBitAddressViewController
+ */
+- (void)checkChangeWithRawTrancationModel:(LMRawTransactionModel *)rawModel
+                                   amount:(NSDecimalNumber *)amount
+                                     note:(NSString *)note {
+}
+/**
+ *  Red envelope transfer audit. LMChatRedLuckyViewController
+ */
+- (void)checkChangeWithRawTrancationModel:(LMRawTransactionModel *)rawModel
+                              ordinaryRed:(OrdinaryRedPackage *)ordinaryRed
+                                     note:(NSString *)note
+                                    money:(NSDecimalNumber *)money type:(int)type {
+}
+/**
+ *  Transfer to friends / LMTransFriendsViewController
+ */
+- (void)checkChangeWithRawTrancationModel:(LMRawTransactionModel *)rawModel
+                                     note:(NSString *)note
+                                    money:(NSDecimalNumber *)money {
+}
+/**
+ *  All the chips
+ */
+- (void)checkChangeWithRawTrancationModel:(LMRawTransactionModel *)rawModel
+                                   amount:(double)amount {
+}
+/**
+ *  Set the payment result LMSetMoneyResultViewController
+ */
+- (void)checkChangeWithRawTrancationModel:(LMRawTransactionModel *)rawModel {
+    
+}
+/**
+ *  Transfer Note LMTransferNotesViewController
+ */
+- (void)checkChangeWithRawTrancationModel:(LMRawTransactionModel *)rawModel
+                             decimalMoney:(NSDecimalNumber *)amount {
+}
+
+/**
+ *  The LMUnSetMoneyResultViewController does not pay for the result
+ */
+- (void)checkChangeWithRawTrancationModel:(LMRawTransactionModel *)rawModel
+                             decimalMoney:(NSDecimalNumber *)amount
+                                     note:(NSString *)note {
+}
 @end

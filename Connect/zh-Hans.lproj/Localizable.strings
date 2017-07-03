@@ -445,7 +445,8 @@
 "Network"="网络类型";
 "Network Image loading failed"="图片加载失败";
 "Network No data"="无数据";
-"Network Server error"="服务器错误";
+"Network Server error"="服务器错误，请稍后重试";
+"Network The request has expired"="请求已经过期";
 "Network Timeout"="超时";
 "Network equest failed please try again later"="请求失败，请稍候再试";
 "Set"="设置模块";
@@ -493,6 +494,7 @@
 "Set Link Mobile"="绑定手机";
 "Set Load failed please try again later"="加载失败，请稍候再试";
 "Set Log Out"="退出";
+"Set Log Out Fail"="退出失败，请检查网络";
 "Set Logging out"="正在退出...";
 "Set Logout delete login data still log"="退出登录将删除你的登录信息和手势密码，你仍要退出当前账户么?";
 "Set Miner fee"="手续费";

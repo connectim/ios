@@ -29,7 +29,7 @@
 // recommand contact
 @property(nonatomic, strong) AccountInfo *contact;
 // tempoary array
-@property(strong, nonatomic) NSMutableArray *temArray;
+@property(strong, nonatomic) NSMutableArray *dataArray;
 
 @property(nonatomic, strong) LMRerweetModel *retweetModel;
 
@@ -48,7 +48,6 @@
 - (instancetype)initWithRetweetModel:(LMRerweetModel *)retweetModel {
     if (self = [super init]) {
         self.retweetModel = retweetModel;
-        self.isFlagUserDetail = YES;
     }
     return self;
 }
@@ -68,11 +67,11 @@
     return _tableView;
 }
 
-- (NSMutableArray *)temArray {
-    if (_temArray == nil) {
-        self.temArray = [NSMutableArray array];
+- (NSMutableArray *)dataArray {
+    if (_dataArray == nil) {
+        self.dataArray = [NSMutableArray array];
     }
-    return _temArray;
+    return _dataArray;
 }
 
 #pragma mark - method respose
@@ -84,25 +83,21 @@
     if (!self.retweetModel) {
         self.title = LMLocalizedString(@"Chat Share contact", nil);
     }
-
     self.recentChats = [SessionManager sharedManager].allRecentChats;
-    if (self.isFlagUserDetail) {
-        for (RecentChatModel *recentModel in self.recentChats) {
-            if (!([recentModel.identifier isEqualToString:self.contact.pub_key] || recentModel.talkType == GJGCChatFriendTalkTypePostSystem)) {
-                [self.temArray objectAddObject:recentModel];
-            }
+    for (RecentChatModel *recentModel in self.recentChats) {
+        if (!([recentModel.identifier isEqualToString:self.contact.pub_key] || recentModel.talkType == GJGCChatFriendTalkTypePostSystem)) {
+            [self.dataArray objectAddObject:recentModel];
         }
     }
     [self.view addSubview:self.tableView];
+    [self.tableView reloadData];
 }
 
 #pragma mark - Table view data source
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if (self.isFlagUserDetail) {
-        return self.temArray.count;
-    }
-    return self.recentChats.count;
+    return self.dataArray.count;
+    
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -113,12 +108,7 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
 
     RecentChatForRecommendCell *cell = [tableView dequeueReusableCellWithIdentifier:@"RecentChatForRecommendCellID" forIndexPath:indexPath];
-    RecentChatModel *recentModel = nil;
-    if (self.isFlagUserDetail) {
-        recentModel = [self.temArray objectAtIndexCheck:indexPath.row];
-    } else {
-        recentModel = [self.recentChats objectAtIndexCheck:indexPath.row];
-    }
+    RecentChatModel *recentModel = [self.dataArray objectAtIndexCheck:indexPath.row];
     [cell setData:recentModel];
 
     return cell;
@@ -126,13 +116,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    RecentChatModel *recentModel = nil;
-    if (self.isFlagUserDetail) {
-        recentModel = [self.temArray objectAtIndexCheck:indexPath.row];
-    } else {
-        recentModel = [self.recentChats objectAtIndexCheck:indexPath.row];
-    }
-
+    RecentChatModel *recentModel = [self.dataArray objectAtIndexCheck:indexPath.row];
     __weak __typeof(&*self) weakSelf = self;
 
     NSString *title = [NSString stringWithFormat:LMLocalizedString(@"Chat Share contact to", nil), self.contact.username, recentModel.name];
@@ -183,8 +167,10 @@
             }];
         }];
     } else {
-        [MBProgressHUD showMessage:LMLocalizedString(@"Common Loading", nil) toView:self.view];
-
+        
+        [GCDQueue executeInMainQueue:^{
+            [MBProgressHUD showMessage:LMLocalizedString(@"Common Loading", nil) toView:self.view];
+        }];
         // creat card
         MMMessage *message = [[MMMessage alloc] init];
         message.user_name = recentModel.name;

@@ -562,10 +562,7 @@ const CGFloat blurRadius = 0.7;
  */
 - (void)show
 {
-    if ([self.delegate respondsToSelector:@selector(willPresentAlertView:)]) {
-        [self.delegate willPresentActionSheet:self];
-    }
-    
+   
     [self setupNewWindow];
     
     [self setupLayout];

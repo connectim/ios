@@ -187,7 +187,7 @@ CREATE_SHARED_MANAGER(LMLinkManDataManager)
                 }
             }
         }
-        [temGroupArray addObject:dic];
+         [temGroupArray addObject:dic];
      }
     return temGroupArray;
 
@@ -225,7 +225,9 @@ CREATE_SHARED_MANAGER(LMLinkManDataManager)
     }
 }
 - (NSString *)getPrex:(AccountInfo *)contact {
-    
+    if (!contact) {
+        return nil;
+    }
     NSString *prex = @"";
     NSString *name = contact.normalShowName;
     if (name.length) {
@@ -238,38 +240,6 @@ CREATE_SHARED_MANAGER(LMLinkManDataManager)
         prex = @"#";
     }
     return prex;
-}
-- (NSMutableArray *)getFriendsArrWithNoConnect {
-    if ( self.friendsArr.count <= 1) {
-        return nil;
-    }
-    NSMutableArray *temGroupArray = [NSMutableArray array];
-    for (NSInteger index = 1; index < self.groupsFriend.count;index++) {
-        
-        NSMutableArray *temCommonArray = [NSMutableArray array];
-        NSMutableDictionary * dic = [self.groupsFriend[index] mutableCopy];
-        NSMutableArray *temArray = [dic[@"items"] mutableCopy];
-        NSString *temTitle = dic[@"title"];
-        if ([dic[@"title"] isEqualToString:LMLocalizedString(@"Link Group Common", nil)]|| [dic[@"title"] isEqualToString:LMLocalizedString(@"Link Favorite Friend", nil)]) {
-            continue;
-        }
-        if ([temTitle isEqualToString:@"C"]) {
-            if (temArray.count < 1 ) {
-                continue;
-            }
-        }
-        for (AccountInfo *info in temArray) {
-            if (![info.pub_key isEqualToString:kSystemIdendifier]) {
-                [temCommonArray addObject:[info mutableCopy]];
-            }
-        }
-        if (temCommonArray.count > 0) {
-            dic[@"items"] = temCommonArray;
-        }
-         [temGroupArray addObject:dic];
-    }
-    return temGroupArray;
-
 }
 - (void)clearArrays {
 

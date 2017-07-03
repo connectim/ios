@@ -32,9 +32,10 @@
     [super viewDidLoad];
     self.title = LMLocalizedString(@"Wallet Transfer", nil);
     [self setWhitefBackArrowItem];
+    [self setRightBarButtonItem];
     [self creatView];
     [self.view addSubview:self.errorTipLabel];
-    [self setRightBarButtonItem];
+    
 }
 
 - (void)setRightBarButtonItem {
@@ -52,7 +53,7 @@
 
     self.titleLabel = [[UILabel alloc] init];
     self.titleLabel.font = [UIFont systemFontOfSize:FONT_SIZE(36)];
-    self.titleLabel.textColor = GJCFQuickHexColor(@"767A82");
+    self.titleLabel.textColor = LMBasicTextFieldeColor;
     _titleLabel.text = LMLocalizedString(@"Wallet Transfer via other APP messges", nil);
     _titleLabel.textAlignment = NSTextAlignmentCenter;
     [self.view addSubview:self.titleLabel];
@@ -98,7 +99,7 @@
     self.userBalanceLabel = [[UILabel alloc] init];
     self.amount = [[NSDecimalNumber alloc] initWithLong:[[MMAppSetting sharedSetting] getAvaliableAmount]];
     self.userBalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance Credit", nil), [PayTool getBtcStringWithAmount:[self.amount integerValue]]];
-    self.userBalanceLabel.textColor = [UIColor colorWithHexString:@"38425F"];
+    self.userBalanceLabel.textColor = LMBasicBlanceBtnTitleColor;
     self.userBalanceLabel.font = [UIFont systemFontOfSize:FONT_SIZE(28)];
     self.userBalanceLabel.textAlignment = NSTextAlignmentCenter;
     [self.view addSubview:self.userBalanceLabel];
@@ -113,6 +114,10 @@
         make.top.equalTo(self.inputAmountView.mas_bottom).offset(AUTO_HEIGHT(60));
         make.centerX.equalTo(self.view);
     }];
+    UITapGestureRecognizer *tapBalance = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapBalance)];
+    [self.userBalanceLabel addGestureRecognizer:tapBalance];
+    self.userBalanceLabel.userInteractionEnabled = YES;
+    
     self.comfrimButton = [[ConnectButton alloc] initWithNormalTitle:LMLocalizedString(@"Wallet Transfer", nil) disableTitle:LMLocalizedString(@"Wallet Transfer", nil)];
     [self.comfrimButton addTarget:self action:@selector(tapConfrim) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:self.comfrimButton];
@@ -122,6 +127,13 @@
         make.height.mas_equalTo(self.comfrimButton.height);
         make.width.mas_equalTo(self.comfrimButton.width);
     }];
+}
+
+- (void)tapBalance{
+    if (![[MMAppSetting sharedSetting] canAutoCalculateTransactionFee]) {
+        long long maxAmount = self.blance - [[MMAppSetting sharedSetting] getTranferFee] * 2;
+        self.inputAmountView.defaultAmountString = [[[NSDecimalNumber alloc] initWithLongLong:maxAmount] decimalNumberByDividingBy:[[NSDecimalNumber alloc] initWithLongLong:pow(10, 8)]].stringValue;
+    }
 }
 
 - (void)outerTransferHis {

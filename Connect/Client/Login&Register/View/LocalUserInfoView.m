@@ -34,7 +34,6 @@
             make.left.equalTo(self.avatarImageView.mas_right).offset(AUTO_WIDTH(20));
             make.centerY.equalTo(self);
         }];
-
         UIImageView *arrowImageView = [[UIImageView alloc] init];
         self.arrowImageView = arrowImageView;
         [self addSubview:arrowImageView];
@@ -42,8 +41,9 @@
         [arrowImageView mas_makeConstraints:^(MASConstraintMaker *make) {
             make.right.equalTo(self).offset(-AUTO_WIDTH(20));
             make.centerY.equalTo(self);
-        }];
-
+        }];  
+        
+       
         UIView *bottomLine = [UIView new];
         bottomLine.backgroundColor = LMBasicLineViewColor;
 //        bottomLine.alpha = 0.5;
@@ -62,7 +62,15 @@
     [view.avatarImageView setPlaceholderImageWithAvatarUrl:user.avatar];
     return view;
 }
-
+-(void)setSoureInfoType:(SourceInfoType)soureInfoType
+{
+    _soureInfoType = soureInfoType;
+    if (soureInfoType == SourceInfoViewTypeEncryPri) {
+        self.arrowImageView.hidden = YES;
+    }else {
+        self.arrowImageView.hidden = NO;
+    }
+}
 - (void)reloadWithUser:(AccountInfo *)user {
     self.userNameLabel.text = user.username;
     // cache userHead image

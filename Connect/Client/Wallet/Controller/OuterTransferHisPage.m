@@ -60,8 +60,8 @@
     header.lastUpdatedTimeLabel.font = [UIFont systemFontOfSize:14];
 
     // set color
-    header.stateLabel.textColor = [UIColor grayColor];
-    header.lastUpdatedTimeLabel.textColor = [UIColor grayColor];
+    header.stateLabel.textColor = LMBasicDarkGray;
+    header.lastUpdatedTimeLabel.textColor = LMBasicDarkGray;
 
     // Immediately enter the refresh state
     [header beginRefreshing];
@@ -139,7 +139,6 @@
 
 // Sort the array by time
 - (void)timeSort {
-//    NSMutableArray* tmpArray = [self.dataArr mutableCopy];
     for (NSInteger i = 0; i < self.dataArr.count; i++) {
         for (NSInteger j = 0; j < self.dataArr.count - i - 1; j++) {
             ExternalBillingInfo *billInfo1 = (ExternalBillingInfo *) self.dataArr[j];

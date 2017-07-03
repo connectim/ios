@@ -36,5 +36,6 @@
 #define LMBasicRateBtnColor         GJCFQuickHexColor(@"B3B5BC")
 #define LMBasicRateBtnTitleColor    GJCFQuickHexColor(@"6277AE")
 #define LMBasicBlanceBtnTitleColor  GJCFQuickHexColor(@"38425F")
+#define LMBasicTextFieldeColor      GJCFQuickHexColor(@"767a82")
 
 #endif /* colorConfiguration_h */

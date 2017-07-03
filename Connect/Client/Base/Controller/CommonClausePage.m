@@ -28,22 +28,47 @@
 @end
 
 @implementation CommonClausePage
-
+#pragma mark - system methods
 - (instancetype)initWithUrl:(NSString *)url {
     if (self = [super init]) {
         self.url = url;
-        // weather contain ?
-        NSString* parameter = @"?";
-        if ([url containsString:@"?"]) {
-            parameter = @"&";
-        }
-        self.url = [NSString stringWithFormat:@"%@%@locale=%@",url,parameter,GJCFUDFGetValue(@"userCurrentLanguage")];
-        
+        [self configUrl];
     }
     return self;
 }
-
-
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    NSMutableArray *leftItems = [NSMutableArray array];
+    
+    
+    UIBarButtonItem *offset = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
+    offset.width = -10;
+    [leftItems objectAddObject:offset]; //offset
+    [leftItems objectAddObject:[self blackBackItem]];
+    [leftItems objectAddObject:[self closeItem]];
+    self.navigationItem.leftBarButtonItems = leftItems;
+    //init js code
+    MMProgressWebView *progressWebView = [[MMProgressWebView alloc] initWithUrl:[NSURL URLWithString:self.url]];
+    self.progressWebView = progressWebView;
+    progressWebView.webView.navigationDelegate = self;
+    progressWebView.progressColor = LMBasicGreen;
+    [self.view addSubview:progressWebView];
+    self.closeItem.customView.hidden = YES;
+    if (self.sourceType == SourceTypeOutNetWork) {
+        [self setNavigationRight:@"menu_white"];
+    } else if (self.sourceType == SourceTypeHelp) {
+        [self setNavigationRight:LMLocalizedString(@"Set FeedBack", nil) titleColor:LMBasicGreen];
+    }
+}
+#pragma other methods
+- (void)configUrl {
+    // weather contain ?
+    NSString* parameter = @"?";
+    if ([self.url containsString:@"?"]) {
+        parameter = @"&";
+    }
+    self.url = [NSString stringWithFormat:@"%@%@locale=%@",self.url,parameter,GJCFUDFGetValue(@"userCurrentLanguage")];
+}
 - (void)doLeft:(id)sender {
     if (self.progressWebView.webView.canGoBack) {
         [self.progressWebView.webView goBack];
@@ -66,14 +91,11 @@
             }];
             return;
         }
-        [UIAlertController showActionSheetInViewController:self withTitle:nil message:nil cancelButtonTitle:LMLocalizedString(@"Common Cancel", nil) destructiveButtonTitle:nil otherButtonTitles:titles popoverPresentationControllerBlock:^(UIPopoverPresentationController *_Nonnull popover) {
-
-        }                                         tapBlock:^(UIAlertController *_Nonnull controller, UIAlertAction *_Nonnull action, NSInteger buttonIndex) {
+        [UIAlertController showActionSheetInViewController:self withTitle:nil message:nil cancelButtonTitle:LMLocalizedString(@"Common Cancel", nil) destructiveButtonTitle:nil otherButtonTitles:titles popoverPresentationControllerBlock:nil tapBlock:^(UIAlertController *_Nonnull controller, UIAlertAction *_Nonnull action, NSInteger buttonIndex) {
             [weakSelf shareUrlWithIndex:buttonIndex];
         }];
     }
 }
-
 - (void)shareUrlWithIndex:(NSInteger)buttonIndex {
     switch (buttonIndex) {
         case 2: //to chat
@@ -137,32 +159,6 @@
 - (void)popViewAction:(id)sender {
     [self.navigationController popViewControllerAnimated:YES];
 }
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    NSMutableArray *leftItems = [NSMutableArray array];
-
-
-    UIBarButtonItem *offset = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-    offset.width = -10;
-    [leftItems objectAddObject:offset]; //offset
-    [leftItems objectAddObject:[self blackBackItem]];
-    [leftItems objectAddObject:[self closeItem]];
-    self.navigationItem.leftBarButtonItems = leftItems;
-    //init js code
-    MMProgressWebView *progressWebView = [[MMProgressWebView alloc] initWithUrl:[NSURL URLWithString:self.url]];
-    self.progressWebView = progressWebView;
-    progressWebView.webView.navigationDelegate = self;
-    progressWebView.progressColor = LMBasicGreen;
-    [self.view addSubview:progressWebView];
-    self.closeItem.customView.hidden = YES;
-    if (self.sourceType == SourceTypeOutNetWork) {
-        [self setNavigationRight:@"menu_white"];
-    } else if (self.sourceType == SourceTypeHelp) {
-        [self setNavigationRight:LMLocalizedString(@"Set FeedBack", nil) titleColor:LMBasicGreen];
-    }
-}
-
 - (UIBarButtonItem *)blackBackItem {
     UIButton *btn = nil;
     if (GJCFSystemiPhone6 || GJCFSystemiPhone5) {
