@@ -84,24 +84,17 @@
     CellGroup *group = self.groups[indexPath.section];
     CellItem *item = group.items[indexPath.row];
     if (item.type == CellItemTypeGroupMemberCell) {
-//        BaseCell *cell = [tableView ceell:indexPath];
-//        
-//        return cell.height;
-
-        return 100;
+        return AUTO_HEIGHT(200);
     }
     if (item.type == CellItemTypeMyInfoCell) {
-        return 115;
+        return AUTO_HEIGHT(230);
     }
-
     if (item.type == CellItemTypeLogoutCell) {
-        return 50;
+        return AUTO_HEIGHT(100);
     }
-
     if (item.type == CellItemTypeSetAvatarCell) {
-        return 80;
+        return AUTO_HEIGHT(160);
     }
-
     return AUTO_HEIGHT(111);
 }
 
@@ -113,7 +106,6 @@
         item.operation();
     }
 }
-//设置section的字体
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
     return AUTO_HEIGHT(40);
@@ -127,14 +119,6 @@
     }
 }
 
-//- (void)tableView:(UITableView *)tableView willDisplayFooterView:(UIView *)view forSection:(NSInteger)section
-//{
-//    if ([view isKindOfClass:[UITableViewHeaderFooterView class]]) {
-//        UITableViewHeaderFooterView* footer = (UITableViewHeaderFooterView*)view;
-//        footer.textLabel.text = [footer.textLabel.text capitalizedString];
-//        footer.textLabel.font = [UIFont systemFontOfSize:FONT_SIZE(24)];
-//    }
-//}
 #pragma mark -getter
 
 - (UITableView *)tableView {

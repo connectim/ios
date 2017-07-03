@@ -25,7 +25,7 @@
 //is phone download user login
 @property(nonatomic, assign) BOOL phoneLogin;
 
-@property (nonatomic ,strong) NSArray *chainUsers;
+@property (nonatomic ,strong) NSMutableArray *chainUsers;
 
 @end
 
@@ -44,7 +44,7 @@
 
 - (instancetype)initWithLocalUsers:(NSArray *)users{
     if (self = [super init]) {
-        self.chainUsers = users.copy;
+        self.chainUsers = [NSMutableArray arrayWithArray:users];
     }
     return self;
 }

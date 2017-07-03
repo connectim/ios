@@ -20,7 +20,7 @@
 // set up
 + (instancetype)sharedManager;
 
-#pragma mark - 外界需要的方法
+#pragma mark - The outside world needs the method, the contact is in use
 /**
  *  get common group
  *
@@ -61,11 +61,17 @@
  *
  */
 - (void)clearUnreadCountWithType:(int)type;
+#pragma mark - The outside world needs the method to share in use
 /**
  *  get share contact
  *
  */
 - (NSMutableArray *)getListGroupsFriend:(AccountInfo *)shareContact;
-
+#pragma mark - Externally provided method, select contact in use
+/**
+ *  get Friends Arr No Connect
+ *
+ */
+- (NSMutableArray *)getFriendsArrWithNoConnect;
 
 @end

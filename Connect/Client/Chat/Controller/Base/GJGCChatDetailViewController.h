@@ -47,9 +47,7 @@
 
 @property(nonatomic, readonly) GJGCChatFriendTalkModel *taklInfo;
 
-@property(nonatomic, strong) NSArray *visibleCells;
-
-@property (nonatomic ,strong) NSMutableArray *noteGroupMembers;
+@property(nonatomic, strong) NSMutableArray *noteGroupMembers;
 
 //Downloading message array
 @property(nonatomic, strong) NSMutableArray *downLoadingRichMessageIds;
@@ -71,19 +69,7 @@
  */
 - (void)stopLoadMore;
 
-/**
- *  start refresh
- */
-- (void)startRefresh;
-
-/**
- *  stop load more
- */
-- (void)startLoadMore;
-
-
 - (void)triggleRefreshing;
-- (void)triggleLoadingMore;
 
 /*
  * stop audio paly

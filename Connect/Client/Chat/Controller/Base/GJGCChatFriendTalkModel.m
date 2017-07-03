@@ -10,7 +10,7 @@
 
 @implementation GJGCChatFriendTalkModel
 
-- (NSString *)fileDocumentName{
+- (NSString *)fileDocumentName {
     if (self.talkType == GJGCChatFriendTalkTypeGroup) {
         _fileDocumentName = self.chatIdendifier;
     } else {
@@ -19,32 +19,11 @@
     return _fileDocumentName;
 }
 
-- (NSString *)group_ecdhKey{
+- (NSString *)group_ecdhKey {
     if (!_group_ecdhKey) {
         _group_ecdhKey = self.chatGroupInfo.groupEcdhKey;
     }
     return _group_ecdhKey;
-}
-
-+ (NSString *)talkTypeString:(GJGCChatFriendTalkType)talkType {
-    NSString *msgType = nil;
-    switch (talkType) {
-        case GJGCChatFriendTalkTypeGroup: {
-            msgType = @"group";
-        }
-            break;
-        case GJGCChatFriendTalkTypePrivate: {
-            msgType = @"private";
-        }
-            break;
-        case GJGCChatFriendTalkTypePostSystem: {
-            msgType = @"post_system";
-        }
-            break;
-        default:
-            break;
-    }
-    return msgType;
 }
 
 @end

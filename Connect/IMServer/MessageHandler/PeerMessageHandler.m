@@ -41,23 +41,22 @@
     if (self = [super init]) {
         self.getNewMessageObservers = [NSHashTable weakObjectsHashTable];
     }
-
     return self;
 }
 
 
-- (void)addGetNewMessageObserver:(id <PeerMessageHandlerGetNewMessage>)oberver {
+- (void)addGetNewMessageObserver:(id <MessageHandlerGetNewMessage>)oberver {
     [self.getNewMessageObservers addObject:oberver];
 }
 
-- (void)removeGetNewMessageObserver:(id <PeerMessageHandlerGetNewMessage>)oberver {
+- (void)removeGetNewMessageObserver:(id <MessageHandlerGetNewMessage>)oberver {
     [self.getNewMessageObservers removeObject:oberver];
 }
 
 - (void)pushGetBitchNewMessages:(NSArray *)messages {
     ChatMessageInfo *lastMsg = [messages lastObject];
     if ([[SessionManager sharedManager].chatSession isEqualToString:lastMsg.messageOwer]) {
-        for (id <PeerMessageHandlerGetNewMessage> ob in self.getNewMessageObservers) {
+        for (id <MessageHandlerGetNewMessage> ob in self.getNewMessageObservers) {
             if ([ob respondsToSelector:@selector(getBitchNewMessage:)]) {
                 [GCDQueue executeInMainQueue:^{
                     [ob getBitchNewMessage:messages];
@@ -69,7 +68,7 @@
 
 - (void)pushGetReadAckWithMessageId:(NSString *)messageId chatUserPublickey:(NSString *)pulickey {
 
-    for (id <PeerMessageHandlerGetNewMessage> ob in self.getNewMessageObservers) {
+    for (id <MessageHandlerGetNewMessage> ob in self.getNewMessageObservers) {
         if ([ob respondsToSelector:@selector(getReadAckWithMessageID:chatUserPublickey:)]) {
             [ob getReadAckWithMessageID:messageId chatUserPublickey:pulickey];
         }
@@ -196,9 +195,11 @@
                 if ([[SessionManager sharedManager].chatSession isEqualToString:lastMsg.messageOwer]) {
                     unReadCount = 0;
                 }
-
+                
                 [self updataRecentChatLastMessageStatus:lastMsg messageCount:unReadCount withSnapChatTime:lastMsg.snapTime];
 
+                //notice onece, clear unread count
+                unReadCount = 0;
             } else {
                 NSMutableArray *pushArray = [NSMutableArray arrayWithArray:pushMessages];
 

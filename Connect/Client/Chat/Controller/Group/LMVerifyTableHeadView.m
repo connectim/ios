@@ -19,11 +19,11 @@
 - (void)awakeFromNib {
     [super awakeFromNib];
     self.backgroundColor = LMBasicBackgroudGray;
-    
+
     self.groupSummaryLable.font = [UIFont systemFontOfSize:FONT_SIZE(28)];
     self.groupMemberLable.font = [UIFont systemFontOfSize:FONT_SIZE(24)];
     self.groupNameLable.font = [UIFont systemFontOfSize:FONT_SIZE(28)];
-    
+
     self.groupMemberLable.textColor = LMBasicLableColor;
     self.groupSummaryLable.textColor = LMBasicLableColor;
     self.bottomLine.backgroundColor = LMBasicMiddleGray;

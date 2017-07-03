@@ -21,9 +21,7 @@
 #import "UserDetailPage.h"
 #import "InviteUserPage.h"
 #import "YYImageCache.h"
-#import "StringTool.h"
 #import "MessageDBManager.h"
-#import "NSMutableArray+MoveObject.h"
 
 typedef NS_ENUM(NSUInteger, SourceType) {
     SourceTypeGroup = 5
@@ -39,7 +37,7 @@ typedef NS_ENUM(NSUInteger, SourceType) {
 
 @property(nonatomic, weak) GJGCChatFriendTalkModel *talkModel;
 
-@property (nonatomic ,strong) NSArray *members;
+@property(nonatomic, strong) NSArray *members;
 
 @property(assign, nonatomic) BOOL isGroupMaster;
 
@@ -91,7 +89,7 @@ typedef NS_ENUM(NSUInteger, SourceType) {
 - (void)syncGroupBaseInfo {
     GroupId *groupIdentifier = [GroupId new];
     groupIdentifier.identifier = self.talkModel.chatGroupInfo.groupIdentifer;
-    
+
     [NetWorkOperationTool POSTWithUrlString:GroupSyncSettingInfoUrl postProtoData:groupIdentifier.data complete:^(id response) {
         HttpResponse *hResponse = (HttpResponse *) response;
         if (hResponse.code != successCode) {
@@ -232,11 +230,13 @@ typedef NS_ENUM(NSUInteger, SourceType) {
     CellItem *topMessage = [CellItem itemWithTitle:LMLocalizedString(@"Chat Sticky on Top chat", nil) type:CellItemTypeSwitch operation:nil];
     topMessage.switchIsOn = self.talkModel.top;
     topMessage.operationWithInfo = ^(id userInfo) {
-        if ([userInfo boolValue]) {
+        BOOL top = [userInfo boolValue];
+        if (top) {
             [SetGlobalHandler topChatWithChatIdentifer:weakSelf.talkModel.chatIdendifier];
         } else {
             [SetGlobalHandler CancelTopChatWithChatIdentifer:weakSelf.talkModel.chatIdendifier];
         }
+        weakSelf.talkModel.top = top;
     };
 
     CellItem *messageNoneNotifi = [CellItem itemWithTitle:LMLocalizedString(@"Chat Mute Notification", nil) type:CellItemTypeSwitch operation:nil];
@@ -250,6 +250,7 @@ typedef NS_ENUM(NSUInteger, SourceType) {
                 } else {
                     [[RecentChatDBManager sharedManager] removeMuteWithIdentifer:weakSelf.talkModel.chatIdendifier];
                 }
+                weakSelf.talkModel.mute = notify;
                 [GCDQueue executeInMainQueue:^{
                     SendNotify(ConnnectMuteNotification, weakSelf.talkModel.chatIdendifier);
                 }];
@@ -260,10 +261,12 @@ typedef NS_ENUM(NSUInteger, SourceType) {
     CellItem *savaToContact = [CellItem itemWithTitle:LMLocalizedString(@"Link Save to Contacts", nil) type:CellItemTypeSwitch operation:nil];
     savaToContact.switchIsOn = self.talkModel.chatGroupInfo.isCommonGroup;
     savaToContact.operationWithInfo = ^(id userInfo) {
-        if ([userInfo boolValue]) {
+        BOOL isCommonGroup = [userInfo boolValue];
+        if (isCommonGroup) {
             [SetGlobalHandler setCommonContactGroupWithIdentifer:weakSelf.talkModel.chatIdendifier complete:^(NSError *error) {
                 if (!error) {
                     [[GroupDBManager sharedManager] addGroupToCommonGroup:weakSelf.talkModel.chatIdendifier];
+                    weakSelf.talkModel.chatGroupInfo.isCommonGroup = isCommonGroup;
                 } else {
                     [GCDQueue executeInMainQueue:^{
                         [MBProgressHUD showToastwithText:LMLocalizedString(@"Update fail", nil) withType:ToastTypeFail showInView:weakSelf.view complete:nil];
@@ -276,6 +279,7 @@ typedef NS_ENUM(NSUInteger, SourceType) {
             [SetGlobalHandler removeCommonContactGroupWithIdentifer:weakSelf.talkModel.chatIdendifier complete:^(NSError *error) {
                 if (!error) {
                     [[GroupDBManager sharedManager] removeFromCommonGroup:weakSelf.talkModel.chatIdendifier];
+                    weakSelf.talkModel.chatGroupInfo.isCommonGroup = isCommonGroup;
                 } else {
                     [GCDQueue executeInMainQueue:^{
                         [MBProgressHUD showToastwithText:LMLocalizedString(@"Fail", nil) withType:ToastTypeFail showInView:weakSelf.view complete:nil];
@@ -296,22 +300,22 @@ typedef NS_ENUM(NSUInteger, SourceType) {
     group3.headTitle = LMLocalizedString(@"Link Other", nil);
 
     CellItem *clearHistory = [CellItem itemWithIcon:@"chat_friend_set_clearhistory" title:LMLocalizedString(@"Link Clear Chat History", nil) type:CellItemTypeNone operation:^{
-        
-        UIAlertController* actionController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
-        UIAlertAction* clearHistoryAction = [UIAlertAction actionWithTitle:LMLocalizedString(@"Link Clear Chat History", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-             [weakSelf clearAllChatHistory];
+
+        UIAlertController *actionController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+        UIAlertAction *clearHistoryAction = [UIAlertAction actionWithTitle:LMLocalizedString(@"Link Clear Chat History", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *_Nonnull action) {
+            [weakSelf clearAllChatHistory];
         }];
-        UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:LMLocalizedString(@"Common Cancel", nil) style:UIAlertActionStyleCancel handler:nil];
-        
+        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:LMLocalizedString(@"Common Cancel", nil) style:UIAlertActionStyleCancel handler:nil];
+
         [actionController addAction:clearHistoryAction];
         [actionController addAction:cancelAction];
         [weakSelf presentViewController:actionController animated:YES completion:nil];
 
-        
+
     }];
     CellItem *leaveGroup = [CellItem itemWithIcon:@"message_group_leave" title:LMLocalizedString(@"Link Delete and Leave", nil) type:CellItemTypeNone operation:^{
-        UIAlertController* actionController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
-        UIAlertAction* deleteAction = [UIAlertAction actionWithTitle:LMLocalizedString(@"Link Delete and Leave", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        UIAlertController *actionController = [UIAlertController alertControllerWithTitle:nil message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+        UIAlertAction *deleteAction = [UIAlertAction actionWithTitle:LMLocalizedString(@"Link Delete and Leave", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *_Nonnull action) {
             [GCDQueue executeInMainQueue:^{
                 [MBProgressHUD showLoadingMessageToView:weakSelf.view];
             }];
@@ -322,14 +326,14 @@ typedef NS_ENUM(NSUInteger, SourceType) {
                         [MBProgressHUD hideHUDForView:weakSelf.view];
                         SendNotify(ConnnectQuitGroupNotification, weakSelf.talkModel.chatIdendifier);
                         [weakSelf.navigationController popToRootViewControllerAnimated:NO];
-                    } else{
+                    } else {
                         [MBProgressHUD showToastwithText:LMLocalizedString(@"Chat Network connection failed please check network", nil) withType:ToastTypeFail showInView:weakSelf.view complete:nil];
                     }
                 }];
             }];
         }];
-        UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:LMLocalizedString(@"Common Cancel", nil) style:UIAlertActionStyleCancel handler:nil];
-        
+        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:LMLocalizedString(@"Common Cancel", nil) style:UIAlertActionStyleCancel handler:nil];
+
         [actionController addAction:deleteAction];
         [actionController addAction:cancelAction];
         [weakSelf presentViewController:actionController animated:YES completion:nil];
@@ -344,15 +348,21 @@ typedef NS_ENUM(NSUInteger, SourceType) {
 }
 
 - (void)clearAllChatHistory {
+    //delete file
     AccountInfo *chatUser = [[UserDBManager sharedManager] getUserByPublickey:self.talkModel.chatIdendifier];
     if (chatUser) {
         [ChatMessageFileManager deleteRecentChatAllMessageFilesByAddress:chatUser.address];
     } else {
         [ChatMessageFileManager deleteRecentChatAllMessageFilesByAddress:self.talkModel.chatIdendifier];
     }
+    
+    //delete message
     [[MessageDBManager sharedManager] deleteAllMessageByMessageOwer:self.talkModel.chatIdendifier];
+    
+    //delete recentchat last contetn
+    [[RecentChatDBManager sharedManager] removeLastContentWithIdentifier:self.talkModel.chatIdendifier];
     [GCDQueue executeInMainQueue:^{
-        SendNotify(@"im.connect.DeleteMessageHistoryNotification", nil);
+        SendNotify(DeleteMessageHistoryNotification, self.talkModel.chatIdendifier);
     }];
 
 }
@@ -470,11 +480,11 @@ typedef NS_ENUM(NSUInteger, SourceType) {
                 message.sendstatus = GJGCChatFriendSendMessageStatusSending;
                 chatMessage.message = message;
                 [[MessageDBManager sharedManager] saveMessage:chatMessage];
-                
+
                 [[RecentChatDBManager sharedManager] createNewChatWithIdentifier:info.pub_key groupChat:NO lastContentShowType:0 lastContent:[GJGCChatFriendConstans lastContentMessageWithType:message.type textMessage:nil]];
-                
+
                 [[IMService instance] asyncSendMessageMessage:message onQueue:nil completion:^(MMMessage *message, NSError *error) {
-                
+
                     ChatMessageInfo *chatMessage = [[MessageDBManager sharedManager] getMessageInfoByMessageid:message.message_id messageOwer:message.publicKey];
                     chatMessage.message = message;
                     chatMessage.sendstatus = message.sendstatus;
@@ -528,7 +538,7 @@ typedef NS_ENUM(NSUInteger, SourceType) {
         if (info != [membsers lastObject]) {
             [welcomeTip appendString:@"、"];
         }
-        
+
         GcmData *groupInfoGcmData = [ConnectTool createGcmWithData:groupMessage.data publickey:info.pub_key needEmptySalt:YES];
         NSString *messageID = [ConnectTool generateMessageId];
 

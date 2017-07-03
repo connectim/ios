@@ -11,7 +11,6 @@
 #import "GroupDBManager.h"
 #import "NetWorkOperationTool.h"
 #import "UIView+ScreenShot.h"
-#import "YYImageCache.h"
 
 @interface LMchatGroupQRCodeViewController ()
 
@@ -35,7 +34,7 @@
     self.view.backgroundColor = LMBasicBlack;
 
     [self setUp];
-    
+
     [self setQRNet:YES];
 }
 
@@ -180,17 +179,17 @@
 
 - (void)shareAction:(NSString *)url {
     NSString *title = [NSString stringWithFormat:
-                       LMLocalizedString(@"Link invite you to start encrypted chat with Connect", nil), [[LKUserCenter shareCenter] currentLoginUser].username];
-    NSURL* urls = [NSURL URLWithString:url];
+            LMLocalizedString(@"Link invite you to start encrypted chat with Connect", nil), [[LKUserCenter shareCenter] currentLoginUser].username];
+    NSURL *urls = [NSURL URLWithString:url];
     UIImage *image = self.groupHeaderImageView.image;
     if (!image) {
         image = [UIImage imageNamed:@"default_user_avatar"];
     }
     UIActivityViewController *activeViewController = [[UIActivityViewController alloc] initWithActivityItems:@[title, urls, image] applicationActivities:nil];
-    
+
     activeViewController.excludedActivityTypes = @[UIActivityTypeAirDrop, UIActivityTypeCopyToPasteboard, UIActivityTypeAddToReadingList];
     [self presentViewController:activeViewController animated:YES completion:nil];
-    
+
     UIActivityViewControllerCompletionWithItemsHandler myblock = ^(NSString *__nullable activityType, BOOL completed, NSArray *__nullable returnedItems, NSError *__nullable activityError) {
         NSLog(@"%d %@", completed, activityType);
     };
@@ -213,7 +212,7 @@
             [GCDQueue executeInMainQueue:^{
                 if (flag) {
                     [MBProgressHUD showToastwithText:LMLocalizedString(@"Link The group is not public", nil) withType:ToastTypeFail showInView:weakSelf.view complete:^{
-                        
+
                         [weakSelf isNotPublic];
                     }];
                     return;
@@ -227,16 +226,16 @@
                 }
             }];
         } else {
-            
+
             NSData *data = [ConnectTool decodeHttpResponse:hResponse];
             if (data) {
                 GroupHash *hashGroup = [GroupHash parseFromData:data error:nil];
                 if (hashGroup.hash_p.length > 0) {
                     self.errorLable.hidden = YES;
-                    
+
                     [weakSelf reloadViewWithHash:hashGroup];
                 } else {
-                    
+
                     [weakSelf isNotPublic];
 
                 }
@@ -244,7 +243,7 @@
             [weakSelf.activityView stopAnimating];
         }
     }                                  fail:^(NSError *error) {
-        
+
         [weakSelf.activityView stopAnimating];
         self.errorLable.hidden = NO;
         self.errorLable.text = LMLocalizedString(@"Server Error", nil);

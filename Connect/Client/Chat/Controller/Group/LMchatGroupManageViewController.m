@@ -40,7 +40,7 @@
 
 - (void)setupData {
     __weak typeof(self) weakSelf = self;
-    
+
     CellItem *publicInvite = [CellItem itemWithTitle:LMLocalizedString(@"Link Whether Public", nil) type:CellItemTypeSwitch operation:nil];
     self.publicInvite = publicInvite;
     publicInvite.switchIsOn = [[GroupDBManager sharedManager] isGroupPublic:weakSelf.talkModel.chatIdendifier];
@@ -52,7 +52,7 @@
     group0.items = @[publicInvite].copy;
     group0.footTitle = LMLocalizedString(@"Link the group member can see the QR", nil);
     [weakSelf.groups objectAddObject:group0];
-    
+
     CellItem *groupIntroduction = [CellItem itemWithTitle:LMLocalizedString(@"Link Group Introduction", nil) type:CellItemTypeArrow operation:^{
         LMGroupIntroductionViewController *introductionVc = [[LMGroupIntroductionViewController alloc] initWithNibName:@"LMGroupIntroductionViewController" bundle:nil];
         introductionVc.titleName = LMLocalizedString(@"Link Group Introduction", nil);
@@ -79,7 +79,7 @@
         }];
         return;
     }
-    
+
     NSMutableArray *temArray = [weakSelf.talkModel.chatGroupInfo.groupMembers mutableCopy];
     for (AccountInfo *contract in temArray) {
         if ([contract.address isEqualToString:weakSelf.groupMasterInfo.address]) {
@@ -160,7 +160,7 @@
                 [GCDQueue executeInMainQueue:^{
                     [MBProgressHUD showToastwithText:LMLocalizedString(@"Link Open Successful", nil) withType:ToastTypeSuccess showInView:self.view complete:nil];
                 }];
-                
+
                 if (self.switchChangeBlock) {
                     self.switchChangeBlock(isPublic);
                 }
@@ -169,7 +169,7 @@
                     [MBProgressHUD showToastwithText:LMLocalizedString(@"Link Close Successful", nil) withType:ToastTypeSuccess showInView:self.view complete:nil];
                 }];
                 [[GroupDBManager sharedManager] setGroupNeedNotPublic:self.talkModel.chatIdendifier];
-                
+
                 if (self.switchChangeBlock) {
                     self.switchChangeBlock(isPublic);
                 }

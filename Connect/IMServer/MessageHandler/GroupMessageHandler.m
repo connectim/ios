@@ -196,7 +196,9 @@
                 }
 
                 [self updataRecentChatLastMessageStatus:lastMsg messageCount:unReadCount groupNoteMyself:groupNoteMyself];
-
+                //notice onece, clear unread count
+                unReadCount = 0;
+                
             } else {
                 NSMutableArray *pushArray = [NSMutableArray arrayWithArray:pushMessages];
 
@@ -268,11 +270,11 @@
     return YES;
 }
 
-- (void)addGetNewMessageObserver:(id <GroupMessageHandlerGetNewMessage>)oberver {
+- (void)addGetNewMessageObserver:(id <MessageHandlerGetNewMessage>)oberver {
     [self.getNewMessageObservers addObject:oberver];
 }
 
-- (void)removeGetNewMessageObserver:(id <GroupMessageHandlerGetNewMessage>)oberver {
+- (void)removeGetNewMessageObserver:(id <MessageHandlerGetNewMessage>)oberver {
     [self.getNewMessageObservers removeObject:oberver];
 }
 
@@ -280,10 +282,10 @@
 
     ChatMessageInfo *lastMsg = [messages lastObject];
     if ([[SessionManager sharedManager].chatSession isEqualToString:lastMsg.messageOwer]) {
-        for (id <GroupMessageHandlerGetNewMessage> ob in self.getNewMessageObservers) {
-            if ([ob respondsToSelector:@selector(getBitchGroupMessage:)]) {
+        for (id <MessageHandlerGetNewMessage> ob in self.getNewMessageObservers) {
+            if ([ob respondsToSelector:@selector(getBitchNewMessage:)]) {
                 [GCDQueue executeInMainQueue:^{
-                    [ob getBitchGroupMessage:messages];
+                    [ob getBitchNewMessage:messages];
                 }];
             }
         }

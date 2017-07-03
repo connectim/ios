@@ -302,8 +302,6 @@ CREATE_SHARED_MANAGER(LMCommandManager)
         [GCDQueue executeInMainQueue:^{
             [[IMService instance] publishConnectState:STATE_CONNECTED];
         }];
-        //upload Cookie
-        [[IMService instance] uploadCookie];
     }
 }
 
@@ -527,19 +525,27 @@ CREATE_SHARED_MANAGER(LMCommandManager)
             SendNotify(kNewFriendRequestNotification, newFriend);
         }];
     } else {
-        if (command.errNo == 1) { //add myself error
-            if (sendComModel.callBack) {
-                sendComModel.callBack([NSError errorWithDomain:@"" code:1 userInfo:nil], nil);
+        
+        switch (command.errNo) {
+            case 3:
+            case 1:
+            {
+                if (sendComModel.callBack) {
+                    sendComModel.callBack([NSError errorWithDomain:@"" code:command.errNo userInfo:nil], nil);
+                }
             }
-        } else {
-            if (sendComModel.callBack) {
-                sendComModel.callBack(nil, oriMsg.sendOriginInfo);
-            }
+                break;
+            default:
+                if (sendComModel.callBack) {
+                    sendComModel.callBack(nil, oriMsg.sendOriginInfo);
+                }
+                break;
         }
     }
 }
 
 - (void)loginOnNewPhoneUploadChatCookie:(Command *)command {
+    DDLogInfo(@"command %@",command);
     [[IMService instance] uploadCookieDuetoLocalChatCookieNotMatchServerChatCookieWithMessageCallModel:nil];
 }
 
@@ -1186,6 +1192,11 @@ CREATE_SHARED_MANAGER(LMCommandManager)
             message = LMLocalizedString(@"Wallet You already open this luckypacket", nil);
         }
             break;
+        case 3: //you garbed this luckypackage
+            {
+                message = LMLocalizedString(@"Chat system luckypackage have been frozen", nil);
+            }
+            break;
         default:
             break;
     }
@@ -1216,21 +1227,29 @@ CREATE_SHARED_MANAGER(LMCommandManager)
 }
 
 - (void)uploadCookieAck:(Command *)command {
+    DDLogInfo(@"command %@",command);
     SendCommandModel *sendComModel = [self.sendingCommands valueForKey:command.msgId];
+    UploadChatCookieModel *uploadChatCookie = sendComModel.sendMsg.sendOriginInfo;
+    SendMessageModel *sendModel = uploadChatCookie.sendMessageModel;
     if (command.errNo == 0) {
-        UploadChatCookieModel *uploadChatCookie = sendComModel.sendMsg.sendOriginInfo;
-        SendMessageModel *sendModel = uploadChatCookie.sendMessageModel;
         ChatCookieData *cacheData = uploadChatCookie.chatCookieData;
         ChatCacheCookie *chatCookie = uploadChatCookie.chatCookie;
         [SessionManager sharedManager].loginUserChatCookie = chatCookie;
         [[LMHistoryCacheManager sharedManager] cacheChatCookie:[SessionManager sharedManager].loginUserChatCookie];
         [[LMHistoryCacheManager sharedManager] cacheLeastChatCookie:cacheData];
+        DDLogInfo(@"update chatCookie success!");
         if (sendModel) {
+            DDLogInfo(@"resend message....");
             [[IMService instance] asyncSendMessageMessage:sendModel.sendMsg onQueue:nil completion:sendModel.callBack onQueue:nil];
         }
     } else if (command.errNo == 4) { //time error
         //note ui ,time error
         [SessionManager sharedManager].loginUserChatCookie = nil;
+        if (sendModel.callBack) {
+            sendModel.sendMsg.sendstatus = GJGCChatFriendSendMessageStatusFaild;
+            NSError *error = [NSError errorWithDomain:@"imserver" code:-1 userInfo:nil];
+            sendModel.callBack(sendModel.sendMsg, error);
+        }
     }
 }
 
@@ -1289,39 +1308,47 @@ CREATE_SHARED_MANAGER(LMCommandManager)
     switch (command.errNo) {
         case 1: //msg: "ACCEPT ERROR"
         {
-            NSError *error = [NSError errorWithDomain:command.msg code:-1 userInfo:nil];
+            NSError *error = [NSError errorWithDomain:command.msg code:command.errNo userInfo:nil];
             if (sendComModel.callBack) {
                 sendComModel.callBack(error, nil);
             }
-            return;
         }
             break;
-        default:
+            
+        case 4: //OVER TIME
+        {
+            NSError *error = [NSError errorWithDomain:command.msg code:command.errNo userInfo:nil];
+            if (sendComModel.callBack) {
+                sendComModel.callBack(error, nil);
+            }
+        }
             break;
-    }
-    
-    ReceiveAcceptFriendRequest *syncRalation = [ReceiveAcceptFriendRequest parseFromData:command.detail error:nil];
-    [[UserDBManager sharedManager] updateNewFriendStatusAddress:syncRalation.address withStatus:RequestFriendStatusAdded];
-    
-    if (sendComModel.callBack) {
-        sendComModel.callBack(nil, oriMsg.sendOriginInfo);
-        [[IMService instance] getFriendsWithVersion:[[MMAppSetting sharedSetting] getContactVersion] comlete:^(NSError *error, id data) {
-            if (!error && [data isKindOfClass:[AccountInfo class]]) {
-                AccountInfo *addUser = (AccountInfo *)data;
-                addUser.message = [[UserDBManager sharedManager] getRequestTipsByUserPublickey:addUser.pub_key];
-                [GCDQueue executeInMainQueue:^{
-                    SendNotify(kAcceptNewFriendRequestNotification, addUser);
+        default:{
+            ReceiveAcceptFriendRequest *syncRalation = [ReceiveAcceptFriendRequest parseFromData:command.detail error:nil];
+            [[UserDBManager sharedManager] updateNewFriendStatusAddress:syncRalation.address withStatus:RequestFriendStatusAdded];
+            
+            if (sendComModel.callBack) {
+                sendComModel.callBack(nil, oriMsg.sendOriginInfo);
+                [[IMService instance] getFriendsWithVersion:[[MMAppSetting sharedSetting] getContactVersion] comlete:^(NSError *error, id data) {
+                    if (!error && [data isKindOfClass:[AccountInfo class]]) {
+                        AccountInfo *addUser = (AccountInfo *)data;
+                        addUser.message = [[UserDBManager sharedManager] getRequestTipsByUserPublickey:addUser.pub_key];
+                        [GCDQueue executeInMainQueue:^{
+                            SendNotify(kAcceptNewFriendRequestNotification, addUser);
+                        }];
+                    }
+                }];
+            } else {
+                [[IMService instance] getFriendsWithVersion:[[MMAppSetting sharedSetting] getContactVersion] comlete:^(NSError *error, id data) {
+                    if (!error && [data isKindOfClass:[AccountInfo class]]) {
+                        [GCDQueue executeInMainQueue:^{
+                            SendNotify(kAcceptNewFriendRequestNotification, data);
+                        }];
+                    }
                 }];
             }
-        }];
-    } else {
-        [[IMService instance] getFriendsWithVersion:[[MMAppSetting sharedSetting] getContactVersion] comlete:^(NSError *error, id data) {
-            if (!error && [data isKindOfClass:[AccountInfo class]]) {
-                [GCDQueue executeInMainQueue:^{
-                    SendNotify(kAcceptNewFriendRequestNotification, data);
-                }];
-            }
-        }];
+        }
+            break;
     }
 }
 

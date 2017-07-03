@@ -20,7 +20,7 @@
 
 - (void)drawRect:(CGRect)rect {
     CGContextRef ctx = UIGraphicsGetCurrentContext();
-    
+
     CGPoint center = CGPointMake(CommonButtonWidth, CommonButtonWidth);
     CGFloat radius = CommonButtonWidth - 12;
     CGFloat startA = -M_PI_2;
@@ -30,7 +30,7 @@
     [self.currentColor setStroke];
     [path stroke];
     CGContextAddPath(ctx, path.CGPath);
-    
+
     CGContextStrokePath(ctx);
 }
 

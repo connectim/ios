@@ -10,6 +10,7 @@
 #import "MessageDBManager.h"
 #import "SetCurrencyPage.h"
 #import "LMSetLanguagePage.h"
+#import "RecentChatDBManager.h"
 
 @interface CommonSetPage ()
 
@@ -147,9 +148,14 @@
 - (void)clearAllChatHistory {
 
     [ChatMessageFileManager deleteAllMessageFile];
-
     [[MessageDBManager sharedManager] deleteAllMessages];
 
+    //remeve all chat last message
+    [[RecentChatDBManager sharedManager] removeAllLastContent];
+    
+    [GCDQueue executeInMainQueue:^{
+        SendNotify(DeleteMessageHistoryNotification, nil);
+    }];
 }
 
 

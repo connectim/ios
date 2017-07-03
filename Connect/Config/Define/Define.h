@@ -25,6 +25,9 @@ selector:_selector name:_name object:nil];
 #define MAX_MINNER_FEE @"10000"
 
 
+#define XTALK_USRID_LEN		36
+#define XTALK_PRIVKEY_LEN	32
+
 // over time code
 #define OVER_TIME_CODE -110
 

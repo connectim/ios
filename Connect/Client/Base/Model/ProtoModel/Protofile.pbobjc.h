@@ -1984,6 +1984,7 @@ typedef GPB_ENUM(DeviceInfo_FieldNumber) {
   DeviceInfo_FieldNumber_Locale = 3,
   DeviceInfo_FieldNumber_Cv = 4,
   DeviceInfo_FieldNumber_Uuid = 5,
+  DeviceInfo_FieldNumber_ChatCookieData = 6,
 };
 
 @interface DeviceInfo : GPBMessage
@@ -1997,6 +1998,10 @@ typedef GPB_ENUM(DeviceInfo_FieldNumber) {
 @property(nonatomic, readwrite) int32_t cv;
 
 @property(nonatomic, readwrite, copy, null_resettable) NSString *uuid;
+
+@property(nonatomic, readwrite, strong, null_resettable) ChatCookieData *chatCookieData;
+/** Test to see if @c chatCookieData has been set. */
+@property(nonatomic, readwrite) BOOL hasChatCookieData;
 
 @end
 

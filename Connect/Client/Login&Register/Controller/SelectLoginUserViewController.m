@@ -33,7 +33,7 @@
     if (self = [super init]) {
         selectedUserBlock = block;
         self.selectedUser = selectedUser;
-        self.users = chainUser.mutableCopy;
+        self.users = chainUser;
     }
     return self;
 }
@@ -74,7 +74,7 @@
 
 - (void)deleteLoacalUser:(AccountInfo *)willDeleteUser {
     [GCDQueue executeInGlobalQueue:^{
-
+        [self.users removeObject:willDeleteUser];
         // delete preferences
         NSString *plistPath = GJCFAppDoucmentPath(@"AccountSetInfo.plist");
         NSMutableDictionary *data = [[NSMutableDictionary alloc] initWithContentsOfFile:plistPath];

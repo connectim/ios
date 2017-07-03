@@ -9,6 +9,8 @@
 #import <Foundation/Foundation.h>
 #import "MMMessage.h"
 #import "GJGCChatFriendContentModel.h"
+#import "GJGCChatFriendTalkModel.h"
+#import "LMTransactionModel.h"
 
 @interface LMMessageTool : NSObject
 
@@ -36,5 +38,10 @@
  * formart message to chatmessage model
  */
 + (GJGCChatFriendContentType)formateChatFriendContent:(GJGCChatFriendContentModel *)chatContentModel withMsgModel:(MMMessage *)message;
+
+
++ (GJGCChatFriendContentModel *)packContentModelWithTalkModel:(GJGCChatFriendTalkModel *)talkModel contentType:(GJGCChatFriendContentType)contentType extData:(id)extData;
+
++ (BOOL)checkRichtextUploadStatuts:(MMMessage *)message;
 
 @end

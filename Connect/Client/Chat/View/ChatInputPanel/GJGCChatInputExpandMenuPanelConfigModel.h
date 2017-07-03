@@ -13,6 +13,4 @@
 
 @property(nonatomic, assign) GJGCChatFriendTalkType talkType;
 
-@property(nonatomic, strong) NSArray *disableItems;
-
 @end

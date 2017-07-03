@@ -7,11 +7,9 @@
 //
 
 #import "GJGCChatInputTextView.h"
-#import "GJGCChatInputRecordAudioTipView.h"
 #import "GJGCChatInputExpandEmojiPanelMenuBarDataSource.h"
 #import "LMMessageTextView.h"
 #import "RecentChatDBManager.h"
-#import <AVFoundation/AVFoundation.h>
 
 #define kTextInsetX 2
 #define kTextInsetBottom 0
@@ -22,40 +20,19 @@
  *  text input view
  */
 @property(nonatomic, strong) LMMessageTextView *textView;
-
-@property(nonatomic, strong) UIButton *recordButton;
-
 @property(nonatomic, strong) UIImageView *inputBackgroundImageView;
 
 /**
  *  text view frame change
  */
 @property(nonatomic, copy) GJGCChatInputTextViewFrameDidChangeBlock frameChangeBlock;
-
-@property(nonatomic, copy) GJGCChatInputTextViewRecordActionChangeBlock actionChangeBlock;
-
 /**
  *  finish input
  */
 @property(nonatomic, copy) GJGCChatInputTextViewFinishInputTextBlock finishInputBlock;
 
-@property(nonatomic, strong) GJGCChatInputRecordAudioTipView *recordTipView;
-
 @property(nonatomic, copy) GJGCChatInputTextViewDidBecomeFirstResponseBlock responseBlock;
-
-@property(nonatomic, strong) NSTimer *minRecordActionTimer;
-
-@property(nonatomic, assign) BOOL isRecordStartRight;
-
-@property(nonatomic, assign) NSInteger selectCharIndex;
-
-@property(nonatomic, strong) NSTextContainer *textContainer;
-
-@property(nonatomic, strong) UILabel *placeHolderLabel;
-
-
 @property(nonatomic, copy) NSString *savedInputText;
-
 @end
 
 @implementation GJGCChatInputTextView
@@ -63,43 +40,29 @@
 
 - (instancetype)initWithFrame:(CGRect)frame {
     if (self = [super initWithFrame:frame]) {
-
         [self initSubViewsWithFrame:frame];
     }
     return self;
 }
 
 - (void)dealloc {
-    [self removeRecordTipView];
     [GJCFNotificationCenter removeObserver:self];
 }
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-
     if (_recordState) {
         self.textView.hidden = YES;
         self.inputBackgroundImageView.hidden = YES;
-        self.recordButton.hidden = NO;
     } else {
-        self.recordButton.hidden = YES;
         self.textView.hidden = NO;
         self.inputBackgroundImageView.hidden = NO;
     }
-
-    /*  */
     self.inputBackgroundImageView.frame = self.bounds;
-    self.placeHolderLabel.frame = self.textView.frame;
-    self.placeHolderLabel.gjcf_left = self.textView.gjcf_left + 4.f;
-
-    /* */
-    self.recordButton.frame = self.bounds;
-
 }
 
 - (void)initSubViewsWithFrame:(CGRect)frame {
     _inputTextStateHeight = self.gjcf_height;
-
     self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     CGRect backgroundFrame = self.frame;
     backgroundFrame.origin.y = 0;
@@ -133,38 +96,8 @@
     self.textView.enablesReturnKeyAutomatically = YES;
     [self addSubview:self.textView];
 
-    self.placeHolderLabel = [[UILabel alloc] init];
-    self.placeHolderLabel.frame = self.textView.frame;
-    self.placeHolderLabel.gjcf_left = self.textView.gjcf_left + 4.f;
-    self.placeHolderLabel.backgroundColor = [UIColor clearColor];
-    self.placeHolderLabel.textColor = GJCFQuickHexColor(@"909090");
-    self.placeHolderLabel.font = self.textView.font;
-    [self addSubview:self.placeHolderLabel];
-    self.placeHolderLabel.hidden = YES;
-
-    self.recordButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.recordButton.frame = self.bounds;
-    self.recordButton.backgroundColor = [UIColor clearColor];
-    self.recordButton.layer.cornerRadius = 2.f;
-    self.recordButton.layer.masksToBounds = YES;
-    [self.recordButton setTitleColor:[GJGCChatInputPanelStyle mainThemeColor] forState:UIControlStateNormal];
-    [self.recordButton setTitleColor:[GJGCChatInputPanelStyle mainThemeColor] forState:UIControlStateHighlighted];
-    [self.recordButton setBackgroundImage:GJCFQuickImageByColorWithSize([UIColor colorWithWhite:0 alpha:0.1], self.recordButton.gjcf_size) forState:UIControlStateHighlighted];
-    [self addSubview:self.recordButton];
-
-    UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self
-                                                                                            action:@selector(longPressRecordButton:)];
-
-    UITapGestureRecognizer *tapR = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapOnRecordButton:)];
-    [self.recordButton addGestureRecognizer:tapR];
-
-    longPress.cancelsTouchesInView = NO;
-    longPress.minimumPressDuration = 0.15;
-    [self.recordButton addGestureRecognizer:longPress];
-
     self.maxAutoExpandHeight = AUTO_HEIGHT(200);
     self.minAutoExpandHeight = AUTO_HEIGHT(70);
-
 }
 
 - (void)setPanelIdentifier:(NSString *)panelIdentifier {
@@ -177,42 +110,19 @@
     [self observeRequiredNoti];
 }
 
-- (void)setPlaceHolder:(NSString *)placeHolder {
-    if ([_placeHolder isEqualToString:placeHolder]) {
-        return;
-    }
-
-    _placeHolder = nil;
-    _placeHolder = [placeHolder copy];
-    self.placeHolderLabel.text = _placeHolder;
-
-    if (self.textView.text.length > 0) {
-        self.placeHolderLabel.hidden = YES;
-    } else {
-        self.placeHolderLabel.hidden = NO;
-    }
-}
 
 #pragma mark - obverve
 
 - (void)observeRequiredNoti {
-
-    NSString *soundMeterNoti = [GJGCChatInputConst panelNoti:GJGCChatInputTextViewRecordSoundMeterNoti formateWithIdentifier:self.panelIdentifier];
-    NSString *recordTooShortNoti = [GJGCChatInputConst panelNoti:GJGCChatInputTextViewRecordTooShortNoti formateWithIdentifier:self.panelIdentifier];
-    NSString *recordTooLongNoti = [GJGCChatInputConst panelNoti:GJGCChatInputTextViewRecordTooLongNoti formateWithIdentifier:self.panelIdentifier];
     NSString *setMessageDraftNoti = [GJGCChatInputConst panelNoti:GJGCChatInputSetLastMessageDraftNoti formateWithIdentifier:self.panelIdentifier];
     NSString *emojiDeleteNoti = [GJGCChatInputConst panelNoti:GJGCChatInputExpandEmojiPanelChooseDeleteNoti formateWithIdentifier:self.panelIdentifier];
     NSString *chooseEmojiNoti = [GJGCChatInputConst panelNoti:GJGCChatInputExpandEmojiPanelChooseEmojiNoti formateWithIdentifier:self.panelIdentifier];
     NSString *appendTextNoti = [GJGCChatInputConst panelNoti:GJGCChatInputPanelNeedAppendTextNoti formateWithIdentifier:self.panelIdentifier];
 
-    [GJCFNotificationCenter addObserver:self selector:@selector(observeRecordSoundMeter:) name:soundMeterNoti object:nil];
-    [GJCFNotificationCenter addObserver:self selector:@selector(observeRecordTooShort:) name:recordTooShortNoti object:nil];
-    [GJCFNotificationCenter addObserver:self selector:@selector(observeRecordTooLong:) name:recordTooLongNoti object:nil];
     [GJCFNotificationCenter addObserver:self selector:@selector(observeSetLastMessageDraft:) name:setMessageDraftNoti object:nil];
     [GJCFNotificationCenter addObserver:self selector:@selector(observeEmojiPanelChooseDeleteNoti:) name:emojiDeleteNoti object:nil];
     [GJCFNotificationCenter addObserver:self selector:@selector(observeEmojiPanelChooseEmojiNoti:) name:chooseEmojiNoti object:nil];
     [GJCFNotificationCenter addObserver:self selector:@selector(observeAppendFocusOnOther:) name:appendTextNoti object:nil];
-
 }
 
 - (void)observeAppendFocusOnOther:(NSNotification *)noti {
@@ -246,11 +156,14 @@
 
 - (void)observeSetLastMessageDraft:(NSNotification *)noti {
     if (noti.object) {
-
         self.textView.text = noti.object;
-
-        [self performSelector:@selector(updateDisplayByInputContentTextChange) withObject:nil afterDelay:0.5];
+        [self performSelector:@selector(updateDisplayByDraftTextChange) withObject:nil afterDelay:0.5];
     }
+}
+
+- (void)updateDisplayByDraftTextChange {
+    [self updateDisplayByInputContentTextChange];
+    [self layoutInputTextView];
 }
 
 - (void)setRecordState:(BOOL)recordState {
@@ -308,17 +221,11 @@
 }
 
 - (void)updateDisplayByInputContentTextChange {
-    [[RecentChatDBManager sharedManager] updateDraft:self.textView.text withIdentifier:[SessionManager sharedManager].chatSession];
-    if (self.textView.text.length > 0) {
-        self.placeHolderLabel.hidden = YES;
-    } else {
-        self.placeHolderLabel.hidden = NO;
-    }
+    [GCDQueue executeInGlobalQueue:^{
+        [[RecentChatDBManager sharedManager] updateDraft:self.textView.text withIdentifier:[SessionManager sharedManager].chatSession];
+    }];
     CGSize contentSize = self.textView.contentSize;
-    DDLogInfo(@"contentSize:%@", NSStringFromCGSize(contentSize));
-
     if (contentSize.height - 8.f > self.textView.bounds.size.height && self.frame.size.height <= self.maxAutoExpandHeight) {
-
         CGFloat changeDelta = contentSize.height - 8.f - self.frame.size.height;
         if (changeDelta + self.height > self.maxAutoExpandHeight) {
             changeDelta = self.maxAutoExpandHeight - self.height;
@@ -332,7 +239,6 @@
             }
         }
     } else if (contentSize.height - 8.f < self.textView.bounds.size.height && contentSize.height > self.minAutoExpandHeight) {
-
         CGFloat minHeight = MAX(self.minAutoExpandHeight, contentSize.height);
         if (contentSize.height - self.minAutoExpandHeight < 5) {
             minHeight = self.minAutoExpandHeight;
@@ -359,7 +265,6 @@
             }
         }
     }
-    [self layoutInputTextView];
 }
 
 - (void)setInputTextBackgroundImage:(UIImage *)inputTextBackgroundImage {
@@ -368,70 +273,6 @@
     }
     _inputTextBackgroundImage = inputTextBackgroundImage;
     self.inputBackgroundImageView.image = GJCFImageResize(_inputTextBackgroundImage, 2, 2, 2, 2);
-}
-
-- (void)setRecordAudioBackgroundImage:(UIImage *)recordAudioBackgroundImage {
-    if (_recordAudioBackgroundImage == recordAudioBackgroundImage) {
-        return;
-    }
-    _recordAudioBackgroundImage = recordAudioBackgroundImage;
-    [self.recordButton setBackgroundImage:GJCFImageResize(_recordAudioBackgroundImage, 2, 2, 2, 2) forState:UIControlStateNormal];
-}
-
-- (void)setRecordingTitle:(NSString *)recordingTitle {
-    if ([_recordingTitle isEqualToString:recordingTitle]) {
-        return;
-    }
-    _recordingTitle = nil;
-    _recordingTitle = [recordingTitle copy];
-    [self.recordButton setTitle:_recordingTitle forState:UIControlStateHighlighted];
-}
-
-- (void)setPreRecordTitle:(NSString *)preRecordTitle {
-    if ([_preRecordTitle isEqualToString:preRecordTitle]) {
-        return;
-    }
-    _preRecordTitle = nil;
-    _preRecordTitle = [preRecordTitle copy];
-    [self.recordButton setTitle:_preRecordTitle forState:UIControlStateNormal];
-}
-
-- (void)showRecordTipView {
-    [self removeRecordTipView];
-    self.recordTipView = [[GJGCChatInputRecordAudioTipView alloc] init];
-    [[[UIApplication sharedApplication] keyWindow] addSubview:self.recordTipView];
-}
-
-- (void)removeRecordTipView {
-    if (self.recordTipView.isTooShortRecordDuration) {
-        GJCFAsyncMainQueueDelay(0.5, ^{
-            if (self.recordTipView) {
-                [self.recordTipView removeFromSuperview];
-                self.recordTipView = nil;
-            }
-        });
-        return;
-    }
-
-    if (self.recordTipView) {
-        [self.recordTipView removeFromSuperview];
-        self.recordTipView = nil;
-    }
-
-}
-
-- (void)observeRecordSoundMeter:(NSNotification *)noti {
-    CGFloat soundMeter = [noti.object floatValue];
-    self.recordTipView.soundMeter = soundMeter;
-}
-
-- (void)observeRecordTooShort:(NSNotification *)noti {
-    self.recordTipView.isTooShortRecordDuration = YES;
-    [self removeRecordTipView];
-}
-
-- (void)observeRecordTooLong:(NSNotification *)noti {
-    [self removeRecordTipView];
 }
 
 - (void)deleteBackward {
@@ -447,6 +288,7 @@
 }
 
 #pragma mark - group @ function
+
 - (void)deleteGroupNoteUserWithLocation:(NSUInteger)location {
     if (GJCFStringIsNull(self.textView.text)) {
         return;
@@ -544,131 +386,17 @@
     self.textView.text = [NSString stringWithFormat:@"%@%@", self.textView.text, model.text];
     [self performSelector:@selector(updateDisplayByInputContentTextChange) withObject:nil afterDelay:0.1];
     CGFloat visiableOriginY = self.textView.contentSize.height - self.textView.bounds.size.height;
-
     if (self.textView.contentSize.height > self.textView.bounds.size.height) {
-
         [self.textView scrollRectToVisible:CGRectMake(0, visiableOriginY, self.textView.gjcf_width, self.textView.gjcf_height) animated:NO];
-
     }
-
     NSString *formateNoti = [GJGCChatInputConst panelNoti:GJGCChatInputTextViewContentChangeNoti formateWithIdentifier:self.panelIdentifier];
     [GJCFNotificationCenter postNotificationName:formateNoti object:self.textView.text];
-
-
 }
 
 - (void)observeEmojiPanelChooseDeleteNoti:(NSNotification *)noti {
     [self deleteLastEmoji];
 
     [self performSelector:@selector(updateDisplayByInputContentTextChange) withObject:nil afterDelay:0.1];
-}
-
-- (BOOL)checkRecordPermission {
-    AVAudioSession *avSession = [AVAudioSession sharedInstance];
-
-    if (avSession && [avSession respondsToSelector:@selector(requestRecordPermission:)]) {
-
-        __block BOOL isPermission;
-
-        [avSession requestRecordPermission:^(BOOL granted) {
-
-            if (!granted) {
-
-                [[[UIAlertView alloc] initWithTitle:@"无法录音" message:@"请在“设置-隐私-麦克风”选项中允许访问你的麦克风" delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil] show];
-            }
-
-            isPermission = granted;
-
-        }];
-
-        return isPermission;
-    }
-
-    return YES;
-}
-
-- (void)tapOnRecordButton:(UITapGestureRecognizer *)sender {
-    if (![self checkRecordPermission]) {
-
-        return;
-    }
-
-    if (self.actionChangeBlock) {
-
-        self.actionChangeBlock(GJGCChatInputTextViewRecordActionTypeTooShort);
-
-    }
-}
-
-- (void)updateStartRecordAction:(NSTimer *)timer {
-    self.isRecordStartRight = YES;
-
-    if (self.minRecordActionTimer) {
-        [self.minRecordActionTimer invalidate];
-        self.minRecordActionTimer = nil;
-    }
-}
-
-- (void)longPressRecordButton:(UILongPressGestureRecognizer *)gestureRecognizer {
-    if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
-        if (![self checkRecordPermission]) {
-            return;
-        }
-
-        self.recordButton.highlighted = YES;
-
-        [self showRecordTipView];
-
-        if (self.actionChangeBlock) {
-            self.actionChangeBlock(GJGCChatInputTextViewRecordActionTypeStart);
-        }
-
-        self.minRecordActionTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(updateStartRecordAction:) userInfo:nil repeats:NO];
-        [self.minRecordActionTimer fire];
-
-    } else if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
-        CGPoint point = [gestureRecognizer locationInView:self.recordButton];
-        if (point.x > 1 && point.y > 1) {
-
-            if (self.isRecordStartRight) {
-
-                if (self.actionChangeBlock) {
-
-                    self.actionChangeBlock(GJGCChatInputTextViewRecordActionTypeFinish);
-                }
-
-            } else {
-
-                if (self.actionChangeBlock) {
-
-                    self.actionChangeBlock(GJGCChatInputTextViewRecordActionTypeCancel);
-                }
-
-                if (self.actionChangeBlock) {
-
-                    self.actionChangeBlock(GJGCChatInputTextViewRecordActionTypeTooShort);
-
-                }
-            }
-
-        } else {
-            if (self.actionChangeBlock) {
-                self.actionChangeBlock(GJGCChatInputTextViewRecordActionTypeCancel);
-            }
-        }
-
-        self.recordButton.highlighted = NO;
-
-        [self removeRecordTipView];
-
-    } else if (gestureRecognizer.state == UIGestureRecognizerStateChanged) {
-        CGPoint point = [gestureRecognizer locationInView:self.recordButton];
-        if (point.x > 1 && point.y > 1) {
-            self.recordTipView.willCancel = NO;
-        } else {
-            self.recordTipView.willCancel = YES;
-        }
-    }
 }
 
 #pragma mark - UITextViewDelegate
@@ -713,11 +441,6 @@
             }
         }
     }
-
-    if ([text isEqualToString:@""]) {
-
-    }
-
     NSString *formateNoti = [GJGCChatInputConst panelNoti:GJGCChatInputTextViewContentShouldChangeNoti formateWithIdentifier:self.panelIdentifier];
     [GJCFNotificationCenter postNotificationName:formateNoti object:text];
     return YES;
@@ -737,13 +460,7 @@
 
 - (void)clearInputText {
     self.textView.text = @"";
-
     [self performSelector:@selector(updateDisplayByInputContentTextChange) withObject:nil afterDelay:0.1];
-}
-
-
-- (BOOL)isValidateContent {
-    return GJCFStringIsNull(self.textView.text);
 }
 
 - (void)reserveToNormal {

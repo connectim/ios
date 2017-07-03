@@ -14,6 +14,4 @@
 
 @interface GPBMessage (LMProtoDataValidation)
 
-+ (instancetype)parseFromValidationData:(NSData *)data error:(NSError **)errorPtr;
-
 @end

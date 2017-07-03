@@ -65,7 +65,7 @@
     TransferInputView *view = [[TransferInputView alloc] init];
     self.inputAmountView = view;
     if (self.amountString) {
-        view.textDefaultAmount = [self.amountString doubleValue];
+        view.defaultAmountString = self.amountString;
     }
     [self.view addSubview:view];
     [view mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -123,12 +123,19 @@
     [self.inputAmountView hidenKeyBoard];
 }
 
+- (void)tapBalance{
+    if (![[MMAppSetting sharedSetting] canAutoCalculateTransactionFee]) {
+        long long maxAmount = self.blance - [[MMAppSetting sharedSetting] getTranferFee];
+        self.inputAmountView.defaultAmountString = [[[NSDecimalNumber alloc] initWithLongLong:maxAmount] decimalNumberByDividingBy:[[NSDecimalNumber alloc] initWithLongLong:pow(10, 8)]].stringValue;
+    }
+}
 
 - (void)initTabelViewCell {
     self.BalanceLabel = [[UILabel alloc] init];
-
-    [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance", nil), [PayTool getBtcStringWithAmount:[[MMAppSetting sharedSetting] getBalance]]];
-
+    self.BalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance Credit", nil), [PayTool getBtcStringWithAmount:[[MMAppSetting sharedSetting] getAvaliableAmount]]];
+    UITapGestureRecognizer *tapBalance = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapBalance)];
+    [self.BalanceLabel addGestureRecognizer:tapBalance];
+    self.BalanceLabel.userInteractionEnabled = YES;
     self.BalanceLabel.textColor = [UIColor colorWithHexString:@"38425F"];
     self.BalanceLabel.font = [UIFont systemFontOfSize:FONT_SIZE(28)];
     self.BalanceLabel.textAlignment = NSTextAlignmentCenter;
@@ -144,7 +151,7 @@
     __weak __typeof(&*self) weakSelf = self;
     [[PayTool sharedInstance] getBlanceWithComplete:^(NSString *blance, UnspentAmount *unspentAmount, NSError *error) {
         weakSelf.blance = unspentAmount.avaliableAmount;
-        weakSelf.BalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance", nil), [PayTool getBtcStringWithAmount:unspentAmount.avaliableAmount]];
+        weakSelf.BalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance Credit", nil), [PayTool getBtcStringWithAmount:unspentAmount.avaliableAmount]];
     }];
 
     self.comfrimButton = [[ConnectButton alloc] initWithNormalTitle:LMLocalizedString(@"Wallet Transfer", nil) disableTitle:LMLocalizedString(@"Wallet Transfer", nil)];
@@ -257,7 +264,6 @@
 
 - (void)makeTransfer:(LMRawTransactionModel *)rawModel decimalMoney:(NSDecimalNumber *)amount note:(NSString *)note {
 
-
     [MBProgressHUD showTransferLoadingViewtoView:self.view];
     self.vtsArray = rawModel.vtsArray;
     self.rawTransaction = rawModel.rawTrancation;
@@ -315,7 +321,7 @@
             [[PayTool sharedInstance] getBlanceWithComplete:^(NSString *blance, UnspentAmount *unspentAmount, NSError *error) {
                 [GCDQueue executeInMainQueue:^{
                     weakSelf.blance = unspentAmount.avaliableAmount;
-                    weakSelf.BalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance", nil), [PayTool getBtcStringWithAmount:unspentAmount.avaliableAmount]];
+                    weakSelf.BalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance Credit", nil), [PayTool getBtcStringWithAmount:unspentAmount.avaliableAmount]];
                 }];
             }];
             [weakSelf createChatWithHashId:hashId address:weakSelf.addressTextField.text Amount:amount.stringValue];

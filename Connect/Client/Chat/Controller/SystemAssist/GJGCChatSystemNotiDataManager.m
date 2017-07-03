@@ -11,7 +11,6 @@
 @interface GJGCChatSystemNotiDataManager ()
 
 @property(nonatomic, assign) NSInteger pageIndex;
-
 @property(nonatomic, assign) BOOL isFinishLoadDataBaseMsg;
 
 @end
@@ -20,13 +19,9 @@
 
 - (instancetype)initWithTalk:(GJGCChatFriendTalkModel *)talk withDelegate:(id <GJGCChatDetailDataSourceManagerDelegate>)aDelegate {
     if (self = [super initWithTalk:talk withDelegate:aDelegate]) {
-
         self.title = LMLocalizedString(@"Chat Connect", nil);
-
         self.pageIndex = 0;
-
         [self readLastMessagesFromDB];
-
     }
     return self;
 }
@@ -75,7 +70,6 @@
             break;
     }
 
-    /* 格式化消息 */
     GJGCChatFriendContentModel *chatContentModel = [[GJGCChatFriendContentModel alloc] init];
     chatContentModel.contentType = aMessage.type;
     chatContentModel.autoMsgid = chatMessage.ID;
@@ -100,10 +94,8 @@
         chatContentModel.isFromSelf = YES;
         chatContentModel.senderName = [[LKUserCenter shareCenter] currentLoginUser].normalShowName;
     }
-    /* 格式内容字段 */
     GJGCChatFriendContentType contentType = [self formateChatFriendContent:chatContentModel withMsgModel:aMessage];
     if (contentType != GJGCChatFriendContentTypeNotFound) {
-        // 界面消息去重
         if (![self contentModelByMsgId:aMessage.message_id]) {
             [self addChatContentModel:chatContentModel];
         }
@@ -124,20 +116,13 @@
 }
 
 - (void)recieveHistoryMessage:(NSNotification *)noti {
-    /* 是否当前会话的历史消息 */
-
-    /* 悬停在第一次加载后的第一条消息上 */
     if (self.delegate && [self.delegate respondsToSelector:@selector(dataSourceManagerRequireFinishRefresh:)]) {
-
         [self.delegate dataSourceManagerRequireFinishRefresh:self];
     }
-
-    /* 如果没有历史消息了 */
     self.isFinishLoadAllHistoryMsg = YES;
-
 }
 
-#pragma mark - 更多消息
+#pragma mark - more messagees
 
 - (void)pushAddMoreMsg:(NSArray *)messages {
 
@@ -156,7 +141,7 @@
 }
 
 
-#pragma mark - 系统公告
+#pragma mark - announcement
 
 - (GJGCChatFriendContentModel *)addSystemAnnouncementWithMessage:(ChatMessageInfo *)chatMessage {
 
@@ -200,11 +185,9 @@
     return notiModel;
 }
 
-
 - (void)requireListUpdate {
     if (self.delegate && [self.delegate respondsToSelector:@selector(dataSourceManagerRequireUpdateListTable:)]) {
         [self.delegate dataSourceManagerRequireUpdateListTable:self];
     }
 }
-
 @end

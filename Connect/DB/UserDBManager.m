@@ -238,7 +238,7 @@ static UserDBManager *manager = nil;
                 findUser.avatar = [resultDict safeObjectForKey:@"avatar"];
                 findUser.username = [resultDict safeObjectForKey:@"username"];
                 findUser.remarks = [resultDict safeObjectForKey:@"remark"];
-                findUser.source = [[resultDict safeObjectForKey:@"source"] integerValue];
+                findUser.source = [[resultDict safeObjectForKey:@"source"] intValue];
                 findUser.isBlackMan = [[resultDict safeObjectForKey:@"blocked"] boolValue];
                 findUser.isOffenContact = [[resultDict safeObjectForKey:@"common"] boolValue];
 

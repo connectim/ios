@@ -16,7 +16,6 @@
 #import "ChatMapCell.h"
 #import "PlayViewController.h"
 #import "ChatFriendSetViewController.h"
-#import "RegexKit.h"
 #import "StringTool.h"
 #import "InviteUserPage.h"
 #import "UserDetailPage.h"
@@ -48,15 +47,14 @@
 #import "LMBaseSSDBManager.h"
 #import "ReconmandChatListPage.h"
 #import "LMPhotoViewController.h"
-#import "CameraTool.h"
 #import "LMApplyJoinToGroupViewController.h"
 #import "HandleUrlManager.h"
 #import "NSURL+Param.h"
 #import "LMSetMoneyResultViewController.h"
 #import "LMUnSetMoneyResultViewController.h"
+#import "LMMessageTool.h"
 
 #define GJGCActionSheetCallPhoneNumberTag 132134
-#define GJGCInputViewToastLabelTag 3344556611
 
 static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheetAssociateKey";
 
@@ -72,9 +70,6 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
 @property(nonatomic, assign) NSInteger lastPlayedAudioMsgIndex;
 
 @property(nonatomic, assign) BOOL isLastPlayedMyAudio;
-
-@property(nonatomic, strong) UILabel *sendLimitTipLabel;
-
 
 @property(nonatomic, strong) NSMutableArray *temWAVFilesArray;
 
@@ -95,12 +90,12 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
 
     if (self.taklInfo.talkType == GJGCChatFriendTalkTypePrivate) {
         [self setRightButtonWithStateImage:@"menu_white" stateHighlightedImage:nil stateDisabledImage:nil titleName:nil];
-        __weak __typeof(&*self)weakSelf = self;
+        __weak __typeof(&*self) weakSelf = self;
         [[IMService instance] getUserCookieWihtChatUser:self.taklInfo.chatUser complete:^(NSError *erro, id data) {
             [weakSelf.dataSourceManager showEcdhKeyUpdataMessageWithSuccess:!erro && data];
         }];
     }
-    
+
     self.audioPlayer = [[GJCFAudioPlayer alloc] init];
     self.audioPlayer.delegate = self;
 
@@ -260,18 +255,6 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
 
 #pragma mark - DataSourceManager Delegate
 
-- (void)dataSourceManagerRequireChangeAudioRecordEnableState:(GJGCChatDetailDataSourceManager *)dataManager state:(BOOL)enable {
-    if (enable) {
-        self.inputPanel.disableActionType = GJGCChatInputBarActionTypeNone;
-    } else {
-        self.inputPanel.disableActionType = GJGCChatInputBarActionTypeRecordAudio;
-    }
-}
-
-- (void)dataSourceManagerRequireAutoPlayNextAudioAtIndex:(NSInteger)index {
-
-}
-
 - (void)dataSourceManagerUpdateUploadprogress:(GJGCChatDetailDataSourceManager *)dataManager progress:(float)progress index:(NSInteger)index {
     GJGCChatFriendVideoCell *videoCell = [self.chatListTable cellForRowAtIndexPath:[NSIndexPath indexPathForRow:index inSection:0]];
 
@@ -299,38 +282,17 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
 
 - (void)dataSourceManagerRequireDeleteMessages:(GJGCChatDetailDataSourceManager *)dataManager deletePaths:(NSArray *)willDeletePaths deleteModels:(NSArray *)models {
     for (NSIndexPath *indexPath in willDeletePaths) {
-
         NSInteger index = [willDeletePaths indexOfObject:indexPath];
-
         GJGCChatContentBaseModel *model = [models objectAtIndexCheck:index];
         [self cancelDownloadAtIndexPath:indexPath];
         [self stopPlayCurrentAudio];
-
         [[MessageDBManager sharedManager] deleteMessageByMessageId:model.localMsgId messageOwer:self.taklInfo.chatIdendifier];
         [ChatMessageFileManager deleteRecentChatMessageFileByMessageID:model.localMsgId Address:self.taklInfo.fileDocumentName];
     }
-}
-
-- (void)dataSourceManagerRequireDeleteMessages:(GJGCChatDetailDataSourceManager *)dataManager deleteIndex:(NSInteger)index {
-
-    if (index >= 0 && index < self.dataSourceManager.chatListArray.count) {
-        NSIndexPath *tapIndexPath = [NSIndexPath indexPathForRow:index inSection:0];
-        GJGCChatFriendContentModel *contentModel = (GJGCChatFriendContentModel *) [self.dataSourceManager contentModelAtIndex:tapIndexPath.row];
-        [self cancelDownloadAtIndexPath:tapIndexPath];
-        [self stopPlayCurrentAudio];
-
-        NSArray *willDeletePaths = [self.dataSourceManager deleteMessageAtIndex:index];
-
-        if (willDeletePaths && willDeletePaths.count > 0) {
-
-            [GCDQueue executeInMainQueue:^{
-                if (contentModel.isFromSelf) {
-                    [self.chatListTable deleteRowsAtIndexPaths:willDeletePaths withRowAnimation:UITableViewRowAnimationRight];
-                } else {
-                    [self.chatListTable deleteRowsAtIndexPaths:willDeletePaths withRowAnimation:UITableViewRowAnimationLeft];
-                }
-            }];
-        }
+    if (willDeletePaths.count) {
+        [self.chatListTable beginUpdates];
+        [self.chatListTable deleteRowsAtIndexPaths:willDeletePaths withRowAnimation:UITableViewRowAnimationBottom];
+        [self.chatListTable endUpdates];
     }
 }
 
@@ -433,12 +395,12 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
             if (contentModel.audioIsDownload) {
                 return;
             }
-            GJGCChatFriendAudioMessageCell *audioCell = (GJGCChatFriendAudioMessageCell *)[self.chatListTable cellForRowAtIndexPath:indexPath];
+            GJGCChatFriendAudioMessageCell *audioCell = (GJGCChatFriendAudioMessageCell *) [self.chatListTable cellForRowAtIndexPath:indexPath];
             if ([audioCell respondsToSelector:@selector(startDownloadAction)]) {
                 [audioCell startDownloadAction];
             }
             contentModel.isDownloading = YES;
-            
+
             NSString *taskIdentifier = nil;
             GJCFFileDownloadTask *downloadTask = [GJCFFileDownloadTask taskWithDownloadUrl:contentModel.audioModel.remotePath withCachePath:contentModel.audioModel.downloadEncodeCachePath withObserver:self getTaskIdentifer:&taskIdentifier];
             if (self.taklInfo.talkType != GJGCChatFriendTalkTypePrivate && self.taklInfo.talkType != GJGCChatFriendTalkTypeGroup) {
@@ -454,7 +416,8 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
                 ecdhkey = [KeyHandle getAes256KeyByECDHKeyAndSalt:ecdhkey salt:[ConnectTool get64ZeroData]];
                 downloadTask.ecdhkey = ecdhkey;
             }
-            downloadTask.userInfo = @{@"type": @"audio"};
+            downloadTask.userInfo = @{@"type": @"audio",
+                                      @"localMsgId":contentModel.localMsgId};
             downloadTask.msgIdentifier = [NSString stringWithFormat:@"%@_%@", self.taklInfo.chatIdendifier, contentModel.localMsgId];
             downloadTask.temOriginFilePath = contentModel.audioModel.localAMRStorePath;
             contentModel.downloadTaskIdentifier = taskIdentifier;
@@ -471,20 +434,20 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
 
     [self.downLoadingRichMessageIds removeObject:task.msgIdentifier];
     [super finishDownloadWithTask:task withDownloadFileData:fileData localPath:localPath];
-    
+
     NSInteger index = [self.dataSourceManager getContentModelIndexByDownloadTaskIdentifier:task.taskUniqueIdentifier];
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
 
     NSDictionary *userInfo = task.userInfo;
     NSString *taskType = userInfo[@"type"];
     if ([taskType isEqualToString:@"audio"]) {
-        NSInteger playingIndex = [self.dataSourceManager getContentModelIndexByLocalMsgId:self.playingAudioMsgId];
-        
+        NSString *localMsgId = [userInfo valueForKey:@"localMsgId"];
+        NSInteger playingIndex = [self.dataSourceManager getContentModelIndexByLocalMsgId:localMsgId];
         GJGCChatFriendContentModel *contentModel = (GJGCChatFriendContentModel *) [self.dataSourceManager contentModelAtIndex:playingIndex];
         contentModel.isDownloading = NO;
         contentModel.audioIsDownload = YES;
-        
-        GJGCChatFriendAudioMessageCell *audioCell = (GJGCChatFriendAudioMessageCell *)[self.chatListTable cellForRowAtIndexPath:indexPath];
+
+        GJGCChatFriendAudioMessageCell *audioCell = (GJGCChatFriendAudioMessageCell *) [self.chatListTable cellForRowAtIndexPath:indexPath];
         if ([audioCell respondsToSelector:@selector(successDownloadAction)]) {
             [audioCell successDownloadAction];
         }
@@ -498,7 +461,7 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
         UIImage *cacheImage = [UIImage imageWithData:fileData];
         contentModel.messageContentImage = cacheImage;
         contentModel.isDownloadImage = YES;
-        
+
         if (![self.chatListTable.visibleCells containsObject:imageCell]) {
             return;
         }
@@ -514,7 +477,7 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
         UIImage *cacheImage = [UIImage imageWithData:fileData];
         contentModel.messageContentImage = cacheImage;
         contentModel.isDownloadThumbImage = YES;
-        
+
         if (![self.chatListTable.visibleCells containsObject:imageCell]) {
             return;
         }
@@ -529,7 +492,7 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
         GJGCChatFriendContentModel *contentModel = [self.dataSourceManager getContentModelByDownloadTaskIdentifier:task.taskUniqueIdentifier];
         UIImage *cacheImage = [UIImage imageWithData:fileData];
         contentModel.messageContentImage = cacheImage;
-        
+
         if (![self.chatListTable.visibleCells containsObject:imageCell]) {
             return;
         }
@@ -544,7 +507,7 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
         GJGCChatFriendContentModel *contentModel = [self.dataSourceManager getContentModelByDownloadTaskIdentifier:task.taskUniqueIdentifier];
         UIImage *cacheImage = [UIImage imageWithData:fileData];
         contentModel.messageContentImage = cacheImage;
-        
+
         if (![self.chatListTable.visibleCells containsObject:imageCell]) {
             return;
         }
@@ -558,7 +521,7 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
         GJGCChatFriendContentModel *contentModel = (GJGCChatFriendContentModel *) [self.dataSourceManager contentModelAtIndex:index];
         contentModel.videoIsDownload = YES;
         GJGCChatFriendVideoCell *imageCell = [self.chatListTable cellForRowAtIndexPath:indexPath];
-        
+
         if (![self.chatListTable.visibleCells containsObject:imageCell]) {
             return;
         }
@@ -584,18 +547,18 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
     if ([taskType isEqualToString:@"videocover"] || [taskType isEqualToString:@"image"]) {
         return;
     }
-    
+
     NSInteger index = [self.dataSourceManager getContentModelIndexByDownloadTaskIdentifier:task.taskUniqueIdentifier];
     NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:0];
-    
+
     GJGCChatFriendContentModel *contentModel = (GJGCChatFriendContentModel *) [self.dataSourceManager contentModelAtIndex:index];
     contentModel.downloadProgress = progress;
-    
+
     GJGCChatFriendBaseCell *cell = [self.chatListTable cellForRowAtIndexPath:indexPath];
     if (![self.chatListTable.visibleCells containsObject:cell]) {
         return;
     }
-    
+
     [cell downloadProgress:progress];
 }
 
@@ -613,16 +576,15 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
     NSString *taskType = userInfo[@"type"];
 
     if ([taskType isEqualToString:@"audio"]) {
-        NSInteger playingIndex = [self.dataSourceManager getContentModelIndexByLocalMsgId:self.playingAudioMsgId];
+        NSString *localMsgId = [userInfo valueForKey:@"localMsgId"];
+        NSInteger playingIndex = [self.dataSourceManager getContentModelIndexByLocalMsgId:localMsgId];
         GJGCChatFriendAudioMessageCell *cell = [self.chatListTable cellForRowAtIndexPath:[NSIndexPath indexPathForRow:playingIndex inSection:0]];
         [cell faildDownloadAction];
         GJGCChatFriendContentModel *contentModel = (GJGCChatFriendContentModel *) [self.dataSourceManager contentModelAtIndex:index];
         contentModel.isDownloading = NO;
         contentModel.audioIsDownload = NO;
     }
-
     if ([taskType isEqualToString:@"image"]) {
-
         GJGCChatFriendImageMessageCell *imageCell = [self.chatListTable cellForRowAtIndexPath:indexPath];
         if ([imageCell isKindOfClass:[GJGCChatFriendImageMessageCell class]]) {
             [imageCell faildState];
@@ -634,8 +596,6 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
             [imageCell failDownloadState];
         }
     }
-
-
     if ([taskType isEqualToString:@"videocover"]) {
 
         GJGCChatFriendVideoCell *imageCell = [self.chatListTable cellForRowAtIndexPath:indexPath];
@@ -730,7 +690,7 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
     NSIndexPath *indexPath = [self.chatListTable indexPathForCell:tapedCell];
     GJGCChatFriendContentModel *contentModel = (GJGCChatFriendContentModel *) [self.dataSourceManager contentModelAtIndex:indexPath.row];
     BOOL isImageDown = GJCFFileIsExist(contentModel.imageOriginDataCachePath) || GJCFFileIsExist(contentModel.thumbImageCachePath);
-    
+
     if (isImageDown && contentModel.snapTime > 0 && !contentModel.isFromSelf && contentModel.readState == GJGCChatFriendMessageReadStateUnReaded) {
         [[MessageDBManager sharedManager] updateMessageReadTimeWithMsgID:contentModel.localMsgId messageOwer:self.taklInfo.chatIdendifier];
         NSInteger readTime = [[MessageDBManager sharedManager] getReadTimeByMessageId:contentModel.localMsgId messageOwer:self.taklInfo.chatIdendifier];
@@ -823,7 +783,7 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
     GJGCChatFriendContentModel *contentModel = (GJGCChatFriendContentModel *) [self.dataSourceManager contentModelAtIndex:tapIndexPath.row];
 
     [self cancelDownloadAtIndexPath:tapIndexPath];
-    
+
     [self stopPlayCurrentAudio];
     [ChatMessageFileManager deleteRecentChatMessageFileByMessageID:contentModel.localMsgId Address:[KeyHandle getAddressByPubkey:self.taklInfo.chatIdendifier]];
     [[MessageDBManager sharedManager] deleteMessageByMessageId:contentModel.localMsgId messageOwer:self.taklInfo.chatIdendifier];
@@ -850,7 +810,7 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
     chatContentModel.senderPublicKey = [[LKUserCenter shareCenter] currentLoginUser].pub_key;
     chatContentModel.senderName = [NSMutableString stringWithFormat:@"%@", [[LKUserCenter shareCenter] currentLoginUser].username];
 
-    chatContentModel.reciverAddress = self.taklInfo.talkType == GJGCChatFriendTalkTypeGroup ?self.taklInfo.chatGroupInfo.groupIdentifer:self.taklInfo.chatUser.address;
+    chatContentModel.reciverAddress = self.taklInfo.talkType == GJGCChatFriendTalkTypeGroup ? self.taklInfo.chatGroupInfo.groupIdentifer : self.taklInfo.chatUser.address;
     chatContentModel.reciverHeadUrl = self.taklInfo.headUrl;
     chatContentModel.reciverPublicKey = self.taklInfo.chatIdendifier;
     chatContentModel.reciverName = self.taklInfo.name;
@@ -858,16 +818,12 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
     chatContentModel.headUrl = [[LKUserCenter shareCenter] currentLoginUser].avatar;
 
     [self.dataSourceManager reSendMesssage:chatContentModel];
-
 }
 
 
 - (void)chatCellDidTapOnHeadView:(GJGCChatBaseCell *)tapedCell {
     NSIndexPath *tapIndexPath = [self.chatListTable indexPathForCell:tapedCell];
-
     GJGCChatFriendContentModel *chatContentModel = (GJGCChatFriendContentModel *) [self.dataSourceManager contentModelAtIndex:tapIndexPath.row];
-
-
     if (chatContentModel.isFromSelf) {
 
     } else {
@@ -878,6 +834,7 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
                     info = [[UserDBManager sharedManager] getUserByAddress:groupUser.address];
                     if (!info) {
                         info = groupUser;
+                        info.stranger = YES;
                     }
                     break;
                 }
@@ -891,7 +848,6 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
         if (!info) {
             return;
         }
-
         if (!info.stranger) {
             if (self.taklInfo.talkType == GJGCChatFriendTalkTypePostSystem) {
                 return;
@@ -940,14 +896,6 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
         }
         LMApplyJoinToGroupViewController *page = [[LMApplyJoinToGroupViewController alloc] initWithGroupIdentifier:chatContentModel.groupIdentifier inviteToken:chatContentModel.inviteToken inviteByAddress:self.taklInfo.chatUser.address];
         [self.navigationController pushViewController:page animated:YES];
-    }
-}
-
-#pragma mark - textFieldChange -delegate
-
-- (void)textFieldChange:(UITextField *)currentTextField {
-    if (currentTextField.text.length > 20) {
-        currentTextField.text = [currentTextField.text substringToIndex:20];
     }
 }
 
@@ -1013,7 +961,9 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
             [MBProgressHUD hideHUDForView:self.view];
         }];
         if (error) {
-            
+            [GCDQueue executeInMainQueue:^{
+                [MBProgressHUD showToastwithText:LMLocalizedString(@"Chat Network connection failed please check network", nil) withType:ToastTypeFail showInView:self.view complete:nil];
+            }];
         } else {
             switch (response.status) {
                 case 0://fail
@@ -1074,13 +1024,6 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
 
 }
 
-#pragma mark - lucky packge delegate
-- (void)redLuckyShowView:(LMRedLuckyShowView *)showView goRedLuckyDetailWithSender:(UIButton *)sender {
-    [showView dismissRedLuckyView];
-    [MBProgressHUD showLoadingMessageToView:self.view];
-    [self showRedBagDetailWithHashId:showView.hashId];
-}
-    
 - (void)getSystemRedBagDetailWithHashId:(NSString *)hashId {
     __weak __typeof(&*self) weakSelf = self;
     [RedBagNetWorkTool getSystemRedBagDetailWithHashId:hashId complete:^(RedPackageInfo *bagInfo, NSError *error) {
@@ -1104,7 +1047,7 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
             } else {
                 if (self.taklInfo.talkType == GJGCChatFriendTalkTypeGroup) {
                     user = [[GroupDBManager sharedManager] getGroupMemberByGroupId:self.taklInfo.chatIdendifier memberAddress:address];
-                } else{
+                } else {
                     user = [[UserDBManager sharedManager] getUserByAddress:bagInfo.redpackage.sendAddress];
                 }
             }
@@ -1127,9 +1070,9 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
                         accoutInfo.avatar = info.avatar;
                         accoutInfo.pub_key = info.pubKey;
                         accoutInfo.address = info.address;
-                        
+
                         if (error) {
-                            
+
                         } else {
                             LMChatRedLuckyDetailController *page = [[LMChatRedLuckyDetailController alloc] initWithUserInfo:accoutInfo redLuckyInfo:bagInfo];
                             page.groupMembers = self.taklInfo.chatGroupInfo.groupMembers;
@@ -1149,7 +1092,7 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
             }
         }
     }];
-    
+
 }
 
 
@@ -1170,7 +1113,7 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
         } else {
             if (self.taklInfo.talkType == GJGCChatFriendTalkTypeGroup) {
                 user = [[GroupDBManager sharedManager] getGroupMemberByGroupId:self.taklInfo.chatIdendifier memberAddress:address];
-            } else{
+            } else {
                 user = [[UserDBManager sharedManager] getUserByAddress:bagInfo.redpackage.sendAddress];
             }
         }
@@ -1280,7 +1223,7 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
                                 [GCDQueue executeInGlobalQueue:^{
                                     [[MessageDBManager sharedManager] saveMessage:chatMessage];
                                 }];
-                                
+
                                 [weakSelf.dataSourceManager showReceiptMessageMessageWithPayName:[[LKUserCenter shareCenter] currentLoginUser].username receiptName:crowdInfo.sender.username isCrowd:YES];
                                 if (crowdInfo.remainSize == 0) {
                                     ChatMessageInfo *chatMessage = [[ChatMessageInfo alloc] init];
@@ -1320,7 +1263,7 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
                 noteVc.PayStatus = bill.status;
                 noteVc.bill = bill;
                 [weakSelf.navigationController pushViewController:noteVc animated:YES];
-                
+
                 int status = [[LMMessageExtendManager sharedManager] getStatus:chatContentModel.hashID];
                 if (status != bill.status) {
                     //更新服务器状态
@@ -1420,7 +1363,7 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
         InviteUserPage *page = [[InviteUserPage alloc] initWithUser:self.taklInfo.chatUser];
         page.sourceType = UserSourceTypeTransaction;
         [self.navigationController pushViewController:page animated:YES];
-    } else{
+    } else {
         UserDetailPage *page = [[UserDetailPage alloc] initWithUser:self.taklInfo.chatUser];
         [self.navigationController pushViewController:page animated:YES];
     }
@@ -1442,31 +1385,31 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
             [MBProgressHUD showLoadingMessageToView:self.view];
             NSString *token = [url valueForParameter:@"token"];
             [NetWorkOperationTool POSTWithUrlString:QueryRedpackgeWithToken(token) postProtoData:nil complete:^(id response) {
-                HttpResponse *hResponse = (HttpResponse *)response;
+                HttpResponse *hResponse = (HttpResponse *) response;
                 if (hResponse.code != successCode) {
                     [GCDQueue executeInMainQueue:^{
                         [MBProgressHUD showToastwithText:LMLocalizedString(@"Set Load failed please try again later", nil) withType:ToastTypeFail showInView:self.view complete:nil];
                     }];
-                } else{
+                } else {
                     [GCDQueue executeInMainQueue:^{
                         [MBProgressHUD hideHUDForView:self.view];
                     }];
-                    NSData* data =  [ConnectTool decodeHttpResponse:hResponse];
+                    NSData *data = [ConnectTool decodeHttpResponse:hResponse];
                     if (data) {
                         RedPackage *redpackge = [RedPackage parseFromData:data error:nil];
                         if (redpackge.remainSize == 0) {
                             if (!redpackge.system) {
                                 [self showRedBagDetailWithHashId:redpackge.hashId];
-                            } else{
+                            } else {
                                 [self getSystemRedBagDetailWithHashId:redpackge.hashId];
                             }
-                        } else{
+                        } else {
                             NSURL *openUrl = [NSURL URLWithString:[NSString stringWithFormat:@"connectim://packet?token=%@", token]];
                             [HandleUrlManager handleOpenURL:openUrl];
                         }
                     }
                 }
-            } fail:^(NSError *error) {
+            }                                  fail:^(NSError *error) {
                 [GCDQueue executeInMainQueue:^{
                     [MBProgressHUD showToastwithText:LMLocalizedString(@"Set Load failed please try again later", nil) withType:ToastTypeFail showInView:self.view complete:nil];
                 }];
@@ -1587,6 +1530,20 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
     }
 }
 
+#pragma mark - lucky packge delegate
+- (void)redLuckyShowView:(LMRedLuckyShowView *)showView goRedLuckyDetailWithSender:(UIButton *)sender {
+    [showView dismissRedLuckyView];
+    [MBProgressHUD showLoadingMessageToView:self.view];
+    [self showRedBagDetailWithHashId:showView.hashId];
+}
+
+#pragma mark - textFieldChange -delegate
+- (void)textFieldChange:(UITextField *)currentTextField {
+    if (currentTextField.text.length > 20) {
+        currentTextField.text = [currentTextField.text substringToIndex:20];
+    }
+}
+
 #pragma mark UIActionSheet methods
 
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
@@ -1622,7 +1579,7 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
 - (void)enterSnapchatModeWithTime:(int)time {
     self.titleView.chatStyle = ChatPageTitleViewStyleSnapChat;
     [self.dataSourceManager openSnapChatModeWithTime:time];
-    
+
     if (![[MMAppSetting sharedSetting] isDontShowSnapchatTip]) {
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:LMLocalizedString(@"Chat Enable Self destruct Mode", nil) message:LMLocalizedString(@"Chat Hide  messages ", nil) preferredStyle:UIAlertControllerStyleAlert];
         UIAlertAction *okAction = [UIAlertAction actionWithTitle:LMLocalizedString(@"Chat I know", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *_Nonnull action) {
@@ -1657,13 +1614,13 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
 
 - (void)downloadAndPlayAudioAtRowIndex:(NSIndexPath *)rowIndex {
     GJGCChatFriendContentModel *contentModel = (GJGCChatFriendContentModel *) [self.dataSourceManager contentModelAtIndex:rowIndex.row];
-    
-    GJGCChatFriendAudioMessageCell *audioCell = (GJGCChatFriendAudioMessageCell *)[self.chatListTable cellForRowAtIndexPath:rowIndex];
+
+    GJGCChatFriendAudioMessageCell *audioCell = (GJGCChatFriendAudioMessageCell *) [self.chatListTable cellForRowAtIndexPath:rowIndex];
     if ([audioCell respondsToSelector:@selector(startDownloadAction)]) {
         [audioCell startDownloadAction];
     }
     contentModel.isDownloading = YES;
-    
+
     NSString *taskIdentifier = nil;
     GJCFFileDownloadTask *downloadTask = [GJCFFileDownloadTask taskWithDownloadUrl:contentModel.audioModel.remotePath withCachePath:contentModel.audioModel.downloadEncodeCachePath withObserver:self getTaskIdentifer:&taskIdentifier];
 
@@ -1769,6 +1726,7 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
 }
 
 #pragma mark - Distance sensor monitoring
+
 - (void)sensorStateChange:(NSNotificationCenter *)notification; {
     if ([[UIDevice currentDevice] proximityState] == YES) {
         [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayAndRecord error:nil];
@@ -1800,7 +1758,9 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
         }
     }
 }
+
 #pragma mark - image video download
+
 - (void)downloadImageFile:(GJGCChatContentBaseModel *)contentModel forIndexPath:(NSIndexPath *)indexPath {
     GJGCChatFriendContentModel *imageContentModel = (GJGCChatFriendContentModel *) [self.dataSourceManager contentModelAtIndex:indexPath.row];
     if (imageContentModel.baseMessageType == GJGCChatBaseMessageTypeSystemNoti) {
@@ -1925,9 +1885,6 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
     }
 }
 
-- (void)downloadDriftBottleImageFile:(GJGCChatFriendContentModel *)imageContentModel forIndexPath:(NSIndexPath *)indexPath {
-}
-
 - (void)downloadGifFile:(GJGCChatFriendContentModel *)gifContentModel forIndexPath:(NSIndexPath *)indexPath {
     if ([GJGCGIFLoadManager gifEmojiIsExistById:gifContentModel.gifLocalId]) {
         return;
@@ -1963,6 +1920,7 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
 
 #pragma mark - GJGCChatInputPanelDelegate
 #pragma mark - meun config
+
 - (GJGCChatInputExpandMenuPanelConfigModel *)chatInputPanelRequiredCurrentConfigData:(GJGCChatInputPanel *)panel {
     GJGCChatInputExpandMenuPanelConfigModel *configModel = [[GJGCChatInputExpandMenuPanelConfigModel alloc] init];
     configModel.talkType = self.taklInfo.talkType;
@@ -1985,8 +1943,7 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
             [self presentViewController:imagePickerVc animated:YES completion:nil];
         }
             break;
-        case GJGCChatInputMenuPanelActionTypeMapLocation:
-        {
+        case GJGCChatInputMenuPanelActionTypeMapLocation: {
             self.isShowingOhterView = YES;
             __weak __typeof(&*self) weakSelf = self;
             MapLocationViewController *mapPage = [[MapLocationViewController alloc] initWithComplete:^(NSDictionary *complete) {
@@ -2068,6 +2025,7 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
 }
 
 #pragma mark - Distance sensor monitoring
+
 - (void)getAuthorization {
     switch ([AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo]) {
         case AVAuthorizationStatusAuthorized:       //The client is authorized to access the hardware supporting a media type.
@@ -2086,8 +2044,7 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
             }];
             break;
         }
-        default:
-        {
+        default: {
             [self creatSetLable];
             return;
         }
@@ -2121,8 +2078,8 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
 }
 
 - (void)showMsgWithTitle:(NSString *)title andContent:(NSString *)content {
-    [UIAlertController showAlertInViewController:self withTitle:title message:content cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:@[LMLocalizedString(@"Common OK", nil)] tapBlock:^(UIAlertController * _Nonnull controller, UIAlertAction * _Nonnull action, NSInteger buttonIndex) {
-        
+    [UIAlertController showAlertInViewController:self withTitle:title message:content cancelButtonTitle:nil destructiveButtonTitle:nil otherButtonTitles:@[LMLocalizedString(@"Common OK", nil)] tapBlock:^(UIAlertController *_Nonnull controller, UIAlertAction *_Nonnull action, NSInteger buttonIndex) {
+
     }];
 }
 
@@ -2137,41 +2094,14 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
         [self.inputPanel recordRightStartLimit];
         return;
     }
-    GJGCChatFriendContentModel *chatContentModel = [[GJGCChatFriendContentModel alloc] init];
-    chatContentModel.baseMessageType = GJGCChatBaseMessageTypeChatMessage;
-    chatContentModel.contentType = GJGCChatFriendContentTypeAudio;
-    chatContentModel.audioModel = audioFile;
-    chatContentModel.audioDuration = [GJGCChatFriendCellStyle formateAudioDuration:GJCFStringFromInt(audioFile.duration)];
-    chatContentModel.audioIsDownload = YES;
-
-    chatContentModel.senderAddress = [[LKUserCenter shareCenter] currentLoginUser].address;
-    chatContentModel.senderHeadUrl = [[LKUserCenter shareCenter] currentLoginUser].avatar;
-    chatContentModel.senderPublicKey = [[LKUserCenter shareCenter] currentLoginUser].pub_key;
-    chatContentModel.senderName = [NSMutableString stringWithFormat:@"%@", [[LKUserCenter shareCenter] currentLoginUser].username];
-
-    chatContentModel.reciverAddress = self.taklInfo.talkType == GJGCChatFriendTalkTypeGroup ?self.taklInfo.chatGroupInfo.groupIdentifer:self.taklInfo.chatUser.address;
-    chatContentModel.reciverHeadUrl = self.taklInfo.headUrl;
-    chatContentModel.reciverPublicKey = self.taklInfo.chatIdendifier;
-    chatContentModel.reciverName = self.taklInfo.name;
-
-    chatContentModel.headUrl = [[LKUserCenter shareCenter] currentLoginUser].avatar;
-    chatContentModel.timeString = [GJGCChatSystemNotiCellStyle formateTime:GJCFDateToString([NSDate date])];
-    chatContentModel.sendStatus = GJGCChatFriendSendMessageStatusSending;
-    chatContentModel.isFromSelf = YES;
-    chatContentModel.talkType = self.taklInfo.talkType;
-    chatContentModel.localMsgId = [ConnectTool generateMessageId];
-
-    NSDate *sendTime = [NSDate date];
-    chatContentModel.sendTime = [sendTime timeIntervalSince1970];
-
+    GJGCChatFriendContentModel *chatContentModel = [LMMessageTool packContentModelWithTalkModel:self.taklInfo contentType:GJGCChatFriendContentTypeAudio extData:audioFile];
     [self.dataSourceManager sendMesssage:chatContentModel];
 }
 
 - (void)chatInputPanel:(GJGCChatInputPanel *)panel sendTextMessage:(NSString *)text {
-    
-    GJGCChatFriendContentModel *chatContentModel = [[GJGCChatFriendContentModel alloc] init];
-    chatContentModel.baseMessageType = GJGCChatBaseMessageTypeChatMessage;
-    chatContentModel.originTextMessage = text;
+
+    GJGCChatFriendContentModel *chatContentModel = [LMMessageTool packContentModelWithTalkModel:self.taklInfo contentType:GJGCChatFriendContentTypeText extData:text];
+
     if ([[GJGCChatContentEmojiParser sharedParser] isWalletUrlString:chatContentModel.originTextMessage]) {
         chatContentModel.contentType = GJGCChatWalletLink;
         if ([text containsString:@"transfer?"]) {
@@ -2181,22 +2111,21 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
         } else if ([text containsString:@"pay?"]) {
             chatContentModel.walletLinkType = LMWalletlinkTypeOuterCollection;
         }
-    }  else{
-        chatContentModel.contentType = GJGCChatFriendContentTypeText;
     }
+
+    //group @
     NSDictionary *parseTextDict = [GJGCChatFriendCellStyle formateSimpleTextMessage:text];
     chatContentModel.simpleTextMessage = [parseTextDict objectForKey:@"contentString"];
     chatContentModel.emojiInfoArray = [parseTextDict objectForKey:@"imageInfo"];
     chatContentModel.phoneNumberArray = [parseTextDict objectForKey:@"phone"];
     if (self.noteGroupMembers.count) {
         NSString *seachRegexString = @"@.*?\\s";
-        NSRegularExpression* regex = [NSRegularExpression regularExpressionWithPattern:seachRegexString
+        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:seachRegexString
                                                                                options:NSRegularExpressionAnchorsMatchLines
                                                                                  error:nil];
         NSArray *array = [regex matchesInString:text options:0 range:NSMakeRange(0, text.length)];
         NSMutableArray *finalNoteMembers = [NSMutableArray array];
-        for(NSTextCheckingResult  *str2 in array)
-        {
+        for (NSTextCheckingResult *str2 in array) {
             NSString *nameString = [text substringWithRange:str2.range];
             if ([nameString hasPrefix:@"@"]) {
                 nameString = [nameString stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:@""];
@@ -2206,7 +2135,7 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
             }
             for (AccountInfo *user in self.noteGroupMembers) {
                 if ([user.groupShowName isEqualToString:nameString] ||
-                    [user.username isEqualToString:nameString]) {
+                        [user.username isEqualToString:nameString]) {
                     [finalNoteMembers objectAddObject:user];
                 }
             }
@@ -2219,58 +2148,11 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
         }
     }
     [self.noteGroupMembers removeAllObjects];
-    chatContentModel.senderAddress = [[LKUserCenter shareCenter] currentLoginUser].address;
-    chatContentModel.senderHeadUrl = [[LKUserCenter shareCenter] currentLoginUser].avatar;
-    chatContentModel.senderPublicKey = [[LKUserCenter shareCenter] currentLoginUser].pub_key;
-    chatContentModel.senderName = [NSMutableString stringWithFormat:@"%@", [[LKUserCenter shareCenter] currentLoginUser].username];
-
-    chatContentModel.reciverAddress = self.taklInfo.talkType == GJGCChatFriendTalkTypeGroup ?self.taklInfo.chatGroupInfo.groupIdentifer:self.taklInfo.chatUser.address;
-    chatContentModel.reciverHeadUrl = self.taklInfo.headUrl;
-    chatContentModel.reciverPublicKey = self.taklInfo.chatIdendifier;
-    chatContentModel.reciverName = self.taklInfo.name;
-
-    chatContentModel.headUrl = [[LKUserCenter shareCenter] currentLoginUser].avatar;
-
-    chatContentModel.timeString = [GJGCChatSystemNotiCellStyle formateTime:GJCFDateToString([NSDate date])];
-    chatContentModel.sendStatus = GJGCChatFriendSendMessageStatusSending;
-
-    chatContentModel.talkType = self.taklInfo.talkType;
-    NSDate *sendTime = [NSDate date];
-    chatContentModel.sendTime = [sendTime timeIntervalSince1970];
-    chatContentModel.localMsgId = [ConnectTool generateMessageId];
-    chatContentModel.isFromSelf = YES;
-
     [self.dataSourceManager sendMesssage:chatContentModel];
 }
 
 - (void)chatInputPanel:(GJGCChatInputPanel *)panel sendGIFMessage:(NSString *)gifCode {
-
-    GJGCChatFriendContentModel *chatContentModel = [[GJGCChatFriendContentModel alloc] init];
-    chatContentModel.baseMessageType = GJGCChatBaseMessageTypeChatMessage;
-    chatContentModel.contentType = GJGCChatFriendContentTypeGif;
-
-
-    NSDate *sendTime = [NSDate date];
-    chatContentModel.sendTime = [sendTime timeIntervalSince1970];
-    chatContentModel.timeString = [GJGCChatSystemNotiCellStyle formateTime:GJCFDateToString(sendTime)];
-    chatContentModel.sendStatus = GJGCChatFriendSendMessageStatusSending;
-    chatContentModel.isFromSelf = YES;
-    chatContentModel.gifLocalId = gifCode;
-    chatContentModel.localMsgId = [ConnectTool generateMessageId];
-
-    chatContentModel.senderAddress = [[LKUserCenter shareCenter] currentLoginUser].address;
-    chatContentModel.senderHeadUrl = [[LKUserCenter shareCenter] currentLoginUser].avatar;
-    chatContentModel.senderPublicKey = [[LKUserCenter shareCenter] currentLoginUser].pub_key;
-    chatContentModel.senderName = [NSMutableString stringWithFormat:@"%@", [[LKUserCenter shareCenter] currentLoginUser].username];
-
-    chatContentModel.reciverAddress = self.taklInfo.talkType == GJGCChatFriendTalkTypeGroup ?self.taklInfo.chatGroupInfo.groupIdentifer:self.taklInfo.chatUser.address;
-    chatContentModel.reciverHeadUrl = self.taklInfo.headUrl;
-    chatContentModel.reciverPublicKey = self.taklInfo.chatIdendifier;
-    chatContentModel.reciverName = self.taklInfo.name;
-
-    chatContentModel.headUrl = [[LKUserCenter shareCenter] currentLoginUser].avatar;
-
-
+    GJGCChatFriendContentModel *chatContentModel = [LMMessageTool packContentModelWithTalkModel:self.taklInfo contentType:GJGCChatFriendContentTypeGif extData:gifCode];
     [self.dataSourceManager sendMesssage:chatContentModel];
 
 }
@@ -2281,6 +2163,7 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
 }
 
 #pragma mark - TZImagePickerControllerDelegate
+
 - (void)sendPhotoImages:(NSArray *)photos backPhoto:(BOOL)isBack {
     NSMutableArray *images = [NSMutableArray array];
     for (UIImage *image in photos) {
@@ -2417,51 +2300,6 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
     }];
 }
 
-- (NSUInteger)durationWithVideo:(NSURL *)videoUrl {
-    NSUInteger second = 0;
-    AVURLAsset *asset = [AVURLAsset assetWithURL:videoUrl];
-    Float64 duration = CMTimeGetSeconds(asset.duration);
-    DDLogInfo(@"%f", duration);
-    if (duration <= 1.0) {
-        second = 1;
-    } else {
-        second = (NSUInteger) (duration + 0.5);
-    }
-    return second;
-}
-
-// Get the video's center frame as video poster image
-- (UIImage *)frameImageFromVideoURL:(NSURL *)videoURL {
-    // result
-    UIImage *image = nil;
-
-    // AVAssetImageGenerator
-    AVAsset *asset = [AVAsset assetWithURL:videoURL];
-    AVAssetImageGenerator *imageGenerator = [[AVAssetImageGenerator alloc] initWithAsset:asset];
-    imageGenerator.appliesPreferredTrackTransform = YES;
-
-    // calculate the midpoint time of video
-    Float64 duration = CMTimeGetSeconds([asset duration]);
-    // 24 frames per second (fps) for film, 30 fps for NTSC (used for TV in North America and
-    // Japan), and 25 fps for PAL (used for TV in Europe).
-    // Using a timescale of 600, you can exactly represent any number of frames in these systems
-    CMTime midpoint = CMTimeMakeWithSeconds(duration / 2.0, 600);
-
-    // get the image from
-    NSError *error = nil;
-    CMTime actualTime;
-    // Returns a CFRetained CGImageRef for an asset at or near the specified time.
-    // So we should mannully release it
-    CGImageRef centerFrameImage = [imageGenerator copyCGImageAtTime:midpoint
-                                                         actualTime:&actualTime
-                                                              error:&error];
-    if (centerFrameImage != NULL) {
-        image = [[UIImage alloc] initWithCGImage:centerFrameImage];
-        // Release the CFRetained image
-        CGImageRelease(centerFrameImage);
-    }
-    return image;
-}
 
 - (void)compressVideoWithVideoURL:(NSURL *)videoURL
                         savedPath:(NSString *)savedPath withComplete:(void (^)(BOOL saved))complete {
@@ -2504,121 +2342,28 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
 #pragma mark - send video
 
 - (void)sendVideo:(NSURL *)originUrl compressedFile:(NSString *)filePath videoSize:(NSString *)videoSize {
-    NSString *message_id = [ConnectTool generateMessageId];
-    NSString *cacheDirectory = [[GJCFCachePathManager shareManager] mainVideoCacheDirectory];
-    cacheDirectory = [[cacheDirectory stringByAppendingPathComponent:[[LKUserCenter shareCenter] currentLoginUser].address]
-            stringByAppendingPathComponent:self.taklInfo.fileDocumentName];
 
-    if (!GJCFFileDirectoryIsExist(cacheDirectory)) {
-        GJCFFileProtectCompleteDirectoryCreate(cacheDirectory);
-    }
-    NSString *videoFileName = [NSString stringWithFormat:@"%@.mp4", message_id];
-    NSString *videoFileCoverImageName = [NSString stringWithFormat:@"%@-coverimage.jpg", message_id];
-    NSString *videoFileLocalPath = [cacheDirectory stringByAppendingPathComponent:videoFileName];
-    NSString *videoFileCoverImageLocalPath = [cacheDirectory stringByAppendingPathComponent:videoFileCoverImageName];
-
-    GJCFFileCopyFileIsRemove(filePath, videoFileLocalPath, YES);
-    UIImage *coverImage = [self frameImageFromVideoURL:originUrl];
-    NSData *coverData = UIImageJPEGRepresentation(coverImage, 1);
-    coverData = [CameraTool imageSizeLessthan2K:coverData withOriginImage:coverImage];
-    GJCFFileWrite(coverData, videoFileCoverImageLocalPath);
-
-    GJGCChatFriendContentModel *chatContentModel = [[GJGCChatFriendContentModel alloc] init];
-    chatContentModel.baseMessageType = GJGCChatBaseMessageTypeChatMessage;
-    chatContentModel.contentType = GJGCChatFriendContentTypeVideo;
-
-
-    chatContentModel.messageContentImage = [UIImage imageWithData:[NSData dataWithContentsOfFile:videoFileLocalPath]];
-
-    chatContentModel.isFromSelf = YES;
-    chatContentModel.talkType = self.taklInfo.talkType;
-    chatContentModel.originImageWidth = coverImage.size.width;
-    chatContentModel.originImageHeight = coverImage.size.height;
-    chatContentModel.localMsgId = message_id;
-
-    chatContentModel.senderAddress = [[LKUserCenter shareCenter] currentLoginUser].address;
-    chatContentModel.senderHeadUrl = [[LKUserCenter shareCenter] currentLoginUser].avatar;
-    chatContentModel.senderPublicKey = [[LKUserCenter shareCenter] currentLoginUser].pub_key;
-    chatContentModel.senderName = [NSMutableString stringWithFormat:@"%@", [[LKUserCenter shareCenter] currentLoginUser].username];
-
-    chatContentModel.reciverAddress = self.taklInfo.talkType == GJGCChatFriendTalkTypeGroup ?self.taklInfo.chatGroupInfo.groupIdentifer:self.taklInfo.chatUser.address;
-    chatContentModel.reciverHeadUrl = self.taklInfo.headUrl;
-    chatContentModel.reciverPublicKey = self.taklInfo.chatIdendifier;
-    chatContentModel.reciverName = self.taklInfo.name;
-    chatContentModel.videoIsDownload = YES;
-
-    chatContentModel.headUrl = [[LKUserCenter shareCenter] currentLoginUser].avatar;
-
-    chatContentModel.timeString = [GJGCChatSystemNotiCellStyle formateTime:GJCFDateToString([NSDate date])];
-    chatContentModel.sendStatus = GJGCChatFriendSendMessageStatusSending;
-
-    chatContentModel.videoOriginDataPath = videoFileLocalPath;
-    chatContentModel.videoOriginCoverImageCachePath = videoFileCoverImageLocalPath;
-    chatContentModel.videoDuration = [self durationWithVideo:originUrl];
-    chatContentModel.videoSize = videoSize;
-
+    NSDictionary *dataDict = @{@"originUrl": originUrl,
+            @"filePath": filePath,
+            @"videoSize": videoSize};
+    GJGCChatFriendContentModel *chatContentModel = [LMMessageTool packContentModelWithTalkModel:self.taklInfo contentType:GJGCChatFriendContentTypeVideo extData:dataDict];
     [self.dataSourceManager sendMesssage:chatContentModel];
-
 }
 
 #pragma mark - send photo
 
 - (void)sendImages:(NSArray *)images {
     for (NSDictionary *imageInfo in images) {
-
-        NSString *originPath = [imageInfo objectForKey:@"origin"];
-        NSString *thumbPath = [imageInfo objectForKey:@"thumb"];
-        NSInteger originWidth = [[imageInfo objectForKey:@"originWidth"] intValue];
-        NSInteger originHeight = [[imageInfo objectForKey:@"originHeight"] intValue];
-        NSString *messageid = [imageInfo objectForKey:@"imageID"];
-        GJGCChatFriendContentModel *chatContentModel = [[GJGCChatFriendContentModel alloc] init];
-        chatContentModel.baseMessageType = GJGCChatBaseMessageTypeChatMessage;
-        chatContentModel.contentType = GJGCChatFriendContentTypeImage;
-        chatContentModel.originImageWidth = originWidth;
-        chatContentModel.originImageHeight = originHeight;
-        chatContentModel.imageOriginDataCachePath = originPath;
-        chatContentModel.thumbImageCachePath = thumbPath;
-        chatContentModel.messageContentImage = [UIImage imageWithData:[NSData dataWithContentsOfFile:chatContentModel.imageOriginDataCachePath]];
-    
-        NSString *filePath = [[GJCFCachePathManager shareManager] mainImageCacheDirectory];
-        filePath = [[filePath stringByAppendingPathComponent:[[LKUserCenter shareCenter] currentLoginUser].address]
-                stringByAppendingPathComponent:self.taklInfo.fileDocumentName];
-        if (!GJCFFileDirectoryIsExist(filePath)) {
-            GJCFFileProtectCompleteDirectoryCreate(filePath);
-        }
-        NSString *fileName = [NSString stringWithFormat:@"%@.jpg", messageid];
-        chatContentModel.imageOriginDataCachePath = [filePath stringByAppendingPathComponent:fileName];
-        GJCFFileCopyFileIsRemove(originPath, chatContentModel.imageOriginDataCachePath, YES);
-        chatContentModel.isFromSelf = YES;
-        chatContentModel.talkType = self.taklInfo.talkType;
-        chatContentModel.localMsgId = messageid;
-
-        chatContentModel.senderAddress = [[LKUserCenter shareCenter] currentLoginUser].address;
-        chatContentModel.senderHeadUrl = [[LKUserCenter shareCenter] currentLoginUser].avatar;
-        chatContentModel.senderPublicKey = [[LKUserCenter shareCenter] currentLoginUser].pub_key;
-        chatContentModel.senderName = [NSMutableString stringWithFormat:@"%@", [[LKUserCenter shareCenter] currentLoginUser].username];
-
-        chatContentModel.reciverAddress = self.taklInfo.talkType == GJGCChatFriendTalkTypeGroup ?self.taklInfo.chatGroupInfo.groupIdentifer:self.taklInfo.chatUser.address;
-        chatContentModel.reciverHeadUrl = self.taklInfo.headUrl;
-        chatContentModel.reciverPublicKey = self.taklInfo.chatIdendifier;
-        chatContentModel.reciverName = self.taklInfo.name;
-
-        chatContentModel.headUrl = [[LKUserCenter shareCenter] currentLoginUser].avatar;
-
-        chatContentModel.timeString = [GJGCChatSystemNotiCellStyle formateTime:GJCFDateToString([NSDate date])];
-        chatContentModel.sendStatus = GJGCChatFriendSendMessageStatusSending;
-
+        GJGCChatFriendContentModel *chatContentModel = [LMMessageTool packContentModelWithTalkModel:self.taklInfo contentType:GJGCChatFriendContentTypeImage extData:imageInfo];
         [self.dataSourceManager sendMesssage:chatContentModel];
     }
 }
 
 
-#pragma mark - 发送红包
+#pragma mark - send luckypackge
 
 - (void)showCreateRedPage {
-
     NSInteger redPackType = 0;
-
     NSString *reciverIdentifier = @"";
     if (self.taklInfo.talkType == GJGCChatFriendTalkTypeGroup) {
         redPackType = LMChatRedLuckyStyleGroup;
@@ -2638,158 +2383,26 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
 }
 
 - (void)sendRedBagWithHashID:(NSString *)hashId tips:(NSString *)tips {
-
-    GJGCChatFriendContentModel *chatContentModel = [[GJGCChatFriendContentModel alloc] init];
-    chatContentModel.baseMessageType = GJGCChatBaseMessageTypeChatMessage;
-
-    chatContentModel.contentType = GJGCChatFriendContentTypeRedEnvelope;
-
-    chatContentModel.redBagTipMessage = [GJGCChatSystemNotiCellStyle formateRedBagWithMessage:tips isOuterTransfer:self.taklInfo.talkType == GJGCChatFriendTalkTypePostSystem];
-    chatContentModel.redBagSubTipMessage = [GJGCChatSystemNotiCellStyle formateCellLeftSubTipsWithType:GJGCChatFriendContentTypeRedEnvelope withNote:tips isCrowding:NO];
-    chatContentModel.hashID = hashId;
-    chatContentModel.tipNote = tips;
-    chatContentModel.senderAddress = [[LKUserCenter shareCenter] currentLoginUser].address;
-    chatContentModel.senderHeadUrl = [[LKUserCenter shareCenter] currentLoginUser].avatar;
-    chatContentModel.senderPublicKey = [[LKUserCenter shareCenter] currentLoginUser].pub_key;
-    chatContentModel.senderName = [NSMutableString stringWithFormat:@"%@", [[LKUserCenter shareCenter] currentLoginUser].username];
-
-    chatContentModel.reciverAddress = self.taklInfo.talkType == GJGCChatFriendTalkTypeGroup ?self.taklInfo.chatGroupInfo.groupIdentifer:self.taklInfo.chatUser.address;
-    chatContentModel.reciverHeadUrl = self.taklInfo.headUrl;
-    chatContentModel.reciverPublicKey = self.taklInfo.chatIdendifier;
-    chatContentModel.reciverName = self.taklInfo.name;
-
-    chatContentModel.headUrl = [[LKUserCenter shareCenter] currentLoginUser].avatar;
-
-    chatContentModel.timeString = [GJGCChatSystemNotiCellStyle formateTime:GJCFDateToString([NSDate date])];
-    chatContentModel.sendStatus = GJGCChatFriendSendMessageStatusSending;
-    chatContentModel.talkType = self.taklInfo.talkType;
-    NSDate *sendTime = [NSDate date];
-    chatContentModel.sendTime = [sendTime timeIntervalSince1970];
-    chatContentModel.localMsgId = [ConnectTool generateMessageId];
-    
-    chatContentModel.isFromSelf = YES;
-
+    LMTransactionModel *transactionModel = [LMTransactionModel new];
+    transactionModel.note = tips;
+    transactionModel.hashId = hashId;
+    GJGCChatFriendContentModel *chatContentModel = [LMMessageTool packContentModelWithTalkModel:self.taklInfo contentType:GJGCChatFriendContentTypeRedEnvelope extData:transactionModel];
     [self.dataSourceManager sendMesssage:chatContentModel];
-
 }
 
 - (void)sendLocation:(NSDictionary *)locationInfo {
-    /**
-     @{@"image":image,
-     @"locationLatitude":@(_location.latitude),
-     @"locationLongitude":@(_location.longitude),
-     @"street":[dict objectForKey:@"Street"]});
-     */
-
-    UIImage *image = [locationInfo valueForKey:@"image"];
-    CGFloat locationLatitude = [[locationInfo valueForKey:@"locationLatitude"] doubleValue];
-    CGFloat locationLongitude = [[locationInfo valueForKey:@"locationLongitude"] doubleValue];
-
-    NSString *filePath = [[GJCFCachePathManager shareManager] mainImageCacheDirectory];
-    filePath = [[filePath stringByAppendingPathComponent:[[LKUserCenter shareCenter] currentLoginUser].address]
-            stringByAppendingPathComponent:self.taklInfo.fileDocumentName];
-    if (!GJCFFileDirectoryIsExist(filePath)) {
-        GJCFFileProtectCompleteDirectoryCreate(filePath);
-    }
-    GJGCChatFriendContentModel *chatContentModel = [[GJGCChatFriendContentModel alloc] init];
-    chatContentModel.localMsgId = [ConnectTool generateMessageId];
-    NSData *imageData = UIImageJPEGRepresentation(image, 1);
-    NSString *imageName = [NSString stringWithFormat:@"%@.jpg", chatContentModel.localMsgId];
-    NSString *imagePath = [filePath stringByAppendingPathComponent:imageName];
-    BOOL saveOriginResult = GJCFFileWrite(imageData, imagePath);
-
-    if (saveOriginResult) {
-        DDLogInfo(@"filePath %@", filePath);
-    } else {
-        DDLogInfo(@"Send picture save error");
-    }
-    chatContentModel.baseMessageType = GJGCChatBaseMessageTypeChatMessage;
-    chatContentModel.contentType = GJGCChatFriendContentTypeMapLocation;
-
-    chatContentModel.locationImageOriginDataCachePath = imagePath;
-
-    chatContentModel.locationLatitude = locationLatitude;
-    chatContentModel.locationLongitude = locationLongitude;
-
-    NSString *locationMessage = [locationInfo valueForKey:@"street"];
-    chatContentModel.originTextMessage = locationMessage;
-    NSMutableAttributedString *descText = [[NSMutableAttributedString alloc] initWithString:locationMessage];
-    [descText addAttribute:NSFontAttributeName
-                     value:[UIFont systemFontOfSize:FONT_SIZE(24)]
-                     range:NSMakeRange(0, locationMessage.length)];
-    [descText addAttribute:NSForegroundColorAttributeName
-                     value:[UIColor whiteColor]
-                     range:NSMakeRange(0, locationMessage.length)];
-    chatContentModel.locationMessage = descText;
-    chatContentModel.isFromSelf = YES;
-    chatContentModel.talkType = self.taklInfo.talkType;
-    chatContentModel.senderAddress = [[LKUserCenter shareCenter] currentLoginUser].address;
-    chatContentModel.senderHeadUrl = [[LKUserCenter shareCenter] currentLoginUser].avatar;
-    chatContentModel.senderPublicKey = [[LKUserCenter shareCenter] currentLoginUser].pub_key;
-    chatContentModel.senderName = [NSMutableString stringWithFormat:@"%@", [[LKUserCenter shareCenter] currentLoginUser].username];
-
-    chatContentModel.reciverAddress = self.taklInfo.talkType == GJGCChatFriendTalkTypeGroup ?self.taklInfo.chatGroupInfo.groupIdentifer:self.taklInfo.chatUser.address;
-    chatContentModel.reciverHeadUrl = self.taklInfo.headUrl;
-    chatContentModel.reciverPublicKey = self.taklInfo.chatIdendifier;
-    chatContentModel.reciverName = self.taklInfo.name;
-
-    chatContentModel.headUrl = [[LKUserCenter shareCenter] currentLoginUser].avatar;
-
-    chatContentModel.timeString = [GJGCChatSystemNotiCellStyle formateTime:GJCFDateToString([NSDate date])];
-    chatContentModel.sendStatus = GJGCChatFriendSendMessageStatusSending;
-    
+    GJGCChatFriendContentModel *chatContentModel = [LMMessageTool packContentModelWithTalkModel:self.taklInfo contentType:GJGCChatFriendContentTypeMapLocation extData:locationInfo];
     [self.dataSourceManager sendMesssage:chatContentModel];
 }
 
 - (void)sendContact:(AccountInfo *)user {
-    
-    GJGCChatFriendContentModel *chatContentModel = [[GJGCChatFriendContentModel alloc] init];
-    chatContentModel.baseMessageType = GJGCChatBaseMessageTypeChatMessage;
-
-    chatContentModel.contentType = GJGCChatFriendContentTypeNameCard;
-
-    chatContentModel.contactAvatar = user.avatar;
-    chatContentModel.contactAddress = user.address;
-    chatContentModel.contactPublickey = user.pub_key;
-
-
-    NSString *name = user.username;
-    NSMutableAttributedString *nameText = [[NSMutableAttributedString alloc] initWithString:name];
-    [nameText addAttribute:NSFontAttributeName
-                     value:[UIFont systemFontOfSize:FONT_SIZE(32)]
-                     range:NSMakeRange(0, name.length)];
-    [nameText addAttribute:NSForegroundColorAttributeName
-                     value:[UIColor whiteColor]
-                     range:NSMakeRange(0, name.length)];
-    chatContentModel.contactName = nameText;
-
-    chatContentModel.contactSubTipMessage = [GJGCChatSystemNotiCellStyle formateNameCardSubTipsIsFromSelf:YES];
-
-    chatContentModel.isFromSelf = YES;
-    chatContentModel.talkType = self.taklInfo.talkType;
-    chatContentModel.localMsgId = [ConnectTool generateMessageId];
-
-    chatContentModel.senderAddress = [[LKUserCenter shareCenter] currentLoginUser].address;
-    chatContentModel.senderHeadUrl = [[LKUserCenter shareCenter] currentLoginUser].avatar;
-    chatContentModel.senderPublicKey = [[LKUserCenter shareCenter] currentLoginUser].pub_key;
-    chatContentModel.senderName = [NSMutableString stringWithFormat:@"%@", [[LKUserCenter shareCenter] currentLoginUser].username];
-
-    chatContentModel.reciverAddress = self.taklInfo.talkType == GJGCChatFriendTalkTypeGroup ?self.taklInfo.chatGroupInfo.groupIdentifer:self.taklInfo.chatUser.address;
-    chatContentModel.reciverHeadUrl = self.taklInfo.headUrl;
-    chatContentModel.reciverPublicKey = self.taklInfo.chatIdendifier;
-    chatContentModel.reciverName = self.taklInfo.name;
-
-    chatContentModel.headUrl = [[LKUserCenter shareCenter] currentLoginUser].avatar;
-
-    chatContentModel.timeString = [GJGCChatSystemNotiCellStyle formateTime:GJCFDateToString([NSDate date])];
-    chatContentModel.sendStatus = GJGCChatFriendSendMessageStatusSending;
-
+    GJGCChatFriendContentModel *chatContentModel = [LMMessageTool packContentModelWithTalkModel:self.taklInfo contentType:GJGCChatFriendContentTypeNameCard extData:user];
     [self.dataSourceManager sendMesssage:chatContentModel];
-
 }
 
-- (void)transfer {
 
+#pragma mark - send transfer message
+- (void)transfer {
     if (self.taklInfo.talkType == GJGCChatFriendTalkTypeGroup) {
         LMGroupFriendsViewController *page = [[LMGroupFriendsViewController alloc] init];
         page.groupFriends = [NSMutableArray arrayWithArray:self.taklInfo.chatGroupInfo.groupMembers];
@@ -2810,62 +2423,28 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
     }
 }
 
-#pragma mark - send transfer message
-
 - (void)sendTransferMessageWithAmount:(NSString *)amount transactionID:(NSString *)transactionID note:(NSString *)note {
-
-    GJGCChatFriendContentModel *chatContentModel = [[GJGCChatFriendContentModel alloc] init];
-    chatContentModel.baseMessageType = GJGCChatBaseMessageTypeChatMessage;
-
-    chatContentModel.contentType = GJGCChatFriendContentTypeTransfer;
-
-    chatContentModel.transferSubTipMessage = [GJGCChatSystemNotiCellStyle formateCellLeftSubTipsWithType:GJGCChatFriendContentTypeTransfer withNote:note isCrowding:YES];
-
-    chatContentModel.transferStatusMessage = [GJGCChatSystemNotiCellStyle formateRecieptSubTipsWithTotal:1 payCount:1 isCrowding:NO transStatus:1];
-    chatContentModel.hashID = transactionID;
-    chatContentModel.tipNote = note;
-    chatContentModel.amount = [amount doubleValue] * pow(10, 8);
-    chatContentModel.transferMessage = [GJGCChatSystemNotiCellStyle formateTransferWithAmount:chatContentModel.amount isSendToMe:NO isOuterTransfer:self.taklInfo.talkType == GJGCChatFriendTalkTypePostSystem];
-
-    chatContentModel.senderAddress = [[LKUserCenter shareCenter] currentLoginUser].address;
-    chatContentModel.senderHeadUrl = [[LKUserCenter shareCenter] currentLoginUser].avatar;
-    chatContentModel.senderPublicKey = [[LKUserCenter shareCenter] currentLoginUser].pub_key;
-    chatContentModel.senderName = [NSMutableString stringWithFormat:@"%@", [[LKUserCenter shareCenter] currentLoginUser].username];
-
-    chatContentModel.reciverAddress = self.taklInfo.talkType == GJGCChatFriendTalkTypeGroup ?self.taklInfo.chatGroupInfo.groupIdentifer:self.taklInfo.chatUser.address;
-    chatContentModel.reciverHeadUrl = self.taklInfo.headUrl;
-    chatContentModel.reciverPublicKey = self.taklInfo.chatIdendifier;
-    chatContentModel.reciverName = self.taklInfo.name;
-
-    chatContentModel.headUrl = [[LKUserCenter shareCenter] currentLoginUser].avatar;
-
-    chatContentModel.timeString = [GJGCChatSystemNotiCellStyle formateTime:GJCFDateToString([NSDate date])];
-    chatContentModel.sendStatus = GJGCChatFriendSendMessageStatusSending;
-    chatContentModel.isFromSelf = YES;
-    chatContentModel.talkType = self.taklInfo.talkType;
-    NSDate *sendTime = [NSDate date];
-    chatContentModel.sendTime = [sendTime timeIntervalSince1970];
-
-    chatContentModel.localMsgId = [ConnectTool generateMessageId];
-
-    NSMutableDictionary* dic = [NSMutableDictionary dictionary];
-    [dic safeSetObject:chatContentModel.localMsgId forKey:@"message_id"];
-    [dic safeSetObject:transactionID forKey:@"hashid"];
-    [dic safeSetObject:@(1) forKey:@"status"];
-    [dic safeSetObject:0 forKey:@"pay_count"];
-    [dic safeSetObject:0 forKey:@"crowd_count"];
-    [[LMMessageExtendManager sharedManager] saveBitchMessageExtendDict:dic];
-
-
+    LMTransactionModel *transactionModel = [LMTransactionModel new];
+    transactionModel.note = note;
+    transactionModel.hashId = transactionID;
+    transactionModel.amount = [[NSDecimalNumber decimalNumberWithString:amount] decimalNumberByMultiplyingBy:[[NSDecimalNumber alloc] initWithLong:pow(10, 8)]];
+    GJGCChatFriendContentModel *chatContentModel = [LMMessageTool packContentModelWithTalkModel:self.taklInfo contentType:GJGCChatFriendContentTypeTransfer extData:transactionModel];
+    [GCDQueue executeInGlobalQueue:^{
+        NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+        [dic safeSetObject:chatContentModel.localMsgId forKey:@"message_id"];
+        [dic safeSetObject:transactionID forKey:@"hashid"];
+        [dic safeSetObject:@(1) forKey:@"status"];
+        [dic safeSetObject:0 forKey:@"pay_count"];
+        [dic safeSetObject:0 forKey:@"crowd_count"];
+        [[LMMessageExtendManager sharedManager] saveBitchMessageExtendDict:dic];
+    }];
     [self.dataSourceManager sendMesssage:chatContentModel];
-
-
 }
 
 #pragma mark - receipt
+
 - (void)sendCrowdBlance {
     __weak __typeof(&*self) weakSelf = self;
-
     if (self.taklInfo.talkType == GJGCChatFriendTalkTypeGroup) {
         LMGroupChatReciptViewController *groupRecipVc = [[LMGroupChatReciptViewController alloc] initWithIdentifier:self.taklInfo.chatIdendifier];
         groupRecipVc.groupMemberCount = self.taklInfo.chatGroupInfo.groupMembers.count;
@@ -2884,116 +2463,36 @@ static NSString *const GJGCActionSheetAssociateKey = @"GJIMSimpleCellActionSheet
         UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:recipVc];
         [self presentViewController:nav animated:YES completion:nil];
     }
-
-
 }
 
 - (void)sendFriendRceiptMessageWithAmount:(NSDecimalNumber *)amount transactionID:(NSString *)transactionID totalMember:(int)totalMember isCrowdfundRceipt:(BOOL)isCrowdfundRceipt note:(NSString *)note {
 
-    GJGCChatFriendContentModel *chatContentModel = [[GJGCChatFriendContentModel alloc] init];
-    chatContentModel.baseMessageType = GJGCChatBaseMessageTypeChatMessage;
-
-    chatContentModel.contentType = GJGCChatFriendContentTypePayReceipt;
-    chatContentModel.localMsgId = [ConnectTool generateMessageId];
-    chatContentModel.tipNote = note;
-    chatContentModel.payOrReceiptMessage = [GJGCChatSystemNotiCellStyle formateRecieptWithAmount:[amount longLongValue] isSendToMe:NO isCrowdfundRceipt:isCrowdfundRceipt withNote:note];
-    chatContentModel.payOrReceiptSubTipMessage = [GJGCChatSystemNotiCellStyle formateCellLeftSubTipsWithType:GJGCChatFriendContentTypePayReceipt withNote:note isCrowding:isCrowdfundRceipt];
-    chatContentModel.payOrReceiptStatusMessage = [GJGCChatSystemNotiCellStyle formateRecieptSubTipsWithTotal:totalMember payCount:0 isCrowding:isCrowdfundRceipt transStatus:0];
-    chatContentModel.hashID = transactionID;
-    chatContentModel.amount = [amount longLongValue];
-    chatContentModel.memberCount = totalMember;
-    chatContentModel.isCrowdfundRceipt = isCrowdfundRceipt;
-
-    chatContentModel.senderAddress = [[LKUserCenter shareCenter] currentLoginUser].address;
-    chatContentModel.senderHeadUrl = [[LKUserCenter shareCenter] currentLoginUser].avatar;
-    chatContentModel.senderPublicKey = [[LKUserCenter shareCenter] currentLoginUser].pub_key;
-    chatContentModel.senderName = [NSMutableString stringWithFormat:@"%@", [[LKUserCenter shareCenter] currentLoginUser].username];
-
-    chatContentModel.reciverAddress = self.taklInfo.talkType == GJGCChatFriendTalkTypeGroup ?self.taklInfo.chatGroupInfo.groupIdentifer:self.taklInfo.chatUser.address;
-    chatContentModel.reciverHeadUrl = self.taklInfo.headUrl;
-    chatContentModel.reciverPublicKey = self.taklInfo.chatIdendifier;
-    chatContentModel.reciverName = self.taklInfo.name;
-
-    chatContentModel.headUrl = [[LKUserCenter shareCenter] currentLoginUser].avatar;
-
-    chatContentModel.timeString = [GJGCChatSystemNotiCellStyle formateTime:GJCFDateToString([NSDate date])];
-    chatContentModel.sendStatus = GJGCChatFriendSendMessageStatusSending;
-    chatContentModel.talkType = self.taklInfo.talkType;
-    NSDate *sendTime = [NSDate date];
-    chatContentModel.sendTime = [sendTime timeIntervalSince1970];
-
-    chatContentModel.isFromSelf = YES;
-    
-    NSMutableDictionary* dict = [NSMutableDictionary dictionary];
-    [dict safeSetObject:chatContentModel.localMsgId forKey:@"message_id"];
-    [dict safeSetObject:transactionID forKey:@"hashid"];
-    [dict safeSetObject:@(0) forKey:@"status"];
-    [dict safeSetObject:0 forKey:@"pay_count"];
-    if (totalMember > 1) {
-        [dict safeSetObject:@(totalMember) forKey:@"crowd_count"];
-    }else
-    {
-      [dict safeSetObject:@(0) forKey:@"crowd_count"];
-    }
-    [[LMMessageExtendManager sharedManager] saveBitchMessageExtendDict:dict];
-    
-    [self.dataSourceManager sendMesssage:chatContentModel];
-
-}
-- (void)showCropingImageOnView:(UIView *)destView {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        UILabel *toastLabel = (UILabel *) [destView viewWithTag:GJGCInputViewToastLabelTag];
-
-        if (!toastLabel) {
-            CGFloat toastWidth = 180;
-            CGFloat toastHeight = 65;
-
-            CGFloat originX = (destView.frame.size.width - toastWidth) / 2;
-            CGFloat originY = (destView.frame.size.height - toastHeight) / 2;
-
-            toastLabel = [[UILabel alloc] initWithFrame:CGRectMake(originX, originY, toastWidth, toastHeight)];
-            toastLabel.layer.cornerRadius = 9.f;
-            toastLabel.backgroundColor = [UIColor blackColor];
-            toastLabel.layer.opacity = 0.7;
-            toastLabel.layer.masksToBounds = YES;
-            toastLabel.textColor = [UIColor whiteColor];
-            toastLabel.textAlignment = NSTextAlignmentCenter;
-            toastLabel.text = @"Picture processing...";
-
-            [destView addSubview:toastLabel];
-
+    LMTransactionModel *transactionModel = [LMTransactionModel new];
+    transactionModel.note = note;
+    transactionModel.isCrowding = isCrowdfundRceipt;
+    transactionModel.size = totalMember;
+    transactionModel.hashId = transactionID;
+    transactionModel.amount = amount;
+    GJGCChatFriendContentModel *chatContentModel = [LMMessageTool packContentModelWithTalkModel:self.taklInfo contentType:GJGCChatFriendContentTypePayReceipt extData:transactionModel];
+    //save trancation status
+    [GCDQueue executeInGlobalQueue:^{
+        NSMutableDictionary *dict = [NSMutableDictionary dictionary];
+        [dict safeSetObject:chatContentModel.localMsgId forKey:@"message_id"];
+        [dict safeSetObject:transactionID forKey:@"hashid"];
+        [dict safeSetObject:@(0) forKey:@"status"];
+        [dict safeSetObject:0 forKey:@"pay_count"];
+        if (totalMember > 1) {
+            [dict safeSetObject:@(totalMember) forKey:@"crowd_count"];
         } else {
-
-            [destView addSubview:toastLabel];
+            [dict safeSetObject:@(0) forKey:@"crowd_count"];
         }
-
-    });
+        [[LMMessageExtendManager sharedManager] saveBitchMessageExtendDict:dict];
+    }];
+    [self.dataSourceManager sendMesssage:chatContentModel];
 }
 
-- (void)removeCropingImageOnView:(UIView *)destView {
-    dispatch_async(dispatch_get_main_queue(), ^{
 
-        UILabel *toastLabel = (UILabel *) [destView viewWithTag:GJGCInputViewToastLabelTag];
-
-        if (!toastLabel) {
-            return;
-        }
-
-        if (![destView.subviews containsObject:toastLabel]) {
-            return;
-        }
-
-        [toastLabel removeFromSuperview];
-        toastLabel = nil;
-
-    });
-}
-
-- (NSString *)createThumbFromOriginImage:(UIImage *)originImage withOriginImagePath:(NSString *)originImagePath imageID:(NSString *)imageID {
-    UIImage *thumbImage = [[originImage copy] fixOrietationWithScale:0.16];
-    return [self createTumbWithImage:thumbImage withOriginImagePath:originImagePath imageID:imageID];
-}
-
+#pragma mark -privte method
 - (NSString *)createTumbWithImage:(UIImage *)thumbImage withOriginImagePath:(NSString *)originImagePath imageID:(NSString *)imageID {
 
     NSString *thumbName = [NSString stringWithFormat:@"%@-thumb.jpg", imageID];

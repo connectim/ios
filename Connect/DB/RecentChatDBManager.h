@@ -126,11 +126,12 @@
 - (NSString *)getDraftWithIdentifier:(NSString *)identifier;
 
 /**
- * recent chat is top status
- * @param publiKeyOrGroupid
+ * remove all chat last message
  * @return
  */
-- (BOOL)isTopChat:(NSString *)publiKeyOrGroupid;
+- (void)removeAllLastContent;
+
+- (void)removeLastContentWithIdentifier:(NSString *)identifier;
 
 /**
  * updata custum field value

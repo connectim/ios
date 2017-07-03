@@ -171,20 +171,20 @@
     return NO;
 }
 
-- (void)addGetNewMessageObserver:(id <SystemMessageHandlerGetNewMessage>)oberver {
+- (void)addGetNewMessageObserver:(id <MessageHandlerGetNewMessage>)oberver {
     [self.getNewMessageObservers addObject:oberver];
 }
 
-- (void)removeGetNewMessageObserver:(id <SystemMessageHandlerGetNewMessage>)oberver {
+- (void)removeGetNewMessageObserver:(id <MessageHandlerGetNewMessage>)oberver {
     [self.getNewMessageObservers removeObject:oberver];
 }
 
 - (void)pushGetBitchNewMessages:(NSArray *)messages {
     if ([[SessionManager sharedManager].chatSession isEqualToString:kSystemIdendifier]) {
-        for (id <SystemMessageHandlerGetNewMessage> ob in self.getNewMessageObservers) {
-            if ([ob respondsToSelector:@selector(getNewSystemMessages:)]) {
+        for (id <MessageHandlerGetNewMessage> ob in self.getNewMessageObservers) {
+            if ([ob respondsToSelector:@selector(getBitchNewMessage:)]) {
                 [GCDQueue executeInMainQueue:^{
-                    [ob getNewSystemMessages:messages];
+                    [ob getBitchNewMessage:messages];
                 }];
             }
         }

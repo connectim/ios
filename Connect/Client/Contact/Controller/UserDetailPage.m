@@ -238,18 +238,21 @@
  *  accept add request
  */
 - (void)acceptRequest {
-    __weak __typeof(&*self) weakSelf = self;
-    [[IMService instance] acceptAddRequestWithAddress:self.user.address source:self.user.source comlete:^(NSError *erro, id data) {
-        if (erro) {
+    [[IMService instance] acceptAddRequestWithAddress:self.user.address source:self.user.source comlete:^(NSError *error, id data) {
+        if (error) {
             [GCDQueue executeInMainQueue:^{
-                [MBProgressHUD showToastwithText:LMLocalizedString(@"Network Server error", nil) withType:ToastTypeFail showInView:weakSelf.view complete:nil];
+                if (error.code == 4) {
+                    [MBProgressHUD showToastwithText:LMLocalizedString(@"Network The request has expired", nil) withType:ToastTypeFail showInView:self.view complete:nil];
+                } else {
+                    [MBProgressHUD showToastwithText:LMLocalizedString(@"Network Server error", nil) withType:ToastTypeFail showInView:self.view complete:nil];
+                }
             }];
         } else{
-            if ([data isEqualToString:weakSelf.user.address]) {
+            if ([data isEqualToString:self.user.address]) {
                 [GCDQueue executeInMainQueue:^{
-                    weakSelf.user.stranger = NO;
-                    [weakSelf setupCellData];
-                    [weakSelf.tableView reloadData];
+                    self.user.stranger = NO;
+                    [self setupCellData];
+                    [self.tableView reloadData];
                 }];
             }
         }

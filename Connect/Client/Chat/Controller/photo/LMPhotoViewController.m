@@ -26,13 +26,13 @@
 
 
 @interface LMPhotoViewController () <AVCaptureFileOutputRecordingDelegate> {
-    
+
     AVCaptureDevice *_videoDevice;
     AVCaptureDevice *_audioDevice;
     AVCaptureDeviceInput *_videoNewInput;
     AVCaptureDeviceInput *_audioInput;
     AVCaptureMovieFileOutput *_movieOutput;
-    
+
     AVPlayer *_player;
     AVPlayerItem *_playItem;
     AVPlayerLayer *_playerLayer;
@@ -115,7 +115,7 @@
 
 - (void)addTipLable {
     self.tipLable = [[UILabel alloc] init];
-    self.tipLable.frame = CGRectMake(10, (ScreenHeight - 20) - 2 * CommonButtonWidth - 50, ScreenWidth-20, 20);
+    self.tipLable.frame = CGRectMake(10, (ScreenHeight - 20) - 2 * CommonButtonWidth - 50, ScreenWidth - 20, 20);
     self.tipLable.text = LMLocalizedString(@"Login Camera guide tip", nil);
     self.tipLable.font = [UIFont systemFontOfSize:FONT_SIZE(24)];
     self.tipLable.textAlignment = NSTextAlignmentCenter;
@@ -226,7 +226,7 @@
     [self addAudio];
     [self setUpCameraLayer];
     [self.session commitConfiguration];
-    
+
     [self.session startRunning];
 
 }
@@ -245,6 +245,7 @@
 }
 
 #pragma mark - start/stop record
+
 - (void)startRecordVideo {
     [self startVideoAnimation];
 }
@@ -415,12 +416,12 @@
 #pragma mark - progress
 
 - (void)refresh:(CADisplayLink *)link {
-    
+
     self.currentCount += 1;
     if (self.currentCount > VideoMaxDuration * 60) {
         [self stopRecordVideo];
     }
-    
+
     self.progressView.progress = (double) (self.currentCount / (VideoMaxDuration * 60.0));
 }
 
@@ -471,9 +472,9 @@
 
 - (void)addAudio {
     NSError *audioError;
-    
+
     _audioDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeAudio];
-    
+
     _audioInput = [[AVCaptureDeviceInput alloc] initWithDevice:_audioDevice error:&audioError];
     if (!audioError) {
         if ([self.session canAddInput:_audioInput]) {
@@ -498,7 +499,7 @@
     [self.cancelButton addTarget:self action:@selector(cancelAction) forControlEvents:UIControlEventTouchUpInside];
     [self.cancelButton setImage:[UIImage imageNamed:@"cancel_take_photo"] forState:UIControlStateNormal];
     [self.view addSubview:self.cancelButton];
-    
+
     self.saveButton = [UIButton buttonWithType:UIButtonTypeCustom];
     self.saveButton.frame = CGRectMake((ScreenWidth - CommonButtonWidth) / 2.0, ScreenHeight - CommonButtonWidth - CommonButtonWidth, CommonButtonWidth, CommonButtonWidth);
     self.saveButton.layer.cornerRadius = CommonButtonWidth / 2.0;
@@ -507,7 +508,7 @@
     [self.saveButton addTarget:self action:@selector(saveButtonAction) forControlEvents:UIControlEventTouchUpInside];
     self.saveButton.backgroundColor = [UIColor whiteColor];
     [self.view addSubview:self.saveButton];
-    
+
     self.resetButton = [UIButton buttonWithType:UIButtonTypeCustom];
     self.resetButton.frame = self.saveButton.frame;
     self.resetButton.layer.cornerRadius = CommonButtonWidth / 2.0;
@@ -516,7 +517,7 @@
     [self.resetButton setImage:[UIImage imageNamed:@"retake_photo"] forState:UIControlStateNormal];
     self.resetButton.backgroundColor = ButtonBgColor;
     [self.view addSubview:self.resetButton];
-    
+
     self.shutterLable = [[UIView alloc] init];
     self.shutterLable.frame = self.saveButton.frame;
     self.shutterLable.backgroundColor = [UIColor whiteColor];
@@ -540,9 +541,9 @@
     self.cancelButton = nil;
 
     [UIView animateWithDuration:0.5 animations:^{
-        
+
         self.saveButton.left = ScreenWidth - CommonButtonWidth - 50;
-        
+
         self.resetButton.left = 50;
     }];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t) (0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -609,7 +610,7 @@
         CGRect bounds = [view bounds];
         [self.previewLayer setFrame:bounds];
         [self.previewLayer setVideoGravity:AVLayerVideoGravityResizeAspectFill];
-        
+
         [viewLayer addSublayer:self.previewLayer];
     }
 }
@@ -646,8 +647,7 @@
     __weak typeof(self) weakSelf = self;
     if (self.isVideo) {
         [self compressVideo];
-    } else
-    {
+    } else {
         if (self.savePhotoBlock) {
             self.savePhotoBlock(weakSelf.imageShowView.image, self.isBack);
         }
@@ -718,29 +718,29 @@
 
         DDLogInfo(@"assetURL = %@, error = %@", assetURL, error);
         lib = nil;
-   }];
-    
+    }];
+
 }
 
 - (UIImage *)fixOrientation:(UIImage *)aImage {
     if (aImage.imageOrientation == UIImageOrientationUp)
         return aImage;
-    
+
     CGAffineTransform transform = CGAffineTransformIdentity;
-    
+
     switch (aImage.imageOrientation) {
         case UIImageOrientationDown:
         case UIImageOrientationDownMirrored:
             transform = CGAffineTransformTranslate(transform, aImage.size.width, aImage.size.height);
             transform = CGAffineTransformRotate(transform, M_PI);
             break;
-            
+
         case UIImageOrientationLeft:
         case UIImageOrientationLeftMirrored:
             transform = CGAffineTransformTranslate(transform, aImage.size.width, 0);
             transform = CGAffineTransformRotate(transform, M_PI_2);
             break;
-            
+
         case UIImageOrientationRight:
         case UIImageOrientationRightMirrored:
             transform = CGAffineTransformTranslate(transform, 0, aImage.size.height);
@@ -749,14 +749,14 @@
         default:
             break;
     }
-    
+
     switch (aImage.imageOrientation) {
         case UIImageOrientationUpMirrored:
         case UIImageOrientationDownMirrored:
             transform = CGAffineTransformTranslate(transform, aImage.size.width, 0);
             transform = CGAffineTransformScale(transform, -1, 1);
             break;
-            
+
         case UIImageOrientationLeftMirrored:
         case UIImageOrientationRightMirrored:
             transform = CGAffineTransformTranslate(transform, aImage.size.height, 0);
@@ -765,11 +765,11 @@
         default:
             break;
     }
-    
+
     CGContextRef ctx = CGBitmapContextCreate(NULL, aImage.size.width, aImage.size.height,
-                                             CGImageGetBitsPerComponent(aImage.CGImage), 0,
-                                             CGImageGetColorSpace(aImage.CGImage),
-                                             CGImageGetBitmapInfo(aImage.CGImage));
+            CGImageGetBitsPerComponent(aImage.CGImage), 0,
+            CGImageGetColorSpace(aImage.CGImage),
+            CGImageGetBitmapInfo(aImage.CGImage));
     CGContextConcatCTM(ctx, transform);
     switch (aImage.imageOrientation) {
         case UIImageOrientationLeft:
@@ -779,12 +779,12 @@
             // Grr...
             CGContextDrawImage(ctx, CGRectMake(0, 0, aImage.size.height, aImage.size.width), aImage.CGImage);
             break;
-            
+
         default:
             CGContextDrawImage(ctx, CGRectMake(0, 0, aImage.size.width, aImage.size.height), aImage.CGImage);
             break;
     }
-    
+
     CGImageRef cgimg = CGBitmapContextCreateImage(ctx);
     UIImage *img = [UIImage imageWithCGImage:cgimg];
     CGContextRelease(ctx);
@@ -802,8 +802,7 @@
 
         [self startRecordVideo];
 
-    } else if (longPressGes.state == UIGestureRecognizerStateEnded)
-    {
+    } else if (longPressGes.state == UIGestureRecognizerStateEnded) {
         [self stopRecordVideo];
 
     }
@@ -825,10 +824,10 @@
         UIImage *image = [UIImage imageWithData:imageData];
         DDLogInfo(@"image size = %@", NSStringFromCGSize(image.size));
         if (self.isBack == NO) {
-          image = [UIImage imageWithCGImage:[image CGImage] scale:1 orientation:UIImageOrientationLeftMirrored];
+            image = [UIImage imageWithCGImage:[image CGImage] scale:1 orientation:UIImageOrientationLeftMirrored];
         }
         weakSelf.imageShowView.image = image;
-        
+
         [weakSelf updateSaveButton];
     }];
 }
@@ -861,7 +860,7 @@
                 [self.session addInput:self.videoInput];
             }
             [self.session removeOutput:_movieOutput];
-             [self addMovieOutput:self.isBack];
+            [self addMovieOutput:self.isBack];
             [self.session commitConfiguration];
         } else if (error) {
             DDLogInfo(@"toggle carema failed, error = %@", error);
@@ -876,6 +875,7 @@
 
 
 }
+
 - (void)removeSomeThing {
     if (_player != nil) {
         [_player.currentItem cancelPendingSeeks];

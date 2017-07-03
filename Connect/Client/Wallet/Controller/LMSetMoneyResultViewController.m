@@ -84,7 +84,7 @@
 - (void)initTabelViewCell {
 
     self.BalanceLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, CGRectGetMaxY(self.rateChangeButton.frame) + AUTO_HEIGHT(30), VSIZE.width, AUTO_HEIGHT(100))];
-    self.BalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance", nil), [PayTool getBtcStringWithAmount:[[MMAppSetting sharedSetting] getBalance]]];
+    self.BalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance Credit", nil), [PayTool getBtcStringWithAmount:[[MMAppSetting sharedSetting] getAvaliableAmount]]];
     self.BalanceLabel.font = [UIFont systemFontOfSize:FONT_SIZE(30)];
     self.BalanceLabel.textColor = [UIColor blackColor];
     self.BalanceLabel.textAlignment = NSTextAlignmentCenter;
@@ -93,7 +93,7 @@
     __weak __typeof(&*self) weakSelf = self;
     [[PayTool sharedInstance] getBlanceWithComplete:^(NSString *blance, UnspentAmount *unspentAmount, NSError *error) {
         weakSelf.blance = unspentAmount.avaliableAmount;
-        weakSelf.BalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance", nil), [PayTool getBtcStringWithAmount:unspentAmount.avaliableAmount]];
+        weakSelf.BalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance Credit", nil), [PayTool getBtcStringWithAmount:unspentAmount.avaliableAmount]];
     }];
 
     // transfer button
@@ -242,13 +242,6 @@
                 passView.requestCallBack(nil);
             }
             [weakSelf createChatWithHashId:hashId address:weakSelf.info.address Amount:weakSelf.trasferAmount.stringValue];
-            // Update the purse balance
-            [[PayTool sharedInstance] getBlanceWithComplete:^(NSString *blance, UnspentAmount *unspentAmount, NSError *error) {
-                [GCDQueue executeInMainQueue:^{
-                    weakSelf.blance = unspentAmount.avaliableAmount;
-                    weakSelf.BalanceLabel.text = [NSString stringWithFormat:LMLocalizedString(@"Wallet Balance", nil), [PayTool getBtcStringWithAmount:unspentAmount.avaliableAmount]];
-                }];
-            }];
             [GCDQueue executeInMainQueue:^{
                 [MBProgressHUD showToastwithText:LMLocalizedString(@"Wallet Transfer Successful", nil) withType:ToastTypeSuccess showInView:weakSelf.view complete:nil];
             }];
